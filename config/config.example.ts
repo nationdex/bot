@@ -1,6 +1,6 @@
 export const config = {
 	token: "",
-	description: "A ForgeScript rewrite of the OG Nationdex BDFD code!",
+	description: "Collect nations on Discord and enjoy an OG environment of peace and freedom!",
 	prefix: "!",
 	name: "Nationdex",
 	status: "online",
