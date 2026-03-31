@@ -1,6 +1,7 @@
 export const config = {
 	token: "",
-	description: "Collect nations on Discord and enjoy an OG environment of peace and freedom!",
+	description:
+		"Collect nations on Discord and enjoy an OG environment of peace and freedom!",
 	prefix: "!",
 	name: "Nationdex",
 	status: "online",

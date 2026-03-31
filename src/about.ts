@@ -3,8 +3,8 @@ module.exports = {
 		name: "about",
 		description: "Provides information about the bot.",
 	},
-    // This command must be linked to the config.ts file in order to work flawlessly.
-    // Please make sure to link this command in the config.ts file.
+	// This command must be linked to the config.ts file in order to work flawlessly.
+	// Please make sure to link this command in the config.ts file.
 	code: `
     $addContainer[
         $addTextDisplay[## Nationdex Discord Bot]
