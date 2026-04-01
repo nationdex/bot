@@ -1,19 +1,27 @@
+/**
+ * Nationdex configuration
+ */
 export const config = {
+  // ── Bot credentials ──────────────────────────────────────────────────────
   token: '',
+
+  // ── Identity ─────────────────────────────────────────────────────────────
+  name: 'Nationdex',
   description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
   prefix: '!',
-  name: 'Nationdex',
   status: 'online',
   activity: {
     name: 'wild nations appear!',
     type: 'Watching',
   },
 
+  // ── Links ─────────────────────────────────────────────────────────────────
   repoURL: 'https://github.com/Nationdex-Team/Nationdex-OG',
   serverURL: 'https://discord.gg/tKh3n5uVnm',
   ToS: 'https://arielaram.com/terms-of-service',
   PrivacyPolicy: 'https://arielaram.com/privacy-policy',
 
+  // ── Spawning ──────────────────────────────────────────────────────────────
   spawn: {
     rateRange: { min: 30, max: 45 },
     spawnMessages: [
@@ -40,11 +48,15 @@ export const config = {
     cooldown: 600,
   },
 
+  // ── Moderation ────────────────────────────────────────────────────────────
   macroServers: [''],
   macroUsers: [''],
 
+  // ── Logging ───────────────────────────────────────────────────────────────
+  /** Discord channel ID where admin log messages are sent. */
   logChannel: '',
 
+  // ── Appearance ────────────────────────────────────────────────────────────
   appearance: {
     interface: {
       collectible: { singular: 'nation', plural: 'nations' },
@@ -66,4 +78,11 @@ export const config = {
       give: { name: 'give', desc: 'Gives a nation to a user.' },
     },
   },
+
+  // ── Packages ──────────────────────────────────────────────────────────────
+  packages: [
+    'nationdex.packages.info',
+    'nationdex.packages.nations',
+    'nationdex.packages.promocodes',
+  ] as string[],
 };

@@ -5,7 +5,15 @@
   "module": "index.ts",
   "scripts": {
     "start": "bun run --watch index.ts",
-    "check": "biome check . --write"
+    "check": "biome check . --write",
+    "pm": "bm2 start ecosystem.config.ts",
+    "pm:fg": "bm2 start ecosystem.config.ts --no-daemon",
+    "pm:dev": "NODE_ENV=development bm2 start ecosystem.config.ts",
+    "pm:stop": "bm2 stop all",
+    "pm:restart": "bm2 restart all",
+    "pm:list": "bm2 list",
+    "pm:logs": "bm2 logs",
+    "pm:save": "bm2 save && bm2 startup install"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -18,9 +26,8 @@
     "@tryforge/forge.canvas": "^1.3.0",
     "@tryforge/forge.db": "^2.1.1",
     "@tryforge/forgescript": "^2.6.0",
-    "bm2": "^1.0.36",
+    "bm2": "^1.0.37",
     "elysia": "^1.4.28",
-    "postgres": "^3.4.8",
-    "react": "^19.2.4"
+    "postgres": "^3.4.8"
   }
 }

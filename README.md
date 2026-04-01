@@ -1,4 +1,4 @@
-# Nationdex OG Codebase
+# Project Nationdex 2026
 
 **The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
 

@@ -9,10 +9,9 @@
         "@tryforge/forge.canvas": "^1.3.0",
         "@tryforge/forge.db": "^2.1.1",
         "@tryforge/forgescript": "^2.6.0",
-        "bm2": "^1.0.36",
+        "bm2": "^1.0.37",
         "elysia": "^1.4.28",
         "postgres": "^3.4.8",
-        "react": "^19.2.4",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -157,7 +156,7 @@
 
     "base64-js": ["base64-js@1.5.1", "", {}, "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA=="],
 
-    "bm2": ["bm2@1.0.36", "", { "dependencies": { "cli-table3": "^0.6.5", "pidusage": "^4.0.1", "ws": "^8.19.0" }, "os": [ "linux", "darwin", ], "bin": { "bm2": "src/index.ts" } }, "sha512-tVh9JPlSQyzx83EZmd+dfI2lWqydfm5cXkTdQ+L/wh7czSBZj1k0SKYUaC6FGdXDsocfylOUbku0CLlvLpNlCw=="],
+    "bm2": ["bm2@1.0.37", "", { "dependencies": { "cli-table3": "^0.6.5", "pidusage": "^4.0.1", "ws": "^8.19.0" }, "os": [ "linux", "darwin", ], "bin": { "bm2": "src/index.ts" } }, "sha512-uXZoCTmvReviOjngCvJsF1329UAK4kwS7MfIU8/Wn3b5eGhfSq2fjiyIljBjYNj68Ry8P7VuBdjO2BZA9GouYw=="],
 
     "brace-expansion": ["brace-expansion@2.0.3", "", { "dependencies": { "balanced-match": "^1.0.0" } }, "sha512-MCV/fYJEbqx68aE58kv2cA/kiky1G8vux3OR6/jbS+jIMe/6fJWa0DTzJU7dqijOWYwHi1t29FlfYI9uytqlpA=="],
 
@@ -298,8 +297,6 @@
     "possible-typed-array-names": ["possible-typed-array-names@1.1.0", "", {}, "sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg=="],
 
     "postgres": ["postgres@3.4.8", "", {}, "sha512-d+JFcLM17njZaOLkv6SCev7uoLaBtfK86vMUXhW1Z4glPWh4jozno9APvW/XKFJ3CCxVoC7OL38BqRydtu5nGg=="],
-
-    "react": ["react@19.2.4", "", {}, "sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ=="],
 
     "reflect-metadata": ["reflect-metadata@0.2.2", "", {}, "sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q=="],
 
