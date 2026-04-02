@@ -7,7 +7,7 @@ import help from './help';
 
 const infoPackage: Package = {
   name: 'info',
-  description: 'General informational commands (about, help).',
+  description: 'General informational commands.',
   commands: [about, help],
 };
 

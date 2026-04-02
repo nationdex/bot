@@ -6,7 +6,7 @@ const collectibleName = config.appearance.commands.collectibles;
 const command: Command = {
   data: {
     name: `${config.appearance.commands.comp.name}`,
-    description: `Show Your Current Completion of ${config.name}`,
+    description: `Show your current completion of ${config.name}`,
     type: 1,
     integration_types: [0, 1],
     options: [
