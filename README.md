@@ -14,10 +14,22 @@ To configure the bot through `config.ts`:
 cp config/config.example.ts config.ts
 ```
 
+To generate a Drizzle schema, use:
+
+```bash
+bun db:generate
+```
+
 To run:
 
 ```bash
-bun start
+bun run pm
+```
+
+If you want to stop the processes, then run:
+
+```bash
+bun run pm:stop
 ```
 
 This project was created using `bun init` in bun v1.2.22.

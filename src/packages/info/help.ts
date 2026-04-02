@@ -13,7 +13,7 @@ const command: Command = {
   code: `
     $addContainer[
       $addTextDisplay[# ${config.name} Discord Bot - help menu]
-      $addSeparator[]
+      $addSeparator[Small]
       $addSection[
         $addTextDisplay[**Config**: </config channel:$botID></config disable:$botID>]
         $addTextDisplay[**Info**: </about:$botID>]

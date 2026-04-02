@@ -62,7 +62,7 @@ const config: EcosystemConfig = {
         POSTGRES_PASSWORD: PG_PASSWORD,
         POSTGRES_USER: 'postgres',
         POSTGRES_DB: 'nationdex',
-        DB_HOST_PORT: '5432',
+        DB_HOST_PORT: '5433',
         DB_CONTAINER_NAME: 'nationdex-postgres',
         DB_IMAGE_NAME: 'nationdex-db',
       },
@@ -81,6 +81,11 @@ const config: EcosystemConfig = {
       errorFile: './logs/bot-error.log',
       env: {
         NODE_ENV: 'production',
+        POSTGRES_PASSWORD: PG_PASSWORD,
+        POSTGRES_USER: 'postgres',
+        POSTGRES_DB: 'nationdex',
+        DB_HOST: 'localhost',
+        DB_HOST_PORT: '5433',
       },
     },
 

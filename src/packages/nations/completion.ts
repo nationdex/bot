@@ -6,7 +6,7 @@ const collectibleName = config.appearance.commands.collectibles;
 const command: Command = {
   data: {
     name: `${config.appearance.commands.comp.name}`,
-    description: `Show your current completion of ${config.name}`,
+    description: config.appearance.commands.comp.desc,
     type: 1,
     integration_types: [0, 1],
     options: [
@@ -18,35 +18,24 @@ const command: Command = {
     ],
   },
   code: `
-    $if[$or[$getUserVar[owned;$authorID;0]==0;$getUserVar[unowned;$authorID;0]==0];
-      $addSection[
-        $addTextDisplay[# Account Migration]
-        $addTextDisplay[Due to system updates to prevent loss of data, please redo this command]
-      ]
-      $callFunction[refurb;$authorID]
-    ]
+    $let[Amount;$get[NationCount[]]]
 
-    $arrayLoad[totals;,$replace[$readDir[./Balls;,];.json;]]
-    $let[Amount;$arrayLength[totals]]
+    $if[$get[Amount]==0;
+      $addContainer[
+        $addTextDisplay[## No ${collectibleName}s available yet!]
+        $addSeparator[Small]
+        $addTextDisplay[The bot's ${collectibleName}s haven't been set up yet. Check back later!]
+      ]
+      $end
+    ]
 
     $let[user;$if[$option[user]==;$authorID;$option[user]]]
 
     $arrayLoad[owned;,;$getUserVar[owned;$get[user]]]
     $arrayLoad[unowned;,;$getUserVar[unowned;$get[user]]]
 
-    $arrayForEach[owned;id;
-      $if[$env[id]==;;
-        $jsonLoad[json;$readFile[Balls/$env[id].json]]
-        $let[caught2;<:emoji:$env[json;emojiID]>,$get[caught2]]
-      ]
-    ]
-
-    $arrayForEach[unowned;id;
-      $if[$env[id]==;;
-        $jsonLoad[json;$readFile[Balls/$env[id].json]]
-        $let[uncaught2;<:emoji:$env[json;emojiID]>,$get[uncaught2]]
-      ]
-    ]
+    $let[caught2;$get[NationEmojis[$getUserVar[owned;$get[user]]]]]
+    $let[uncaught2;$get[NationEmojis[$getUserVar[unowned;$get[user]]]]]
 
     $author[$userDisplayName[$get[user]];$userAvatar[$get[user]]]
 

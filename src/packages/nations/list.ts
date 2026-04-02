@@ -7,19 +7,25 @@ const collectiblePlural = config.appearance.interface.collectible.plural;
 const command: Command = {
   data: {
     name: `${config.appearance.commands.list.name}`,
-    description: `See your ${collectiblePlural} inventory!`,
+    description: config.appearance.commands.list.desc,
     type: 1,
     integration_types: [0, 1],
   },
   code: `
-    $let[caught;$getUserVar[Caught;$authorID]]
+    $let[nationCount;$get[NationCount[]]]
 
-    $arrayLoad[balls;,;$readDir[./Balls;,]]
-    $let[rareness;0]
-    $arrayForEach[balls;rare;
-      $jsonLoad[rareness;$readFile[./Balls/$env[rare]]]
-      $letSum[rareness;$env[rareness;rarity]]
+    $if[$get[nationCount]==0;
+      $addContainer[
+        $addTextDisplay[## No ${collectiblePlural} available yet!]
+        $addSeparator[Small]
+        $addTextDisplay[The bot's ${collectiblePlural} haven't been set up yet. Check back later!]
+      ]
+      $end
     ]
+
+    $let[rareness;$get[TotalRareness[]]
+
+    $let[caught;$getUserVar[Caught;$authorID]]
 
     $let[page;1]
 
@@ -28,8 +34,7 @@ const command: Command = {
     $let[totalPages;$round[$math[($get[totalItems]/10)+0.5]]]
 
     $addContainer[
-      $addTextDisplay[Inventory]
-      $addSeparator[]
+      $addTextDisplay[## $username's ${collectibleSingular} List]
       $addTextDisplay[Select a ${collectibleSingular} from below to view!]
       $addTextDisplay[Page: $get[page]/$get[totalPages]]
     ]
@@ -43,7 +48,7 @@ const command: Command = {
     ]
 
     $addActionRow[
-      $addStringSelectMenu[balls-list-$get[page];Choose a ${collectibleSingular}!;;0;1]
+      $addStringSelectMenu[nations-list-$get[page];Choose a ${collectibleSingular}!;;0;1]
     ]
 
     $let[startIndex;$math[($get[page]-1)*10]]
@@ -73,8 +78,13 @@ const command: Command = {
           $let[split2;$get[name]|$get[atk]|$get[hlth]|$get[date]]
         ]
 
-        $jsonLoad[data;$readFile[./Balls/$get[name].json]]
-        $addOption[$env[data;country] - Rarity $round[$math[($env[data;rarity]/$get[rareness])*100];2]%;ATK: $get[atk]% ● HP: $get[hlth]% ● $parseDate[$get[date];Date];$authorID-$get[split2]$get[random];<:emoji:$env[data;emojiID]>]
+        $let[nationRaw;$get[NationData[$get[name]]]]
+        $textSplit[$get[nationRaw];|]
+        $let[nCountry;$splitText[0]]
+        $let[nEmojiId;$splitText[1]]
+        $let[nRarity;$splitText[2]]
+
+        $addOption[$get[nCountry] - Rarity $round[$math[($get[nRarity]/$get[rareness])*100];2]%;ATK: $get[atk]% ● HP: $get[hlth]% ● $parseDate[$get[date];Date];$authorID-$get[split2]$get[random];<:emoji:$get[nEmojiId]>]
         $let[startIndex;$math[$get[startIndex]+1]]
       ]
     ]
