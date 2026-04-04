@@ -32,13 +32,9 @@ export const config = {
     },
     commands: {
       collectibles: 'nations',
-      comp: {
-        name: 'comp',
-        desc: 'Shows the amount of ${collectiblePlural} collected and the progress of your journey.',
-      },
-      list: {
-        name: 'list',
-        desc: 'Shows a list of all the ${collectiblePlural} you have collected.',
+      prog: {
+        name: 'prog',
+        desc: 'View your collection progress and select nations to inspect.',
       },
     },
   },

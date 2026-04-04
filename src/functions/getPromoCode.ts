@@ -23,7 +23,7 @@ export default new NativeFunction({
     },
   ],
   output: ArgType.String,
-  async execute(ctx, [code]) {
+  async execute(_ctx, [code]) {
     if (!code) return this.success('');
 
     const [row] = await db

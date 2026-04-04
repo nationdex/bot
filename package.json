@@ -6,6 +6,7 @@
   "scripts": {
     "start": "bun run --watch index.ts",
     "check": "biome check . --write",
+    "typecheck": "tsc --noEmit",
     "pm": "bm2 start ecosystem.config.ts",
     "pm:fg": "bm2 start ecosystem.config.ts --no-daemon",
     "pm:dev": "NODE_ENV=development bm2 start ecosystem.config.ts",
@@ -35,7 +36,8 @@
     "bm2": "^1.0.37",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.20.0",
-    "postgres": "^3.4.8"
+    "postgres": "^3.4.8",
+    "tsx": "^4.21.0"
   },
   "patchedDependencies": {
     "pg@8.20.0": "patches/pg@8.20.0.patch",

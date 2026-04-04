@@ -1,7 +1,7 @@
 import { config } from '../../../config';
 import type { Command } from '../../types';
 
-const { collectibles, comp, list } = config.appearance.commands;
+const { collectibles, prog } = config.appearance.commands;
 
 const command: Command = {
   data: {
@@ -14,13 +14,10 @@ const command: Command = {
     $addContainer[
       $addTextDisplay[# ${config.name} Discord Bot - help menu]
       $addSeparator[Small]
-      $addSection[
-        $addTextDisplay[**Config**: </config channel:$botID></config disable:$botID>]
-        $addTextDisplay[**Info**: </about:$botID>]
-        $addTextDisplay[**Help**: </help:$botID>]
-        $addTextDisplay[**Player**: </profile:$botID>]
-        $addTextDisplay[**${collectibles}**: </${collectibles} ${comp.name}:$botID></${collectibles} ${list.name}>]
-      ]
+      $addTextDisplay[**Info**: </about:$botID>]
+      $addTextDisplay[**Help**: </help:$botID>]
+      $addTextDisplay[**Redeem**: </redeem:$botID>]
+      $addTextDisplay[**${collectibles}**: </${collectibles} ${prog.name}:$botID>]
     ]
   `,
 };

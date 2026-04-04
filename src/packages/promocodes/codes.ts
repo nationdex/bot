@@ -17,22 +17,19 @@ const command: Command = {
     ],
   },
   code: `
-    $let[codeRaw;$get[PromoCode[$toLowerCase[$option[code]]]]]
+    $defer
 
-    $if[$or[$get[codeRaw]==;$checkContains[$getUserVar[Redeemed];$toLowerCase[$option[code]]]];
-      This code is invalid or has already been used.
-      $end
-    ]
+    $let[codeRaw;$getPromoCode[$toLowerCase[$option[code]]]]
+
+    $onlyIf[$get[codeRaw]!=;$addContainer[$addTextDisplay[❌ This code is invalid.]]]
+    $onlyIf[$checkContains[$getUserVar[Redeemed];$toLowerCase[$option[code]]]==false;$addContainer[$addTextDisplay[❌ This code has already been redeemed.]]]
 
     $textSplit[$get[codeRaw];|]
     $let[reward;$splitText[0]]
     $let[codeMessage;$splitText[1]]
 
-    $let[nationRaw;$get[NationData[$get[reward]]]]
-    $if[$get[nationRaw]==;
-      This code references an unknown nation. Please contact an admin.
-      $end
-    ]
+    $let[nationRaw;$getNationData[$get[reward]]]
+    $onlyIf[$get[nationRaw]!=;$addContainer[$addTextDisplay[❌ This code references an unknown nation. Please contact an admin.]]]
 
     $textSplit[$get[nationRaw];|]
     $let[Country;$splitText[0]]
@@ -43,36 +40,31 @@ const command: Command = {
     $let[health;$randomNumber[250;$get[maxHealth]]]
     $let[attack;$randomNumber[250;$get[maxAttack]]]
 
-    $if[$usePromoCode[$toLowerCase[$option[code]]]==false;
-      This code is no longer available.
-      $end
-    ]
+    $onlyIf[$usePromoCode[$toLowerCase[$option[code]]]!=false;$addContainer[$addTextDisplay[❌ This code is no longer available.]]]
 
-    $if[$getUserVar[inventory;$authorID;open]==open;
-      $callFunction[redeem;$get[Country] (#$math[$getGlobalVar[globalCaught;0]+1], $get[attack]%/$get[health]%);$get[emoji];$get[codeMessage]]
-    ;
-      $ephemeral
-      $callFunction[redeem;$get[Country] (#$math[$getGlobalVar[globalCaught;0]+1], $get[attack]%/$get[health]%);$get[emoji];$get[codeMessage]]
-    ]
+    $c[Save redemption data]
+    $!setGlobalVar[globalCaught;$math[$getGlobalVar[globalCaught;0]+1]]
+    $!setUserVar[Caught;$get[reward]|$get[attack]|$get[health]|$getTimestamp-$getUserVar[Caught]]
+    $!setUserVar[Redeemed;$toLowerCase[$option[code]]-$getUserVar[Redeemed]]
 
-    $sendMessage[${config.logChannel};
-    A nation has been Redeemed!
-    ]
+    $c[Log synchronously before the CV2 response — container resets after send, no flag leak]
+    $sendMessage[${config.logChannel};**Promo Code Redeemed**
+    Code: $toTitleCase[$option[code]]
+    User: $username ($authorID)
+    Nation: $get[Country]
+    Guild: $guildID]
+
+    $c[Show success to the user]
     $addContainer[
-      $addTextDisplay[## Details of the Redeem]
-      $addSeparator[Small]
       $addSection[
-        $addTextDisplay[Code: $toTitleCase[$option[code]]]
-        $addTextDisplay[Author: $username]
-        $addTextDisplay[User ID: $authorID]
-        $addTextDisplay[Guild ID: $guildID]
-        $addTextDisplay[Nation: $get[Country]]
+        $addTextDisplay[## 🎉 You received a $get[Country]!]
+        $addTextDisplay[<:emoji:$get[emoji]> **$get[Country]** (#$getGlobalVar[globalCaught;0])]
+        $addTextDisplay[⚔️ ATK: **$get[attack]%** ● ❤️ HP: **$get[health]%**]
+        $addThumbnail[https://cdn.discordapp.com/emojis/$get[emoji].png]
       ]
+      $addSeparator[Small]
+      $addTextDisplay[$get[codeMessage]]
     ]
-
-    $setGlobalVar[globalCaught;$math[$getGlobalVar[globalCaught;0]+1]]
-    $setUserVar[Caught;$get[reward]|$get[attack]|$get[health]|$getTimestamp-$getUserVar[Caught]]
-    $setUserVar[Redeemed;$toLowerCase[$option[code]]-$getUserVar[Redeemed]]
   `,
 };
 

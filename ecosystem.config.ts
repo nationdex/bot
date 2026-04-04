@@ -36,12 +36,12 @@ interface EcosystemConfig {
 }
 
 // Read sensitive values from .env (Bun loads .env automatically)
-const PG_PASSWORD = process.env.POSTGRESPASSWORD ?? '';
+const PG_PASSWORD = process.env.POSTGRES_PASSWORD ?? process.env.POSTGRESPASSWORD ?? '';
 const PANEL_PORT = process.env.PANEL_PORT ?? '3000';
 
 if (!PG_PASSWORD) {
   console.warn(
-    '[ecosystem] Warning: POSTGRESPASSWORD is not set in .env — the database process will fail to start.'
+    '[ecosystem] Warning: POSTGRES_PASSWORD or POSTGRESPASSWORD is not set in .env — the database process will fail to start.'
   );
 }
 
@@ -51,11 +51,12 @@ const config: EcosystemConfig = {
     {
       name: 'postgres',
       script: './scripts/start-db.ts',
+      interpreter: 'bun',
       autorestart: true,
       maxRestarts: 5,
       minUptime: 3000,
       restartDelay: 5000,
-      killTimeout: 15000, // Give Docker time to stop gracefully
+      killTimeout: 6000, // docker stop --time 3 (3s) + 3s margin
       outFile: './logs/db-out.log',
       errorFile: './logs/db-error.log',
       env: {
@@ -72,10 +73,14 @@ const config: EcosystemConfig = {
     {
       name: 'nationdex',
       script: './index.ts',
+      interpreter: 'bun',
+      instances: 1,        // Never run more than one bot process — multiple instances
+      execMode: 'fork',    // share the same token and race on every interaction event
       autorestart: true,
       maxRestarts: 10,
       minUptime: 5000,
       restartDelay: 3000,
+      killTimeout: 3000, // Bun exits fast on SIGTERM
       watch: false,
       outFile: './logs/bot-out.log',
       errorFile: './logs/bot-error.log',
@@ -92,11 +97,14 @@ const config: EcosystemConfig = {
     // ── 3. Admin panel ────────────────────────────────────────────────────────
     {
       name: 'admin-panel',
-      script: './website/start.ts',
+      script: './start.ts',
+      interpreter: 'bun',
+      cwd: './website',
       autorestart: true,
       maxRestarts: 10,
       minUptime: 5000,
       restartDelay: 3000,
+      killTimeout: 8000, // Next.js needs ~5s to drain, start.ts force-kills after 10s anyway
       watch: false,
       outFile: './logs/panel-out.log',
       errorFile: './logs/panel-error.log',

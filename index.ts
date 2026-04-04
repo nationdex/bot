@@ -1,9 +1,12 @@
+import { join } from 'node:path';
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { ForgeDB } from '@tryforge/forge.db';
 import { ForgeClient, FunctionManager } from '@tryforge/forgescript';
 import { ActivityType, Collection, type PresenceStatusData } from 'discord.js';
-import { join } from 'path';
+import { sql } from 'drizzle-orm';
 import { config } from './config';
+import { db } from './src/db';
+import { DB_CONFIG } from './src/db/connection';
 import { customFunctions } from './src/functions';
 import { logger } from './src/logger';
 import { allCommands, packages } from './src/packages';
@@ -27,6 +30,16 @@ if (!config.token) {
   process.exit(1);
 }
 
+// ── DB password guard ─────────────────────────────────────────────────────────
+// pg's SASL/SCRAM auth throws a cryptic "client password must be a string" error
+// when it receives an empty string. Catch it early with a clear message.
+if (!DB_CONFIG.password) {
+  logger.error(
+    'Missing database password. Set the POSTGRES_PASSWORD environment variable before starting the bot.'
+  );
+  process.exit(1);
+}
+
 // ── Client ────────────────────────────────────────────────────────────────────
 const client = new ForgeClient({
   intents: ['Guilds', 'GuildMessages', 'MessageContent'],
@@ -35,11 +48,11 @@ const client = new ForgeClient({
   extensions: [
     new ForgeDB({
       type: 'postgres',
-      host: process.env.DB_HOST ?? 'localhost',
-      port: Number(process.env.DB_HOST_PORT ?? 5432),
-      username: process.env.POSTGRES_USER ?? 'postgres',
-      password: process.env.POSTGRES_PASSWORD ?? process.env.POSTGRESPASSWORD ?? '',
-      database: process.env.POSTGRES_DB ?? 'nationdex',
+      host: DB_CONFIG.host,
+      port: DB_CONFIG.port,
+      username: DB_CONFIG.user,
+      password: DB_CONFIG.password,
+      database: DB_CONFIG.database,
     }),
     new ForgeCanvas(),
   ],
@@ -51,28 +64,47 @@ FunctionManager.addMany(customFunctions);
 // ── Register commands ─────────────────────────────────────────────────────────
 client.applicationCommands.add(...allCommands);
 
-// Group nations commands into a subcommand collection keyed by collectibles name
-const { collectibles, comp, list } = config.appearance.commands;
-const mgr = client.applicationCommands as unknown as {
-  path: string;
-  commands: Collection<string, unknown>;
-};
+// Group the nations subcommands under a single parent slash command.
+//
+// ForgeScript's ApplicationCommandManager stores commands in an internal
+// Collection<string, Command | Collection<string, Command>>. When a value is
+// itself a Collection, the framework treats it as a subcommand group and
+// registers it as one Discord command with subcommands. This is the same
+// structure the folder-based loader produces; we replicate it manually because
+// this project uses the package-based loader instead.
+//
+// Tested against @tryforge/forgescript@2.6.0.
+groupNationsSubcommands(client.applicationCommands);
 
-const nationsGroup = new Collection<string, unknown>();
-const compCmd = mgr.commands.get(comp.name);
-const listCmd = mgr.commands.get(list.name);
-if (compCmd) {
-  mgr.commands.delete(comp.name);
-  nationsGroup.set(comp.name, compCmd);
-}
-if (listCmd) {
-  mgr.commands.delete(list.name);
-  nationsGroup.set(list.name, listCmd);
-}
-mgr.commands.set(collectibles, nationsGroup);
+/**
+ * Moves the prog command out of the flat command registry and nests it under a
+ * subcommand group named after `config.appearance.commands.collectibles`.
+ * Also sets the manager's path so toJSON() can find nations/config.json for
+ * the group description.
+ */
+function groupNationsSubcommands(appCmds: ForgeClient['applicationCommands']): void {
+  const { collectibles, prog } = config.appearance.commands;
 
-// Point at src/packages/ so toJSON() picks up nations/config.json for group description
-mgr.path = join(process.cwd(), 'src/packages');
+  // Access ForgeScript's internal command registry.
+  const mgr = appCmds as unknown as {
+    path: string;
+    commands: Collection<string, unknown>;
+  };
+
+  const group = new Collection<string, unknown>();
+
+  const progCmd = mgr.commands.get(prog.name);
+  if (progCmd) {
+    mgr.commands.delete(prog.name);
+    group.set(prog.name, progCmd);
+  }
+
+  mgr.commands.set(collectibles, group);
+
+  // Point at src/packages/ so toJSON() picks up nations/config.json for the
+  // subcommand group description.
+  mgr.path = join(process.cwd(), 'src/packages');
+}
 
 // ── Startup log ───────────────────────────────────────────────────────────────
 for (const pkg of packages) {
@@ -81,6 +113,19 @@ for (const pkg of packages) {
     `Loaded package "${pkg.name}" (${pkg.commands.length} command(s)${names ? `: ${names}` : ', grouped'})`
   );
 }
+
+// ── DB readiness probe ────────────────────────────────────────────────────────
+// Runs once at startup. Does not block login — just surfaces a clear log entry
+// when PostgreSQL is unreachable so the team knows why DB-dependent commands fail.
+db.execute(sql`SELECT 1`)
+  .then(() => logger.info('Database connection verified'))
+  .catch((err: Error) =>
+    logger.warn(
+      'PostgreSQL is not reachable — commands that read/write user data will fail until the database is available. ' +
+        'Check that the DB container is running before starting the bot.',
+      err
+    )
+  );
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 client

@@ -1,12 +1,12 @@
 const CONTAINER = process.env.DB_CONTAINER_NAME ?? 'nationdex-postgres';
 const IMAGE = process.env.DB_IMAGE_NAME ?? 'nationdex-db';
 const HOST_PORT = process.env.DB_HOST_PORT ?? '5432';
-const PG_PASS = process.env.POSTGRES_PASSWORD;
+const PG_PASS = process.env.POSTGRES_PASSWORD ?? process.env.POSTGRESPASSWORD;
 const PG_USER = process.env.POSTGRES_USER ?? 'postgres';
 const PG_DB = process.env.POSTGRES_DB ?? 'nationdex';
 
 if (!PG_PASS) {
-  console.error('[db] POSTGRES_PASSWORD is not set. Aborting.');
+  console.error('[db] POSTGRES_PASSWORD or POSTGRESPASSWORD is not set. Aborting.');
   process.exit(1);
 }
 
@@ -85,7 +85,9 @@ const watcher = setInterval(() => {
 function shutdown(signal: string) {
   clearInterval(watcher);
   console.log(`[db] Received ${signal} — stopping container "${CONTAINER}"...`);
-  Bun.spawnSync(['docker', 'stop', CONTAINER], { stdio: ['inherit', 'inherit', 'inherit'] });
+  // --time 3: give Postgres 3 s to flush WAL, then SIGKILL. Keeps total
+  // shutdown under bm2's killTimeout so the process exits cleanly.
+  Bun.spawnSync(['docker', 'stop', '--time', '3', CONTAINER], { stdio: ['inherit', 'inherit', 'inherit'] });
   process.exit(0);
 }
 

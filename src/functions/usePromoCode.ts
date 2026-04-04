@@ -1,12 +1,15 @@
 import { ArgType, NativeFunction } from '@tryforge/forgescript';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, gt, sql } from 'drizzle-orm';
 import { db, promoCodes } from '../db';
 
 /**
  * $usePromoCode[code]
  * Atomically decrements usesLeft for the given promo code (case-insensitive).
- * Returns "true" if the decrement succeeded (usesLeft was > 0), "false" otherwise.
- * Only decrements when usesLeft > 0 to prevent going negative.
+ * Returns "true" if the decrement succeeded, "false" if the code is exhausted
+ * or not found.
+ *
+ * The WHERE clause includes `uses_left > 0` so the decrement and the guard are
+ * a single atomic DB operation — no separate read-then-write race condition.
  */
 export default new NativeFunction({
   name: '$usePromoCode',
@@ -23,18 +26,17 @@ export default new NativeFunction({
     },
   ],
   output: ArgType.String,
-  async execute(ctx, [code]) {
+  async execute(_ctx, [code]) {
     if (!code) return this.success('false');
 
     const result = await db
       .update(promoCodes)
       .set({ usesLeft: sql`${promoCodes.usesLeft} - 1` })
-      .where(eq(promoCodes.code, code.trim().toLowerCase()))
+      .where(and(eq(promoCodes.code, code.trim().toLowerCase()), gt(promoCodes.usesLeft, 0)))
       .returning({ usesLeft: promoCodes.usesLeft });
 
-    // If no row was matched, or the update somehow left usesLeft negative, report failure
-    const updated = result[0];
-    if (!updated || updated.usesLeft < 0) return this.success('false');
+    // If no rows were updated the code was either not found or already exhausted.
+    if (result.length === 0) return this.success('false');
 
     return this.success('true');
   },

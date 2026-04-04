@@ -1,8 +1,8 @@
 /**
  * Nationdex logger
  */
-import { appendFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 const LOG_DIR = join(process.cwd(), 'logs');
 const LOG_FILE = join(LOG_DIR, 'nationdex.log');
@@ -47,7 +47,7 @@ function write(level: Level, message: string, error?: unknown): void {
 
   // File output — sync write so nothing is lost on crash
   try {
-    appendFileSync(LOG_FILE, line + '\n');
+    appendFileSync(LOG_FILE, `${line}\n`);
   } catch {
     // Don't let a logging failure take down the process
   }
@@ -55,6 +55,6 @@ function write(level: Level, message: string, error?: unknown): void {
 
 export const logger = {
   info: (message: string) => write('INFO', message),
-  warn: (message: string) => write('WARN', message),
+  warn: (message: string, error?: unknown) => write('WARN', message, error),
   error: (message: string, error?: unknown) => write('ERROR', message, error),
 };

@@ -23,7 +23,7 @@ export default new NativeFunction({
     },
   ],
   output: ArgType.String,
-  async execute(ctx, [slugList]) {
+  async execute(_ctx, [slugList]) {
     if (!slugList) return this.success('');
 
     const slugs = slugList

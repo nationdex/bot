@@ -13,7 +13,7 @@ export default new NativeFunction({
   brackets: false,
   args: [],
   output: ArgType.Number,
-  async execute(ctx) {
+  async execute(_ctx) {
     const [row] = await db.select({ value: count() }).from(nations);
     return this.success(row?.value ?? 0);
   },
