@@ -87,7 +87,9 @@ function shutdown(signal: string) {
   console.log(`[db] Received ${signal} — stopping container "${CONTAINER}"...`);
   // --time 3: give Postgres 3 s to flush WAL, then SIGKILL. Keeps total
   // shutdown under bm2's killTimeout so the process exits cleanly.
-  Bun.spawnSync(['docker', 'stop', '--time', '3', CONTAINER], { stdio: ['inherit', 'inherit', 'inherit'] });
+  Bun.spawnSync(['docker', 'stop', '--time', '3', CONTAINER], {
+    stdio: ['inherit', 'inherit', 'inherit'],
+  });
   process.exit(0);
 }
 

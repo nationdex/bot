@@ -68,9 +68,7 @@
         "nations_slug_unique": {
           "name": "nations_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -128,9 +126,7 @@
         "promo_codes_code_unique": {
           "name": "promo_codes_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "policies": {},

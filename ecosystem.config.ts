@@ -52,6 +52,8 @@ const config: EcosystemConfig = {
       name: 'postgres',
       script: './scripts/start-db.ts',
       interpreter: 'bun',
+      instances: 1, // Always run exactly one database instance
+      execMode: 'fork',
       autorestart: true,
       maxRestarts: 5,
       minUptime: 3000,
@@ -74,8 +76,8 @@ const config: EcosystemConfig = {
       name: 'nationdex',
       script: './index.ts',
       interpreter: 'bun',
-      instances: 1,        // Never run more than one bot process — multiple instances
-      execMode: 'fork',    // share the same token and race on every interaction event
+      instances: 1, // Never run more than one bot process — multiple instances
+      execMode: 'fork', // share the same token and race on every interaction event
       autorestart: true,
       maxRestarts: 10,
       minUptime: 5000,
@@ -100,6 +102,8 @@ const config: EcosystemConfig = {
       script: './start.ts',
       interpreter: 'bun',
       cwd: './website',
+      instances: 1, // Always run exactly one admin panel instance
+      execMode: 'fork',
       autorestart: true,
       maxRestarts: 10,
       minUptime: 5000,

@@ -15,10 +15,10 @@ const command: Command = {
       $addTextDisplay[${config.description}]
       $addTextDisplay[**Running Version:** v1.0.0]
       $addSeparator[Large]
-      $addTextDisplay[### ====== 📊 Statistics ======]
+      $addTextDisplay[### 📊 Statistics]
       $addTextDisplay[🌍 Servers: **$guildCount** | ⚡ Latency: **$ping ms**]
       $addSeparator[Large;false]
-      $addTextDisplay[### ====== 🔗 Links ======]
+      $addTextDisplay[### 🔗 Links]
       $addActionRow
       $addButton[${config.serverURL};Support Server;Link]
       $addButton[${config.repoURL};GitHub Repository;Link]
