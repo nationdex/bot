@@ -1,5 +1,10 @@
 /**
- * Nationdex configuration
+ * Nationdex configuration — example
+ *
+ * Copy this file to the project root as config.ts and fill in your values.
+ * config.ts is gitignored and never committed.
+ *
+ *   cp config/config.example.ts config.ts
  */
 export const config = {
   // ── Bot credentials ──────────────────────────────────────────────────────
@@ -8,7 +13,7 @@ export const config = {
   // ── Identity ─────────────────────────────────────────────────────────────
   name: 'Nationdex',
   description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
-  prefix: 'n.',
+  prefix: '!',
   status: 'online',
   activity: {
     name: 'wild nations appear!',

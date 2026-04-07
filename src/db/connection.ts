@@ -6,12 +6,12 @@
  *   - Drizzle ORM client (src/db/index.ts)
  *   - Drizzle Kit migrations (drizzle.config.ts)
  *
- * Default port is 5433 to match the ecosystem / Docker setup.
+ * Default port is 5435 to match the ecosystem / Docker setup.
  */
 
 export const DB_CONFIG = {
   host: process.env.DB_HOST ?? 'localhost',
-  port: Number(process.env.DB_HOST_PORT ?? 5433),
+  port: Number(process.env.DB_HOST_PORT ?? 5435),
   user: process.env.POSTGRES_USER ?? 'postgres',
   password: process.env.POSTGRES_PASSWORD ?? process.env.POSTGRESPASSWORD ?? '',
   database: process.env.POSTGRES_DB ?? 'nationdex',

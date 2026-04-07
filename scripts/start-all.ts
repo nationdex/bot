@@ -1,47 +1,28 @@
 #!/usr/bin/env bun
 
 /**
- * Cross-platform startup script for Nationdex
+ * Nationdex production startup script
  *
- * Runs all three services simultaneously:
- * - PostgreSQL database
- * - Discord bot
- * - Next.js admin panel
- *
- * Works on Windows, macOS, and Linux
- * (Use this if BM2 is not available on your platform)
+ * Runs bot and admin panel as a single Bun-managed process pair.
+ * The database is expected to already be running (via Docker or docker-compose).
  *
  * Usage:
  *   bun scripts/start-all.ts
+ *   docker-compose up          ← recommended for production
  */
 
-// ── Configuration ─────────────────────────────────────────────────────────────
-const REQUIRED_NODE_VERSION = 20;
-const PANEL_PORT = process.env.PANEL_PORT ?? '3001';
-
-// ── Node version check ─────────────────────────────────────────────────────────
-const currentVersion = parseInt(process.versions.node.split('.')[0] ?? '0', 10);
-if (currentVersion < REQUIRED_NODE_VERSION) {
-  console.error(
-    `[ERROR] Node.js v${process.versions.node} is too old.\n` +
-      `Next.js requires Node.js >= ${REQUIRED_NODE_VERSION}.9.0\n` +
-      `Please upgrade: https://nodejs.org`
-  );
-  process.exit(1);
-}
+const PANEL_PORT = process.env.PANEL_PORT ?? '3005';
 
 console.log('');
 console.log('═══════════════════════════════════════════════════════════');
-console.log('  Nationdex Multi-Process Startup');
+console.log('  Nationdex Startup');
 console.log('═══════════════════════════════════════════════════════════');
 console.log('');
 console.log(`Platform: ${process.platform}`);
-console.log(`Node.js: ${process.versions.node}`);
 console.log('');
 console.log('Starting services:');
-console.log('  1. PostgreSQL database');
-console.log('  2. Discord bot');
-console.log('  3. Next.js admin panel');
+console.log('  1. Discord bot');
+console.log('  2. Admin panel');
 console.log('');
 
 // ── Process management ─────────────────────────────────────────────────────────
@@ -56,7 +37,6 @@ async function shutdown(signal: string) {
   console.log(`\n[${signal}] Shutting down gracefully...`);
   console.log('');
 
-  // Kill all processes
   for (const { name, process: proc } of processes) {
     try {
       console.log(`Stopping ${name}...`);
@@ -66,7 +46,6 @@ async function shutdown(signal: string) {
     }
   }
 
-  // Wait for processes to exit (max 10 seconds)
   let exited = 0;
   const timeout = setTimeout(() => {
     console.warn('Force-killing remaining processes...');
@@ -79,7 +58,6 @@ async function shutdown(signal: string) {
     }
   }, 10000);
 
-  // Wait for all processes to finish
   for (const { process: proc } of processes) {
     try {
       await proc.exited;
@@ -94,28 +72,8 @@ async function shutdown(signal: string) {
   process.exit(0);
 }
 
-// Handle termination signals
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
-
-// ── Start PostgreSQL ──────────────────────────────────────────────────────────
-const dbProc = Bun.spawn(['bun', 'run', 'scripts/start-db.ts'], {
-  stdio: ['inherit', 'inherit', 'inherit'],
-  env: {
-    ...process.env,
-    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD ?? '',
-    POSTGRES_USER: 'postgres',
-    POSTGRES_DB: 'nationdex',
-    DB_HOST_PORT: '5433',
-    DB_CONTAINER_NAME: 'nationdex-postgres',
-    DB_IMAGE_NAME: 'nationdex-db',
-  },
-});
-processes.push({ name: 'PostgreSQL', process: dbProc });
-console.log('✓ PostgreSQL starting...');
-
-// Wait a bit for database to be ready before starting bot
-await new Promise((resolve) => setTimeout(resolve, 2000));
 
 // ── Start Discord Bot ─────────────────────────────────────────────────────────
 const botProc = Bun.spawn(['bun', 'run', 'index.ts'], {
@@ -123,11 +81,6 @@ const botProc = Bun.spawn(['bun', 'run', 'index.ts'], {
   env: {
     ...process.env,
     NODE_ENV: 'production',
-    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD ?? '',
-    POSTGRES_USER: 'postgres',
-    POSTGRES_DB: 'nationdex',
-    DB_HOST: 'localhost',
-    DB_HOST_PORT: '5433',
   },
 });
 processes.push({ name: 'Discord Bot', process: botProc });
@@ -152,7 +105,6 @@ console.log('══════════════════════�
 console.log('');
 console.log('Services:');
 console.log(`  Admin Panel: http://localhost:${PANEL_PORT}`);
-console.log('  Database:    localhost:5433');
 console.log('  Bot:         Running (Discord)');
 console.log('');
 

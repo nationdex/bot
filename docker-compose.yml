@@ -1,0 +1,46 @@
+# Podman Compose configuration for Nationdex
+# Run with: podman-compose up
+services:
+  # ── PostgreSQL database ─────────────────────────────────────────────────────
+  db:
+    image: docker.io/library/postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-nationdex}
+    ports:
+      - "${DB_HOST_PORT:-5435}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nationdex}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ── Bun application — bot + admin panel in one instance ────────────────────
+  # config.ts (gitignored) is mounted from the host — fill it in from
+  # config/config.example.ts before running docker compose up.
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_HOST_PORT: 5432
+    command: ["bun", "run", "scripts/start-all.ts"]
+    ports:
+      - "${PANEL_PORT:-3005}:${PANEL_PORT:-3005}"
+
+volumes:
+  db_data:

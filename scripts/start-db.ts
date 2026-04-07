@@ -75,13 +75,13 @@ const watcher = setInterval(() => {
   if (s !== 'running') {
     clearInterval(watcher);
     console.error(
-      `[db] Container "${CONTAINER}" is no longer running (status: "${s}"). Signalling BM2 to restart.`
+      `[db] Container "${CONTAINER}" is no longer running (status: "${s}"). Exiting so the parent process can restart.`
     );
     process.exit(1);
   }
 }, POLL_MS);
 
-// Graceful shutdown: stop the container when BM2 sends SIGTERM/SIGINT
+// Graceful shutdown: stop the container on SIGTERM/SIGINT
 function shutdown(signal: string) {
   clearInterval(watcher);
   console.log(`[db] Received ${signal} — stopping container "${CONTAINER}"...`);
