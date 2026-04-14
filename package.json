@@ -2,9 +2,9 @@
   "name": "pnd26",
   "version": "1.0.0",
   "description": "The Project Nationdex 2026 is a modern reimagining of the oldest Ballsdex alternative in existence, known as Nationdex.bot!",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "scripts": {
-    "start": "bun run index.ts",
+    "start": "bun run src/index.ts",
     "dev": "bun scripts/start-all-dev.ts",
     "dev:all": "bun scripts/start-all-dev.ts",
     "start:all": "bun scripts/start-all.ts",

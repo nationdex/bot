@@ -75,7 +75,7 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 // ── Start Discord Bot (with --watch flag for hot reload) ──────────────────────
-const botProc = Bun.spawn(['bun', 'run', '--watch', 'index.ts'], {
+const botProc = Bun.spawn(['bun', 'run', '--watch', 'src/index.ts'], {
   stdio: ['inherit', 'inherit', 'inherit'],
   env: {
     ...process.env,

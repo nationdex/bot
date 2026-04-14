@@ -1,10 +1,10 @@
 /**
  * Nationdex configuration — example
  *
- * Copy this file to the project root as config.ts and fill in your values.
- * config.ts is gitignored and never committed.
+ * Copy this file to config/config.ts and fill in your values.
+ * config/config.ts is gitignored and never committed.
  *
- *   cp config/config.example.ts config.ts
+ *   cp config/config.example.ts config/config.ts
  */
 export const config = {
   // ── Bot credentials ──────────────────────────────────────────────────────

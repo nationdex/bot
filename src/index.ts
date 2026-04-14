@@ -4,12 +4,12 @@ import { ForgeDB } from '@tryforge/forge.db';
 import { ForgeClient, FunctionManager } from '@tryforge/forgescript';
 import { ActivityType, Collection, type PresenceStatusData } from 'discord.js';
 import { sql } from 'drizzle-orm';
-import { config } from './config';
-import { db } from './src/db';
-import { DB_CONFIG } from './src/db/connection';
-import { customFunctions } from './src/functions';
-import { logger } from './src/logger';
-import { allCommands, packages } from './src/packages';
+import { config } from '../config/config';
+import { db } from './db';
+import { DB_CONFIG } from './db/connection';
+import { customFunctions } from './functions';
+import { logger } from './logger';
+import { allCommands, packages } from './packages';
 
 // ── Global error handlers ─────────────────────────────────────────────────────
 process.on('uncaughtException', (err) => {

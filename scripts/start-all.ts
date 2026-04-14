@@ -76,7 +76,7 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 // ── Start Discord Bot ─────────────────────────────────────────────────────────
-const botProc = Bun.spawn(['bun', 'run', 'index.ts'], {
+const botProc = Bun.spawn(['bun', 'run', 'src/index.ts'], {
   stdio: ['inherit', 'inherit', 'inherit'],
   env: {
     ...process.env,
