@@ -26,7 +26,7 @@ process.on('unhandledRejection', (reason) => {
 
 // ── Token guard ───────────────────────────────────────────────────────────────
 if (!config.token) {
-  logger.error('Missing bot token in config. Please set config.token.');
+  logger.critical('Missing bot token in config. Please set config.token.');
   process.exit(1);
 }
 
@@ -34,7 +34,7 @@ if (!config.token) {
 // pg's SASL/SCRAM auth throws a cryptic "client password must be a string" error
 // when it receives an empty string. Catch it early with a clear message.
 if (!DB_CONFIG.password) {
-  logger.error(
+  logger.critical(
     'Missing database password. Set the POSTGRES_PASSWORD environment variable before starting the bot.'
   );
   process.exit(1);
@@ -145,6 +145,6 @@ client
     return client.applicationCommands.registerGlobal();
   })
   .catch((err: Error) => {
-    logger.error('Failed to log in or register commands', err);
+    logger.critical('Failed to log in or register commands', err);
     process.exit(1);
   });

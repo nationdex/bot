@@ -1,4 +1,4 @@
-import { config } from '../../../config';
+import { config } from '../../../config/config';
 import type { Command } from '../../types';
 
 const command: Command = {

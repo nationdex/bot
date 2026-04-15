@@ -1,7 +1,7 @@
 /**
  * Package loader
  */
-import { config } from '../../config';
+import { config } from '../../config/config';
 import type { Command, Package } from '../types';
 import infoPackage from './info';
 import nationsPackage from './nations';

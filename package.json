@@ -9,6 +9,8 @@
     "dev:all": "bun scripts/start-all-dev.ts",
     "start:all": "bun scripts/start-all.ts",
     "prod": "bun scripts/start-all.ts",
+    "stop": "bun scripts/stop.ts",
+    "stop:force": "bun scripts/stop.ts --force",
     "check": "biome check . --write",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
