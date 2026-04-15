@@ -1,4 +1,4 @@
-import { config } from '../../../config';
+import { config } from '../../../config/config';
 import type { Command } from '../../types';
 
 const command: Command = {
@@ -19,7 +19,7 @@ const command: Command = {
   code: `
     $defer
 
-    $let[codeRaw;$getPromoCode[$toLowerCase[$option[code]]]]
+    $let[codeRaw;$get[PromoCode[$toLowerCase[$option[code]]]]
 
     $onlyIf[$get[codeRaw]!=;$addContainer[$addTextDisplay[❌ This code is invalid.]]]
     $onlyIf[$checkContains[$getUserVar[Redeemed];$toLowerCase[$option[code]]]==false;$addContainer[$addTextDisplay[❌ This code has already been redeemed.]]]
@@ -28,7 +28,7 @@ const command: Command = {
     $let[reward;$splitText[0]]
     $let[codeMessage;$splitText[1]]
 
-    $let[nationRaw;$getNationData[$get[reward]]]
+    $let[nationRaw;$get[NationData[$get[reward]]]
     $onlyIf[$get[nationRaw]!=;$addContainer[$addTextDisplay[❌ This code references an unknown nation. Please contact an admin.]]]
 
     $textSplit[$get[nationRaw];|]

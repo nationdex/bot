@@ -43,11 +43,4 @@ export const config = {
       },
     },
   },
-
-  // ── Packages ──────────────────────────────────────────────────────────────
-  packages: [
-    'nationdex.packages.info',
-    'nationdex.packages.nations',
-    'nationdex.packages.promocodes',
-  ] as string[],
 };

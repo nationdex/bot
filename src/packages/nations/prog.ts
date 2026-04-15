@@ -1,4 +1,4 @@
-import { config } from '../../../config';
+import { config } from '../../../config/config';
 import type { Command } from '../../types';
 
 const collectibleSingular = config.appearance.interface.collectible.singular;
@@ -20,12 +20,12 @@ const command: Command = {
   },
   code: `
     $defer
-    $let[nationCount;$getNationCount]
+    $let[nationCount;$get[NationCount]]
 
     $onlyIf[$get[nationCount]!=0;$addContainer[$addTextDisplay[## No ${collectiblePlural} available yet!]$addSeparator[Small]$addTextDisplay[The bot's ${collectiblePlural} haven't been set up yet. Check back later!]]]
 
     $let[user;$if[$option[user]==;$authorID;$option[user]]]
-    $let[rareness;$getTotalRareness]
+    $let[rareness;$get[TotalRareness]]
     $let[caught;$getUserVar[Caught;$get[user]]]
 
     $onlyIf[$get[caught]!=;$addContainer[$addTextDisplay[## $userDisplayName[$get[user]]'s ${collectibleSingular} Progression]$addSeparator[Small]$addTextDisplay[You haven't caught any ${collectiblePlural} yet! Use </redeem:$botID> to get started.]]]
@@ -54,7 +54,7 @@ const command: Command = {
           $let[hlth$get[i];1]
           $let[date$get[i];1729707105594]
         ]
-        $let[nd$get[i];$getNationData[$get[slug$get[i]]]]
+        $let[nd$get[i];$get[NationData[$get[slug$get[i]]]]
         $if[$get[nd$get[i]]!=;
           $textSplit[$get[nd$get[i]];|]
           $let[emojiList;$get[emojiList] <:emoji:$splitText[1]>]
