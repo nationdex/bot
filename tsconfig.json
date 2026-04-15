@@ -1,4 +1,10 @@
 {
+  "exclude": [
+    // website has its own tsconfig.json (jsx: react-jsx, dom lib, Next.js plugin)
+    // including it here causes ~30 false-positive JSX / missing-module errors
+    "website",
+    "node_modules"
+  ],
   "compilerOptions": {
     // Type definitions
     "types": ["bun"],

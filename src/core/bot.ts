@@ -16,12 +16,12 @@ export class Client extends ForgeClient {
 
     constructor() {
         if (!config.token) {
-            logger.error('Missing bot token in config. Please set config.token.');
+            logger.critical('Missing bot token in config. Please set config.token.');
             process.exit(1);
         }
 
         if (!DB_CONFIG.password) {
-            logger.error(
+            logger.critical(
                 'Missing database password. Set the POSTGRES_PASSWORD environment variable before starting the bot.'
             );
             process.exit(1);
