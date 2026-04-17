@@ -1,4 +1,0 @@
-[[nationdex.packages]]
-name = "my_cool_package"
-location = "./extra/my_cool_package"
-enabled = true

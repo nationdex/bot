@@ -42,6 +42,7 @@ bun.lock
 
 # Configuration file — copy config/config.example.ts to config/config.ts and fill in values
 config/config.ts
+config/extra.toml
 
 # 3rd party support
 extra/*
