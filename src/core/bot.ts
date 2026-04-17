@@ -1,4 +1,4 @@
-import { ForgeClient } from "@tryforge/forgescript";
+import { ForgeClient, FunctionManager } from "@tryforge/forgescript";
 import { logger } from "../logger";
 import { config } from "../../config/config";
 import { DB_CONFIG } from "../db/connection";
@@ -7,7 +7,7 @@ import { ForgeCanvas } from "@tryforge/forge.canvas";
 import { db } from "../db";
 import { sql } from "drizzle-orm";
 import { type ActivityType, Collection } from "discord.js"
-import { getPackages } from "../packages";
+import { getCommands, getFunctions } from "../packages";
 import path from "node:path";
 import type { Package } from "../types";
 
@@ -52,13 +52,27 @@ export class Client extends ForgeClient {
                 ]
             }
         })
+    }
 
-        // this.loadFunctions();
+    private async loadFunctions() {
+        try {
+            const functions = await getFunctions();
+            for (const fn of functions) {
+                // @ts-expect-error
+                // i added a @ts-except-error because TypeScript throws an typing error,
+                // but this behavior has been tested and works correctly at runtime
+                this.functions.add(fn);
+            }
+        } catch (e) {
+            logger.error("Failed to load functions", e);
+        }
+
+        console.log(this.functions)
     }
 
     private async loadCommands() {
         try {
-            const packages = await getPackages();
+            const packages = await getCommands();
             for (const pkg of packages) {
                 this.packages.set(pkg.name, pkg);
             }
@@ -123,6 +137,7 @@ export class Client extends ForgeClient {
     public async start(token?: string | undefined): Promise<string> {
         try {
             await this.loadCommands();
+            await this.loadFunctions();
             for (const pkg of this.packages.values()) {
                 const names = pkg.commands.map((c: { data: { name: string } }) => c.data.name).join(', ');
                 logger.info(
