@@ -7,7 +7,8 @@ import { ForgeCanvas } from "@tryforge/forge.canvas";
 import { db } from "../db";
 import { sql } from "drizzle-orm";
 import { type ActivityType, Collection } from "discord.js"
-import { getCommands, getFunctions } from "../packages";
+import { getCommands, discoverFunctions } from "../packages";
+import { customFunctions } from "../functions";
 import path from "node:path";
 import type { Package } from "../types";
 
@@ -33,12 +34,12 @@ export class Client extends ForgeClient {
             prefixes: [config.prefix],
             extensions: [
                 new ForgeDB({
-                type: 'postgres',
-                host: DB_CONFIG.host,
-                port: DB_CONFIG.port,
-                username: DB_CONFIG.user,
-                password: DB_CONFIG.password,
-                database: DB_CONFIG.database,
+                    type: 'postgres',
+                    host: DB_CONFIG.host,
+                    port: DB_CONFIG.port,
+                    username: DB_CONFIG.user,
+                    password: DB_CONFIG.password,
+                    database: DB_CONFIG.database,
                 }),
                 new ForgeCanvas(),
             ],
@@ -56,18 +57,16 @@ export class Client extends ForgeClient {
 
     private async loadFunctions() {
         try {
-            const functions = await getFunctions();
-            for (const fn of functions) {
-                // @ts-expect-error
-                // i added a @ts-except-error because TypeScript throws an typing error,
-                // but this behavior has been tested and works correctly at runtime
-                this.functions.add(fn);
+            // default functions
+            FunctionManager.addMany(customFunctions)
+            // extra function
+            const extraFunctions = await discoverFunctions();
+            for (const fn of extraFunctions) {
+                this.functions.load(fn)
             }
         } catch (e) {
             logger.error("Failed to load functions", e);
         }
-
-        console.log(this.functions)
     }
 
     private async loadCommands() {
@@ -136,8 +135,8 @@ export class Client extends ForgeClient {
 
     public async start(token?: string | undefined): Promise<string> {
         try {
-            await this.loadCommands();
             await this.loadFunctions();
+            await this.loadCommands();
             for (const pkg of this.packages.values()) {
                 const names = pkg.commands.map((c: { data: { name: string } }) => c.data.name).join(', ');
                 logger.info(

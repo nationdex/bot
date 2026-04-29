@@ -31,8 +31,7 @@
     "@tryforge/forge.db": "^2.1.1",
     "@tryforge/forgescript": "^2.6.0",
     "@types/pg": "^8.20.0",
-    "drizzle-orm": "^0.45.2",
-    "pg": "^8.20.0",
+    "drizzle-orm": "^0.45.2",    "pg": "^8.20.0",
     "postgres": "^3.4.9",
     "toml": "^4.1.1"
   },

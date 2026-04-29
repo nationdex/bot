@@ -1,48 +1,24 @@
-import type { NativeFunction } from "@tryforge/forgescript";
-import { customFunctions } from "../functions";
 import path from "node:path"; 
 import { getEnabledPackages } from "./package";
-import { pathToFileURL } from "bun";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 
-export async function discoverFunctions(): Promise<NativeFunction[]> {
-    const functions: NativeFunction[] = [];
+/**
+ * Discover all 3rd party functions and returns paths
+ */
+export async function discoverFunctions(): Promise<string[]> {
+    const functions: string[] = [];
 
     const basePath = path.join(process.cwd(), "node_modules");
 
     for (const packageName of getEnabledPackages().keys()) {
-        const packagePath = path.join(basePath, packageName, "functions", "index.ts");
+        const functionsPath = path.join(basePath, packageName, "functions");
 
-        if (!existsSync(packagePath)) continue;
+        if (!existsSync(functionsPath)) continue;
+        const stat = statSync(functionsPath);
+        if (!stat.isDirectory()) continue;
 
-        const module = await import(pathToFileURL(packagePath).href);
-
-        if (!module || !module.default || !Array.isArray(module.default)) continue;
-
-        functions.push(...module.default);
+        functions.push(path.relative(process.cwd(), functionsPath))
     }
 
     return functions;
-}
-
-/**
- * Gets functions packages and 3rd party functions.
- */
-export async function getFunctions(): Promise<NativeFunction[]> {
-    const extraFunctions = await discoverFunctions();
-    return [...customFunctions, ...extraFunctions];
-}
-
-/**
- * Gets only 3rd party functions
- */
-export async function getExtraFunctions(): Promise<NativeFunction[]> {
-    return await discoverFunctions();
-}
-
-/**
- * Gets only default functions
- */
-export async function getDefaultFunctions(): Promise<NativeFunction[]> {
-    return customFunctions;
 }
