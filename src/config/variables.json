@@ -1,0 +1,72 @@
+{
+  "settings": {
+    "inventory_privacy": "public", 
+    "profile_privacy": "public", 
+    "accept_gifts": "true"
+  },
+  "blockedUsers": [],
+  "nationsData": {
+    "total": 0,
+    "common": 0,
+    "uncommon": 0,
+    "rare": 0,
+    "mythic": 0,
+    "legendary": 0,
+    "total_caught": 0,
+    "nations": {}
+  },
+  "nations": {
+    "total": 0,
+    "total_value": 0,
+    "common": 0,
+    "uncommon": 0,
+    "rare": 0,
+    "mythic": 0,
+    "legendary": 0,
+    "unique": [],
+    "nations": []
+  },
+  "auctionHouse": {},
+  "auction": {
+    "total": 0,
+    "sold": 0,
+    "earnings": 0,
+    "nations": []
+  },
+  "nation": {
+    "nation": "",
+    "author": "",
+    "attack": "",
+    "health": "",
+    "attack_type": "",
+    "health_type": "",
+    "event": "",
+    "card": "",
+    "timestamp": "",
+    "caught_in": ""
+  },
+  "codeInfo": {
+    "reward": "",
+    "message": "",
+    "expires_at": "",
+    "uses_left": "",
+    "used_by": []
+  },
+  "spawnConfig": {
+    "config_channel": "",
+    "status": "enabled",
+    "weight": 0,
+    "channel": "",
+    "message": "",
+    "nation": "",
+    "attack": "",
+    "health": "",
+    "attack_bonus": "",
+    "health_bonus": "",
+    "event": "",
+    "timestamp": "",
+    "caught_by": "",
+    "caught_in": ""
+  },
+  "events": {}
+}

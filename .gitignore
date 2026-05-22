@@ -1,44 +1,10 @@
-# dependencies (bun install)
-node_modules
-./node_modules
-
-# output
-out
-dist
-*.tgz
-
-# code coverage
-coverage
-*.lcov
-
-# logs
-logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
-
-# environment variables
+src/config/config.ts
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# caches
-.eslintcache
-.cache
-*.tsbuildinfo
-
-# IntelliJ based IDEs
-.idea
-
-# Finder (MacOS) folder config
-.DS_Store
-
-# Secrets — never commit these
-.env
-
-# Lock files — platform-specific entries can break cross-platform installs
-bun.lock
-
-# Configuration file — copy config/config.example.ts to config/config.ts and fill in values
-config/config.ts
+dist/
+node_modules/
+logs/
+database/
+assets/
+nations.json
+package-lock.json
+website/
