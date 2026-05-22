@@ -1,11 +1,11 @@
-# Project Nationdex 2026
+# Project NationDex 2.0
 
 **The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
 
 To install dependencies:
 
 ```bash
-bun install
+npm install
 ```
 
 To configure the bot through `config.ts`:
@@ -14,23 +14,8 @@ To configure the bot through `config.ts`:
 cp config/config.example.ts config.ts
 ```
 
-To generate a Drizzle schema, use:
-
-```bash
-bun db:generate
-```
-
 To run:
 
 ```bash
-bun run pm
+npm run test
 ```
-
-If you want to stop the processes, then run:
-
-```bash
-bun run pm:stop
-```
-
-This project was created using `bun init` in bun v1.2.22.
-[Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
