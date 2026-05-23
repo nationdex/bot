@@ -16,12 +16,6 @@ export default new ApplicationCommand({
     ],
     options: [
       {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: 'The user whose nation info card to view',
-        required: false,
-      },
-      {
         type: ApplicationCommandOptionType.String,
         name: 'nation',
         description: 'The nation whose info card to view',
@@ -31,8 +25,7 @@ export default new ApplicationCommand({
     ],
   },
   code: `
-  $let[user;$findUser[$option[user];true]]
-  $jsonLoad[nations;$getUserData[$get[user];nations]]
+  $jsonLoad[nations;$getUserData[$authorID;nations]]
   $let[id;$default[$option[nation];$env[nations;0]]]
   $let[ind;$arrayIndexOf[nations;$get[id]]]
   $let[prev;$env[nations;$sub[$get[ind];1]]]
@@ -43,7 +36,7 @@ export default new ApplicationCommand({
   ]
   
   $interactionReply[
-Viewing nations info cards of $userDisplayName[$get[user]]
+Viewing nations info cards of **$userDisplayName**
 $nationCard[$get[id]]
     $addActionRow
     $addButton[pages-nationInfo-$authorID-$get[prev]-$get[user]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]

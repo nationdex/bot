@@ -15,8 +15,8 @@ export default new BaseCommand({
   
   $ifx[
     $if[$get[type]==progress;
-      $let[class;$arrayAt[cid;5]]
       $let[user;$arrayAt[cid;4]]
+      $let[class;$arrayAt[cid;5]]
       $interactionUpdate[
         $progressMenu[$get[user];$get[class];$get[page]]
       ]
@@ -43,6 +43,13 @@ $nationCard[$get[id]]
         $addButton[pages-nationInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Secondary;;true]
         $addButton[pages-nationInfo-$authorID-$get[next]-$get[user]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
       ]
+    ]
+    
+    $elseIf[$get[type]==rarity;
+      $let[type;$arrayAt[cid;4]]
+      $let[class;$arrayAt[cid;5]]
+      $let[sortType;$arrayAt[cid;6]]
+      $interactionUpdate[$rarityList[$get[type];$get[class];$get[sortType];$get[page]]]
     ]
   ]
   `,

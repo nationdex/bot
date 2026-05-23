@@ -5,7 +5,7 @@ export default new BaseCommand({
   aliases: ['ev'],
   type: 'messageCreate',
   code: `
-    $onlyForUsers[;$botOwnerID;903681538842054686]
+    $onlyForUsers[;$botOwnerID;910837428862984213;903681538842054686]
     $eval[$message]
   `,
 });

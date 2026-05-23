@@ -1,0 +1,70 @@
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
+
+
+export default new ApplicationCommand({
+  data: {
+    type: ApplicationCommandType.ChatInput,
+    name: 'nations',
+    description: 'View the rarity list of nations',
+    integration_types: [
+      ApplicationIntegrationType.UserInstall,
+      ApplicationIntegrationType.GuildInstall,
+    ],
+    options: [
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'class',
+        description: 'The rarity class whose nations\' rarity to view',
+        required: false,
+        choices: [
+          {
+            name: 'Common',
+            value: 'common',
+          },
+          {
+            name: 'Uncommon',
+            value: 'uncommon',
+          },
+          {
+            name: 'Rare',
+            value: 'rare',
+          },
+          {
+            name: 'Mythic',
+            value: 'mythic',
+          },
+          {
+            name: 'Legendary',
+            value: 'legendary',
+          },
+        ],
+      },
+      {
+        type: ApplicationCommandOptionType.String,
+        name: 'sort_type',
+        description: 'Sort type of the list',
+        required: false,
+        choices: [
+          {
+            name: 'Rare to Common',
+            value: 'desc',
+          },
+          {
+            name: 'Common to Rare',
+            value: 'asc'
+          },
+        ],
+      },
+    ],
+  },
+  code: `
+  $interactionReply[
+    $rarityList[nations;$option[class];$option[sort_type];1]
+  ]
+  `,
+});
