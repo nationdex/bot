@@ -51,11 +51,11 @@ export default new ApplicationCommand({
         required: false,
         choices: [
           {
-            name: 'Rare to Common',
+            name: 'Common to Rare',
             value: 'desc',
           },
           {
-            name: 'Common to Rare',
+            name: 'Rare to Common',
             value: 'asc'
           },
         ],

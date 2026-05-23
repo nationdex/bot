@@ -31,6 +31,9 @@ export default new ApplicationCommand({
   $let[prev;$env[nations;$sub[$get[ind];1]]]
   $let[next;$env[nations;$sum[$get[ind];1]]]
   
+  $onlyIf[$arrayIncludes[nations;$get[id]];
+    $err[Invalid nation!;true]
+  ]
   $onlyIf[$arrayLength[nations]>0;
     $err[No nations found;true]
   ]

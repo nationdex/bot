@@ -11,7 +11,7 @@ export const config = {
   color: '#5119F9',
 
   // URLs
-  repo: 'https://github.com/Nationdex-Team/Nationdex',
+  repo: 'https://github.com/nationdex/bot',
   server: 'https://discord.gg/tKh3n5uVnm',
   terms: 'https://arielaram.com/terms-of-service',
   policy: 'https://arielaram.com/privacy-policy',

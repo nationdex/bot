@@ -21,6 +21,11 @@ export default new BaseCommand({
         ;nations]
       ]
       $arraySlice[nations;nations;0;25]
+      
+      $onlyIf[$arrayLength[nations]>0;
+        $addChoice[No nations found;null]
+      ]
+      
       $arrayForEach[nations;nat;
         $addChoice[#$env[nat]: $getNationInfo[$env[nat];name];$env[nat]]]
     ]
