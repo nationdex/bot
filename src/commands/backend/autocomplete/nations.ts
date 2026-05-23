@@ -31,5 +31,5 @@ export default new BaseCommand({
         $addChoice[#$env[nat]: $getEvent[$getNation[$get[id];event];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]]
     ]
   ]
-  `
+  `,
 });

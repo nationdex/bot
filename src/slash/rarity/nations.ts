@@ -5,7 +5,6 @@ import {
   ApplicationIntegrationType,
 } from 'discord.js';
 
-
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
@@ -19,7 +18,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'The rarity class whose nations\' rarity to view',
+        description: "The rarity class whose nations' rarity to view",
         required: false,
         choices: [
           {
@@ -56,7 +55,7 @@ export default new ApplicationCommand({
           },
           {
             name: 'Rare to Common',
-            value: 'asc'
+            value: 'asc',
           },
         ],
       },

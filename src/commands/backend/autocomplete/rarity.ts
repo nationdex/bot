@@ -30,5 +30,5 @@ export default new BaseCommand({
         $addChoice[#$env[nat]: $getNationInfo[$env[nat];name];$env[nat]]]
     ]
   ]
-  `
+  `,
 });

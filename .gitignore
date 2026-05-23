@@ -7,4 +7,3 @@ src/config/config.ts
 src/commands/dev/
 website/
 .forgevsc.json
-package-lock.json
