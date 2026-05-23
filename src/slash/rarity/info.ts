@@ -35,6 +35,10 @@ export default new ApplicationCommand({
   $let[totalRarity;$math[$getNationsData[rarity;+]]]
   $let[chance;$cropText[$math[($get[rarity]/$get[totalRarity])*100];0;5]%]
   
+  $onlyIf[$arrayIncludes[ids;$get[nation]];
+    $err[Invalid nation!;true]
+  ]
+  
   $interactionReply[
     $addContainer[
       $addTextDisplay[## $appEmoji[$getNationInfo[$get[nation];emoji_id]] $getNationInfo[$get[nation];name]
