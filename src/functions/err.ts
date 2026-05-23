@@ -1,27 +1,27 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "err",
+  name: 'err',
   // Returns a custom error message
   params: [
     {
-      "name": "message",
+      name: 'message',
       // The error message
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "ephemeral",
+      name: 'ephemeral',
       // Whether to make it ephemeral
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "delete?",
+      name: 'delete?',
       // Whether to delete the error message, only works for non-ephemeral. true if left empty
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[message;$env[message]]
@@ -69,5 +69,5 @@ export default new ForgeFunction({
       ]
     ]
   ]
-  `
+  `,
 });

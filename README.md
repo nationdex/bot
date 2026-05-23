@@ -11,11 +11,17 @@ npm install
 To configure the bot through `config.ts`:
 
 ```bash
-cp config/config.example.ts config.ts
+cp src/config/config.example.ts src/config/config.ts
 ```
 
 To run:
 
 ```bash
 npm run test
+```
+
+To check formatting:
+
+```bash
+npm run check
 ```

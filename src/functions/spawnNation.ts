@@ -1,46 +1,46 @@
-import { ForgeFunction } from "@tryforge/forgescript"
-import { config } from "../config/config"
+import { ForgeFunction } from '@tryforge/forgescript';
+import { config } from '../config/config';
 
-export default new ForgeFunction ({
-  name: "spawnNation",
+export default new ForgeFunction({
+  name: 'spawnNation',
   // Spawn a nation with the given properties
   params: [
     {
-      "name": "channel",
+      name: 'channel',
       // The channel to spawn the nation in
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "nation",
+      name: 'nation',
       // ID of the nation to spawn, random according to rarity if not specified
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "attackBonus",
+      name: 'attackBonus',
       // The attack bonus for the nation
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "healthBonus",
+      name: 'healthBonus',
       // The health bonus for the nation
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "class",
+      name: 'class',
       // The rarity class of the nation, random if not specified
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "event",
+      name: 'event',
       // The event type of the nation, none if not specified
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[ch;$env[channel]]
@@ -83,5 +83,5 @@ export default new ForgeFunction ({
   $!jsonSet[config;timestamp;"$getTimestamp"]
   $!jsonSet[config;event;$get[event]]
   $setGuildVar[spawnConfig;$env[config]]
-  `
+  `,
 });

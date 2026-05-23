@@ -1,15 +1,15 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "settings",
-    description: "View or customise your player settings",
+    name: 'settings',
+    description: 'View or customise your player settings',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
-    ]
+      ApplicationIntegrationType.GuildInstall,
+    ],
   },
   code: `
   $jsonLoad[settings;$getUserVar[settings]]
@@ -20,5 +20,5 @@ export default new ApplicationCommand({
   ]
   
   $interactionUpdate[$settingsMenu[$authorID]]
-  `
+  `,
 });

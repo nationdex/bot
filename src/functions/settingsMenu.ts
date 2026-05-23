@@ -1,16 +1,16 @@
-import { config } from "../config/config"
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
-  name: "settingsMenu",
+  name: 'settingsMenu',
   // Shows the settings menu of a user as a components v2 message
   params: [
     {
-      "name": "user",
+      name: 'user',
       // The user whose settings to get
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   brackets: false,
   code: `
@@ -45,8 +45,8 @@ Choose whether you accept nations as a gift]
         $addButton[settings-accept_gifts-$authorID-$if[$get[gifts];false;true];$if[$get[gifts];Yes;No];$if[$get[gifts];Primary;Secondary]]
       ]
       $addSeparator
-      $addTextDisplay[Made with ❤️ by NationDex™ Team]
+      $addTextDisplay[Made with 💙 by NationDex™ Team]
     ;${config.color}]
   ]
-  `
+  `,
 });

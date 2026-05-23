@@ -1,8 +1,8 @@
-import { BaseCommand } from "@tryforge/forgescript"
+import { BaseCommand } from '@tryforge/forgescript';
 
 export default new BaseCommand({
   hide: true,
-  type: "interactionCreate",
+  type: 'interactionCreate',
   code: `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==pages]
@@ -45,5 +45,5 @@ $nationCard[$get[id]]
       ]
     ]
   ]
-  `
+  `,
 });

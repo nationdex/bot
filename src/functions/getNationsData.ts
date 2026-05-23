@@ -1,21 +1,21 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "getNationsData",
+  name: 'getNationsData',
   // Get info about nations from the "nationsData" variable
   params: [
     {
-      "name": "value",
+      name: 'value',
       // The value/info to retrive, leave blank to get json data
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "separator",
+      name: 'separator',
       // The separator to use in case of multiple values
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $jsonLoad[data;$getGlobalVar[nationsData]]
@@ -37,5 +37,5 @@ export default new ForgeFunction({
       $return[$arrayJoin[mapped;$get[separator]]]
     ]
   ]
-`
+`,
 });

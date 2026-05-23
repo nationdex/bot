@@ -1,27 +1,27 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "addUserNation",
+  name: 'addUserNation',
   // Add a nation to a user's completion
   params: [
     {
-      "name": "user",
+      name: 'user',
       // The ID of the user
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "nation",
-      "type": "String",
+      name: 'nation',
+      type: 'String',
       // The id of the nation to add
-      "required": true
+      required: true,
     },
     {
-      "name": "data",
+      name: 'data',
       // The nation's data
-      "type": "String",
-      "required": true
-    }
+      type: 'String',
+      required: true,
+    },
   ],
   code: `
   $let[user;$env[user]]
@@ -46,5 +46,5 @@ export default new ForgeFunction({
   $!jsonSet[data;total_caught;$sum[$env[data;total_caught];1]]
   $!jsonSet[data;nations;$get[nation];global_caught;$sum[$env[data;nations;$get[nation];global_caught];1]]
   $setGlobalVar[nationsData;$env[data]]
-  `
+  `,
 });

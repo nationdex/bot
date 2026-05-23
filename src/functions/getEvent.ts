@@ -1,21 +1,21 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "getEvent",
+  name: 'getEvent',
   // Get information about an event from the "events" variable
   params: [
     {
-      "name": "name",
+      name: 'name',
       // name of the event
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "value",
+      name: 'value',
       // value or info go retrive
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[ev;$env[name]]
@@ -25,5 +25,5 @@ export default new ForgeFunction({
   $jsonLoad[event;$env[events;$get[ev]]]
   
   $return[$if[$get[val]!=;$env[event;$get[val]];$env[event]]]
-  `
+  `,
 });

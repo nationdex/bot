@@ -1,7 +1,7 @@
 {
   "settings": {
-    "inventory_privacy": "public", 
-    "profile_privacy": "public", 
+    "inventory_privacy": "public",
+    "profile_privacy": "public",
     "accept_gifts": "true"
   },
   "blockedUsers": [],

@@ -1,23 +1,27 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationCommandOptionType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "unblock",
-    description: "Unblock a user",
+    name: 'unblock',
+    description: 'Unblock a user',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: "user",
-        description: "The user you want to unblock",
-        required: true
-      }
-    ]
+        name: 'user',
+        description: 'The user you want to unblock',
+        required: true,
+      },
+    ],
   },
   code: `
   $let[user;$option[user]]
@@ -40,5 +44,5 @@ export default new ApplicationCommand({
       $addTextDisplay[Unblocked <@$get[user]> (\`$username[$get[user]]\`)]
     ;#00FF00]
   ]
-  `
+  `,
 });

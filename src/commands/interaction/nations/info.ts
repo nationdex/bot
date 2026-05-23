@@ -1,8 +1,8 @@
-import { BaseCommand } from "@tryforge/forgescript"
+import { BaseCommand } from '@tryforge/forgescript';
 
 export default new BaseCommand({
   hide: true,
-  type: "interactionCreate",
+  type: 'interactionCreate',
   code: `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$and[$arrayAt[cid;0]==nations;$arrayAt[cid;1]==info]]
@@ -15,5 +15,5 @@ export default new BaseCommand({
   $interactionReply[
     $nationCard[$get[id]]
   ]
-  `
+  `,
 });

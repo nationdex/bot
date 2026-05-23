@@ -1,8 +1,8 @@
-import { BaseCommand } from "@tryforge/forgescript"
+import { BaseCommand } from '@tryforge/forgescript';
 
 export default new BaseCommand({
   unprefixed: true,
-  type: "messageCreate",
+  type: 'messageCreate',
   code: `
   $let[nation;$spawnConfig[nation]]
   $onlyIf[$get[nation]!=]
@@ -38,5 +38,5 @@ export default new BaseCommand({
 Congratulations <@$authorID>! You caught a $getNationInfo[$get[nation];class] $appEmoji[$getNationInfo[$get[nation];emoji_id]] **$getNationInfo[$get[nation];name]**!
 \`$spawnConfig[attack_bonus]%\` / \`$spawnConfig[health_bonus]%\`
 -# Caught in $divide[$get[caughtin];1000]s
-  `
+  `,
 });

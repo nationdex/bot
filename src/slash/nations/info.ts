@@ -1,30 +1,34 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType, ApplicationCommandOptionType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "info",
-    description: "View info card of your nations",
+    name: 'info',
+    description: 'View info card of your nations',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: "user",
-        description: "The user whose nation info card to view", 
-        required: false
+        name: 'user',
+        description: 'The user whose nation info card to view',
+        required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
-        name: "nation",
-        description: "The nation whose info card to view", 
+        name: 'nation',
+        description: 'The nation whose info card to view',
         required: false,
-        autocomplete: true
-      }
-    ]
+        autocomplete: true,
+      },
+    ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
@@ -46,5 +50,5 @@ $nationCard[$get[id]]
     $addButton[pages-nationInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Secondary;;true]
     $addButton[pages-nationInfo-$authorID-$get[next]-$get[user]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
   ]
-  `
+  `,
 });

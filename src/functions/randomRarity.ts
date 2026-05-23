@@ -1,15 +1,15 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "randomRarity",
+  name: 'randomRarity',
   // Returns a random id from the given json based on its "rarity" key value
   params: [
     {
-      "name": "data",
+      name: 'data',
       // the json data of values. must be in the following form: { "id": { "rarity": integer } }
-      "type": "String",
-      "required": true
-    }
+      type: 'String',
+      required: true,
+    },
   ],
   code: `
   $return[$js[const data = $env[data];
@@ -26,5 +26,5 @@ export default new ForgeFunction({
     }
     
 result]]
-  `
+  `,
 });

@@ -1,51 +1,55 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationCommandOptionType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "progress",
-    description: "View your nations progress",
+    name: 'progress',
+    description: 'View your nations progress',
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall
+      ApplicationIntegrationType.UserInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: "user",
-        description: "The user whose nations progress to view",
-        required: false
+        name: 'user',
+        description: 'The user whose nations progress to view',
+        required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
-        name: "class",
-        description: "The rarity class to view",
+        name: 'class',
+        description: 'The rarity class to view',
         required: false,
         choices: [
           {
-            "name": "Common",
-            "value": "common"
+            name: 'Common',
+            value: 'common',
           },
           {
-            "name": "Uncommon",
-            "value": "uncommon"
+            name: 'Uncommon',
+            value: 'uncommon',
           },
           {
-            "name": "Rare",
-            "value": "rare"
+            name: 'Rare',
+            value: 'rare',
           },
           {
-            "name": "Mythic",
-            "value": "mythic"
+            name: 'Mythic',
+            value: 'mythic',
           },
           {
-            "name": "Legendary",
-            "value": "legendary"
-          }
-        ]
-      }
-    ]
+            name: 'Legendary',
+            value: 'legendary',
+          },
+        ],
+      },
+    ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
@@ -57,7 +61,7 @@ export default new ApplicationCommand({
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> have their inventory private;true]
+      $err[<@$get[user]> has their inventory private;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
@@ -71,5 +75,5 @@ export default new ApplicationCommand({
   $interactionUpdate[
     $progressMenu[$get[user];$get[class];1]
   ]
-  `
+  `,
 });

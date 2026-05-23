@@ -1,11 +1,12 @@
-import { BaseCommand } from "@tryforge/forgescript"
+import { BaseCommand } from '@tryforge/forgescript';
 
 export default new BaseCommand({
-  name: "howlate",
-  aliases: ["hl"],
-  description: "Check how late you were from the user who caught the last nation by replying to your message",
-  usage: "",
-  type: "messageCreate",
+  name: 'howlate',
+  aliases: ['hl'],
+  description:
+    'Check how late you were from the user who caught the last nation by replying to your message',
+  usage: '',
+  type: 'messageCreate',
   code: `
   $let[nation;$spawnConfig[nation]]
   $jsonLoad[catch_names;$getNationInfo[$get[nation];catch_names]]
@@ -46,5 +47,5 @@ export default new BaseCommand({
 
 -# difference of $sub[$get[user_time];$get[catcher_time]]s
   ]
-  `
+  `,
 });

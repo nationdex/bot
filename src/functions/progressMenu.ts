@@ -1,28 +1,28 @@
-import { config } from "../config/config"
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
-  name: "progressMenu",
+  name: 'progressMenu',
   // Shows the nations progress of a user as a components v2 message
   params: [
     {
-      "name": "user",
+      name: 'user',
       // The user whose progress to check
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "class",
+      name: 'class',
       // Progeess of a specific rarity class
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "page",
+      name: 'page',
       // The page number to show
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   brackets: false,
   code: `
@@ -150,5 +150,5 @@ Total Nations Owned: **$getUserData[$get[user];total]**]
   ]
   
   $return
-  `
+  `,
 });

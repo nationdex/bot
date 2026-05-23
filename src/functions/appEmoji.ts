@@ -1,21 +1,21 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "appEmoji",
+  name: 'appEmoji',
   // Get an application emoji from the given identifier
   params: [
     {
-      "name": "emoji",
+      name: 'emoji',
       // The emoji/name/id
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "value",
+      name: 'value',
       // The value to get, name/id/emoji/url
-      "type": "String",
-      "required": false
-      }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[em;$findApplicationEmoji[$env[emoji]]]
@@ -35,5 +35,5 @@ export default new ForgeFunction({
       $return[$emoji[$get[em]]]
     ]
   ]
-  `
+  `,
 });

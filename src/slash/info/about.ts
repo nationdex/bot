@@ -1,16 +1,16 @@
-import { config } from "../../config/config"
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
-  type: ApplicationCommandType.ChatInput,
-  name: "about",
-  description: `About ${config.name}`,
-  integration_types: [
-    ApplicationIntegrationType.GuildInstall,
-    ApplicationIntegrationType.UserInstall
-  ]
+    type: ApplicationCommandType.ChatInput,
+    name: 'about',
+    description: `About ${config.name}`,
+    integration_types: [
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
+    ],
   },
   independent: true,
   code: `
@@ -30,7 +30,7 @@ Uptime: **$parseMS[$uptime;2]**]
 $appEmoji[crown] **[${config.author.name}\\](${config.author.profile})** Founder
 $appEmoji[code] **[${config.dev.name}\\](${config.dev.profile})** Bot Developer
 $appEmoji[code] **[${config.webDev.name}\\](${config.webDev.profile})** Web Developer
--# Made with ♥️ using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions
+-# Made with 💙 using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
 ]
       
       $addSeparator
@@ -43,5 +43,5 @@ $appEmoji[code] **[${config.webDev.name}\\](${config.webDev.profile})** Web Deve
       $addButton[${config.policy};Privacy Policy;Link]
     ;${config.color}]
   ]
-  `
+  `,
 });

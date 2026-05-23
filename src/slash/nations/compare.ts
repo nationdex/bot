@@ -1,52 +1,56 @@
-import { config } from "../../config/config"
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationCommandOptionType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "compare",
-    description: "Compare your nations progress with another user",
+    name: 'compare',
+    description: 'Compare your nations progress with another user',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: "user",
-        description: "The user whom you want to compare to",
-        required: true
+        name: 'user',
+        description: 'The user whom you want to compare to',
+        required: true,
       },
       {
         type: ApplicationCommandOptionType.String,
-        name: "class",
-        description: "Compare the nations of a specific rarity class",
+        name: 'class',
+        description: 'Compare the nations of a specific rarity class',
         required: false,
         choices: [
           {
-            "name": "Common",
-            "value": "common"
+            name: 'Common',
+            value: 'common',
           },
           {
-            "name": "Uncommon",
-            "value": "uncommon"
+            name: 'Uncommon',
+            value: 'uncommon',
           },
           {
-            "name": "Rare",
-            "value": "rare"
+            name: 'Rare',
+            value: 'rare',
           },
           {
-            "name": "Mythic",
-            "value": "mythic"
+            name: 'Mythic',
+            value: 'mythic',
           },
           {
-            "name": "Legendary",
-            "value": "legendary"
-          }
-        ]
-      }
-    ]
+            name: 'Legendary',
+            value: 'legendary',
+          },
+        ],
+      },
+    ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
@@ -113,5 +117,5 @@ $arrayJoin[allIds;  ]
       ]]
     ;${config.color}]
   ]
-  `
+  `,
 });

@@ -1,27 +1,27 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "sortData",
+  name: 'sortData',
   // Sort the given data and returns the new sorted data
   params: [
     {
-      "name": "data",
+      name: 'data',
       // The json data to sort
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "key",
+      name: 'key',
       // The key on whose basis to sort the data
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "order",
+      name: 'order',
       // The sorting order, asc or desc
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `$return[$js[const json = $env[data];
 const sortKey = "$env[key]";
@@ -40,5 +40,5 @@ JSON.stringify(Object.fromEntries(
     return order === "desc" ? -cmp : cmp;
   })
 ), null, 2);]]
-  `
+  `,
 });

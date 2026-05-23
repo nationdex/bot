@@ -1,8 +1,8 @@
-import { BaseCommand } from "@tryforge/forgescript"
+import { BaseCommand } from '@tryforge/forgescript';
 
 export default new BaseCommand({
-  type: "clientReady",
+  type: 'clientReady',
   code: `
     $log[Ready as $username[$botID]]
-  `
+  `,
 });

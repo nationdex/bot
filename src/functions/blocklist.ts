@@ -1,22 +1,22 @@
-import { config } from "../config/config"
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
-  name: "blocklist",
+  name: 'blocklist',
   // Shows the blocklist of an user as a components v2 message
   params: [
     {
-      "name": "user",
+      name: 'user',
       // The user whose blocks list to check
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "page",
+      name: 'page',
       // The page number to show
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   brackets: false,
   code: `
@@ -48,5 +48,5 @@ export default new ForgeFunction({
         $addButton[pages-blocklist-$authorID-index;$get[page] / $get[pages];Primary;;true]
         $addButton[pages-blocklist-$authorID-$sum[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
   ]
-  `
+  `,
 });

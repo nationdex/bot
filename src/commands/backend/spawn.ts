@@ -1,8 +1,7 @@
-import { BaseCommand } from "@tryforge/forgescript"
-import { config } from "../../config/config"
-export default new BaseCommand ({
+import { BaseCommand } from '@tryforge/forgescript';
+export default new BaseCommand({
   unprefixed: true,
-  type: "messageCreate",
+  type: 'messageCreate',
   code: `
   $onlyIf[$spawnConfig[status]==enabled]
   
@@ -30,5 +29,5 @@ export default new BaseCommand ({
       $spawnNation[$get[ch]]
     ]
   ;$get[wait]]
-  `
+  `,
 });

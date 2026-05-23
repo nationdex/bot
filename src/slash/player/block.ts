@@ -1,23 +1,27 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationCommandOptionType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+} from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "block",
-    description: "Block a user",
+    name: 'block',
+    description: 'Block a user',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.User,
-        name: "user",
-        description: "The user you want to block",
-        required: true
-      }
-    ]
+        name: 'user',
+        description: 'The user you want to block',
+        required: true,
+      },
+    ],
   },
   code: `
   $let[user;$option[user]]
@@ -47,5 +51,5 @@ export default new ApplicationCommand({
   $addActionRow
   $addButton[info-block;;Secondary;$appEmoji[question_mark]]
   ]
-  `
+  `,
 });

@@ -1,27 +1,27 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "getNationInfo",
+  name: 'getNationInfo',
   // Get info about a specific nation from the "nationsData" variable's "nations" key
   params: [
     {
-      "name": "id",
+      name: 'id',
       // The nation id whose info to get
-      "type": "String",
-      "required": true
+      type: 'String',
+      required: true,
     },
     {
-      "name": "value",
+      name: 'value',
       // The value/info to retrive, leave blank to get json data
-      "type": "String",
-      "required": false
+      type: 'String',
+      required: false,
     },
     {
-      "name": "separator",
+      name: 'separator',
       // The separator to use in case of multiple values
-      "type": "String",
-      "required": false
-    }
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[id;$env[id]]
@@ -41,5 +41,5 @@ export default new ForgeFunction({
     ]
     ;$return[$env[nation]]
   ]
-  `
+  `,
 });

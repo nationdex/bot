@@ -1,14 +1,12 @@
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "toggle",
-    description: "Toggle on/off nations spawning in the server",
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall
-    ]
+    name: 'toggle',
+    description: 'Toggle on/off nations spawning in the server',
+    integration_types: [ApplicationIntegrationType.GuildInstall],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -27,5 +25,5 @@ export default new ApplicationCommand({
       $addTextDisplay[$toTitleCase[$get[toggle]] nations spawning in the server]
     ;#00FF00]
   ]
-  `
+  `,
 });

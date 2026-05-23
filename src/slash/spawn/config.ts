@@ -1,15 +1,13 @@
-import { config } from "../../config/config"
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: "configs",
+    name: 'configs',
     description: "Check server's spawn configurations",
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall
-    ]
+    integration_types: [ApplicationIntegrationType.GuildInstall],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -36,5 +34,5 @@ Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTi
 ]
     ;${config.color}]
   ]
-  `
+  `,
 });

@@ -1,15 +1,15 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "nationCard",
+  name: 'nationCard',
   // Displays a caught nation's info with its card as a plain message
   params: [
     {
-      "name": "id",
+      name: 'id',
       // ID of the nation whose card to show
-      "type": "String",
-      "required": true
-    }
+      type: 'String',
+      required: true,
+    },
   ],
   code: `
   $let[id;$env[id]]
@@ -20,5 +20,5 @@ $appEmoji[sword] ATK: $appEmoji[$getNation[$get[id];attack_type]] $getNation[$ge
 $appEmoji[heart] HP: $appEmoji[$getNation[$get[id];health_type]] $getNation[$get[id];health]
 <card>
     ]
-  `
-})
+  `,
+});

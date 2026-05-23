@@ -1,18 +1,18 @@
-import { ForgeFunction } from "@tryforge/forgescript"
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: "spawnConfig",
+  name: 'spawnConfig',
   // Get a server's spawns configurations from the "spawnConfig" variable
   params: [
     {
-      "name": "value",
+      name: 'value',
       // The value to get
-      "type": "String",
-      "required": true
-    }
+      type: 'String',
+      required: true,
+    },
   ],
   code: `
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $return[$env[config;$env[value]]]
-  `
+  `,
 });

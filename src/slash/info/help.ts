@@ -1,16 +1,16 @@
-import { config } from "../../config/config"
-import { ApplicationCommand } from "@tryforge/forgescript"
-import { ApplicationCommandType, ApplicationIntegrationType } from "discord.js"
+import { ApplicationCommand } from '@tryforge/forgescript';
+import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
-  type: ApplicationCommandType.ChatInput,
-  name: "commands",
-  description: "Get a list of commands",
-  integration_types: [
-    ApplicationIntegrationType.GuildInstall,
-    ApplicationIntegrationType.UserInstall
-  ]
+    type: ApplicationCommandType.ChatInput,
+    name: 'commands',
+    description: 'Get a list of commands',
+    integration_types: [
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
+    ],
   },
   independent: true,
   code: `
@@ -42,8 +42,8 @@ $arrayJoin[miscs;
 ]]
 ]
       $addSeparator
-      $addTextDisplay[-# Made with ❤️ by NationDex Team™]
+      $addTextDisplay[-# Made with 💙 by NationDex Team™]
     ;${config.color}]
   ]
-  `
+  `,
 });
