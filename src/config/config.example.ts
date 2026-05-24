@@ -2,19 +2,20 @@ export const config = {
   // Bot
   token: '',
   name: 'Nationdex',
-  description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
+  description:
+    'Collect nations on Discord and enjoy the OG environment through one of the oldest Ballsdex-like bots in existence!',
   version: '1.0.0',
 
   // Command configs
-  prefixes: ['!', '.'],
+  prefixes: ['nd!', 'nd.'],
   logChannel: '',
-  color: '#5119F9',
+  color: '#003297ff',
 
   // URLs
   repo: 'https://github.com/nationdex/bot',
   server: 'https://discord.gg/tKh3n5uVnm',
-  terms: 'https://arielaram.com/terms-of-service',
-  policy: 'https://arielaram.com/privacy-policy',
+  terms: 'https://admin.nationdex.com/tos/',
+  policy: 'https://admin.nationdex.com/privacy-policy/',
 
   // Paths
   flags: 'assets/flags',
