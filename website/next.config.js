@@ -1,11 +1,7 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   reactStrictMode: true,
-  outputFileTracingRoot: dirname(fileURLToPath(import.meta.url)),
 };
 
-// Export the Next.js configuration
-export default nextConfig;
+module.exports = nextConfig;

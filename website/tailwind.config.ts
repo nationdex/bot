@@ -1,7 +1,5 @@
-// Import Tailwind CSS config type
 import type { Config } from 'tailwindcss';
 
-// Define the Tailwind CSS configuration
 const config: Config = {
   darkMode: 'class',
   content: [
@@ -63,5 +61,4 @@ const config: Config = {
   plugins: [],
 };
 
-// Export the Tailwind CSS configuration
 export default config;

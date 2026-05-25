@@ -1,17 +1,12 @@
-// Users component
 'use client';
 
-// Import React and external libraries
 import { motion } from 'framer-motion';
 import { Search, Users as UsersIcon } from 'lucide-react';
 import { useState } from 'react';
-
-// Import UI components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
-// Define the mock users array
 const mockUsers = [
   {
     id: '1',
@@ -36,7 +31,6 @@ const mockUsers = [
   },
 ];
 
-// Define the Users component
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
 

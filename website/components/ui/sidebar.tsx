@@ -1,14 +1,11 @@
-// Define the Sidebar component
 'use client';
 
-// Import dependencies
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { createContext, type ReactNode, useContext, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-// Define the Links interface
 interface Links {
   label: string;
   href: string;
@@ -16,7 +13,6 @@ interface Links {
   active?: boolean;
 }
 
-// Define the SidebarContextProps interface
 interface SidebarContextProps {
   open: boolean;
   setOpen: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -25,7 +21,6 @@ interface SidebarContextProps {
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
-// Define the useSidebar hook
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
@@ -34,7 +29,6 @@ export const useSidebar = () => {
   return context;
 };
 
-// Define the SidebarProvider component
 export const SidebarProvider = ({
   children,
   open: openProp,
@@ -55,7 +49,6 @@ export const SidebarProvider = ({
   );
 };
 
-// Define the Sidebar component
 export const Sidebar = ({
   children,
   open,
@@ -74,13 +67,11 @@ export const Sidebar = ({
   );
 };
 
-// Define the SidebarBodyProps interface
 interface SidebarBodyProps {
   className?: string;
   children?: ReactNode;
 }
 
-// Define the SidebarBody component
 export const SidebarBody = (props: SidebarBodyProps) => {
   return (
     <>
@@ -90,7 +81,6 @@ export const SidebarBody = (props: SidebarBodyProps) => {
   );
 };
 
-// Define the DesktopSidebar component
 export const DesktopSidebar = ({ className, children, ...props }: SidebarBodyProps) => {
   const { open, setOpen, animate } = useSidebar();
 
@@ -117,7 +107,6 @@ export const DesktopSidebar = ({ className, children, ...props }: SidebarBodyPro
   );
 };
 
-// Define the MobileSidebar component
 export const MobileSidebar = ({ className, children, ...props }: SidebarBodyProps) => {
   const { open, setOpen } = useSidebar();
 
@@ -163,7 +152,6 @@ export const MobileSidebar = ({ className, children, ...props }: SidebarBodyProp
   );
 };
 
-// Define the SidebarLink component
 export const SidebarLink = ({
   link,
   className,

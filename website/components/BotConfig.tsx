@@ -1,7 +1,5 @@
-// Bot configuration component
 'use client';
 
-// Import the React hooks and components
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Define the BotConfig component
 export default function BotConfig() {
   const [config, setConfig] = useState({
     prefix: '!',
@@ -18,12 +15,10 @@ export default function BotConfig() {
     maxInventory: '100',
   });
 
-  // Handle changes to the configuration
   const handleChange = (key: string, value: string) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Return the JSX for the component
   return (
     <div className="w-full space-y-4 sm:space-y-6">
       <div className="mb-4 sm:mb-6">

@@ -1,17 +1,12 @@
-// Nations component
 'use client';
 
-// Import React and external libraries
 import { motion } from 'framer-motion';
 import { Globe, Search } from 'lucide-react';
 import { useState } from 'react';
-
-// Import UI components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
-// Define the mock nations array
 const mockNations = [
   { id: '1', name: 'United States', catches: 1245, rarity: 'Common' },
   { id: '2', name: 'Japan', catches: 892, rarity: 'Common' },
@@ -21,7 +16,6 @@ const mockNations = [
   { id: '6', name: 'Liechtenstein', catches: 18, rarity: 'Epic' },
 ];
 
-// Define the Nations component
 export default function Nations() {
   const [searchQuery, setSearchQuery] = useState('');
 

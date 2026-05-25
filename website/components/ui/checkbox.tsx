@@ -1,12 +1,8 @@
-// Import external libraries
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { Check } from 'lucide-react';
 import * as React from 'react';
-
-// Import utility functions
 import { cn } from '@/lib/utils';
 
-// Define the Checkbox component
 const Checkbox = React.forwardRef<
   React.ComponentRef<typeof CheckboxPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
@@ -26,5 +22,4 @@ const Checkbox = React.forwardRef<
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-// Export the Checkbox component
 export { Checkbox };

@@ -1,7 +1,5 @@
-// Next.js client component
 'use client';
 
-// Import motion components from framer-motion
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ChevronDown,
@@ -26,7 +24,6 @@ import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/lib/hooks';
 import { cn } from '@/lib/utils';
 
-// Main home page component
 export default function Home() {
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [open, setOpen] = useState(false);
@@ -195,7 +192,6 @@ export default function Home() {
   );
 }
 
-// Main content wrapper component
 const MainContentWrapper = ({ children, open }: { children: React.ReactNode; open: boolean }) => {
   const isMobile = useIsMobile();
 
@@ -216,7 +212,6 @@ const MainContentWrapper = ({ children, open }: { children: React.ReactNode; ope
   );
 };
 
-// Logo component
 const Logo = () => {
   return (
     <Link href="#" className="font-normal flex space-x-3 items-center text-sm py-2 relative z-20">
@@ -232,7 +227,6 @@ const Logo = () => {
   );
 };
 
-// Logo icon component
 const LogoIcon = () => {
   return (
     <Link href="#" className="font-normal flex items-center text-sm py-2 relative z-20">
@@ -247,7 +241,6 @@ const LogoIcon = () => {
   );
 };
 
-// Sidebar user profile component
 const SidebarUserProfile = ({ open }: { open: boolean }) => {
   return (
     <motion.div

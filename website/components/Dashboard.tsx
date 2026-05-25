@@ -1,12 +1,8 @@
-// Dashboard component
 'use client';
 
-// Import React and external libraries
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
-
-// Import UI components
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -16,7 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// Define the stats array
 const stats = [
   {
     id: 1,
@@ -41,7 +36,6 @@ const stats = [
   },
 ];
 
-// Define the top nations array
 const topNations = [
   { name: 'United States', data: [100, 300, 500, 300, 500, 1000, 500] },
   { name: 'United Kingdom', data: [300, 500, 300, 100, 500, 300, 100] },
@@ -51,10 +45,8 @@ const topNations = [
   { name: 'Canada', data: [100, 500, 300, 500, 100, 300, 500] },
 ];
 
-// Define the months array
 const months = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
 
-// Define the getColorForValue function
 const getColorForValue = (value: number) => {
   if (value >= 1000) return 'bg-purple-900';
   if (value >= 500) return 'bg-purple-700';
@@ -62,7 +54,6 @@ const getColorForValue = (value: number) => {
   return 'bg-purple-300';
 };
 
-// Define the Dashboard component
 export default function Dashboard() {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [timeRange, setTimeRange] = useState('Annually');

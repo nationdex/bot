@@ -1,16 +1,12 @@
-// Logs component
 'use client';
 
-// Import React and external libraries
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
 
-// Import UI components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Define the mock logs array
 const mockLogs = [
   {
     id: '1',
@@ -44,14 +40,12 @@ const mockLogs = [
   },
 ];
 
-// Define the level colors object
 const levelColors: Record<string, string> = {
   info: 'text-blue-400 bg-blue-400/10',
   warn: 'text-yellow-400 bg-yellow-400/10',
   error: 'text-red-400 bg-red-400/10',
 };
 
-// Define the Logs component
 export default function Logs() {
   const [filter, setFilter] = useState<'all' | 'info' | 'warn' | 'error'>('all');
 

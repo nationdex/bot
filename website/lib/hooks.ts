@@ -1,7 +1,5 @@
-// Import React hooks
 import { useEffect, useState } from 'react';
 
-// Define a hook to check if the screen is mobile
 export function useIsMobile(breakpoint = 768) {
   const [isMobile, setIsMobile] = useState(false);
 

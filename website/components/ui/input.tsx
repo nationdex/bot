@@ -1,13 +1,8 @@
-// Import external libraries
 import * as React from 'react';
-
-// Import utility functions
 import { cn } from '@/lib/utils';
 
-// Define the Input component props
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-// Define the Input component
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
@@ -25,5 +20,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = 'Input';
 
-// Export the Input component
 export { Input };

@@ -1,24 +1,28 @@
-import { Elysia } from 'elysia';
+import { Hono } from 'hono';
+import { handle } from 'hono/vercel';
 
-const app = new Elysia({ prefix: '/api' })
-  .get('/', () => ({ message: 'Nationdex API' }))
+const app = new Hono().basePath('/api');
 
-  .get('/health', () => ({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-  }))
+app.get('/', (c) => {
+  return c.json({ message: 'Nationdex API test' });
+});
 
-  .get('/stats', () => ({
+app.get('/health', (c) => {
+  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/stats', (c) => {
+  return c.json({
     users: 1234,
     nations: 195,
     caught: 45678,
     guilds: 42,
-  }));
+  });
+});
 
-const handler = (req: Request) => app.handle(req);
+const handler = handle(app);
 
 export const GET = handler;
 export const POST = handler;
 export const PUT = handler;
-export const PATCH = handler;
 export const DELETE = handler;
