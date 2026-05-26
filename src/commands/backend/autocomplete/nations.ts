@@ -26,14 +26,7 @@ export default new BaseCommand({
       
       $arrayForEach[nations;nat;
         $let[nation;$getNation[$env[nat];nation]]
-<<<<<<< HEAD
-        $addChoice[#$env[nat]: $getEvent[$getNation[$get[id];event];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]]
-    ]
-  ]
-  `,
-});
-=======
-        $addChoice[#$env[nat]: $getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]]
+        $addChoice[#$env[nat]: $getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]
+        ]
   `
 });
->>>>>>> a1cd9b1 (added new nations commands, fixed minor bugs changed the DB format a little bit)

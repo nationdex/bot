@@ -1,24 +1,10 @@
-# Assets
 assets/
-
-# Database
 database/
-
-# Compiled code
 dist/
-
-# Logs
 logs/
-
-# Node.js
 node_modules/
-
-# Config
 src/config/config.ts
-
-# Dev commands
 src/commands/dev/
-
-# VSCode
+website/
+nations.json
 .forgevsc.json
-.vscode
