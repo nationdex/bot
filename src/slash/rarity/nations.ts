@@ -20,28 +20,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: "The rarity class whose nations' rarity to view.",
         required: false,
-        choices: [
-          {
-            name: 'Common',
-            value: 'common',
-          },
-          {
-            name: 'Uncommon',
-            value: 'uncommon',
-          },
-          {
-            name: 'Rare',
-            value: 'rare',
-          },
-          {
-            name: 'Mythic',
-            value: 'mythic',
-          },
-          {
-            name: 'Legendary',
-            value: 'legendary',
-          },
-        ],
+        autocomplete: true
       },
       {
         type: ApplicationCommandOptionType.String,

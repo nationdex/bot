@@ -23,7 +23,7 @@ export default new ForgeFunction({
   $let[user;$findUser[$env[user];true]]
   $let[page;$if[$and[$isNumber[$env[page]];$env[page]>0];$env[page];1]]
   $let[maxperpage;25]
-  $jsonLoad[blocked;$getUserVar[blockedSsers;$get[user]]]
+  $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   $let[pages;$ceil[$divide[$arrayLength[blocked];$get[maxperpage]]]]
   $let[stInd;$sub[$get[page];1]]
   $let[endInd;$get[maxperpage]]

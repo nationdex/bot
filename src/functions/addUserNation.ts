@@ -12,15 +12,15 @@ export default new ForgeFunction({
     },
     {
       name: 'nation',
-      type: 'String',
       // The id of the nation to add.
+      type: 'String',
       required: true,
     },
     {
       name: 'data',
       // The nation's data.
       type: 'String',
-      required: true,
+      required: false,
     },
   ],
   code: `

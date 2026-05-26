@@ -28,7 +28,8 @@ export default new ForgeFunction({
   code: `
   $let[user;$findUser[$env[user];true]]
   $let[nation;$env[nation]]
-  $let[class;$env[class]]
+  $jsonLoad[classes;$getNationsData[classes]]
+  $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $let[page;$if[$and[$isNumber[$env[page]];$env[page]>0];$env[page];1]]
   $let[maxperpage;25]
   $let[stInd;$multi[$get[maxperpage];$max[$sub[$get[page];1];0]]]
@@ -37,20 +38,12 @@ export default new ForgeFunction({
   $jsonLoad[nations;$getNationsData[nations]]
   $jsonLoad[ids;$jsonKeys[nations]]
   $let[total;$getNationsData[total]]
-  $let[legendary;$getNationsData[legendary]]
-  $let[mythic;$getNationsData[mythic]]
-  $let[rare;$getNationsData[rare]]
-  $let[uncommon;$getNationsData[uncommon]]
-  $let[common;$getNationsData[common]]
+  $arrayForEach[classes;class;$let[$env[class];$getNationsData[$env[class]]]]
   
   $jsonLoad[userNations;$getUserData[$get[user];nations]]
   $jsonLoad[userUniques;$getUserData[$get[user];unique]]
   $let[userTotal;$getUserData[$get[user];total]]
-  $let[userLegendary;$getUserData[$get[user];legendary]]
-  $let[userMythic;$getUserData[$get[user];mythic]]
-  $let[userRare;$getUserData[$get[user];rare]]
-  $let[userUncommon;$getUserData[$get[user];uncommon]]
-  $let[userCommon;$getUserData[$get[user];common]]
+  $arrayForEach[classes;class;$let[user$toTitleCase[$env[class]];$getUserData[$get[user];$env[class]]]]
       
   $ifx[
     $if[$get[class]!=;
@@ -87,7 +80,7 @@ Total $toTitleCase[$get[class]] Nations: **$get[user$toTitleCase[$get[class]]]**
           $arrayForEach[nation;nat;
             $let[id;$env[nat]]
             $let[nation;$getNation[$get[id];nation]]
-            $addOption[$cropText[$getEvent[$getNation[$get[id];event];emoji]$getNationInfo[$get[nation];name];0;97;...];ATTACK: $getNation[$get[id];attack] | HEALTH: $getNation[$get[id];health];$env[nat];$appEmoji[$getNationInfo[$get[nation];emoji_id]]]
+            $addOption[$cropText[$getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name];0;97;...];ATTACK: $getNation[$get[id];attack] | HEALTH: $getNation[$get[id];health];$env[nat];$appEmoji[$getNationInfo[$get[nation];emoji_id]]]
           ]
           ;$addStringSelectMenu[nations-info-$authorID-$get[class];Select a nation to view its info;true]
           $addOption[null;null;null]
@@ -103,7 +96,6 @@ Total $toTitleCase[$get[class]] Nations: **$get[user$toTitleCase[$get[class]]]**
     $else[
       $let[pages;$ceil[$divide[$max[$arrayLength[userNations];1];$get[maxperpage]]]]
       $arraySlice[userNations;nation;$get[stInd];$get[endInd]]
-      $jsonLoad[classes;[ "legendary", "mythic", "rare", "uncommon", "common" \\]]
       $let[owned;$arrayLength[userUniques]]
       $let[progress;$cropText[$math[($get[owned]/$get[total])*100];0;4]]
       
@@ -135,7 +127,7 @@ Total Nations Owned: **$getUserData[$get[user];total]**]
           $arrayForEach[nation;nat;
             $let[id;$env[nat]]
             $let[nation;$getNation[$get[id];nation]]
-            $addOption[$cropText[$getEvent[$getNation[$get[id];event];emoji]$getNationInfo[$get[nation];name];0;97;...];ATTACK: $getNation[$get[id];attack] | HEALTH: $getNation[$get[id];health];$env[nat];$appEmoji[$getNationInfo[$get[nation];emoji_id]]]
+            $addOption[$cropText[$getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name];0;97;...];ATTACK: $getNation[$get[id];attack] | HEALTH: $getNation[$get[id];health];$env[nat];$appEmoji[$getNationInfo[$get[nation];emoji_id]]]
           ]
           ;$addStringSelectMenu[nations-info-$authorID;Select a nation to view its info;true]
           $addOption[null;null;null]

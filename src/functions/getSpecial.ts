@@ -1,12 +1,12 @@
 import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: 'getEvent',
-  // Get information about an event from the "events" variable.
+  name: 'getSpecial',
+  // Get information about an special from the "specials" variable
   params: [
     {
       name: 'name',
-      // Name of the event.
+      // name of the special
       type: 'String',
       required: true,
     },
@@ -21,9 +21,9 @@ export default new ForgeFunction({
   $let[ev;$env[name]]
   $let[val;$env[value]]
   
-  $jsonLoad[events;$getGlobalVar[events]]
-  $jsonLoad[event;$env[events;$get[ev]]]
+  $jsonLoad[specials;$getGlobalVar[specials]]
+  $jsonLoad[special;$env[specials;$get[ev]]]
   
-  $return[$if[$get[val]!=;$env[event;$get[val]];$env[event]]]
+  $return[$if[$get[val]!=;$env[special;$get[val]];$env[special]]]
   `,
 });

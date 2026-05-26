@@ -26,28 +26,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'The rarity class to view.',
         required: false,
-        choices: [
-          {
-            name: 'Common',
-            value: 'common',
-          },
-          {
-            name: 'Uncommon',
-            value: 'uncommon',
-          },
-          {
-            name: 'Rare',
-            value: 'rare',
-          },
-          {
-            name: 'Mythic',
-            value: 'mythic',
-          },
-          {
-            name: 'Legendary',
-            value: 'legendary',
-          },
-        ],
+        autocomplete: true
       },
     ],
   },
@@ -69,7 +48,7 @@ export default new ApplicationCommand({
   ]
   
   $interactionReply[
-    $addTextDisplay[Fetching your nations data...]
+    $addTextDisplay[Fetching nations data of **$userDisplayName[$get[user]]**...]
   ]
   
   $interactionUpdate[

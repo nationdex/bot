@@ -27,34 +27,14 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'Compare the nations of a specific rarity class.',
         required: false,
-        choices: [
-          {
-            name: 'Common',
-            value: 'common',
-          },
-          {
-            name: 'Uncommon',
-            value: 'uncommon',
-          },
-          {
-            name: 'Rare',
-            value: 'rare',
-          },
-          {
-            name: 'Mythic',
-            value: 'mythic',
-          },
-          {
-            name: 'Legendary',
-            value: 'legendary',
-          },
-        ],
+        autocomplete: true
       },
     ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
-  $let[class;$option[class]]
+  $jsonLoad[classes;$getNationsData[classes]]
+  $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
@@ -75,20 +55,24 @@ export default new ApplicationCommand({
   $jsonLoad[allNations;$getNationsData[nations]]
   $jsonLoad[allIds;$jsonKeys[allNations]]
   
-  $arrayMap[nations;nid;$if[$get[class]!=;$if[$getNationInfo[$env[nid];class]==$get[class];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];nations]
-  $arrayMap[userNations;nid;$if[$get[class]!=;$if[$getNationInfo[$env[nid];class]==$get[class];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];userNations]
-    $arrayMap[allIds;nid;$if[$get[class]!=;$if[$getNationInfo[$env[nid];class]==$get[class];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];allIds]
+  $arrayMap[nations;nid;$if[$and[$get[class]!=;$getNationInfo[$env[nid];class]==$get[class]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];nations]
+  $arrayMap[userNations;nid;$if[$and[$get[class]!=;$getNationInfo[$env[nid];class]==$get[class]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];userNations]
+  $arrayMap[allIds;nid;$if[$and[$get[class]!=;$getNationInfo[$env[nid];class]==$get[class]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]];$return[$appEmoji[$getNationInfo[$env[nid];emoji_id]]]];allIds]
   $jsonLoad[same;[\\]]
   $arrayForEach[allIds;nid;
     $if[$and[$arrayIncludes[nations;$env[nid]];$arrayIncludes[userNations;$env[nid]]];
       $!jsonSet[same;$arrayLength[same];$env[nid]]
       $!jsonDelete[nations;$arrayIndexOf[nations;$env[nid]]]
+    ]
+    $if[$or[$arrayIncludes[nations;$env[nid]];$arrayIncludes[userNations;$env[nid]]];
       $!jsonDelete[userNations;$arrayIndexOf[userNations;$env[nid]]]
+    ]
+    $if[$or[$arrayIncludes[nations;$env[nid]];$arrayIncludes[userNations;$env[nid]]];
       $!jsonDelete[allIds;$arrayIndexOf[allIds;$env[nid]]]
     ]
   ]
-  $let[count;$if[$get[class]!=;$getUserData[$authorID;$get[class]];$getUserData[$authorID;total]]]
-  $let[userCount;$if[$get[class]!=;$getUserData[$get[user];$get[class]];$getUserData[$get[user];total]]]
+  $let[count;$arrayLength[nations]]
+  $let[userCount;$arrayLength[userNations]]
   $let[totalCount;$if[$get[class]!=;$getNationsData[$get[class]];$getNationsData[total]]]
   $let[progress;$math[($get[count]/$get[totalCount])*100]%]
   $let[userProgress;$math[($get[userCount]/$get[totalCount])*100]%]

@@ -1,13 +1,13 @@
-import { ForgeFunction } from '@tryforge/forgescript';
 import { config } from '../config/config';
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'rarityList',
-  // Displays the rarity list of nations/events as a Components v2 message.
+  // Displays the rarity list of nations/specials as a components v2 message
   params: [
     {
       name: 'type',
-      // Type of list, nations/events
+      // Type of list, nations/specials
       type: 'String',
       required: true,
     },
@@ -32,7 +32,8 @@ export default new ForgeFunction({
   ],
   code: `
   $let[type;$env[type]]
-  $let[class;$replace[$env[class];null;]]
+  $jsonLoad[classes;$getNationsData[classes]]
+  $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $let[sortType;$if[$env[sortType]==asc;asc;desc]]
   $let[page;$default[$replace[$env[page];null;];1]]
   $let[maxperpage;15]
@@ -40,17 +41,17 @@ export default new ForgeFunction({
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
   
   $if[$get[type]==nations;
-  $jsonLoad[nations;$getNationsData[nations]]
-  $jsonLoad[ids;$getNationsData[id]]
-  $if[$get[class]!=;
-    $arrayForEach[ids;nid;$if[$getNationInfo[$env[nid];class]!=$get[class];$!jsonDelete[nations;$env[nid]]]]
-  ]
-  
-  $jsonLoad[sortedData;$sortData[$env[nations];rarity;$get[sortType]]]
-  $jsonLoad[ids;$jsonKeys[sortedData]]
-  $let[totalRarity;$math[$getNationsData[rarity;+]]]
-  
-  $arrayMap[ids;id;$return[$appEmoji[$getNationInfo[$env[id];emoji_id]] **$getNationInfo[$env[id];name]**: \`$cropText[$math[($getNationInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
+    $jsonLoad[nations;$getNationsData[nations]]
+    $jsonLoad[ids;$getNationsData[id]]
+    $if[$get[class]!=;
+      $arrayForEach[ids;nid;$if[$getNationInfo[$env[nid];class]!=$get[class];$!jsonDelete[nations;$env[nid]]]]
+    ]
+    
+    $jsonLoad[sortedData;$sortData[$env[nations];rarity;$get[sortType]]]
+    $jsonLoad[ids;$jsonKeys[sortedData]]
+    $let[totalRarity;$math[$getNationsData[rarity;+]]]
+    
+    $arrayMap[ids;id;$return[$appEmoji[$getNationInfo[$env[id];emoji_id]] **$getNationInfo[$env[id];name]**: \`$cropText[$math[($getNationInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
   ]
   $let[pages;$ceil[$divide[$arrayLength[ids];$get[maxperpage]]]]
   $arraySlice[mapped;display;$get[stInd];$get[endInd]]

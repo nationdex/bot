@@ -4,10 +4,8 @@ export default new BaseCommand({
   type: 'interactionCreate',
   allowedInteractionTypes: ['autocomplete'],
   code: `
-  $onlyIf[$applicationCommandName==nations]
+  $onlyIf[$and[$applicationCommandName==nations;$focusedOptionName==nation]]
   
-  $ifx[
-    $if[$and[$applicationSubCommandName==info;$focusedOptionName==nation];
       $jsonLoad[nations;$getUserData[$authorID;nations]]
       $let[val;$toLowerCase[$focusedOptionValue]]
       $if[$get[val]!=;
@@ -28,8 +26,14 @@ export default new BaseCommand({
       
       $arrayForEach[nations;nat;
         $let[nation;$getNation[$env[nat];nation]]
+<<<<<<< HEAD
         $addChoice[#$env[nat]: $getEvent[$getNation[$get[id];event];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]]
     ]
   ]
   `,
 });
+=======
+        $addChoice[#$env[nat]: $getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]]
+  `
+});
+>>>>>>> a1cd9b1 (added new nations commands, fixed minor bugs changed the DB format a little bit)

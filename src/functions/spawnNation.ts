@@ -1,5 +1,5 @@
-import { ForgeFunction } from '@tryforge/forgescript';
 import { config } from '../config/config';
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'spawnNation',
@@ -36,8 +36,8 @@ export default new ForgeFunction({
       required: false,
     },
     {
-      name: 'event',
-      // The event type of the nation, none if not specified.
+      name: 'special',
+      // The special type of the nation, none if not specified
       type: 'String',
       required: false,
     },
@@ -56,7 +56,7 @@ export default new ForgeFunction({
   $let[nation;$default[$replace[$env[nation];null;];$randomRarity[$env[nations]]]]
   $let[atck_bns;$default[$replace[$env[attackBonus];null;];$randomText[+;-]$randomNumber[1;20]]]
   $let[hlth_bns;$default[$replace[$env[healthBonus];null;];$randomText[+;-]$randomNumber[1;20]]]
-  $let[event;$replace[$env[event];null;]]
+  $let[special;$replace[$env[special];null;]]
   $let[atck;$ceil[$math[$getNationInfo[$get[nation];attack]$cropText[$get[atck_bns];0;1](($getNationInfo[$get[nation];attack]*$cropText[$get[atck_bns];1;4])/100)]]]
   $let[hlth;$ceil[$math[$getNationInfo[$get[nation];health]$cropText[$get[hlth_bns];0;1](($getNationInfo[$get[nation];health]*$cropText[$get[hlth_bns];1;4])/100)]]]
   
@@ -81,7 +81,7 @@ export default new ForgeFunction({
   $!jsonSet[config;attack_bonus;"$get[atck_bns]"]
   $!jsonSet[config;health_bonus;"$get[hlth_bns]"]
   $!jsonSet[config;timestamp;"$getTimestamp"]
-  $!jsonSet[config;event;$get[event]]
+  $!jsonSet[config;special;$get[special]]
   $setGuildVar[spawnConfig;$env[config]]
   `,
 });

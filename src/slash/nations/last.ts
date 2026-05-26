@@ -26,34 +26,14 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'View info of the last nation you caught of a specific rarity class.',
         required: false,
-        choices: [
-          {
-            name: 'Common',
-            value: 'common',
-          },
-          {
-            name: 'Uncommon',
-            value: 'uncommon',
-          },
-          {
-            name: 'Rare',
-            value: 'rare',
-          },
-          {
-            name: 'Mythic',
-            value: 'mythic',
-          },
-          {
-            name: 'Legendary',
-            value: 'legendary',
-          },
-        ],
+        autocomplete: true
       },
     ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
-  $let[class;$option[class]]
+  $jsonLoad[classes;$getNationsData[classes]]
+  $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;

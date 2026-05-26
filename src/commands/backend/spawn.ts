@@ -17,10 +17,14 @@ export default new BaseCommand({
     $setGuildVar[spawnConfig;$env[config]]
     $spawnNation[$get[ch]]
   ]
-  $jsonLoad[config;$getGuildVar[spawnConfig]]
-    $let[message;$env[config;last_spawn;message]]
   
+  $if[$sub[$getTimestamp;$spawnConfig[timestamp]]>$parseString[1h30m];
+    $spawnNation[$get[ch]]
+  ]
+  
+  $let[message;$spawnConfig[message]]
   $let[wait;$randomNumber[$parseString[20m];$parseString[40m]]]
+  
   $setTimeout[
     $jsonLoad[config;$getGuildVar[spawnConfig]]
     $if[$spawnConfig[message]==$get[message];

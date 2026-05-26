@@ -28,8 +28,8 @@ export default new BaseCommand({
     "health": "$spawnConfig[health]",
     "attack_type": "$if[$spawnConfig[attack]>=$getNationInfo[$get[nation];attack];buffed;nerfed]",
     "health_type": "$if[$spawnConfig[health]>=$getNationInfo[$get[nation];health];buffed;nerfed]",
-    "event": "$spawnConfig[event]",
-    "card": "$default[$getEvent[$spawnConfig[event];card];$getNationInfo[$get[nation];regime]].png",
+    "special": "$spawnConfig[special]",
+    "card": "$default[$getSpecial[$spawnConfig[special];card];$getNationInfo[$get[nation];regime]].png",
     "timestamp": "$getMessage[$channelID;$messageID;timestamp]",
     "caught_in": "$get[caughtin]"
   }]

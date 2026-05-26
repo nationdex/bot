@@ -39,12 +39,11 @@ export default new ApplicationCommand({
   ]
   
   $interactionReply[
-Viewing nations info cards of **$userDisplayName**
-$nationCard[$get[id]]
+    $nationCard[$get[id]]
     $addActionRow
-    $addButton[pages-nationInfo-$authorID-$get[prev]-$get[user]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
-    $addButton[pages-nationInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Secondary;;true]
-    $addButton[pages-nationInfo-$authorID-$get[next]-$get[user]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
+    $addButton[pages-nationInfo-$authorID-$get[prev]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
+    $addButton[pages-nationInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Primary;;true]
+    $addButton[pages-nationInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
   ]
   `,
 });
