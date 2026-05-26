@@ -1,7 +1,7 @@
 {
   "name": "nationdex",
   "version": "1.0.0",
-  "description": "The Project Nationdex 2.0 is a modern reimagining of the oldest Ballsdex alternative in existence, known as Nationdex.bot!",
+  "description": "The Project NationDex 2.0 is a modern revival of the oldest BallsDex alternative in existence, known as NationDex!",
   "type": "commonjs",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "fix": "rm -rf dist/ && npm run build",
     "typecheck": "tsc --noEmit"
   },
-  "author": "Nationdex Team (https://github.com/nationdex)",
+  "author": "NationDex Team (https://github.com/nationdex)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

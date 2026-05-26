@@ -1,12 +1,13 @@
-# Project Nationdex 2.0 🇪🇺
+# Project NationDex 2.0 🇪🇺
 
-**The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
+**The legacy nostalgic OG environment of NationDex reinvented in 2026!**
 
-Behold, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative in Bot Designer for Discord, with `arielaram` and `lukde22r` as the original founders!
+That is right, one of the oldest BallsDex-like bots in existence, created in December 2022 as a legitimate BallsDex alternative in Bot Designer for Discord, has returned.
 
-Join our cause at the Nationdex [headquarters](https://dsc.nationdex.com/)!
+Join our cause at the NationDex [headquarters](https://dsc.nationdex.com/)!
 
-## ⚙️ Setup:
+## ⚙️ Setup
+
 To install dependencies:
 
 ```bash
@@ -31,7 +32,7 @@ to start:
 npm run start
 ```
 
-## 🛠️ Troubleshooting:
+## 🛠️ Troubleshooting
 
 ⚠️ Sometimes you remove a command from the src directory but it still shows up on discord. In that case, run:
 
