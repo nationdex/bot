@@ -6,12 +6,12 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'configs',
-    description: "Check server's spawn configurations",
+    description: "Check server's spawn configurations.",
     integration_types: [ApplicationIntegrationType.GuildInstall],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
-    $err[You need **Manage Server** permissions to use this command;true]
+    $err[You need **Manage Server** permissions to use this command.;true]
   ]
   
   $jsonLoad[config;$getGuildVar[spawnConfig]]

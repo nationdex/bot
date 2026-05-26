@@ -2,17 +2,17 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'getEvent',
-  // Get information about an event from the "events" variable
+  // Get information about an event from the "events" variable.
   params: [
     {
       name: 'name',
-      // name of the event
+      // Name of the event.
       type: 'String',
       required: true,
     },
     {
       name: 'value',
-      // value or info go retrive
+      // Value or info to retrieve.
       type: 'String',
       required: false,
     },

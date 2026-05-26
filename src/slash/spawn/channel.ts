@@ -9,13 +9,13 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'channel',
-    description: 'Set a channel for nations to spawn',
+    description: 'Set a channel for nations to spawn.',
     integration_types: [ApplicationIntegrationType.GuildInstall],
     options: [
       {
         type: ApplicationCommandOptionType.Channel,
         name: 'channel',
-        description: 'The channel to spawn nations in. Leave empty to reset',
+        description: 'The channel to spawn nations in. Leave empty to reset.',
         required: false,
         channel_types: [0],
       },
@@ -23,7 +23,7 @@ export default new ApplicationCommand({
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
-    $err[You need **Manage Server** permissions to use this command;true]
+    $err[You need **Manage Server** permissions to use this command.;true]
   ]
   
   $let[ch;$option[channel]]

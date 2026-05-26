@@ -4,7 +4,7 @@ export default new BaseCommand({
   name: 'howlate',
   aliases: ['hl'],
   description:
-    'Check how late you were from the user who caught the last nation by replying to your message',
+    'Check how late you were from the user who caught the last nation by replying to your message.',
   usage: '',
   type: 'messageCreate',
   code: `
@@ -18,23 +18,23 @@ export default new BaseCommand({
   $let[msg;$messageReferenceID]
   
   $onlyIf[$get[msg]!=;
-    $err[Please reply to the message you want to compare]
+    $err[Please reply to the message you want to compare.]
   ]
   $let[user;$getMessage[$channelID;$get[msg];authorID]]
   $let[content;$toLowerCase[$getMessage[$channelID;$get[msg];content]]]
   $let[timestamp;$getMessage[$channelID;$get[msg];timestamp]]
   
   $onlyIf[$get[nation]!=;
-    $err[No nations have yet spawned in this server]
+    $err[No nations have spawned in this server yet.]
   ]
   $onlyIf[$get[catcher]!=;
-    $err[No one could catch the last nation]
+    $err[No one could catch the last nation.]
   ]
   $onlyIf[$get[catcher]!=$get[user];
-    $err[You can't compare someone by themself]
+    $err[You can't compare someone by themselves.]
   ]
   $onlyIf[$or[$arrayIncludes[catch_names;$get[content]];$arrayIncludes[translations;$get[content]]];
-    $err[Not even close, the name was wrong]
+    $err[Not even close, the name was wrong.]
   ]
   
   $let[catcher_time;$divide[$get[caughtin];1000]]

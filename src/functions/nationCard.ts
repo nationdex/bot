@@ -2,11 +2,11 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'nationCard',
-  // Displays a caught nation's info with its card as a plain message
+  // Displays a caught nation's info with its card as a plain message.
   params: [
     {
       name: 'id',
-      // ID of the nation whose card to show
+      // ID of the nation whose card to show.
       type: 'String',
       required: true,
     },

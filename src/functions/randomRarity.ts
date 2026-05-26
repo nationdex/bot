@@ -2,11 +2,11 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'randomRarity',
-  // Returns a random id from the given json based on its "rarity" key value
+  // Returns a random id from the given json based on its "rarity" key value.
   params: [
     {
       name: 'data',
-      // the json data of values. must be in the following form: { "id": { "rarity": integer } }
+      // The json data of values. Must be in the following form: { "id": { "rarity": integer } }
       type: 'String',
       required: true,
     },

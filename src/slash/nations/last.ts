@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'last',
-    description: 'View info of the last nation you caught',
+    description: 'View info of the last nation you caught.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,13 +18,13 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whose last nation to check',
+        description: 'The user whose last nation to check.',
         required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'View info of the last nation you caught of a specific rarity class',
+        description: 'View info of the last nation you caught of a specific rarity class.',
         required: false,
         choices: [
           {
@@ -57,7 +57,7 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect nations, sadly :(;true]
+    $err[Bots cannot collect nations, sadly.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;

@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'nations',
-    description: 'View the rarity list of nations',
+    description: 'View the rarity list of nations.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,7 +18,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: "The rarity class whose nations' rarity to view",
+        description: "The rarity class whose nations' rarity to view.",
         required: false,
         choices: [
           {
@@ -46,7 +46,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'sort_type',
-        description: 'Sort type of the list',
+        description: 'Sort type of the list.',
         required: false,
         choices: [
           {

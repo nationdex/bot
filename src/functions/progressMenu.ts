@@ -3,23 +3,23 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'progressMenu',
-  // Shows the nations progress of a user as a components v2 message
+  // Shows the nations progress of a user as a Components v2 message.
   params: [
     {
       name: 'user',
-      // The user whose progress to check
+      // The user whose progress to check.
       type: 'String',
       required: false,
     },
     {
       name: 'class',
-      // Progeess of a specific rarity class
+      // Progress of a specific rarity class.
       type: 'String',
       required: false,
     },
     {
       name: 'page',
-      // The page number to show
+      // The page number to show.
       type: 'String',
       required: false,
     },

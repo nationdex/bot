@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'unblock',
-    description: 'Unblock a user',
+    description: 'Unblock a user.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,7 +18,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user you want to unblock',
+        description: 'The user you want to unblock.',
         required: true,
       },
     ],
@@ -28,11 +28,11 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers]]
   
   $onlyIf[$userExists[$get[user]];
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   
   $onlyIf[$arrayIncludes[blocked;$get[user]];
-    $err[You have not blocked this user;true]
+    $err[You have not blocked this user.;true]
   ]
   
   $!jsonDelete[blocked;$arrayIndexOf[blocked;$get[user]]]

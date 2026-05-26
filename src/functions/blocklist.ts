@@ -3,17 +3,17 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'blocklist',
-  // Shows the blocklist of an user as a components v2 message
+  // Shows the blocklist of an user as a Components v2 message.
   params: [
     {
       name: 'user',
-      // The user whose blocks list to check
+      // The user whose blocks list to check.
       type: 'String',
       required: false,
     },
     {
       name: 'page',
-      // The page number to show
+      // The page number to show.
       type: 'String',
       required: false,
     },

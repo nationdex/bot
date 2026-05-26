@@ -2,7 +2,7 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'appEmoji',
-  // Get an application emoji from the given identifier
+  // Get an application emoji from the given identifier.
   params: [
     {
       name: 'emoji',

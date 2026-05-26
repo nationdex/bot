@@ -5,7 +5,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'settings',
-    description: 'View or customise your player settings',
+    description: 'View or customize your player settings.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

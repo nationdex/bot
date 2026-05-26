@@ -3,41 +3,41 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'spawnNation',
-  // Spawn a nation with the given properties
+  // Spawn a nation with the given properties.
   params: [
     {
       name: 'channel',
-      // The channel to spawn the nation in
+      // The channel to spawn the nation in.
       type: 'String',
       required: true,
     },
     {
       name: 'nation',
-      // ID of the nation to spawn, random according to rarity if not specified
+      // ID of the nation to spawn, random according to rarity if not specified.
       type: 'String',
       required: false,
     },
     {
       name: 'attackBonus',
-      // The attack bonus for the nation
+      // The attack bonus for the nation.
       type: 'String',
       required: false,
     },
     {
       name: 'healthBonus',
-      // The health bonus for the nation
+      // The health bonus for the nation.
       type: 'String',
       required: false,
     },
     {
       name: 'class',
-      // The rarity class of the nation, random if not specified
+      // The rarity class of the nation, random if not specified.
       type: 'String',
       required: false,
     },
     {
       name: 'event',
-      // The event type of the nation, none if not specified
+      // The event type of the nation, none if not specified.
       type: 'String',
       required: false,
     },

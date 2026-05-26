@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: 'View info card of your nations',
+    description: 'View info card of your nations.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,7 +18,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'nation',
-        description: 'The nation whose info card to view',
+        description: 'The nation whose info card to view.',
         required: false,
         autocomplete: true,
       },

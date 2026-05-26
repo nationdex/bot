@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: 'View rarity info of your nation',
+    description: 'View rarity info of your nation.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,7 +19,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'nation',
-        description: 'The nation whose rarity info to view',
+        description: 'The nation whose rarity info to view.',
         required: true,
         autocomplete: true,
       },

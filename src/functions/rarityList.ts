@@ -3,7 +3,7 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'rarityList',
-  // Displays the rarity list of nations/events as a components v2 message
+  // Displays the rarity list of nations/events as a Components v2 message.
   params: [
     {
       name: 'type',
@@ -13,19 +13,19 @@ export default new ForgeFunction({
     },
     {
       name: 'class',
-      // Rarity class of nations
+      // Rarity class of nations.
       type: 'String',
       required: false,
     },
     {
       name: 'sortType',
-      // Sorting type of the list
+      // Sorting type of the list.
       type: 'String',
       required: false,
     },
     {
       name: 'page',
-      // The page number to show
+      // The page number to show.
       type: 'String',
       required: false,
     },

@@ -3,11 +3,11 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'settingsMenu',
-  // Shows the settings menu of a user as a components v2 message
+  // Shows the settings menu of a user as a Components v2 message.
   params: [
     {
       name: 'user',
-      // The user whose settings to get
+      // The user whose settings to get.
       type: 'String',
       required: false,
     },
@@ -23,7 +23,7 @@ export default new ForgeFunction({
     $addContainer[
       $addSection[
         $addTextDisplay[### $appEmoji[setting] Player Settings
-Customise your interaction with other players]
+Customize your interaction with other players]
         $addThumbnail[$userAvatar]
       ]
       $addSeparator

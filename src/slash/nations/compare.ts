@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'compare',
-    description: 'Compare your nations progress with another user',
+    description: 'Compare your nations progress with another user.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,13 +19,13 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whom you want to compare to',
+        description: 'The user whom you want to compare to.',
         required: true,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'Compare the nations of a specific rarity class',
+        description: 'Compare the nations of a specific rarity class.',
         required: false,
         choices: [
           {
@@ -96,7 +96,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $addContainer[
       $addSection[
-        $addTextDisplay[## Progress Comparision
+        $addTextDisplay[## Progress Comparison
 -# Between **$userDisplayName** and **$userDisplayName[$get[user]]**
 Progress of $userDisplayName: **$get[progress]**
 Progress of $userDisplayName[$get[user]]: **$get[userProgress]**]

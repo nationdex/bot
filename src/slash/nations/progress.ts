@@ -18,13 +18,13 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whose nations progress to view',
+        description: 'The user whose nations progress to view.',
         required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'The rarity class to view',
+        description: 'The rarity class to view.',
         required: false,
         choices: [
           {
@@ -57,7 +57,7 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect nations, sadly :(;true]
+    $err[Bots cannot collect nations, sadly.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;

@@ -2,23 +2,23 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'addUserNation',
-  // Add a nation to a user's completion
+  // Add a nation to a user's completion.
   params: [
     {
       name: 'user',
-      // The ID of the user
+      // The ID of the user.
       type: 'String',
       required: true,
     },
     {
       name: 'nation',
       type: 'String',
-      // The id of the nation to add
+      // The id of the nation to add.
       required: true,
     },
     {
       name: 'data',
-      // The nation's data
+      // The nation's data.
       type: 'String',
       required: true,
     },

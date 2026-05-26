@@ -2,23 +2,23 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'sortData',
-  // Sort the given data and returns the new sorted data
+  // Sort the given data and returns the new sorted data.
   params: [
     {
       name: 'data',
-      // The json data to sort
+      // The json data to sort.
       type: 'String',
       required: true,
     },
     {
       name: 'key',
-      // The key on whose basis to sort the data
+      // The key on whose basis to sort the data.
       type: 'String',
       required: false,
     },
     {
       name: 'order',
-      // The sorting order, asc or desc
+      // The sorting order, asc or desc.
       type: 'String',
       required: false,
     },

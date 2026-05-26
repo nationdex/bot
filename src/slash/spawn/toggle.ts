@@ -5,12 +5,12 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'toggle',
-    description: 'Toggle on/off nations spawning in the server',
+    description: 'Toggle on/off nations spawning in the server.',
     integration_types: [ApplicationIntegrationType.GuildInstall],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
-    $err[You need **Manage Server** permissions to use this command;true]
+    $err[You need **Manage Server** permissions to use this command.;true]
   ]
   
   $jsonLoad[config;$getGuildVar[spawnConfig]]
@@ -22,7 +22,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[$toTitleCase[$get[toggle]] nations spawning in the server]
+      $addTextDisplay[$toTitleCase[$get[toggle]] nations spawning in the server.]
     ;#00FF00]
   ]
   `,

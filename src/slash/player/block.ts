@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'block',
-    description: 'Block a user',
+    description: 'Block a user.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,7 +18,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user you want to block',
+        description: 'The user you want to block.',
         required: true,
       },
     ],
@@ -28,16 +28,16 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers]]
   
   $onlyIf[$userExists[$get[user]];
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[You cannot block bots;true]
+    $err[You cannot block bots.;true]
   ]
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot block yourself... why do you even want to?;true]
+    $err[You cannot block yourself. Why do you even want to?;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have already blocked this user;true]
+    $err[You have already blocked this user.;true]
   ]
   
   $!jsonSet[blocked;$arrayLength[blocked];"$get[user]"]

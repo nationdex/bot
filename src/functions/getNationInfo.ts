@@ -2,23 +2,23 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'getNationInfo',
-  // Get info about a specific nation from the "nationsData" variable's "nations" key
+  // Get info about a specific nation from the "nationsData" variable's "nations" key.
   params: [
     {
       name: 'id',
-      // The nation id whose info to get
+      // The nation id whose info to get.
       type: 'String',
       required: true,
     },
     {
       name: 'value',
-      // The value/info to retrive, leave blank to get json data
+      // The value/info to retrieve, leave blank to get json data.
       type: 'String',
       required: false,
     },
     {
       name: 'separator',
-      // The separator to use in case of multiple values
+      // The separator to use in case of multiple values.
       type: 'String',
       required: false,
     },
