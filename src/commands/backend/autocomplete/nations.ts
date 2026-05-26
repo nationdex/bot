@@ -28,5 +28,5 @@ export default new BaseCommand({
         $let[nation;$getNation[$env[nat];nation]]
         $addChoice[#$env[nat]: $getSpecial[$getNation[$get[id];special];emoji]$getNationInfo[$get[nation];name] | ($getNation[$env[nat];attack] $getNation[$env[nat];health]) | $parseDate[$getNation[$env[nat];timestamp];Locale];$env[nat]]
         ]
-  `
+  `,
 });

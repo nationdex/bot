@@ -26,7 +26,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'View info of the last nation you caught of a specific rarity class.',
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
     ],
   },
@@ -41,11 +41,11 @@ export default new ApplicationCommand({
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> have their inventory private;true]
+      $err[<@$get[user]> have their inventory private.;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   
   $jsonLoad[nations;$getUserData[$get[user];nations]]
@@ -54,7 +54,7 @@ export default new ApplicationCommand({
   ]
   
   $onlyIf[$arrayLength[nations]>0;
-    $err[No nations found;true]
+    $err[No nations found.;true]
   ]
   
   $let[id;$env[nations;$sub[$arrayLength[nations];1]]]

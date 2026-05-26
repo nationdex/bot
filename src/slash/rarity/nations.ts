@@ -20,7 +20,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: "The rarity class whose nations' rarity to view.",
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
       {
         type: ApplicationCommandOptionType.String,

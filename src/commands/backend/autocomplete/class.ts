@@ -12,5 +12,5 @@ export default new BaseCommand({
   ]
   
   $arrayForEach[classes;class;$addChoice[$toTitleCase[$env[class]];$env[class]]]
-  `
+  `,
 });

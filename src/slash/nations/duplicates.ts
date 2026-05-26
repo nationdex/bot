@@ -1,29 +1,29 @@
-import { config } from '../../config/config';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ApplicationIntegrationType
+  ApplicationIntegrationType,
 } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'duplicates',
-    description: 'View your most duplicate nations',
+    description: 'View your most duplicate nations.',
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'The class whose nations to show',
+        description: 'The class whose nations to show.',
         required: false,
-        autocomplete: true
-      }
-    ]
+        autocomplete: true,
+      },
+    ],
   },
   code: `
   $jsonLoad[classes;$getNationsData[classes]]
@@ -50,7 +50,7 @@ export default new ApplicationCommand({
   ]
     
     $onlyIf[$env[data]!={};
-      $err[No nations found;true]
+      $err[No nations found.;true]
     ]
     
     $jsonLoad[sorted;$sortData[$env[data];total;desc]]
@@ -75,5 +75,5 @@ $arrayJoin[natDisp;
 ]
       ;${config.color}]
     ]
-  `
+  `,
 });

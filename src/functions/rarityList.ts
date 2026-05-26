@@ -1,5 +1,5 @@
-import { config } from '../config/config';
 import { ForgeFunction } from '@tryforge/forgescript';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'rarityList',

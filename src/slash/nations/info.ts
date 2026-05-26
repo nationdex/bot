@@ -35,7 +35,7 @@ export default new ApplicationCommand({
     $err[Invalid nation!;true]
   ]
   $onlyIf[$arrayLength[nations]>0;
-    $err[No nations found;true]
+    $err[No nations found.;true]
   ]
   
   $interactionReply[
