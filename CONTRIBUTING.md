@@ -11,10 +11,23 @@ Before anything, please make sure to install Node.js through their official [web
 ## Recommended IDEs
 
 - Visual Studio Code
+
+> VS Code is the main IDE anyway, nothing can escape the almighty Microsoft.
+
 - Antigravity
+
+> If you want an AI-driven IDE by your side to do a lot of hallucinations on the ForgeScript codes and make you suffer in the process, then use Antigravity lol.
 
 ## Recommended Extensions
 
 - ForgeVSC
+
+> THIS IS IMPORTANT SIR! ForgeVSC gives ForgeScript an actual type-safe layer on the codebase, making it easier to develop and maintain.
+
 - NPM Intellisense
-- Biome
+
+> This extension is for you to import modules and stuff with ease, without causing you a headache or whatever.
+
+- Code Spell Checker
+
+> If you are bored and don't know what to do on the codebase, then you can fix the silly grammar mistakes which we do sometimes, by using this extension. However, this extension is not mandatory to be used.
