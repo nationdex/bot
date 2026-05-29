@@ -26,7 +26,7 @@ To enable third-party extras through `extra.ts`:
 cp src/config/extra.example.ts src/config/extra.ts
 ```
 
-Extras are fetched from GitHub (or a local path while developing) into the hidden `extra/` cache folder — same idea as [BallsDex V3 extras](https://github.com/Ballsdex-Team/BallsDex-DiscordBot), but configured in TypeScript instead of TOML. See `src/config/extra.example.ts` for the format.
+Extras install through npm into the hidden `extra/` folder — configure them in `extra.ts` (see `extra.example.ts`). Run `npm run install-extras` to fetch or refresh them.
 
 To run on dev:
 
