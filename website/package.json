@@ -21,7 +21,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.40.0",
     "hono": "^4.12.23",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.17.0",
     "next": "^16.2.6",
     "next-transpile-modules": "^10.0.1",
     "react": "^19.2.6",

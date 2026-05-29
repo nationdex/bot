@@ -46,6 +46,8 @@ To check formatting:
 
 ```bash
 npm run check
+
+npm run check:fix
 ```
 
 Or if you want to check for any typechecking errors:
