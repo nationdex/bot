@@ -4,5 +4,7 @@ dist/
 logs/
 node_modules/
 src/config/config.ts
+src/config/extra.ts
 src/commands/dev/
-website/
+extra/*
+!extra/.gitkeep

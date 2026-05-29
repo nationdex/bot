@@ -2,6 +2,8 @@ import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { ForgeDB } from '@tryforge/forge.db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { config } from './config/config';
+import { extras } from './config/extra';
+import { loadExtras, loadExtraVariables } from './config/loadExtras';
 
 const db = new ForgeDB({
   type: 'better-sqlite3',
@@ -23,9 +25,10 @@ const client = new ForgeClient({
   extensions: [db, canvas],
 });
 
-db.variables(require('../src/config/variables.json'));
+loadExtraVariables(db, extras, require('../src/config/variables.json'));
 client.functions.load('dist/functions');
 client.commands.load('dist/commands');
+loadExtras(client, extras);
 client.applicationCommands.load('dist/slash');
 
 client.login(config.token);
