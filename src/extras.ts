@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { ForgeDB } from '@tryforge/forge.db';
 import type { ForgeClient } from '@tryforge/forgescript';
-import type { NationDexExtra } from './extra';
+import type { NationDexExtra } from './config/extra';
 
 const SUBDIRS = ['functions', 'commands', 'slash'] as const;
 const EXTRA_DIR = path.join(process.cwd(), 'extra');
@@ -61,10 +61,7 @@ function resolveExtraRoot(extra: NationDexExtra): string | null {
   const entry = extra.path ?? '';
 
   if (isLocalLocation(extra.location)) {
-    const localRoot = path.resolve(
-      process.cwd(),
-      extra.location.replace(/^file:/, '')
-    );
+    const localRoot = path.resolve(process.cwd(), extra.location.replace(/^file:/, ''));
     if (!fs.existsSync(localRoot)) {
       console.warn(`[extras] Skipping "${extra.name}": local path not found (${extra.location})`);
       return null;
@@ -213,6 +210,6 @@ export function loadExtras(client: ForgeClient, extras: NationDexExtra[]) {
 }
 
 if (require.main === module) {
-  const { extras } = require('./extra') as { extras: NationDexExtra[] };
+  const { extras } = require('./config/extra') as { extras: NationDexExtra[] };
   installExtras(extras);
 }

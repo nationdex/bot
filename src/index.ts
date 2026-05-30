@@ -3,7 +3,7 @@ import { ForgeDB } from '@tryforge/forge.db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { config } from './config/config';
 import { extras } from './config/extra';
-import { installExtras, loadExtras, loadExtraVariables } from './config/extras';
+import { installExtras, loadExtras, loadExtraVariables } from './extras';
 
 const db = new ForgeDB({
   type: 'better-sqlite3',
