@@ -8,6 +8,9 @@ import type { NationDexExtra } from './config/extra';
 const SUBDIRS = ['functions', 'commands', 'slash'] as const;
 const EXTRA_DIR = path.join(process.cwd(), 'extra');
 
+type EventCommand = { data: { path?: string } };
+type CommandRegistry = { commands: Map<string, EventCommand[]> };
+
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -111,25 +114,90 @@ export function installExtras(extras: NationDexExtra[]) {
   }
 }
 
+function listJsFiles(dir: string): string[] {
+  const files: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...listJsFiles(fullPath));
+      continue;
+    }
+    if (entry.name.endsWith('.js')) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
 function stageSlashCommands(moduleRoot: string, extraName: string, slashRoot: string) {
   const extraSlash = path.join(moduleRoot, 'slash');
   if (!fs.existsSync(extraSlash)) {
     return;
   }
 
-  for (const entry of fs.readdirSync(extraSlash)) {
-    const source = path.join(extraSlash, entry);
-    const target = path.join(slashRoot, entry);
-
-    if (fs.existsSync(target)) {
-      console.warn(
-        `[extras] "${extraName}" skipped slash entry "${entry}" (conflicts with core or another extra)`
-      );
-      continue;
+  const stageEntry = (source: string, target: string) => {
+    if (fs.statSync(source).isDirectory()) {
+      fs.mkdirSync(target, { recursive: true });
+      for (const entry of fs.readdirSync(source)) {
+        stageEntry(path.join(source, entry), path.join(target, entry));
+      }
+      return;
     }
 
-    fs.cpSync(source, target, { recursive: true });
+    if (fs.existsSync(target)) {
+      console.log(
+        `[extras] "${extraName}" replaced slash command: ${path.relative(slashRoot, target).replace(/\\/g, '/')}`
+      );
+    }
+
+    fs.cpSync(source, target, { force: true });
+  };
+
+  for (const entry of fs.readdirSync(extraSlash)) {
+    stageEntry(path.join(extraSlash, entry), path.join(slashRoot, entry));
   }
+}
+
+function replaceCoreEventCommands(client: ForgeClient, moduleRoot: string, extraName: string) {
+  const commandsPath = path.join(moduleRoot, 'commands');
+  if (!fs.existsSync(commandsPath)) {
+    return;
+  }
+
+  const extraBasenames = new Set(listJsFiles(commandsPath).map((file) => path.basename(file)));
+
+  const registry = client.commands as unknown as CommandRegistry;
+
+  for (const [type, cmds] of registry.commands) {
+    const kept = cmds.filter((cmd: EventCommand) => {
+      const cmdPath = cmd.data.path;
+      if (!cmdPath || !extraBasenames.has(path.basename(cmdPath))) {
+        return true;
+      }
+
+      const normalized = cmdPath.replace(/\\/g, '/');
+      if (!normalized.includes('/dist/commands/')) {
+        return true;
+      }
+
+      console.log(
+        `[extras] "${extraName}" replaced event command: ${path.basename(cmdPath)} (${type})`
+      );
+      return false;
+    });
+
+    registry.commands.set(type, kept);
+  }
+}
+
+function loadExtraCommands(client: ForgeClient, moduleRoot: string, extraName: string) {
+  const commandsPath = path.join(moduleRoot, 'commands');
+  if (!fs.existsSync(commandsPath)) {
+    return;
+  }
+
+  replaceCoreEventCommands(client, moduleRoot, extraName);
+  client.commands.load(commandsPath);
 }
 
 function loadExtraModules(client: ForgeClient, moduleRoot: string, extraName: string) {
@@ -146,7 +214,7 @@ function loadExtraModules(client: ForgeClient, moduleRoot: string, extraName: st
     } else if (subdir === 'functions') {
       client.functions.load(subdirPath);
     } else {
-      client.commands.load(subdirPath);
+      loadExtraCommands(client, moduleRoot, extraName);
     }
   }
 }
@@ -181,9 +249,8 @@ export function loadExtraVariables(
     for (const [key, value] of Object.entries(extraVariables)) {
       if (key in merged) {
         console.warn(
-          `[extras] "${extra.name}" skipped variables key "${key}" (already defined in core)`
+          `[extras] "${extra.name}" replaced variables key "${key}" (was defined in core)`
         );
-        continue;
       }
       merged[key] = value;
     }

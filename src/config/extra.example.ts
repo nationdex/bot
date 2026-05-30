@@ -11,7 +11,11 @@ export type NationDexExtra = {
   location: string;
   /** Optional subfolder inside the package with functions/, commands/, and slash/. */
   path?: string;
-  /** When false, the extra is skipped without removing its entry. */
+  /**
+   * When false, the extra is skipped without removing its entry.
+   * Files in an enabled extra replace core modules with the same slash path,
+   * event-command filename, or ForgeFunction name.
+   */
   enabled: boolean;
 };
 
