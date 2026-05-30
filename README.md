@@ -26,7 +26,7 @@ To enable third-party extras through `extra.ts`:
 cp src/config/extra.example.ts src/config/extra.ts
 ```
 
-Extras install through npm into the hidden `extra/` folder — configure them in `extra.ts` (see `extra.example.ts`). Run `npm run install-extras` to fetch or refresh them.
+Extras install through npm into the hidden `extra/` folder — configure them in `extra.ts` (see `extra.example.ts`). Run `npm run extras` to fetch or refresh them.
 
 To run on dev:
 
@@ -63,3 +63,4 @@ Or if you want to check for any typechecking errors:
 ```bash
 npm run typecheck
 ```
+
