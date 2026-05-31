@@ -43,7 +43,7 @@
       "!node_modules",
       "!dist",
       "!.next",
-      "!website/.next",
+      "!website/dist",
       "!website/node_modules",
       "!*.min.js",
       "!*.generated.*"

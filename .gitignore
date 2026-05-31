@@ -5,4 +5,3 @@ logs/
 node_modules/
 src/config/config.ts
 src/commands/dev/
-website/

@@ -1,12 +1,14 @@
 {
   "name": "nationdex-admin-panel",
   "version": "1.0.0",
-  "description": "This is the official admin panel for Project Nationdex 2.0, made in Next.js, Shadcn/ui, TailwindCSS, and React.",
+  "description": "Official admin panel for Project Nationdex 2.0 — React, Shadcn/ui, TailwindCSS, and Vite.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 3000 --host",
+    "start": "vite preview --port 3000 --host"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",
@@ -15,24 +17,20 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.40.0",
-    "hono": "^4.12.23",
     "lucide-react": "^1.17.0",
-    "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",
-    "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.0",
     "autoprefixer": "^10.5.0",
     "postcss": "8.5.15",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
-  },
-  "overrides": {
-    "postcss": "$postcss"
+    "typescript": "^6.0.3",
+    "vite": "^7.2.2"
   }
 }
