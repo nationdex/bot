@@ -29,7 +29,7 @@ export function AnimatedPanel({
     return (
       <Tilt3D
         maxTilt={maxTilt}
-        lift={8}
+        lift={3}
         sheen={false}
         enterDelay={enterDelay}
         className={cn('h-full', className)}

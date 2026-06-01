@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import {
   bot,
@@ -87,7 +87,7 @@ function TimeRangeToggle({
   layoutId: string;
 }) {
   return (
-    <div className="relative z-20 flex w-full rounded bg-[var(--admin-elevated)] p-0.5 sm:w-auto">
+    <div className="relative z-20 flex w-full overflow-hidden rounded bg-[var(--admin-elevated)] p-0.5 sm:w-auto">
       {(['Month', 'Annually'] as const).map((range) => (
         <button
           type="button"
@@ -128,11 +128,10 @@ function TrendChartCard({
   enterDelay?: number;
 }) {
   const reducedMotion = useReducedMotion();
-  const enable3D = useIs3DEnabled();
 
   return (
-    <AnimatedPanel enterDelay={enterDelay} maxTilt={5}>
-      <Card className={cn(admin.card, 'h-full')}>
+    <AnimatedPanel enterDelay={enterDelay} maxTilt={4}>
+      <Card className={cn(admin.card, 'h-full overflow-hidden')}>
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className={cn('text-sm font-medium', admin.muted)}>{title}</h3>
@@ -147,45 +146,38 @@ function TrendChartCard({
             {chartMonths.map((month, idx) => {
               const height = chartHeights[idx];
               const isAug = month === 'Aug';
+              const barHeight = height * 3;
 
               return (
                 <div key={`${chartId}-${month}`} className="flex items-end gap-2 sm:gap-3">
                   <div className={cn('w-8 shrink-0 text-xs sm:w-10', admin.muted)}>{month}</div>
-                  <div className="relative flex-1">
+                  <div className="relative flex h-20 flex-1 items-end overflow-hidden">
                     <motion.div
                       key={`${chartId}-${month}-${timeRange}`}
-                      initial={
-                        reducedMotion
-                          ? false
-                          : enable3D
-                            ? { height: 0, opacity: 0, scaleY: 0.6 }
-                            : { height: 0, opacity: 0 }
-                      }
-                      animate={{ height: `${height * 3}px`, opacity: 1, scaleY: 1 }}
+                      initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+                      animate={{ height: barHeight, opacity: 1 }}
                       transition={{ delay: 0.1 + idx * 0.08, ...springSnappy }}
-                      style={{ transformOrigin: 'bottom' }}
                       className={cn(
-                        'relative rounded-t',
+                        'w-full max-h-full rounded-t',
                         isAug
                           ? 'bg-[var(--admin-accent)]'
                           : 'bg-[color-mix(in_srgb,var(--admin-fg)_18%,transparent)]'
                       )}
-                    >
-                      {isAug && chartId === 'catch-growth' && (
-                        <div
-                          className={cn(
-                            'absolute left-1/2 -top-9 sm:-top-10 -translate-x-1/2 whitespace-nowrap rounded px-2 py-1 text-center text-[10px] leading-tight shadow-md',
-                            'bg-yellow-500 text-[var(--admin-accent-fg)]'
-                          )}
-                        >
-                          +22.9%
-                          <br />
-                          August, 2024
-                          <br />
-                          432,988
-                        </div>
-                      )}
-                    </motion.div>
+                    />
+                    {isAug && chartId === 'catch-growth' && (
+                      <div
+                        className={cn(
+                          'pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded px-2 py-1 text-center text-[10px] leading-tight shadow-md',
+                          'mb-1 bg-yellow-500 text-[var(--admin-accent-fg)]'
+                        )}
+                      >
+                        +22.9%
+                        <br />
+                        August, 2024
+                        <br />
+                        432,988
+                      </div>
+                    )}
                   </div>
                   <div className={cn('w-6 shrink-0 text-right text-[10px] sm:w-8', admin.muted)}>
                     {height}%
@@ -240,8 +232,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
           const Icon = stat.icon;
           return (
             <motion.div key={stat.id} variants={listItem} className="h-full">
-              <AnimatedPanel enterDelay={i * 0.06} maxTilt={7}>
-                <Card className={cn(admin.card, 'h-full')}>
+              <AnimatedPanel enterDelay={i * 0.06} maxTilt={5}>
+                <Card className={cn(admin.card, 'h-full overflow-hidden')}>
                   <CardContent className="p-4 sm:p-5">
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <h3 className={cn('text-xs font-medium sm:text-sm', admin.muted)}>

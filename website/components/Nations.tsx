@@ -121,22 +121,18 @@ export default function Nations({ searchQuery = '' }: { searchQuery?: string }) 
                   exit="exit"
                   className="h-full"
                 >
-                  <AnimatedPanel enterDelay={Math.min(i * 0.05, 0.3)} maxTilt={8}>
+                  <AnimatedPanel enterDelay={Math.min(i * 0.05, 0.3)} maxTilt={4}>
                     <div
                       className={cn(
-                        'h-full rounded-lg border p-4 transition-colors',
+                        'flex h-full flex-col gap-3 rounded-lg border p-4 transition-colors',
                         admin.elevated,
                         admin.hoverRow
                       )}
                     >
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <span className={cn('block truncate text-sm font-medium', admin.fg)}>
-                            {entry.name}
-                          </span>
-                          <span className={cn('font-mono text-[10px]', admin.muted)}>
-                            {entry.id}
-                          </span>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className={cn('truncate text-sm font-medium', admin.fg)}>{entry.name}</p>
+                          <p className={cn('mt-0.5 font-mono text-[10px]', admin.muted)}>{entry.id}</p>
                         </div>
                         <span
                           className={cn(
@@ -147,11 +143,11 @@ export default function Nations({ searchQuery = '' }: { searchQuery?: string }) 
                           {formatRarity(entry.class)}
                         </span>
                       </div>
-                      <div className={cn('flex items-center justify-between text-xs', admin.muted)}>
-                        <span>{entry.globalCaught.toLocaleString()} global caught</span>
-                        <span>weight {entry.weight}</span>
+                      <div className={cn('space-y-1 text-xs', admin.muted)}>
+                        <p>{entry.globalCaught.toLocaleString()} global caught</p>
+                        <p>Weight {entry.weight}</p>
                       </div>
-                      <div className="mt-3 flex justify-end">
+                      <div className="mt-auto flex justify-end pt-1">
                         <Button
                           variant="ghost"
                           size="sm"
