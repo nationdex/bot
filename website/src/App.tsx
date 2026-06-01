@@ -7,13 +7,8 @@ import {
   Settings as SettingsIcon,
   Users,
 } from 'lucide-react';
-import { useState } from 'react';
-import CardsPage from '@/components/Cards';
-import Dashboard from '@/components/Dashboard';
+import { lazy, Suspense, useState } from 'react';
 import HeaderSearch from '@/components/HeaderSearch';
-import Nations from '@/components/Nations';
-import Settings from '@/components/Settings';
-import UsersPage from '@/components/Users';
 import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
 import { useThemePrefs } from '@/hooks/useThemePrefs';
@@ -39,6 +34,12 @@ const sectionTitles: Record<string, string> = {
   cards: 'Cards',
   settings: 'Settings',
 };
+
+const Dashboard = lazy(() => import('@/components/Dashboard'));
+const UsersPage = lazy(() => import('@/components/Users'));
+const Nations = lazy(() => import('@/components/Nations'));
+const CardsPage = lazy(() => import('@/components/Cards'));
+const Settings = lazy(() => import('@/components/Settings'));
 
 export default function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
@@ -247,7 +248,21 @@ export default function App() {
                     {...pageMotion}
                     className="preserve-3d gpu-layer"
                   >
-                    {renderContent()}
+                    <Suspense
+                      fallback={
+                        <div
+                          className={cn(
+                            'flex min-h-[240px] items-center justify-center rounded-lg border',
+                            admin.elevated,
+                            admin.muted
+                          )}
+                        >
+                          Loading section...
+                        </div>
+                      }
+                    >
+                      {renderContent()}
+                    </Suspense>
                   </motion.div>
                 </AnimatePresence>
               </div>
