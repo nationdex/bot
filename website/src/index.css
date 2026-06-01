@@ -99,13 +99,6 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-
-  /* Children inside Tilt3D — stay 2D so bars/text don't shear */
-  .tilt-flat {
-    transform: translateZ(0);
-    transform-style: flat;
-    isolation: isolate;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
