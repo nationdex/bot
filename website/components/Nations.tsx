@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Globe, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { AnimatedPanel } from '@/components/ui/animated-panel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -112,7 +111,7 @@ export default function Nations({ searchQuery = '' }: { searchQuery?: string }) 
             className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <AnimatePresence initial={false}>
-              {filteredCatalog.map((entry, i) => (
+              {filteredCatalog.map((entry) => (
                 <motion.div
                   key={entry.id}
                   variants={listItem}
@@ -121,48 +120,44 @@ export default function Nations({ searchQuery = '' }: { searchQuery?: string }) 
                   exit="exit"
                   className="h-full"
                 >
-                  <AnimatedPanel enterDelay={Math.min(i * 0.05, 0.3)} maxTilt={8}>
-                    <div
-                      className={cn(
-                        'h-full rounded-lg border p-4 transition-colors',
-                        admin.elevated,
-                        admin.hoverRow
-                      )}
-                    >
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <span className={cn('block truncate text-sm font-medium', admin.fg)}>
-                            {entry.name}
-                          </span>
-                          <span className={cn('font-mono text-[10px]', admin.muted)}>
-                            {entry.id}
-                          </span>
-                        </div>
-                        <span
-                          className={cn(
-                            'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium',
-                            rarityBadgeClass[entry.class as RarityClass]
-                          )}
-                        >
-                          {formatRarity(entry.class)}
+                  <div
+                    className={cn(
+                      'h-full rounded-lg border p-4 transition-colors',
+                      admin.elevated,
+                      admin.hoverRow
+                    )}
+                  >
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className={cn('block truncate text-sm font-medium', admin.fg)}>
+                          {entry.name}
                         </span>
+                        <span className={cn('font-mono text-[10px]', admin.muted)}>{entry.id}</span>
                       </div>
-                      <div className={cn('flex items-center justify-between text-xs', admin.muted)}>
-                        <span>{entry.globalCaught.toLocaleString()} global caught</span>
-                        <span>weight {entry.weight}</span>
-                      </div>
-                      <div className="mt-3 flex justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className={cn('h-7 text-xs', admin.muted, 'hover:text-[var(--admin-fg)]')}
-                          disabled
-                        >
-                          Edit
-                        </Button>
-                      </div>
+                      <span
+                        className={cn(
+                          'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium',
+                          rarityBadgeClass[entry.class as RarityClass]
+                        )}
+                      >
+                        {formatRarity(entry.class)}
+                      </span>
                     </div>
-                  </AnimatedPanel>
+                    <div className={cn('flex items-center justify-between text-xs', admin.muted)}>
+                      <span>{entry.globalCaught.toLocaleString()} global caught</span>
+                      <span>weight {entry.weight}</span>
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn('h-7 text-xs', admin.muted, 'hover:text-[var(--admin-fg)]')}
+                        disabled
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
