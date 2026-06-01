@@ -2,6 +2,20 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+type LocalProductionConfig = {
+  allowedHosts?: string[];
+};
+
+let localProductionConfig: LocalProductionConfig = {};
+try {
+  const mod = await import('./production');
+  localProductionConfig = mod.localProductionConfig ?? {};
+} catch {
+  localProductionConfig = {};
+}
+
+const allowedHosts = localProductionConfig.allowedHosts ?? [];
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -12,10 +26,12 @@ export default defineConfig({
   server: {
     port: 3000,
     strictPort: true,
+    allowedHosts,
   },
   preview: {
     port: 3000,
     strictPort: true,
+    allowedHosts,
   },
   build: {
     outDir: 'dist',
