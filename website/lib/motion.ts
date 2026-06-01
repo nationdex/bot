@@ -1,5 +1,5 @@
 export const springSnappy = { type: 'spring' as const, stiffness: 420, damping: 30 };
-export const springSoft = { type: 'spring' as const, stiffness: 280, damping: 26 };
+export const springSoft = { type: 'spring' as const, stiffness: 300, damping: 28, mass: 0.9 };
 
 /** Showcase-style 3D pacing (~0.5–0.6s feel) */
 export const spring3D = {
@@ -92,7 +92,7 @@ export const staggerContainer = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.07, delayChildren: 0.05 },
+    transition: { staggerChildren: 0.06, delayChildren: 0.04 },
   },
 };
 

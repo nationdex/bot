@@ -50,7 +50,7 @@ export function DesktopSidebar({ className, children, ...props }: SidebarBodyPro
   return (
     <aside
       className={cn(
-        'fixed left-3 top-3 bottom-3 z-30 hidden w-64 flex-col rounded-2xl border shadow-2xl overflow-hidden',
+        'fixed left-3 top-3 bottom-3 z-30 hidden w-64 flex-col rounded-2xl border shadow-2xl overflow-hidden md:flex',
         'md:left-4 md:top-4 md:bottom-4',
         admin.sidebar,
         className
@@ -127,7 +127,7 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
           : active
             ? { scale: 1.01 }
             : enable3D
-              ? { x: 3, rotateY: 8, z: 6 }
+              ? { x: 3, rotateY: 5, z: 4 }
               : { x: 3 }
       }
       whileTap={reducedMotion ? undefined : { scale: 0.98 }}

@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import { bot } from '@/lib/bot';
+import { fadeUp, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 function SettingToggle({
@@ -69,8 +70,13 @@ export default function Settings() {
   const threeDActive = useIs3DEnabled();
 
   return (
-    <div className="w-full space-y-4 sm:space-y-6">
-      <div className="mb-4 sm:mb-6 space-y-3">
+    <motion.div
+      className="w-full space-y-4 sm:space-y-6"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={fadeUp} className="mb-4 sm:mb-6 space-y-3">
         <div>
           <h1 className={cn('mb-2 text-xl font-bold sm:text-2xl md:text-3xl', admin.fg)}>
             Settings
@@ -79,90 +85,94 @@ export default function Settings() {
             Personalize the {bot.name} admin panel. Preferences are saved in this browser.
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      <Card className={cn(admin.card)}>
-        <CardContent className="space-y-6 p-5">
-          <div className="flex items-center gap-2">
-            <Palette className={cn('h-4 w-4', admin.muted)} />
-            <h3 className={cn('text-sm font-medium', admin.muted)}>Theme &amp; appearance</h3>
-          </div>
-          <ThemeSettings />
-        </CardContent>
-      </Card>
+      <motion.div variants={fadeUp}>
+        <Card className={cn(admin.card)}>
+          <CardContent className="space-y-6 p-5">
+            <div className="flex items-center gap-2">
+              <Palette className={cn('h-4 w-4', admin.muted)} />
+              <h3 className={cn('text-sm font-medium', admin.muted)}>Theme &amp; appearance</h3>
+            </div>
+            <ThemeSettings />
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      <Card className={cn(admin.card)}>
-        <CardContent className="space-y-6 p-5">
-          <div className="flex items-center gap-2">
-            <Sparkles className={cn('h-4 w-4', admin.muted)} />
-            <h3 className={cn('text-sm font-medium', admin.muted)}>Motion &amp; effects</h3>
-          </div>
+      <motion.div variants={fadeUp}>
+        <Card className={cn(admin.card)}>
+          <CardContent className="space-y-6 p-5">
+            <div className="flex items-center gap-2">
+              <Sparkles className={cn('h-4 w-4', admin.muted)} />
+              <h3 className={cn('text-sm font-medium', admin.muted)}>Motion &amp; effects</h3>
+            </div>
 
-          <div className="space-y-5">
-            <SettingToggle
-              id="animations-enabled"
-              label="Enable animations"
-              description="Page transitions, staggered reveals, hover feedback, and search palette motion."
-              checked={animationsEnabled}
-              disabled={osReducedMotion}
-              onChange={setAnimationsEnabled}
-            />
+            <div className="space-y-5">
+              <SettingToggle
+                id="animations-enabled"
+                label="Enable animations"
+                description="Page transitions, staggered reveals, hover feedback, and search palette motion."
+                checked={animationsEnabled}
+                disabled={osReducedMotion}
+                onChange={setAnimationsEnabled}
+              />
 
-            <SettingToggle
-              id="animations-3d"
-              label="Enable 3D effects"
-              description="Card tilt, perspective page turns, depth on hover, and chart bar flips."
-              checked={enable3D}
-              disabled={!animationsEnabled || osReducedMotion}
-              onChange={setEnable3D}
-            />
-          </div>
+              <SettingToggle
+                id="animations-3d"
+                label="Enable 3D effects"
+                description="Card tilt, perspective page turns, depth on hover, and chart bar flips."
+                checked={enable3D}
+                disabled={!animationsEnabled || osReducedMotion}
+                onChange={setEnable3D}
+              />
+            </div>
 
-          {osReducedMotion && (
-            <div
-              className={cn(
-                'flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs',
-                admin.elevated,
-                admin.muted
-              )}
-            >
-              <Monitor className={cn('mt-0.5 h-3.5 w-3.5 shrink-0', admin.muted)} />
-              <p>
-                Your system has <strong className={admin.fg}>Reduce motion</strong> enabled.
-                Animations stay off regardless of these toggles.
+            {osReducedMotion && (
+              <div
+                className={cn(
+                  'flex items-start gap-2 rounded-lg border px-3 py-2.5 text-xs',
+                  admin.elevated,
+                  admin.muted
+                )}
+              >
+                <Monitor className={cn('mt-0.5 h-3.5 w-3.5 shrink-0', admin.muted)} />
+                <p>
+                  Your system has <strong className={admin.fg}>Reduce motion</strong> enabled.
+                  Animations stay off regardless of these toggles.
+                </p>
+              </div>
+            )}
+
+            <div className={cn('rounded-lg border px-3 py-3 text-xs', admin.elevated, admin.muted)}>
+              <p className={cn('font-medium', admin.fg)}>Current motion mode</p>
+              <p className="mt-1">
+                {reducedMotion
+                  ? 'Static — no animations'
+                  : threeDActive
+                    ? 'Full — 2D and 3D motion'
+                    : 'Lite — 2D animations only (3D off)'}
               </p>
             </div>
-          )}
 
-          <div className={cn('rounded-lg border px-3 py-3 text-xs', admin.elevated, admin.muted)}>
-            <p className={cn('font-medium', admin.fg)}>Current motion mode</p>
-            <p className="mt-1">
-              {reducedMotion
-                ? 'Static — no animations'
-                : threeDActive
-                  ? 'Full — 2D and 3D motion'
-                  : 'Lite — 2D animations only (3D off)'}
-            </p>
-          </div>
-
-          <div className="flex justify-end border-t border-[var(--admin-border)] pt-4">
-            <motion.button
-              type="button"
-              onClick={resetAnimationPrefs}
-              whileTap={reducedMotion ? undefined : { scale: 0.98 }}
-              className={cn(
-                'inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors',
-                admin.elevated,
-                admin.muted,
-                admin.hoverRow
-              )}
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reset motion defaults
-            </motion.button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            <div className="flex justify-end border-t border-[var(--admin-border)] pt-4">
+              <motion.button
+                type="button"
+                onClick={resetAnimationPrefs}
+                whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+                className={cn(
+                  'inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors',
+                  admin.elevated,
+                  admin.muted,
+                  admin.hoverRow
+                )}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset motion defaults
+              </motion.button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 }

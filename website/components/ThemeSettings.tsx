@@ -1,7 +1,10 @@
+import { motion } from 'framer-motion';
 import { Check, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
 import { useThemePrefs } from '@/hooks/useThemePrefs';
 import { admin } from '@/lib/admin-classes';
+import { fadeUp, springSnappy, staggerContainer } from '@/lib/motion';
 import type { ThemePalette } from '@/lib/theme-prefs';
 import { presetShellBackground, type ThemePreset, themePresets } from '@/lib/theme-presets';
 import { cn } from '@/lib/utils';
@@ -28,15 +31,21 @@ function PresetCard({
   active: boolean;
   onApply: () => void;
 }) {
+  const reducedMotion = useReducedMotion();
+  const enable3D = useIs3DEnabled();
+
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onApply}
+      whileHover={reducedMotion ? undefined : { y: -3, scale: 1.01 }}
+      whileTap={reducedMotion ? undefined : { scale: 0.99 }}
+      style={enable3D ? { transformPerspective: 900 } : undefined}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-xl border text-left transition-colors',
+        'group flex flex-col overflow-hidden rounded-xl border text-left transition-shadow',
         active
-          ? 'border-[var(--admin-accent)] ring-1 ring-[color-mix(in_srgb,var(--admin-accent)_40%,transparent)]'
-          : cn(admin.elevated, admin.hoverRow)
+          ? 'border-[var(--admin-accent)] shadow-lg ring-1 ring-[color-mix(in_srgb,var(--admin-accent)_35%,transparent)]'
+          : cn(admin.elevated, admin.hoverRow, 'hover:shadow-md')
       )}
     >
       <div className="flex h-14">
@@ -76,7 +85,7 @@ function PresetCard({
         </div>
         <p className={cn('text-[11px] leading-snug', admin.muted)}>{preset.description}</p>
       </div>
-    </button>
+    </motion.button>
   );
 }
 
@@ -93,27 +102,45 @@ function ColorField({
   onChange: (value: string) => void;
   picker?: boolean;
 }) {
-  const hex = value.startsWith('#') ? value.slice(0, 7) : '#888888';
+  const isHex = /^#[0-9A-Fa-f]{3,8}$/.test(value.trim());
+  const pickerHex = isHex
+    ? value.length === 4
+      ? `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`
+      : value.slice(0, 7)
+    : '#888888';
 
   return (
-    <div className="flex items-center justify-between gap-3">
-      <label htmlFor={id} className={cn('text-xs', admin.muted)}>
+    <div
+      className={cn(
+        'min-w-0 space-y-2 rounded-lg border p-3',
+        admin.panel,
+        'border-[var(--admin-border)]'
+      )}
+    >
+      <label htmlFor={`${id}-input`} className={cn('block text-xs font-medium', admin.fg)}>
         {label}
       </label>
-      <div className="flex items-center gap-2">
-        {picker && value.startsWith('#') && (
-          <input
-            id={id}
-            type="color"
-            value={hex}
-            onChange={(e) => onChange(e.target.value)}
-            className="h-8 w-10 cursor-pointer rounded border border-[var(--admin-border)] bg-transparent"
-          />
+      <div className="flex min-w-0 items-center gap-2">
+        {picker && isHex && (
+          <label
+            className="relative h-9 w-9 shrink-0 cursor-pointer overflow-hidden rounded-md border border-[var(--admin-border)]"
+            style={{ backgroundColor: pickerHex }}
+            title="Pick color"
+          >
+            <input
+              type="color"
+              value={pickerHex}
+              onChange={(e) => onChange(e.target.value)}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+          </label>
         )}
         <Input
+          id={`${id}-input`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={cn('h-8 w-28 font-mono text-xs', admin.input)}
+          spellCheck={false}
+          className={cn('h-9 min-w-0 flex-1 font-mono text-xs', admin.input)}
         />
       </div>
     </div>
@@ -131,9 +158,16 @@ function PaletteEditor({
   onChange: (patch: Partial<ThemePalette>) => void;
   onReset: () => void;
 }) {
+  const reducedMotion = useReducedMotion();
+
   return (
-    <div className={cn('space-y-4 rounded-lg border p-4', admin.elevated)}>
-      <div className="flex items-center justify-between gap-2">
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="show"
+      className={cn('space-y-4 rounded-xl border p-4 sm:p-5', admin.elevated)}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className={cn('text-sm font-medium', admin.fg)}>{title}</h4>
         <button
           type="button"
@@ -149,16 +183,18 @@ function PaletteEditor({
         </button>
       </div>
 
-      <div
+      <motion.div
+        layout
         className="h-16 rounded-lg border border-[var(--admin-border)]"
         style={{
           background: palette.gradientEnabled
             ? `linear-gradient(${palette.gradientAngle}deg, ${palette.gradientFrom}, ${palette.gradientTo})`
             : palette.shell,
         }}
+        transition={reducedMotion ? { duration: 0 } : springSnappy}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2">
         <ColorField
           id={`${title}-shell`}
           label="Shell"
@@ -216,9 +252,9 @@ function PaletteEditor({
         />
       </div>
 
-      <div className="space-y-3 border-t border-[var(--admin-border)] pt-3">
+      <div className="space-y-3 border-t border-[var(--admin-border)] pt-4">
         <label className="flex items-center justify-between gap-3">
-          <span className={cn('text-xs', admin.muted)}>Shell gradient</span>
+          <span className={cn('text-xs font-medium', admin.fg)}>Shell gradient</span>
           <button
             type="button"
             role="switch"
@@ -229,9 +265,11 @@ function PaletteEditor({
               palette.gradientEnabled ? 'bg-[var(--admin-accent)]' : 'bg-[var(--admin-elevated)]'
             )}
           >
-            <span
+            <motion.span
+              layout
+              transition={springSnappy}
               className={cn(
-                'absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform',
+                'absolute top-0.5 left-0.5 h-5 w-5 rounded-full',
                 palette.gradientEnabled
                   ? 'translate-x-5 bg-[var(--admin-accent-fg)]'
                   : 'translate-x-0 bg-[var(--admin-fg)] opacity-40'
@@ -241,7 +279,7 @@ function PaletteEditor({
         </label>
 
         {palette.gradientEnabled && (
-          <>
+          <div className="grid grid-cols-1 gap-3">
             <ColorField
               id={`${title}-grad-from`}
               label="Gradient from"
@@ -254,8 +292,8 @@ function PaletteEditor({
               value={palette.gradientTo}
               onChange={(gradientTo) => onChange({ gradientTo })}
             />
-            <div className="space-y-1">
-              <label htmlFor={`${title}-angle`} className={cn('text-xs', admin.muted)}>
+            <div className="space-y-2 rounded-lg border border-[var(--admin-border)] p-3">
+              <label htmlFor={`${title}-angle`} className={cn('text-xs font-medium', admin.fg)}>
                 Angle ({palette.gradientAngle}°)
               </label>
               <input
@@ -265,13 +303,13 @@ function PaletteEditor({
                 max={360}
                 value={palette.gradientAngle}
                 onChange={(e) => onChange({ gradientAngle: Number(e.target.value) })}
-                className="w-full"
+                className="w-full accent-[var(--admin-accent)]"
               />
             </div>
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -295,8 +333,8 @@ export default function ThemeSettings() {
     )?.id ?? null;
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap gap-2">
+    <motion.div className="space-y-5" variants={staggerContainer} initial="hidden" animate="show">
+      <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
         {(['dark', 'light'] as const).map((option) => (
           <button
             type="button"
@@ -310,16 +348,16 @@ export default function ThemeSettings() {
             {option} mode
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="space-y-3">
+      <motion.div variants={fadeUp} className="space-y-3">
         <div>
           <h4 className={cn('text-sm font-medium', admin.fg)}>Theme presets</h4>
           <p className={cn('mt-1 text-xs', admin.muted)}>
             Apply a full dark + light palette in one click. You can still fine-tune colors below.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {themePresets.map((preset) => (
             <PresetCard
               key={preset.id}
@@ -329,28 +367,32 @@ export default function ThemeSettings() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <p className={cn('text-xs', admin.muted)}>
+      <motion.p variants={fadeUp} className={cn('text-xs', admin.muted)}>
         Customize colors and shell gradients separately for dark and light mode. Active mode:{' '}
         <strong className={admin.fg}>{mode}</strong>.
-      </p>
+      </motion.p>
 
-      <PaletteEditor
-        title="Dark mode palette"
-        palette={dark}
-        onChange={updateDark}
-        onReset={resetDarkPalette}
-      />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <PaletteEditor
+          title="Dark mode palette"
+          palette={dark}
+          onChange={updateDark}
+          onReset={resetDarkPalette}
+        />
+        <PaletteEditor
+          title="Light mode palette"
+          palette={light}
+          onChange={updateLight}
+          onReset={resetLightPalette}
+        />
+      </div>
 
-      <PaletteEditor
-        title="Light mode palette"
-        palette={light}
-        onChange={updateLight}
-        onReset={resetLightPalette}
-      />
-
-      <div className="flex justify-end border-t border-[var(--admin-border)] pt-4">
+      <motion.div
+        variants={fadeUp}
+        className="flex justify-end border-t border-[var(--admin-border)] pt-4"
+      >
         <button
           type="button"
           onClick={resetTheme}
@@ -364,7 +406,7 @@ export default function ThemeSettings() {
           <RotateCcw className="h-3.5 w-3.5" />
           Reset all theme defaults
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

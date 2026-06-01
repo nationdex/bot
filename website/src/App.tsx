@@ -161,8 +161,6 @@ export default function App() {
           </motion.div>
         </nav>
       </div>
-
-      <SidebarUserProfile />
     </>
   );
 
@@ -170,7 +168,7 @@ export default function App() {
     <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <div className={cn('min-h-screen transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
-          <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
+          <SidebarBody>{sidebarContent}</SidebarBody>
         </Sidebar>
 
         <div
@@ -305,63 +303,6 @@ const Logo = () => {
         <span className={cn('block truncate text-base font-semibold', admin.fg)}>{bot.name}</span>
         <span className={cn('block truncate text-[10px]', admin.muted)}>Admin panel</span>
       </div>
-    </motion.div>
-  );
-};
-
-const SidebarUserProfile = () => {
-  const reducedMotion = useReducedMotion();
-  const enable3D = useIs3DEnabled();
-
-  return (
-    <motion.div
-      variants={fadeUp}
-      initial="hidden"
-      animate="show"
-      transition={{ delay: reducedMotion ? 0 : 0.2 }}
-      className="shrink-0 border-t border-[var(--admin-border)] p-4"
-    >
-      <motion.div
-        whileHover={
-          reducedMotion
-            ? undefined
-            : enable3D
-              ? { scale: 1.02, rotateX: 4, rotateY: -4 }
-              : { scale: 1.02 }
-        }
-        whileTap={reducedMotion ? undefined : { scale: 0.98 }}
-        style={enable3D ? { transformPerspective: 900 } : undefined}
-        className={cn(
-          'preserve-3d flex items-center gap-3 rounded-xl border px-3 py-2.5',
-          admin.elevated
-        )}
-      >
-        <motion.div
-          className={cn(
-            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-semibold',
-            admin.elevated,
-            admin.fg
-          )}
-          animate={
-            reducedMotion
-              ? undefined
-              : {
-                  boxShadow: [
-                    '0 0 0 0 rgba(255,255,255,0)',
-                    '0 0 0 4px rgba(255,255,255,0.04)',
-                    '0 0 0 0 rgba(255,255,255,0)',
-                  ],
-                }
-          }
-          transition={{ duration: 2.5, repeat: Infinity }}
-        >
-          ND
-        </motion.div>
-        <div className="min-w-0 flex-1">
-          <p className={cn('truncate text-sm font-medium', admin.fg)}>Admin</p>
-          <p className={cn('truncate text-xs', admin.muted)}>admin@arielaram.com</p>
-        </div>
-      </motion.div>
     </motion.div>
   );
 };
