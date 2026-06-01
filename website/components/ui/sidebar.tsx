@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { SIDEBAR_WIDTH, SidebarProvider, useSidebar } from '@/components/ui/sidebar-context';
 import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
+import { admin } from '@/lib/admin-classes';
 import { springSnappy } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -49,8 +50,9 @@ export function DesktopSidebar({ className, children, ...props }: SidebarBodyPro
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col',
-        'border-r border-[#2a2a2a] bg-[#121212]',
+        'fixed left-3 top-3 bottom-3 z-30 hidden w-64 flex-col rounded-2xl border shadow-2xl overflow-hidden',
+        'md:left-4 md:top-4 md:bottom-4',
+        admin.sidebar,
         className
       )}
       style={{ width: SIDEBAR_WIDTH }}
@@ -82,8 +84,8 @@ export function MobileSidebar({ className, children, ...props }: SidebarBodyProp
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
               className={cn(
-                'fixed inset-y-0 left-0 z-[100] flex w-64 flex-col',
-                'border-r border-[#2a2a2a] bg-[#121212] shadow-2xl',
+                'fixed inset-y-0 left-0 z-[100] flex w-64 flex-col border-r shadow-2xl',
+                admin.sidebar,
                 className
               )}
               style={{ width: SIDEBAR_WIDTH }}
@@ -92,7 +94,7 @@ export function MobileSidebar({ className, children, ...props }: SidebarBodyProp
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                  className={cn('rounded-lg p-1.5 transition-colors', admin.muted, admin.hoverRow)}
                   aria-label="Close menu"
                 >
                   <X size={20} />
@@ -133,7 +135,7 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
       style={enable3D ? { transformPerspective: 900 } : undefined}
       className={cn(
         'preserve-3d relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-        active ? 'text-[#0F0F0F]' : 'text-white/60 hover:text-white',
+        active ? 'text-[var(--admin-accent-fg)]' : cn(admin.muted, 'hover:text-[var(--admin-fg)]'),
         className
       )}
       {...props}
@@ -141,14 +143,14 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
       {active && (
         <motion.span
           layoutId="sidebar-active-pill"
-          className="absolute inset-0 rounded-lg bg-white shadow-sm"
+          className="absolute inset-0 rounded-lg bg-[var(--admin-accent)] shadow-sm"
           transition={springSnappy}
         />
       )}
       <span
         className={cn(
           'relative z-10 flex h-5 w-5 shrink-0 items-center justify-center',
-          active ? 'text-[#0F0F0F]' : 'text-white/70'
+          active ? 'text-[var(--admin-accent-fg)]' : admin.muted
         )}
       >
         {link.icon}

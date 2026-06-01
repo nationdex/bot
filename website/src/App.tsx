@@ -1,6 +1,14 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
-import { Globe, LayoutDashboard, Menu, Settings as SettingsIcon, Users } from 'lucide-react';
+import {
+  Globe,
+  Layers,
+  LayoutDashboard,
+  Menu,
+  Settings as SettingsIcon,
+  Users,
+} from 'lucide-react';
 import { useState } from 'react';
+import CardsPage from '@/components/Cards';
 import Dashboard from '@/components/Dashboard';
 import HeaderSearch from '@/components/HeaderSearch';
 import Nations from '@/components/Nations';
@@ -8,6 +16,8 @@ import Settings from '@/components/Settings';
 import UsersPage from '@/components/Users';
 import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
+import { useThemePrefs } from '@/hooks/useThemePrefs';
+import { admin } from '@/lib/admin-classes';
 import { bot } from '@/lib/bot';
 import {
   fadeUp,
@@ -20,11 +30,13 @@ import {
   spring3D,
   staggerContainer,
 } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
 const sectionTitles: Record<string, string> = {
   dashboard: 'Dashboard',
   users: 'Users',
   nations: bot.collectible.plural.charAt(0).toUpperCase() + bot.collectible.plural.slice(1),
+  cards: 'Cards',
   settings: 'Settings',
 };
 
@@ -32,6 +44,7 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sectionFilterQuery, setSectionFilterQuery] = useState('');
+  const { mode } = useThemePrefs();
   const reducedMotion = useReducedMotion();
   const enable3D = useIs3DEnabled();
   const pageMotion = reducedMotion
@@ -63,6 +76,7 @@ export default function App() {
     setSectionFilterQuery('');
     setMobileOpen(false);
   };
+
   const links = [
     {
       label: 'Dashboard',
@@ -83,6 +97,12 @@ export default function App() {
       id: 'nations',
     },
     {
+      label: 'Cards',
+      href: '#',
+      icon: <Layers className="h-5 w-5" />,
+      id: 'cards',
+    },
+    {
       label: 'Settings',
       href: '#',
       icon: <SettingsIcon className="h-5 w-5" />,
@@ -98,6 +118,8 @@ export default function App() {
         return <UsersPage searchQuery={sectionFilterQuery} />;
       case 'nations':
         return <Nations searchQuery={sectionFilterQuery} />;
+      case 'cards':
+        return <CardsPage searchQuery={sectionFilterQuery} />;
       case 'settings':
         return <Settings />;
       default:
@@ -111,7 +133,12 @@ export default function App() {
         <Logo />
 
         <nav className="flex flex-col gap-1">
-          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-white/30">
+          <p
+            className={cn(
+              'mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider',
+              admin.muted
+            )}
+          >
             Menu
           </p>
           <motion.div
@@ -140,15 +167,13 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
-      <div className="min-h-screen bg-[#0a0a0a]">
+      <div className={cn('min-h-screen transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
-          <SidebarBody className="flex h-full flex-col justify-between">
-            {sidebarContent}
-          </SidebarBody>
+          <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
         </Sidebar>
 
         <div
-          className="min-h-screen transition-[margin] duration-200 md:ml-[var(--sidebar-width)]"
+          className="min-h-screen transition-[margin] duration-200 md:ml-[calc(var(--sidebar-width)+1rem)]"
           style={{ ['--sidebar-width' as string]: `${SIDEBAR_WIDTH}px` }}
         >
           <div className="min-h-screen p-3 md:p-4 perspective-scene">
@@ -163,9 +188,18 @@ export default function App() {
               animate={{ opacity: 1, rotateX: 0, y: 0, scale: 1 }}
               transition={reducedMotion ? { duration: 0 } : { ...spring3D, delay: 0.05 }}
               style={enable3D ? { transformPerspective: perspectiveDefault } : undefined}
-              className="preserve-3d gpu-layer flex min-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border border-[#252525] bg-[#0F0F0F] md:min-h-[calc(100vh-2rem)]"
+              className={cn(
+                'preserve-3d gpu-layer flex min-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border md:min-h-[calc(100vh-2rem)]',
+                admin.panel
+              )}
             >
-              <header className="sticky top-0 z-40 border-b border-[#1A1A1A] bg-[#0F0F0F]/95 backdrop-blur-sm">
+              <header
+                className={cn(
+                  'sticky top-0 z-40 border-b backdrop-blur-sm',
+                  admin.panel,
+                  'bg-[color-mix(in_srgb,var(--admin-panel)_95%,transparent)]'
+                )}
+              >
                 <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6">
                   <div className="min-w-0">
                     <AnimatePresence mode="wait">
@@ -175,11 +209,11 @@ export default function App() {
                         style={enable3D ? { transformPerspective: 900 } : undefined}
                         className={enable3D ? 'preserve-3d' : undefined}
                       >
-                        <h1 className="truncate text-base font-semibold text-white sm:text-lg">
+                        <h1 className={cn('truncate text-base font-semibold sm:text-lg', admin.fg)}>
                           {sectionTitles[currentSection] ?? 'Admin'}
                         </h1>
-                        <p className="truncate text-xs text-white/40">
-                          {bot.name} v{bot.version}
+                        <p className={cn('truncate text-xs', admin.muted)}>
+                          {bot.name} v{bot.version} · {mode} mode
                         </p>
                       </motion.div>
                     </AnimatePresence>
@@ -193,7 +227,11 @@ export default function App() {
                       onClick={() => setMobileOpen(true)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.92 }}
-                      className="rounded-lg p-2 text-white/70 hover:bg-white/10 hover:text-white md:hidden"
+                      className={cn(
+                        'rounded-lg p-2 md:hidden transition-colors',
+                        admin.muted,
+                        admin.hoverRow
+                      )}
                       aria-label="Open menu"
                     >
                       <Menu className="h-5 w-5" />
@@ -240,7 +278,7 @@ const Logo = () => {
       className="preserve-3d flex items-center gap-3 rounded-lg px-2 py-1.5"
     >
       <motion.img
-        src="/assets/nationdexlogo.png"
+        src="/assets/logo.png"
         alt="Nationdex"
         width={36}
         height={36}
@@ -249,8 +287,8 @@ const Logo = () => {
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
       <div className="min-w-0">
-        <span className="block truncate text-base font-semibold text-white">{bot.name}</span>
-        <span className="block truncate text-[10px] text-white/40">Admin panel</span>
+        <span className={cn('block truncate text-base font-semibold', admin.fg)}>{bot.name}</span>
+        <span className={cn('block truncate text-[10px]', admin.muted)}>Admin panel</span>
       </div>
     </motion.div>
   );
@@ -266,22 +304,29 @@ const SidebarUserProfile = () => {
       initial="hidden"
       animate="show"
       transition={{ delay: reducedMotion ? 0 : 0.2 }}
-      className="shrink-0 border-t border-[#2a2a2a] p-4"
+      className="shrink-0 border-t border-[var(--admin-border)] p-4"
     >
       <motion.div
         whileHover={
           reducedMotion
             ? undefined
             : enable3D
-              ? { scale: 1.02, rotateX: 4, rotateY: -4, borderColor: 'rgba(255,255,255,0.12)' }
-              : { scale: 1.02, borderColor: 'rgba(255,255,255,0.12)' }
+              ? { scale: 1.02, rotateX: 4, rotateY: -4 }
+              : { scale: 1.02 }
         }
         whileTap={reducedMotion ? undefined : { scale: 0.98 }}
         style={enable3D ? { transformPerspective: 900 } : undefined}
-        className="preserve-3d flex items-center gap-3 rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-2.5"
+        className={cn(
+          'preserve-3d flex items-center gap-3 rounded-xl border px-3 py-2.5',
+          admin.elevated
+        )}
       >
         <motion.div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#333] bg-[#252525] text-xs font-semibold text-white"
+          className={cn(
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-semibold',
+            admin.elevated,
+            admin.fg
+          )}
           animate={
             reducedMotion
               ? undefined
@@ -298,8 +343,8 @@ const SidebarUserProfile = () => {
           ND
         </motion.div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-white">Admin</p>
-          <p className="truncate text-xs text-white/45">admin@arielaram.com</p>
+          <p className={cn('truncate text-sm font-medium', admin.fg)}>Admin</p>
+          <p className={cn('truncate text-xs', admin.muted)}>admin@arielaram.com</p>
         </div>
       </motion.div>
     </motion.div>

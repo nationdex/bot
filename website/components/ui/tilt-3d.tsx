@@ -101,7 +101,7 @@ export function Tilt3D({
       >
         <motion.div
           ref={ref}
-          className="preserve-3d gpu-layer relative h-full"
+          className="preserve-3d gpu-layer relative h-full isolate"
           onPointerMove={enableTilt ? handleMove : undefined}
           onPointerEnter={enableTilt ? handleEnter : undefined}
           onPointerLeave={enableTilt ? handleLeave : undefined}
@@ -116,14 +116,14 @@ export function Tilt3D({
               : undefined
           }
         >
-          {children}
           {enableTilt && sheen && (
             <motion.div
               aria-hidden
-              className="pointer-events-none absolute inset-0 z-10 rounded-[inherit]"
+              className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
               style={{ background: sheenBackground, opacity: sheenOpacity }}
             />
           )}
+          <div className="relative z-[1] h-full">{children}</div>
         </motion.div>
       </motion.div>
     </div>

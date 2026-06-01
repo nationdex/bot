@@ -1,19 +1,24 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AnimationPrefsProvider } from '@/hooks/useAnimationPrefs';
+import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
 import { applyAnimationPrefsToDocument, loadAnimationPrefs } from '@/lib/animation-prefs';
+import { applyThemeToDocument, loadThemePrefs } from '@/lib/theme-prefs';
 import App from './App';
 import './index.css';
 
 applyAnimationPrefsToDocument(loadAnimationPrefs());
+applyThemeToDocument(loadThemePrefs());
 
 const root = document.getElementById('root');
 if (root) {
   createRoot(root).render(
     <StrictMode>
-      <AnimationPrefsProvider>
-        <App />
-      </AnimationPrefsProvider>
+      <ThemePrefsProvider>
+        <AnimationPrefsProvider>
+          <App />
+        </AnimationPrefsProvider>
+      </ThemePrefsProvider>
     </StrictMode>
   );
 }

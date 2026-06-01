@@ -2,6 +2,18 @@
 
 @layer base {
   :root {
+    --admin-shell: #0a0a0a;
+    --admin-sidebar: #121212;
+    --admin-panel: #0f0f0f;
+    --admin-card: #1a1a1a;
+    --admin-elevated: #252525;
+    --admin-border: #252525;
+    --admin-fg: #fafafa;
+    --admin-muted: rgba(255, 255, 255, 0.5);
+    --admin-accent: #ffffff;
+    --admin-accent-fg: #0f0f0f;
+    --admin-shell-bg: var(--admin-shell);
+
     --background: 0 0% 6%;
     --foreground: 0 0% 98%;
     --card: 0 0% 10%;
@@ -29,18 +41,22 @@
   * {
     border-color: hsl(var(--border));
   }
+
   body {
-    background: #0f0f0f;
-    color: #fafafa;
+    background: var(--admin-shell-bg, var(--admin-shell));
+    color: var(--admin-fg);
     margin: 0;
     padding: 0;
     font-family:
       "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition:
+      background 0.25s ease,
+      color 0.25s ease;
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: color-mix(in srgb, var(--admin-fg) 15%, transparent) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -53,20 +69,20 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: color-mix(in srgb, var(--admin-fg) 15%, transparent);
     border-radius: 3px;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--admin-fg) 25%, transparent);
   }
 }
 
 .glass-effect {
-  background: rgba(26, 26, 26, 0.8);
+  background: color-mix(in srgb, var(--admin-card) 80%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--admin-fg) 8%, transparent);
 }
 
 @layer utilities {

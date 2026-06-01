@@ -181,3 +181,46 @@ export function collectibleLabel(count: number): string {
 export function formatRarity(rarity: RarityClass): string {
   return rarityLabels[rarity];
 }
+
+/** Card art types — regime defaults from nation info, specials from global `specials` var */
+export const cardCategories = [
+  { id: 'regimes', label: 'Regimes', description: 'Default nation card art by government type' },
+  { id: 'specials', label: 'Specials', description: 'Override cards from getSpecial[name;card]' },
+] as const;
+
+export type CardCategoryId = (typeof cardCategories)[number]['id'];
+
+export const placeholderRegimes = [
+  { id: 'democracy', name: 'Democracy', file: 'democracy.png', nationsCount: 68 },
+  { id: 'republic', name: 'Republic', file: 'republic.png', nationsCount: 42 },
+  { id: 'monarchy', name: 'Monarchy', file: 'monarchy.png', nationsCount: 31 },
+  { id: 'dictatorship', name: 'Dictatorship', file: 'dictatorship.png', nationsCount: 18 },
+  { id: 'theocracy', name: 'Theocracy', file: 'theocracy.png', nationsCount: 6 },
+] as const;
+
+export const placeholderSpecials = [
+  {
+    id: 'golden',
+    name: 'Golden',
+    card: 'golden.png',
+    description: 'Rare golden foil variant for events',
+  },
+  {
+    id: 'holographic',
+    name: 'Holographic',
+    card: 'holographic.png',
+    description: 'Shimmer holo overlay',
+  },
+  {
+    id: 'shadow',
+    name: 'Shadow',
+    card: 'shadow.png',
+    description: 'Dark silhouette special spawn',
+  },
+  {
+    id: 'founder',
+    name: 'Founder',
+    card: 'founder.png',
+    description: 'Limited founder edition card',
+  },
+] as const;

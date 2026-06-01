@@ -75,7 +75,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
         whileHover={reducedMotion ? undefined : { scale: 1.08, rotate: 8 }}
         whileTap={{ scale: 0.95 }}
         className={cn(
-          'rounded-lg p-2 text-white/50 transition-colors hover:bg-white/10 hover:text-white',
+          'rounded-lg p-2 text-[var(--admin-muted)] transition-colors hover:bg-[var(--admin-accent)]/10 hover:text-[var(--admin-fg)]',
           className
         )}
         aria-label="Search admin panel"
@@ -107,10 +107,10 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="fixed left-1/2 top-[max(1rem,12vh)] z-50 w-[min(calc(100vw-1.5rem),32rem)] -translate-x-1/2 overflow-hidden rounded-xl border border-[#333] bg-[#141414] shadow-2xl"
+              className="fixed left-1/2 top-[max(1rem,12vh)] z-50 w-[min(calc(100vw-1.5rem),32rem)] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-panel)] shadow-2xl"
             >
-              <div className="flex items-center gap-2 border-b border-[#252525] px-3 py-2.5">
-                <Search className="h-4 w-4 shrink-0 text-white/40" />
+              <div className="flex items-center gap-2 border-b border-[var(--admin-border)] px-3 py-2.5">
+                <Search className="h-4 w-4 shrink-0 text-[var(--admin-muted)]" />
                 <Input
                   ref={inputRef}
                   value={query}
@@ -120,12 +120,12 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                   }}
                   onKeyDown={handleInputKeyDown}
                   placeholder="Search users, nations, logs, pages…"
-                  className="h-9 flex-1 border-0 bg-transparent px-0 text-sm text-white shadow-none placeholder:text-white/35 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-9 flex-1 border-0 bg-transparent px-0 text-sm text-[var(--admin-fg)] shadow-none placeholder:text-[var(--admin-muted)] focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <button
                   type="button"
                   onClick={close}
-                  className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-white"
+                  className="rounded-md p-1 text-[var(--admin-muted)] hover:bg-[var(--admin-accent)]/10 hover:text-[var(--admin-fg)]"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
@@ -142,39 +142,43 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                         onClick={() => selectResult(result)}
                         className={cn(
                           'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
-                          index === activeIndex ? 'bg-white/10' : 'hover:bg-white/5'
+                          index === activeIndex
+                            ? 'bg-[var(--admin-accent)]/10'
+                            : 'hover:bg-[var(--admin-accent)]/5'
                         )}
                       >
-                        <span className="shrink-0 rounded-md bg-[#252525] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/50">
+                        <span className="shrink-0 rounded-md bg-[var(--admin-elevated)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--admin-muted)]">
                           {searchTypeLabels[result.type]}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm text-white">{result.title}</span>
+                          <span className="block truncate text-sm text-[var(--admin-fg)]">
+                            {result.title}
+                          </span>
                           {result.subtitle && (
-                            <span className="block truncate text-xs text-white/40">
+                            <span className="block truncate text-xs text-[var(--admin-muted)]">
                               {result.subtitle}
                             </span>
                           )}
                         </span>
                         <ArrowRight
                           className={cn(
-                            'h-3.5 w-3.5 shrink-0 text-white/30',
-                            index === activeIndex && 'text-white/60'
+                            'h-3.5 w-3.5 shrink-0 text-[var(--admin-muted)]',
+                            index === activeIndex && 'text-[var(--admin-muted)]'
                           )}
                         />
                       </button>
                     </li>
                   ))
                 ) : (
-                  <li className="px-3 py-8 text-center text-sm text-white/40">
+                  <li className="px-3 py-8 text-center text-sm text-[var(--admin-muted)]">
                     No results for &ldquo;{query}&rdquo;
                   </li>
                 )}
               </ul>
 
-              <div className="flex items-center justify-between border-t border-[#252525] px-3 py-2 text-[10px] text-white/30">
+              <div className="flex items-center justify-between border-t border-[var(--admin-border)] px-3 py-2 text-[10px] text-[var(--admin-muted)]">
                 <span>↑↓ navigate · Enter open</span>
-                <kbd className="rounded border border-[#333] bg-[#1a1a1a] px-1.5 py-0.5 font-mono">
+                <kbd className="rounded border border-[var(--admin-border)] bg-[var(--admin-card)] px-1.5 py-0.5 font-mono">
                   Ctrl K
                 </kbd>
               </div>

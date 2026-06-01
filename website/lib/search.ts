@@ -6,7 +6,7 @@ import {
   placeholderUsers,
 } from '@/lib/bot';
 
-export type AdminSection = 'dashboard' | 'users' | 'nations' | 'settings';
+export type AdminSection = 'dashboard' | 'users' | 'nations' | 'cards' | 'settings';
 
 export type SearchResultType = 'page' | 'user' | 'nation' | 'log';
 
@@ -43,10 +43,17 @@ const pages: SearchResult[] = [
     section: 'nations',
   },
   {
+    id: 'page-cards',
+    type: 'page',
+    title: 'Cards',
+    subtitle: 'Regimes, specials, and card assets',
+    section: 'cards',
+  },
+  {
     id: 'page-settings',
     type: 'page',
     title: 'Settings',
-    subtitle: 'Animations and display preferences',
+    subtitle: 'Theme, animations, and display preferences',
     section: 'settings',
   },
 ];

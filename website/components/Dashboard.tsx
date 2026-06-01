@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, FileText } from 'lucide-react';
+import { ArrowUpRight, FileText, Globe, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import PlaceholderNotice from '@/components/PlaceholderNotice';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -10,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tilt3D } from '@/components/ui/tilt-3d';
 import { useIs3DEnabled, useReducedMotion } from '@/hooks/useReducedMotion';
+import { admin } from '@/lib/admin-classes';
 import {
   bot,
   formatRarity,
@@ -21,6 +20,7 @@ import {
   placeholderStats,
 } from '@/lib/bot';
 import { listItem, perspectiveDefault, springSnappy, staggerContainer } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
 const stats = [
   {
@@ -29,7 +29,7 @@ const stats = [
     label: 'Registered Users',
     value: placeholderStats.userCount.toLocaleString(),
     change: 'ForgeDB user vars',
-    icon: ArrowUpRight,
+    icon: Users,
   },
   {
     id: 2,
@@ -37,7 +37,7 @@ const stats = [
     label: `${bot.collectible.plural.charAt(0).toUpperCase()}${bot.collectible.plural.slice(1)} Caught`,
     value: placeholderStats.totalCaught.toLocaleString(),
     change: `${bot.vars.globalCatalog}.total_caught`,
-    icon: ArrowUpRight,
+    icon: Globe,
   },
   {
     id: 3,
@@ -158,16 +158,14 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
           >
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 px-1 sm:px-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--admin-fg)] mb-2 px-1 sm:px-0">
               {filterHeadlines[selectedFilter]}
             </h1>
-            <p className="text-xs text-white/40 px-1 sm:px-0">
+            <p className="text-xs text-[var(--admin-muted)] px-1 sm:px-0">
               {bot.name} v{bot.version} · prefixes {bot.prefixes.join(', ')}
             </p>
           </motion.div>
         </AnimatePresence>
-
-        <PlaceholderNotice />
 
         <div className="flex flex-wrap gap-2.5 px-1 sm:px-0">
           {filterOptions.map((filter) => (
@@ -177,14 +175,14 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
               onClick={() => setSelectedFilter(filter)}
               className={`relative min-h-9 cursor-pointer select-none rounded-full px-4 py-2 text-sm font-medium transition-colors touch-manipulation ${
                 selectedFilter === filter
-                  ? 'text-[#0F0F0F]'
-                  : 'bg-[#1A1A1A] text-white/70 hover:bg-[#252525] hover:text-white active:bg-[#2a2a2a]'
+                  ? 'text-[var(--admin-accent-fg)]'
+                  : 'bg-[var(--admin-card)] text-[var(--admin-muted)] hover:bg-[var(--admin-elevated)] hover:text-[var(--admin-fg)] active:bg-[color-mix(in_srgb,var(--admin-fg)_8%,var(--admin-card))]'
               }`}
             >
               {selectedFilter === filter && (
                 <motion.span
                   layoutId="dashboard-filter-pill"
-                  className="pointer-events-none absolute inset-0 rounded-full bg-white"
+                  className="pointer-events-none absolute inset-0 rounded-full bg-[var(--admin-accent)]"
                   transition={springSnappy}
                 />
               )}
@@ -210,51 +208,40 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                   : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
             }`}
           >
-            {visibleStats.map((stat, i) => {
+            {visibleStats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <Tilt3D key={stat.id} enterDelay={i * 0.08} maxTilt={9} className="h-full">
-                  <Card className="bg-[#1A1A1A] border-[#252525] hover:border-[#333] transition-colors h-full">
+                <motion.div key={stat.id} variants={listItem} className="h-full">
+                  <Card className="bg-[var(--admin-card)] border-[var(--admin-border)] hover:border-[var(--admin-border)] transition-colors h-full">
                     <CardContent className="p-4 sm:p-5">
-                      <div className="flex items-start justify-between mb-3">
-                        <h3 className="text-xs sm:text-sm font-medium text-white/70">
+                      <div className="flex items-start justify-between mb-3 gap-3">
+                        <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">
                           {stat.label}
                         </h3>
-                        <motion.div
-                          whileHover={
-                            reducedMotion
-                              ? undefined
-                              : enable3D
-                                ? { rotate: 45, scale: 1.1, rotateX: 12 }
-                                : { rotate: 45, scale: 1.1 }
-                          }
-                          style={enable3D ? { transformPerspective: 500 } : undefined}
-                          className="preserve-3d w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0"
+                        <div
+                          className={cn(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border',
+                            admin.elevated
+                          )}
                         >
-                          <Icon className="w-3 h-3 text-white/50" />
-                        </motion.div>
+                          <Icon className="h-4 w-4 text-[var(--admin-accent)]" />
+                        </div>
                       </div>
                       <motion.p
                         key={stat.value}
-                        initial={
-                          reducedMotion
-                            ? false
-                            : enable3D
-                              ? { opacity: 0, scale: 0.9, rotateX: 20 }
-                              : { opacity: 0, scale: 0.9 }
-                        }
-                        animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                        style={enable3D ? { transformPerspective: 600 } : undefined}
-                        className="preserve-3d text-xl sm:text-2xl font-bold text-white mb-1"
+                        initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-xl sm:text-2xl font-bold text-[var(--admin-fg)] mb-1 tabular-nums"
                       >
                         {stat.value}
                       </motion.p>
                       {stat.change && (
-                        <p className="text-xs text-white/40 font-mono">{stat.change}</p>
+                        <p className="text-xs text-[var(--admin-muted)] font-mono">{stat.change}</p>
                       )}
                     </CardContent>
                   </Card>
-                </Tilt3D>
+                </motion.div>
               );
             })}
           </motion.div>
@@ -264,18 +251,18 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       {showCharts && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
           {showNationsChart && (
-            <Tilt3D enterDelay={0.35} maxTilt={6} lift={6} className="lg:col-span-2">
-              <Card className="bg-[#1A1A1A] border-[#252525] hover:border-[#333] transition-colors h-full">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-                    <h3 className="text-sm font-medium text-white/70 capitalize">
-                      Top caught {bot.collectible.plural}
-                    </h3>
+            <Card className="lg:col-span-2 bg-[var(--admin-card)] border-[var(--admin-border)] hover:border-[var(--admin-border)] transition-colors h-full">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+                  <h3 className="text-sm font-medium text-[var(--admin-muted)] capitalize">
+                    Top caught {bot.collectible.plural}
+                  </h3>
+                  <div className="relative z-20 w-full sm:w-auto">
                     <Select defaultValue="all">
-                      <SelectTrigger className="bg-[#252525] text-white text-xs border-[#333] w-full sm:w-auto h-8">
+                      <SelectTrigger className="min-h-9 w-full cursor-pointer touch-manipulation bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs border-[var(--admin-border)] sm:min-w-[9rem] sm:w-auto h-9">
                         <SelectValue placeholder="All classes" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#252525] border-[#333]">
+                      <SelectContent className="bg-[var(--admin-elevated)] border-[var(--admin-border)]">
                         <SelectItem value="all">All classes</SelectItem>
                         {bot.rarityClasses.map((rarity) => (
                           <SelectItem key={rarity} value={rarity} className="capitalize">
@@ -285,178 +272,186 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                    <table className="w-full min-w-[400px]">
-                      <thead>
-                        <tr>
-                          <th className="text-left text-xs text-white/50 pb-2 pr-4">ID</th>
-                          <th className="text-left text-xs text-white/50 pb-2 pr-4 capitalize">
-                            {bot.collectible.singular}
-                          </th>
-                          <th className="text-left text-xs text-white/50 pb-2 pr-4">Class</th>
-                          <th className="text-right text-xs text-white/50 pb-2">global_caught</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[...topNations]
-                          .sort((a, b) => b.globalCaught - a.globalCaught)
-                          .map((entry, i) => (
-                            <motion.tr
-                              key={entry.id}
-                              initial={{ opacity: 0, x: -12 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.45 + i * 0.06 }}
-                              className="border-t border-[#252525]"
-                            >
-                              <td className="py-2 pr-4 font-mono text-xs text-white/50">
-                                {entry.id}
-                              </td>
-                              <td className="text-xs sm:text-sm text-white/70 py-2 pr-4 font-medium">
-                                {entry.name}
-                              </td>
-                              <td className="py-2 pr-4 text-xs text-white/50 capitalize">
-                                {formatRarity(entry.class)}
-                              </td>
-                              <td className="py-2 text-right text-sm text-white">
-                                {entry.globalCaught.toLocaleString()}
-                              </td>
-                            </motion.tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            </Tilt3D>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                  <table className="w-full min-w-[400px]">
+                    <thead>
+                      <tr>
+                        <th className="text-left text-xs text-[var(--admin-muted)] pb-2 pr-4">
+                          ID
+                        </th>
+                        <th className="text-left text-xs text-[var(--admin-muted)] pb-2 pr-4 capitalize">
+                          {bot.collectible.singular}
+                        </th>
+                        <th className="text-left text-xs text-[var(--admin-muted)] pb-2 pr-4">
+                          Class
+                        </th>
+                        <th className="text-right text-xs text-[var(--admin-muted)] pb-2">
+                          global_caught
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...topNations]
+                        .sort((a, b) => b.globalCaught - a.globalCaught)
+                        .map((entry, i) => (
+                          <motion.tr
+                            key={entry.id}
+                            initial={{ opacity: 0, x: -12 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.45 + i * 0.06 }}
+                            className="border-t border-[var(--admin-border)]"
+                          >
+                            <td className="py-2 pr-4 font-mono text-xs text-[var(--admin-muted)]">
+                              {entry.id}
+                            </td>
+                            <td className="text-xs sm:text-sm text-[var(--admin-muted)] py-2 pr-4 font-medium">
+                              {entry.name}
+                            </td>
+                            <td className="py-2 pr-4 text-xs text-[var(--admin-muted)] capitalize">
+                              {formatRarity(entry.class)}
+                            </td>
+                            <td className="py-2 text-right text-sm text-[var(--admin-fg)]">
+                              {entry.globalCaught.toLocaleString()}
+                            </td>
+                          </motion.tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {showGrowthChart && (
-            <Tilt3D enterDelay={0.42} maxTilt={6} lift={6} className={growthChartSpan}>
-              <Card className="bg-[#1A1A1A] border-[#252525] hover:border-[#333] transition-colors h-full">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                    <h3 className="text-sm font-medium text-white/70">
-                      {growthChartTitles[selectedFilter]}
-                    </h3>
+            <Card
+              className={`${growthChartSpan} bg-[var(--admin-card)] border-[var(--admin-border)] hover:border-[var(--admin-border)] transition-colors h-full`}
+            >
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h3 className="text-sm font-medium text-[var(--admin-muted)]">
+                    {growthChartTitles[selectedFilter]}
+                  </h3>
 
-                    <div className="relative z-20 flex w-full rounded bg-[#252525] p-0.5 sm:w-auto">
-                      <button
-                        type="button"
-                        onClick={() => setTimeRange('Month')}
-                        className={`relative min-h-8 flex-1 cursor-pointer select-none rounded px-3 py-1.5 text-xs touch-manipulation sm:flex-none ${
-                          timeRange === 'Month'
-                            ? 'text-[#0F0F0F]'
-                            : 'text-white/70 hover:text-white'
-                        }`}
-                      >
-                        {timeRange === 'Month' && (
-                          <motion.span
-                            layoutId="time-range-pill"
-                            className="pointer-events-none absolute inset-0 rounded bg-white"
-                            transition={springSnappy}
-                          />
-                        )}
-                        <span className="pointer-events-none relative z-10">Month</span>
-                      </button>
+                  <div className="relative z-20 flex w-full rounded bg-[var(--admin-elevated)] p-0.5 sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => setTimeRange('Month')}
+                      className={`relative min-h-8 flex-1 cursor-pointer select-none rounded px-3 py-1.5 text-xs touch-manipulation sm:flex-none ${
+                        timeRange === 'Month'
+                          ? 'text-[var(--admin-accent-fg)]'
+                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                      }`}
+                    >
+                      {timeRange === 'Month' && (
+                        <motion.span
+                          layoutId="time-range-pill"
+                          className="pointer-events-none absolute inset-0 rounded bg-[var(--admin-accent)]"
+                          transition={springSnappy}
+                        />
+                      )}
+                      <span className="pointer-events-none relative z-10">Month</span>
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={() => setTimeRange('Annually')}
-                        className={`relative min-h-8 flex-1 cursor-pointer select-none rounded px-3 py-1.5 text-xs touch-manipulation sm:flex-none ${
-                          timeRange === 'Annually'
-                            ? 'text-[#0F0F0F]'
-                            : 'text-white/70 hover:text-white'
-                        }`}
-                      >
-                        {timeRange === 'Annually' && (
-                          <motion.span
-                            layoutId="time-range-pill"
-                            className="pointer-events-none absolute inset-0 rounded bg-white"
-                            transition={springSnappy}
-                          />
-                        )}
-                        <span className="pointer-events-none relative z-10">Annually</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setTimeRange('Annually')}
+                      className={`relative min-h-8 flex-1 cursor-pointer select-none rounded px-3 py-1.5 text-xs touch-manipulation sm:flex-none ${
+                        timeRange === 'Annually'
+                          ? 'text-[var(--admin-accent-fg)]'
+                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                      }`}
+                    >
+                      {timeRange === 'Annually' && (
+                        <motion.span
+                          layoutId="time-range-pill"
+                          className="pointer-events-none absolute inset-0 rounded bg-[var(--admin-accent)]"
+                          transition={springSnappy}
+                        />
+                      )}
+                      <span className="pointer-events-none relative z-10">Annually</span>
+                    </button>
                   </div>
+                </div>
 
-                  {/* CHART */}
-                  <div className="space-y-3 sm:space-y-4">
-                    {['Jun', 'Jul', 'Aug'].map((month, idx) => {
-                      const height = [15, 20, 25][idx];
-                      const isAug = month === 'Aug';
+                {/* CHART */}
+                <div className="space-y-3 sm:space-y-4">
+                  {['Jun', 'Jul', 'Aug'].map((month, idx) => {
+                    const height = [15, 20, 25][idx];
+                    const isAug = month === 'Aug';
 
-                      return (
-                        <div key={month} className="flex items-end gap-2 sm:gap-3">
-                          <div className="w-8 sm:w-10 text-xs text-white/50 shrink-0">{month}</div>
+                    return (
+                      <div key={month} className="flex items-end gap-2 sm:gap-3">
+                        <div className="w-8 sm:w-10 text-xs text-[var(--admin-muted)] shrink-0">
+                          {month}
+                        </div>
 
-                          <div className="flex-1 relative preserve-3d" style={{ perspective: 600 }}>
-                            <motion.div
-                              key={`${month}-${timeRange}-${selectedFilter}`}
-                              initial={
-                                reducedMotion
-                                  ? { height: 0, opacity: 0 }
-                                  : enable3D
-                                    ? { height: 0, opacity: 0, rotateX: 88 }
-                                    : { height: 0, opacity: 0 }
-                              }
-                              animate={{ height: `${height * 3}px`, opacity: 1, rotateX: 0 }}
-                              transition={{ delay: 0.55 + idx * 0.1, ...springSnappy }}
-                              style={{
-                                transformOrigin: 'bottom',
-                                ...(enable3D ? { transformPerspective: perspectiveDefault } : {}),
-                              }}
-                              className={`preserve-3d gpu-layer relative rounded-t ${
-                                isAug ? 'bg-purple-400' : 'bg-gray-700'
-                              }`}
-                            >
-                              {isAug && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: 6, scale: 0.9 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  transition={{ delay: 0.9 }}
-                                  className="
+                        <div className="flex-1 relative preserve-3d" style={{ perspective: 600 }}>
+                          <motion.div
+                            key={`${month}-${timeRange}-${selectedFilter}`}
+                            initial={
+                              reducedMotion
+                                ? { height: 0, opacity: 0 }
+                                : enable3D
+                                  ? { height: 0, opacity: 0, rotateX: 88 }
+                                  : { height: 0, opacity: 0 }
+                            }
+                            animate={{ height: `${height * 3}px`, opacity: 1, rotateX: 0 }}
+                            transition={{ delay: 0.55 + idx * 0.1, ...springSnappy }}
+                            style={{
+                              transformOrigin: 'bottom',
+                              ...(enable3D ? { transformPerspective: perspectiveDefault } : {}),
+                            }}
+                            className={`preserve-3d gpu-layer relative rounded-t ${
+                              isAug ? 'bg-purple-400' : 'bg-gray-700'
+                            }`}
+                          >
+                            {isAug && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ delay: 0.9 }}
+                                className="
                       absolute left-1/2 -translate-x-1/2
                       -top-9 sm:-top-10
-                      bg-yellow-500 text-[#0F0F0F]
+                      bg-yellow-500 text-[var(--admin-accent-fg)]
                       text-[10px] px-2 py-1 rounded
                       text-center leading-tight
                       whitespace-nowrap
                       shadow-md
                     "
-                                >
-                                  +22.9%
-                                  <br />
-                                  August, 2024
-                                  <br />
-                                  432,988
-                                </motion.div>
-                              )}
-                            </motion.div>
-                          </div>
-
-                          <div className="w-6 sm:w-8 text-[10px] text-white/30 text-right shrink-0">
-                            {height}%
-                          </div>
+                              >
+                                +22.9%
+                                <br />
+                                August, 2024
+                                <br />
+                                432,988
+                              </motion.div>
+                            )}
+                          </motion.div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            </Tilt3D>
+
+                        <div className="w-6 sm:w-8 text-[10px] text-[var(--admin-muted)] text-right shrink-0">
+                          {height}%
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       )}
 
       {showLogs && (
-        <Card className="bg-[#1A1A1A] border-[#252525] hover:border-[#333] transition-colors">
+        <Card className="bg-[var(--admin-card)] border-[var(--admin-border)] hover:border-[var(--admin-border)] transition-colors">
           <CardContent className="p-4 sm:p-5 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-white/70" />
-                <h3 className="text-sm font-medium text-white/70">
+                <FileText className="w-4 h-4 text-[var(--admin-muted)]" />
+                <h3 className="text-sm font-medium text-[var(--admin-muted)]">
                   {selectedFilter === 'Activity' || selectedFilter === 'All'
                     ? 'Activity Log'
                     : `${selectedFilter} Log`}
@@ -470,14 +465,14 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                     onClick={() => setLogFilter(level)}
                     className={`relative min-h-9 cursor-pointer select-none rounded-md px-3 py-2 text-xs font-medium capitalize touch-manipulation transition-colors ${
                       logFilter === level
-                        ? 'text-[#0F0F0F]'
-                        : 'bg-[#252525] text-white/60 hover:bg-[#2a2a2a] hover:text-white active:bg-[#333]'
+                        ? 'text-[var(--admin-accent-fg)]'
+                        : 'bg-[var(--admin-elevated)] text-[var(--admin-muted)] hover:opacity-90 hover:text-[var(--admin-fg)] active:bg-[color-mix(in_srgb,var(--admin-fg)_10%,var(--admin-elevated))]'
                     }`}
                   >
                     {logFilter === level && (
                       <motion.span
                         layoutId="log-level-pill"
-                        className="pointer-events-none absolute inset-0 rounded-md bg-white"
+                        className="pointer-events-none absolute inset-0 rounded-md bg-[var(--admin-accent)]"
                         transition={springSnappy}
                       />
                     )}
@@ -493,25 +488,19 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
               animate="show"
               className="space-y-1 max-h-[420px] overflow-y-auto"
             >
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence initial={false}>
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log) => (
                     <motion.div
                       key={log.id}
-                      layout
                       variants={listItem}
                       initial="hidden"
                       animate="show"
                       exit="exit"
-                      whileHover={
-                        reducedMotion
-                          ? { x: 4, backgroundColor: 'rgba(255,255,255,0.05)' }
-                          : enable3D
-                            ? { x: 4, rotateY: 2, backgroundColor: 'rgba(255,255,255,0.05)' }
-                            : { x: 4, backgroundColor: 'rgba(255,255,255,0.05)' }
-                      }
-                      style={enable3D ? { transformPerspective: 800 } : undefined}
-                      className="preserve-3d flex items-start gap-3 py-2.5 px-3 rounded-lg transition-colors"
+                      className={cn(
+                        'flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors',
+                        admin.hoverRow
+                      )}
                     >
                       <span
                         className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded shrink-0 ${levelColors[log.level] ?? ''}`}
@@ -519,8 +508,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         {log.level}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-white truncate">{log.message}</p>
-                        <p className="text-[10px] text-white/30 mt-0.5">
+                        <p className="text-sm text-[var(--admin-fg)] truncate">{log.message}</p>
+                        <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">
                           {new Date(log.timestamp).toLocaleString()}
                         </p>
                       </div>
@@ -531,7 +520,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                     key="empty"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-sm text-white/40 py-6 text-center"
+                    className="text-sm text-[var(--admin-muted)] py-6 text-center"
                   >
                     No logs for this filter.
                   </motion.p>
