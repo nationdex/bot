@@ -6,6 +6,7 @@
     "outDir": "./dist",
     "paths": {},
     "strict": true,
+    "noUnusedLocals": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

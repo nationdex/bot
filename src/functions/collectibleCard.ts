@@ -1,6 +1,6 @@
 import { ForgeFunction } from '@tryforge/forgescript';
 // Reserved for collectible naming configurations.
-import { ctbl } from '../config/collectible';
+import { ctbl as _ctbl } from '../config/collectible';
 import { config } from '../config/config';
 
 export default new ForgeFunction({

@@ -7,7 +7,7 @@ import {
 import { ctbl } from '../../config/collectible';
 import { config } from '../../config/config';
 // Reserved for collectible naming configurations.
-import collectibles from './collectibles';
+import _collectibles from './collectibles';
 
 export default new ApplicationCommand({
   data: {
