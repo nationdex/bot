@@ -1,91 +1,158 @@
-'use client';
-
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Globe, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { admin } from '@/lib/admin-classes';
+import {
+  bot,
+  collectibleLabel,
+  formatRarity,
+  placeholderCatalog,
+  type RarityClass,
+  rarityBadgeClass,
+} from '@/lib/bot';
+import { fadeUp, listItem, staggerContainer } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
-const mockNations = [
-  { id: '1', name: 'United States', catches: 1245, rarity: 'Common' },
-  { id: '2', name: 'Japan', catches: 892, rarity: 'Common' },
-  { id: '3', name: 'Germany', catches: 756, rarity: 'Common' },
-  { id: '4', name: 'Monaco', catches: 34, rarity: 'Rare' },
-  { id: '5', name: 'Vatican City', catches: 5, rarity: 'Legendary' },
-  { id: '6', name: 'Liechtenstein', catches: 18, rarity: 'Epic' },
-];
+export default function Nations({ searchQuery = '' }: { searchQuery?: string }) {
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [classFilter, setClassFilter] = useState<string>('all');
 
-export default function Nations() {
-  const [searchQuery, setSearchQuery] = useState('');
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
 
-  const filteredNations = mockNations.filter((nation) =>
-    nation.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCatalog = placeholderCatalog.filter((entry) => {
+    const matchesSearch =
+      entry.name.toLowerCase().includes(localQuery.toLowerCase()) ||
+      entry.id.toLowerCase().includes(localQuery.toLowerCase());
+    const matchesClass = classFilter === 'all' || entry.class === classFilter;
+    return matchesSearch && matchesClass;
+  });
 
   return (
     <div className="w-full space-y-4 sm:space-y-6">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Nations</h1>
-        <p className="text-sm text-white/50">Browse and manage all available nations in the dex.</p>
+      <div className="mb-4 sm:mb-6 space-y-3">
+        <div>
+          <h1 className={cn('mb-2 text-xl font-bold sm:text-2xl md:text-3xl capitalize', admin.fg)}>
+            {bot.collectible.plural}
+          </h1>
+          <p className={cn('text-sm', admin.muted)}>
+            Global catalog from <code className="opacity-80">{bot.vars.globalCatalog}.nations</code>{' '}
+            — rarity classes: {bot.rarityClasses.join(', ')}.
+          </p>
+        </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <Card className="bg-[#1A1A1A] border-[#252525]">
-          <CardContent className="p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-white/70" />
-                <h3 className="text-sm font-medium text-white/70">All Nations</h3>
-              </div>
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-[#252525] border-[#333] text-white pl-9"
-                  placeholder="Search nations..."
-                />
-              </div>
+      <Card className={cn(admin.card)}>
+        <CardContent className="space-y-4 p-5">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Globe className={cn('h-4 w-4 shrink-0', admin.muted)} />
+              <h3 className={cn('text-sm font-medium capitalize', admin.muted)}>
+                Catalog ({placeholderCatalog.length} {collectibleLabel(placeholderCatalog.length)})
+              </h3>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredNations.map((nation, i) => (
-                <motion.div
-                  key={nation.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.05 }}
+            <motion.div
+              className="relative z-20 flex flex-col gap-2 md:flex-row md:items-center"
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+            >
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  className={cn(
+                    'pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2',
+                    admin.muted
+                  )}
+                />
+                <Input
+                  value={localQuery}
+                  onChange={(e) => setLocalQuery(e.target.value)}
+                  className={cn('h-9 w-full pl-9 pr-3', admin.input)}
+                  placeholder="Search by name or ID..."
+                />
+              </div>
+              <Select value={classFilter} onValueChange={setClassFilter}>
+                <SelectTrigger
+                  className={cn(
+                    'min-h-9 h-9 w-full shrink-0 cursor-pointer touch-manipulation text-xs md:w-36',
+                    admin.input
+                  )}
                 >
-                  <div className="bg-[#252525] rounded-lg p-4 border border-[#333] hover:border-[#444] transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-white">{nation.name}</span>
+                  <SelectValue placeholder="All classes" />
+                </SelectTrigger>
+                <SelectContent className={cn(admin.elevated, admin.fg)}>
+                  <SelectItem value="all">All classes</SelectItem>
+                  {bot.rarityClasses.map((rarity) => (
+                    <SelectItem key={rarity} value={rarity} className="capitalize">
+                      {formatRarity(rarity)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </motion.div>
+          </div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            <AnimatePresence initial={false}>
+              {filteredCatalog.map((entry) => (
+                <motion.div
+                  key={entry.id}
+                  variants={listItem}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  className="h-full"
+                >
+                  <div
+                    className={cn(
+                      'h-full rounded-lg border p-4 transition-colors',
+                      admin.elevated,
+                      admin.hoverRow
+                    )}
+                  >
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className={cn('block truncate text-sm font-medium', admin.fg)}>
+                          {entry.name}
+                        </span>
+                        <span className={cn('font-mono text-[10px]', admin.muted)}>{entry.id}</span>
+                      </div>
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                          nation.rarity === 'Common'
-                            ? 'bg-gray-500/20 text-gray-400'
-                            : nation.rarity === 'Rare'
-                              ? 'bg-blue-500/20 text-blue-400'
-                              : nation.rarity === 'Epic'
-                                ? 'bg-purple-500/20 text-purple-400'
-                                : 'bg-yellow-500/20 text-yellow-400'
-                        }`}
+                        className={cn(
+                          'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium',
+                          rarityBadgeClass[entry.class as RarityClass]
+                        )}
                       >
-                        {nation.rarity}
+                        {formatRarity(entry.class)}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-white/50">
-                        {nation.catches.toLocaleString()} catches
-                      </span>
+                    <div className={cn('flex items-center justify-between text-xs', admin.muted)}>
+                      <span>{entry.globalCaught.toLocaleString()} global caught</span>
+                      <span>weight {entry.weight}</span>
+                    </div>
+                    <div className="mt-3 flex justify-end">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-white/50 hover:text-white h-7 text-xs"
+                        className={cn('h-7 text-xs', admin.muted, 'hover:text-[var(--admin-fg)]')}
+                        disabled
                       >
                         Edit
                       </Button>
@@ -93,10 +160,23 @@ export default function Nations() {
                   </div>
                 </motion.div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          <AnimatePresence>
+            {filteredCatalog.length === 0 && (
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className={cn('py-8 text-center text-sm', admin.muted)}
+              >
+                No catalog entries match.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,12 +1,22 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
-import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import { 
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+  InteractionContextType
+} from 'discord.js';
+import { ctbl } from '../../config/collectible';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'toggle',
-    description: 'Toggle on/off nations spawning in the server.',
-    integration_types: [ApplicationIntegrationType.GuildInstall],
+    description: `Toggle on/off ${ctbl.plural} spawning in the server.`,
+    integration_types: [
+      ApplicationIntegrationType.GuildInstall
+    ],
+    contexts: [
+      InteractionContextType.Guild,
+    ],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -18,11 +28,11 @@ export default new ApplicationCommand({
   $!jsonSet[config;status;$get[toggle]]
   $setGuildVar[spawnConfig;$env[config]]
   
-
+ 
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[$toTitleCase[$get[toggle]] nations spawning in the server.]
+      $addTextDisplay[$toTitleCase[$get[toggle]] ${ctbl.plural} spawning in the server.]
     ;#00FF00]
   ]
   `,

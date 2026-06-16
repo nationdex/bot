@@ -5,7 +5,8 @@
     "accept_gifts": "true"
   },
   "blockedUsers": [],
-  "nationsData": {
+<<<<<<< HEAD
+  "collectiblesData": {
     "classes": [
       "common",
       "uncommon",
@@ -13,6 +14,10 @@
       "mythic",
       "legendary"
     ],
+=======
+  "nationsData": {
+    "classes": ["common", "uncommon", "rare", "mythic", "legendary"],
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     "total": 0,
     "common": 0,
     "uncommon": 0,
@@ -20,9 +25,9 @@
     "mythic": 0,
     "legendary": 0,
     "total_caught": 0,
-    "nations": {}
+    "collectibles": {}
   },
-  "nations": {
+  "userCollectibles": {
     "total": 0,
     "total_value": 0,
     "common": 0,
@@ -31,17 +36,17 @@
     "mythic": 0,
     "legendary": 0,
     "unique": [],
-    "nations": []
+    "collectibleIds": []
   },
   "auctionHouse": {},
   "auction": {
     "total": 0,
     "sold": 0,
     "earnings": 0,
-    "nations": []
+    "onSale": []
   },
-  "nation": {
-    "nation": "",
+  "collectible": {
+    "id": "",
     "author": "",
     "attack": "",
     "health": "",
@@ -65,7 +70,7 @@
     "weight": 0,
     "channel": "",
     "message": "",
-    "nation": "",
+    "id": "",
     "attack": "",
     "health": "",
     "attack_bonus": "",

@@ -1,15 +1,16 @@
+import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
-} from 'discord.js';
+  } from 'discord.js';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: 'nations',
-    description: 'View the rarity list of nations.',
+    name: 'collectibles',
+    description: `View the rarity list of ${ctbl.plural}.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,9 +19,9 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: "The rarity class whose nations' rarity to view.",
+        description: `The rarity class whose ${ctbl.plural}' rarity to view.`,
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
       {
         type: ApplicationCommandOptionType.String,
@@ -42,7 +43,7 @@ export default new ApplicationCommand({
   },
   code: `
   $interactionReply[
-    $rarityList[nations;$option[class];$option[sort_type];1]
+    $rarityList[collectibles;$option[class];$option[sort_type];1]
   ]
   `,
 });

@@ -1,19 +1,23 @@
-import { config } from '../config/config';
 import { ForgeFunction } from '@tryforge/forgescript';
+<<<<<<< HEAD
+import { ctbl } from '../config/collectible';
+=======
+import { config } from '../config/config';
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 
 export default new ForgeFunction({
   name: 'rarityList',
-  // Displays the rarity list of nations/specials as a components v2 message
+  // Displays the rarity list of collectibles/specials as a components v2 message
   params: [
     {
       name: 'type',
-      // Type of list, nations/specials
+      // Type of list, collectibles/specials
       type: 'String',
       required: true,
     },
     {
       name: 'class',
-      // Rarity class of nations.
+      // Rarity class of collectibles.
       type: 'String',
       required: false,
     },
@@ -32,7 +36,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[type;$env[type]]
-  $jsonLoad[classes;$getNationsData[classes]]
+  $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $let[sortType;$if[$env[sortType]==asc;asc;desc]]
   $let[page;$default[$replace[$env[page];null;];1]]
@@ -40,18 +44,18 @@ export default new ForgeFunction({
   $let[stInd;$multi[$get[maxperpage];$sub[$get[page];1]]]
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
   
-  $if[$get[type]==nations;
-    $jsonLoad[nations;$getNationsData[nations]]
-    $jsonLoad[ids;$getNationsData[id]]
+  $if[$get[type]==collectibles;
+    $jsonLoad[nations;$collectiblesData[collectibles]]
+    $jsonLoad[ids;$collectiblesData[id]]
     $if[$get[class]!=;
-      $arrayForEach[ids;nid;$if[$getNationInfo[$env[nid];class]!=$get[class];$!jsonDelete[nations;$env[nid]]]]
+      $arrayForEach[ids;nid;$if[$collectibleInfo[$env[nid];class]!=$get[class];$!jsonDelete[nations;$env[nid]]]]
     ]
     
     $jsonLoad[sortedData;$sortData[$env[nations];rarity;$get[sortType]]]
     $jsonLoad[ids;$jsonKeys[sortedData]]
-    $let[totalRarity;$math[$getNationsData[rarity;+]]]
+    $let[totalRarity;$math[$collectiblesData[rarity;+]]]
     
-    $arrayMap[ids;id;$return[$appEmoji[$getNationInfo[$env[id];emoji_id]] **$getNationInfo[$env[id];name]**: \`$cropText[$math[($getNationInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
+    $arrayMap[ids;id;$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]] **$collectibleInfo[$env[id];name]**: \`$cropText[$math[($collectibleInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
   ]
   $let[pages;$ceil[$divide[$arrayLength[ids];$get[maxperpage]]]]
   $arraySlice[mapped;display;$get[stInd];$get[endInd]]
@@ -59,8 +63,8 @@ export default new ForgeFunction({
   $return[
     $addContainer[
       $addSection[
-        $addTextDisplay[## Rarity List of nations
--# Total $arrayLength[ids] nations]
+        $addTextDisplay[## Rarity List of ${ctbl.plural}
+-# Total $arrayLength[ids] ${ctbl.plural}]
         $addThumbnail[$userAvatar[$botID]]
       ]
       $addTextDisplay[$arrayJoin[display;

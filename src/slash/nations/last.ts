@@ -1,3 +1,4 @@
+import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
@@ -9,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'last',
-    description: 'View info of the last nation you caught.',
+    description: `View info of the last ${ctbl.singular} you caught.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,50 +19,55 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whose last nation to check.',
+        description: `The user whose last ${ctbl.singular} to check.`,
         required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'View info of the last nation you caught of a specific rarity class.',
+        description: `View info of the last ${ctbl.singular} you caught of a specific rarity class.`,
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
     ],
   },
   code: `
   $let[user;$findUser[$option[user];true]]
-  $jsonLoad[classes;$getNationsData[classes]]
+  $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect nations, sadly.;true]
+    $err[Bots cannot collect ${ctbl.plural}, sadly.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> have their inventory private;true]
+      $err[<@$get[user]> have their inventory private.;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   
-  $jsonLoad[nations;$getUserData[$get[user];nations]]
+  $jsonLoad[ctbls;$getUserData[$get[user];collectibleIds]]
   $if[$get[class]!=;
-    $arrayMap[nations;nation;$if[$getNationInfo[$getNation[$env[nation];nation];class]==$get[class];$return[$env[nation]]];nations]
+    $arrayMap[ctbls;colId;$if[$collectibleInfo[$collectible[$env[colId];id];class]==$get[class];$return[$env[colId]]];ctbls]
   ]
   
+<<<<<<< HEAD
+  $onlyIf[$arrayLength[ctbls]>0;
+    $err[No ${ctbl.plural} found;true]
+=======
   $onlyIf[$arrayLength[nations]>0;
-    $err[No nations found;true]
+    $err[No nations found.;true]
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
   ]
   
-  $let[id;$env[nations;$sub[$arrayLength[nations];1]]]
+  $let[id;$env[ctbls;$sub[$arrayLength[ctbls];1]]]
   
   $interactionReply[
-**Info of the last nation you caught**:
-$nationCard[$get[id]]
+**Info of the last ${ctbl.singular} you caught**:
+$collectibleCard[$get[id]]
   ]
   `,
 });

@@ -9,7 +9,7 @@ const db = new ForgeDB({
 
 const canvas = new ForgeCanvas();
 
-const client = new ForgeClient({
+const dex = new ForgeClient({
   intents: [
     'Guilds',
     'GuildMessages',
@@ -24,8 +24,8 @@ const client = new ForgeClient({
 });
 
 db.variables(require('../src/config/variables.json'));
-client.functions.load('dist/functions');
-client.commands.load('dist/commands');
-client.applicationCommands.load('dist/slash');
+dex.functions.load('dist/functions');
+dex.commands.load('dist/commands');
+dex.applicationCommands.load('dist/slash');
 
-client.login(config.token);
+dex.login(config.token);

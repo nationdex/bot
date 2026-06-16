@@ -27,7 +27,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'Compare the nations of a specific rarity class.',
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
     ],
   },
@@ -38,16 +38,16 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect nations, sadly :(;true]
+    $err[Bots cannot collect nations, sadly.;true]
   ]
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot compare your own nations, run the </nations progress:$applicationCommandID[nations]> command to view your progress;true]
+    $err[You cannot compare your own nations, run the </nations progress:$applicationCommandID[nations]> command to view your progress.;true]
   ]
   $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-    $err[<@$get[user]> have their inventory private;true]
+    $err[<@$get[user]> have their inventory private.;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   
   $jsonLoad[nations;$getUserData[$authorID;unique]]

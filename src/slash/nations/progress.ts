@@ -1,3 +1,4 @@
+import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
@@ -9,7 +10,11 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'progress',
-    description: 'View your nations progress',
+<<<<<<< HEAD
+    description: `View your ${ctbl.plural} progress`,
+=======
+    description: 'View your nations progress.',
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
@@ -18,7 +23,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whose nations progress to view.',
+        description: `The user whose ${ctbl.plural} progress to view.`,
         required: false,
       },
       {
@@ -26,7 +31,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'The rarity class to view.',
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
     ],
   },
@@ -36,19 +41,19 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect nations, sadly.;true]
+    $err[Bots cannot collect ${ctbl.plural}, sadly.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> has their inventory private;true]
+      $err[<@$get[user]> has their inventory private.;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   
   $interactionReply[
-    $addTextDisplay[Fetching nations data of **$userDisplayName[$get[user]]**...]
+    $addTextDisplay[Fetching ${ctbl.plural} data of **$userDisplayName[$get[user]]**...]
   ]
   
   $interactionUpdate[

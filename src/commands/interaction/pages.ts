@@ -1,4 +1,5 @@
 import { BaseCommand } from '@tryforge/forgescript';
+import { ctbl } from '../../config/collectible';
 
 export default new BaseCommand({
   hide: true,
@@ -27,19 +28,21 @@ export default new BaseCommand({
         $blocklist[$get[user];$get[page]]
       ]
     ]
-    $elseIf[$get[type]==nationInfo;
+    $elseIf[$get[type]==collectibleInfo;
       $let[id;$arrayAt[cid;3]]
-      $jsonLoad[nations;$getUserData[$authorID;nations]]
-      $let[ind;$arrayIndexOf[nations;$get[id]]]
-      $let[prev;$env[nations;$sub[$get[ind];1]]]
-      $let[next;$env[nations;$sum[$get[ind];1]]]
-      
-      $interactionUpdate[
-        $nationCard[$get[id]]
+      $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIds]]
+      $let[ind;$arrayIndexOf[userCollectibles;$get[id]]]
+      $let[prev;$env[userCollectibles;$sub[$get[ind];1]]]
+      $let[next;$env[userCollectibles;$sum[$get[ind];1]]]
+
+      $interactionUpdate[Loading ${ctbl.singular} info...]
+
+      $!editMessage[$channelID;$messageID;
+        $collectibleCard[$get[id]]
         $addActionRow
-        $addButton[pages-nationInfo-$authorID-$get[prev]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
-        $addButton[pages-nationInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Primary;;true]
-        $addButton[pages-nationInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[userCollectibles];Primary;;true]
+        $addButton[pages-collectibleInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
       ]
     ]
     

@@ -6,7 +6,7 @@
     "mythic": 0,
     "legendary": 0,
     "total_caught": 0,
-    "nations": {
+    "collectibles": {
         "CC0001": {
             "name": "Republic of Malta",
             "short_name": "Malta",

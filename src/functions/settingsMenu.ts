@@ -1,3 +1,4 @@
+import { ctbl } from '../config/collectible';
 import { ForgeFunction } from '@tryforge/forgescript';
 import { config } from '../config/config';
 
@@ -41,7 +42,7 @@ Choose whether people can view your profile or not]
       $addSeparator
       $addSection[
         $addTextDisplay[**Accept Gifts?**:
-Choose whether you accept nations as a gift]
+Choose whether you accept ${ctbl.plural} as a gift]
         $addButton[settings-accept_gifts-$authorID-$if[$get[gifts];false;true];$if[$get[gifts];Yes;No];$if[$get[gifts];Primary;Secondary]]
       ]
       $addSeparator

@@ -1,16 +1,25 @@
+<<<<<<< HEAD
 import { config } from '../../config/config';
+import { ctbl } from '../../config/collectible';
+=======
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'gift',
-    description: 'Gift a nation to another user',
+<<<<<<< HEAD
+    description: `Gift a ${ctbl.singular} to another user`,
+=======
+    description: 'Gift a nation to another user.',
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,48 +28,53 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whom you want to gift',
+        description: 'The user whom you want to gift.',
         required: true,
       },
       {
         type: ApplicationCommandOptionType.String,
+<<<<<<< HEAD
+        name: `${ctbl.singular}`,
+        description: `The ${ctbl.singular} you want to gift`,
+=======
         name: 'nation',
-        description: 'The nation you want to gift',
+        description: 'The nation you want to gift.',
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
         required: true,
-        autocomplete: true
-      }
+        autocomplete: true,
+      },
     ],
   },
   code: `
   $let[user;$option[user]]
-  $let[id;$option[nation]]
-  $let[nation;$getNation[$get[id];nation]]
-  $jsonLoad[nations;$getUserData[$authorID;nations]]
+  $let[id;$option[${ctbl.singular}]]
+  $let[colId;$collectible[$get[id];id]]
+  $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot send gifts to yourself;true]
+    $err[You cannot send gifts to yourself.;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot accept gifts;true]
+    $err[Bots cannot accept gifts.;true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** do not accept gifts;true]
+    $err[**$userDisplayName[$get[user]]** does not accept gifts.;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have blocked **$userDisplayName[$get[user]]**;true]
+    $err[You have blocked **$userDisplayName[$get[user]]**.;true]
   ]
   $onlyIf[$arrayIncludes[userBlocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[Something went wrong.;true]
   ]
   $onlyIf[$arrayIncludes[nations;$get[id]];
-    $err[Invalid nation!;true]
+    $err[Invalid ${ctbl.singular}!;true]
   ]
   
   $let[msg;$interactionReply[
     $addContainer[
-      $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following nation:
-\`#$get[id]\` $getEvent[$getNation[$get[id];event];emoji]$appEmoji[$getNationInfo[$get[nation];emoji_id]] **$getNationInfo[$get[nation];name]**
--# ATK: $appEmoji[$getNation[$get[id];attack_type]] **$getNation[$get[id];attack]** / HP: $appEmoji[$getNation[$get[id];health_type]] **$getNation[$get[id];health]**]
+      $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following ${ctbl.singular}:
+\`#$get[id]\` $getSpecial[$collectible[$get[id];event];emoji]$appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
+-# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
     ;${config.color}]
     $addActionRow
     $addButton[gift-confirm-$authorID-$get[user]-$get[id];Confirm;Success;$appEmoji[check_mark]]

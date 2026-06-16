@@ -15,14 +15,13 @@ export default new BaseCommand({
   $if[$get[weight]>=50;
     $!jsonSet[config;weight;0]
     $setGuildVar[spawnConfig;$env[config]]
-    $spawnNation[$get[ch]]
+    $spawnCollectible[$get[ch]]
   ]
   
-  $if[$sub[$getTimestamp;$spawnConfig[timestamp]]>$parseString[1h30m];
-    $spawnNation[$get[ch]]
+  $if[$sub[$getTimestamp;$spawnConfig[timestamp]]>=$parseString[1h30m];
+    $spawnCollectible[$get[ch]]
   ]
   
-  $let[message;$spawnConfig[message]]
   $let[wait;$randomNumber[$parseString[20m];$parseString[40m]]]
   
   $setTimeout[
@@ -30,7 +29,7 @@ export default new BaseCommand({
     $if[$spawnConfig[message]==$get[message];
       $!jsonSet[config;weight;0]
       $setGuildVar[spawnConfig;$env[config]]
-      $spawnNation[$get[ch]]
+      $spawnCollectible[$get[ch]]
     ]
   ;$get[wait]]
   `,

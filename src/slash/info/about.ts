@@ -1,6 +1,7 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
 import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
 import { config } from '../../config/config';
+import { ctbl } from '../../config/collectible';
 
 export default new ApplicationCommand({
   data: {
@@ -23,7 +24,7 @@ ${config.description}]
       ]
       $addSeparator
       $addTextDisplay[**Stats**
-**$getNationsData[total]** nations to collect • **$guildCount** servers • **$userCount** users • **$getNationsData[total_caught]** nations caught
+**$collectiblesData[total]** ${ctbl.plural} to collect • **$guildCount** servers • **$userCount** users • **$collectiblesData[total_caught]** ${ctbl.plural} caught
 Version **${config.version}**
 Uptime: **$parseMS[$uptime;2]**]
       $addTextDisplay[**Credits**

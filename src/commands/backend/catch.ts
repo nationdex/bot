@@ -4,11 +4,11 @@ export default new BaseCommand({
   unprefixed: true,
   type: 'messageCreate',
   code: `
-  $let[nation;$spawnConfig[nation]]
-  $onlyIf[$get[nation]!=]
+  $let[ctbl;$spawnConfig[collectible]]
+  $onlyIf[$get[ctbl]!=]
   
-  $jsonLoad[names;$getNationInfo[$get[nation];catch_names]]
-  $jsonLoad[trNames;$getNationInfo[translations]]
+  $jsonLoad[names;$collectibleInfo[$get[ctbl];catch_names]]
+  $jsonLoad[trNames;$collectibleInfo[translations]]
   
   $let[msg;$toLowerCase[$message]]
   
@@ -21,21 +21,21 @@ export default new BaseCommand({
   $!jsonSet[config;caught_in;"$get[caughtin]"]
   $setGuildVar[spawnConfig;$env[config]]
   
-  $addUserNation[$authorID;$get[nation];{
-    "nation": "$get[nation]",
+  $addUserCollectible[$authorID;$get[ctbl];{
+    "id": "$get[ctbl]",
     "author": "$authorID",
     "attack": "$spawnConfig[attack]",
     "health": "$spawnConfig[health]",
-    "attack_type": "$if[$spawnConfig[attack]>=$getNationInfo[$get[nation];attack];buffed;nerfed]",
-    "health_type": "$if[$spawnConfig[health]>=$getNationInfo[$get[nation];health];buffed;nerfed]",
+    "attack_type": "$if[$spawnConfig[attack]>=$collectibleInfo[$get[ctbl];attack];buffed;nerfed]",
+    "health_type": "$if[$spawnConfig[health]>=$collectibleInfo[$get[ctbl];health];buffed;nerfed]",
     "special": "$spawnConfig[special]",
-    "card": "$default[$getSpecial[$spawnConfig[special];card];$getNationInfo[$get[nation];regime]].png",
+    "card": "$default[$getSpecial[$spawnConfig[special];card];$collectibleInfo[$get[ctbl];regime]].png",
     "timestamp": "$getMessage[$channelID;$messageID;timestamp]",
     "caught_in": "$get[caughtin]"
   }]
   
   $reply
-Congratulations <@$authorID>! You caught a $getNationInfo[$get[nation];class] $appEmoji[$getNationInfo[$get[nation];emoji_id]] **$getNationInfo[$get[nation];name]**!
+Congratulations <@$authorID>! You caught a $collectibleInfo[$get[ctbl];class] $appEmoji[$collectibleInfo[$get[ctbl];emoji_id]] **$collectibleInfo[$get[ctbl];name]**!
 \`$spawnConfig[attack_bonus]%\` / \`$spawnConfig[health_bonus]%\`
 -# Caught in $divide[$get[caughtin];1000]s
   `,

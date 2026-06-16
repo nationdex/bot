@@ -1,72 +1,89 @@
+<<<<<<< HEAD
 import { config } from '../../config/config';
+import { ctbl } from '../../config/collectible';
+=======
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ApplicationIntegrationType
+  ApplicationIntegrationType,
 } from 'discord.js';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'duplicates',
-    description: 'View your most duplicate nations',
+<<<<<<< HEAD
+    description: `View your most duplicate ${ctbl.plural}`,
+=======
+    description: 'View your most duplicate nations.',
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: 'The class whose nations to show',
+<<<<<<< HEAD
+        description: `The class whose ${ctbl.plural} to show`,
+=======
+        description: 'The class whose nations to show.',
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
         required: false,
-        autocomplete: true
-      }
-    ]
+        autocomplete: true,
+      },
+    ],
   },
   code: `
-  $jsonLoad[classes;$getNationsData[classes]]
+  $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
   $let[special;$option[special]]
-  $jsonLoad[nations;$getUserData[$authorID;nations]]
+  $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   $jsonLoad[specials;$getGlobalVar[specials]]
   $jsonLoad[data;{}]
   $arrayForEach[nations;nat;
-    $let[nation;$getNation[$env[nat];nation]]
+    $let[colId;$collectible[$env[nat];id]]
     $jsonLoad[ids;$jsonKeys[data]]
-    $if[$arrayIncludes[ids;$get[nation]];
-      $!jsonSet[data;$get[nation];total;$sum[$env[data;$get[nation];total];1]]
-      ;$!jsonSet[data;$get[nation];{
+    $if[$arrayIncludes[ids;$get[colId]];
+      $!jsonSet[data;$get[colId];total;$sum[$env[data;$get[colId];total];1]]
+      ;$!jsonSet[data;$get[colId];{
         "total": 1,
-        "nations": {}
+        "collectibles": {}
       }]
     ]
-    $jsonLoad[ids;$env[data;$get[nation];nations]]
-    $!jsonSet[data;$get[nation];nations;$env[nat];$sum[$getNation[$env[nat];attack];$getNation[$env[nat];health]]]
-    $if[$and[$get[class]!=;$getNationInfo[$get[nation];class]!=$get[class]];
-      $!jsonDelete[data;$get[nation]]
+    $jsonLoad[ids;$env[data;$get[colId];collectibles]]
+    $!jsonSet[data;$get[colId];collectibles;$env[nat];$sum[$collectible[$env[nat];attack];$collectible[$env[nat];health]]]
+    $if[$and[$get[class]!=;$collectibleInfo[$get[colId];class]!=$get[class]];
+      $!jsonDelete[data;$get[colId]]
     ]
   ]
     
     $onlyIf[$env[data]!={};
-      $err[No nations found;true]
+<<<<<<< HEAD
+      $err[No ${ctbl.plural} found;true]
+=======
+      $err[No nations found.;true]
+>>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     ]
     
     $jsonLoad[sorted;$sortData[$env[data];total;desc]]
     $jsonLoad[ids;$jsonKeys[sorted]]
-    $let[nation;$env[ids;0]]
-    $jsonLoad[nation;$env[sorted;$get[nation]]]
-    $jsonLoad[nations;$sortData[$env[nation;nations];;desc]]
+    $let[colId;$env[ids;0]]
+    $jsonLoad[colId;$env[sorted;$get[colId]]]
+    $jsonLoad[nations;$sortData[$env[colId;collectibles;;desc]]]
     $jsonLoad[nids;$jsonKeys[nations]]
-    $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$getNation[$env[nat];special];emoji]$appEmoji[$getNationInfo[$getNation[$env[nat];nation];emoji_id]]: ATK: $appEmoji[$getNation[$env[nat];attack_type]] **$getNation[$env[nat];attack]** | HP: $appEmoji[$getNation[$env[nat];health_type]] **$getNation[$env[nat];health]**];natDisp]
+    $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];collectible];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
     $arraySlice[natDisp;natDisp;0;10]
     
     $interactionReply[
       $addContainer[
-        $addTextDisplay[### Your most duplicate $if[$get[class]!=;$get[class] nation;nation] is:
-$appEmoji[$getNationInfo[$get[nation];emoji_id]] **$getNationInfo[$get[nation];name]**
--# You have total **$env[nation;total]** of this nation]
+        $addTextDisplay[### Your most duplicate $get[class] ${ctbl.singular} is:
+$appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
+-# You have total **$env[colId;total]** of this ${ctbl.singular}]
         $addSeparator
         $addTextDisplay[
           **Top 10 that you caught**:
@@ -75,5 +92,5 @@ $arrayJoin[natDisp;
 ]
       ;${config.color}]
     ]
-  `
+  `,
 });

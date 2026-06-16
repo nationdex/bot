@@ -1,8 +1,8 @@
 import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
-  name: 'getNationsData',
-  // Get info about nations from the "nationsData" variable.
+  name: 'collectiblesData',
+  // Get info about collectibles from the "collectiblesData" variable.
   params: [
     {
       name: 'value',
@@ -18,7 +18,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $jsonLoad[data;$getGlobalVar[nationsData]]
+  $jsonLoad[data;$getGlobalVar[collectiblesData]]
   $jsonLoad[keys;$jsonKeys[data]]
   $let[value;$env[value]]
   $let[separator;$env[separator]]
@@ -29,9 +29,9 @@ export default new ForgeFunction({
   
   $if[$arrayIncludes[keys;$get[value]];
     $return[$env[data;$get[value]]];
-    $jsonLoad[nations;$env[data;nations]]
-    $jsonLoad[ids;$jsonKeys[nations]]
-    $arrayMap[ids;id;$return[$env[nations;$env[id];$get[value]]];mapped]
+    $jsonLoad[collectibles;$env[data;collectibles]]
+    $jsonLoad[ids;$jsonKeys[collectibles]]
+    $arrayMap[ids;id;$return[$env[collectibles;$env[id];$get[value]]];mapped]
     $if[$get[separator]==null;
       $return[$env[mapped]];
       $return[$arrayJoin[mapped;$get[separator]]]

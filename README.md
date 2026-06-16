@@ -42,10 +42,16 @@ npm run fix
 
 This will recreate the dist directory, up to date with the src directory.
 
-To check formatting:
+To check formatting (read-only):
 
 ```bash
 npm run check
+```
+
+To apply Biome fixes and rewrite files in place:
+
+```bash
+npm run check:fix
 ```
 
 Or if you want to check for any typechecking errors:

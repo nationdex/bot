@@ -2,24 +2,23 @@ export const config = {
   // Bot
   token: '',
   name: 'Nationdex',
-  description:
-    'Collect nations on Discord and enjoy the OG environment through one of the oldest Ballsdex-like bots in existence!',
+  description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
   version: '1.0.0',
 
   // Command configs
-  prefixes: ['nd!', 'nd.'],
+  prefixes: ['n.', 'nd!'],
   logChannel: '',
-  color: '#003297ff',
+  color: '#4000ff',
 
   // URLs
   repo: 'https://github.com/nationdex/bot',
   server: 'https://discord.gg/tKh3n5uVnm',
-  terms: 'https://admin.nationdex.com/tos/',
-  policy: 'https://admin.nationdex.com/privacy-policy/',
+  terms: 'https://arielaram.com/terms-of-service',
+  policy: 'https://arielaram.com/privacy-policy',
 
   // Paths
   flags: 'assets/flags',
-  nations: 'assets/nations',
+  spawn_arts: 'assets/spawn_arts',
   icons: 'assets/icons',
   cards: 'assets/cards',
 
@@ -37,3 +36,4 @@ export const config = {
     profile: 'https://discord.com/users/903681538842054686',
   },
 };
+

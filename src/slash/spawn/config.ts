@@ -1,13 +1,23 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
-import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import { 
+  ApplicationCommandType, 
+  ApplicationIntegrationType,
+  InteractionContextType,
+} from 'discord.js';
 import { config } from '../../config/config';
+import { ctbl } from '../../config/collectible';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'configs',
     description: "Check server's spawn configurations.",
-    integration_types: [ApplicationIntegrationType.GuildInstall],
+    integration_types: [
+      ApplicationIntegrationType.GuildInstall
+    ],
+    contexts: [
+      InteractionContextType.Guild,
+    ],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -30,7 +40,7 @@ export default new ApplicationCommand({
       $addSeparator
       $addTextDisplay[Spawn Channel: $if[$get[ch]!=;<#$get[ch]>;Not Set]
 Status: **$get[status]**
-Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No nations spawned]
+Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No ${ctbl.plural} spawned]
 ]
     ;${config.color}]
   ]
