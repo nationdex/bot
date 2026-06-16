@@ -29,5 +29,5 @@ export default new BaseCommand({
         $let[colId;$collectible[$env[nat];id]]
         $addChoice[#$env[nat]: $getSpecial[$collectible[$env[nat];special];emoji] $collectibleInfo[$get[colId];name] | ($collectible[$env[nat];attack] $collectible[$env[nat];health]) | $parseDate[$collectible[$env[nat];timestamp];Locale];$env[nat]]
         ]
-  `
+  `,
 });

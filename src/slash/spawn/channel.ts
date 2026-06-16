@@ -12,12 +12,8 @@ export default new ApplicationCommand({
     type: ApplicationCommandType.ChatInput,
     name: 'channel',
     description: `Set a channel for ${ctbl.plural} to spawn.`,
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall
-    ],
-     contexts: [
-      InteractionContextType.Guild,
-    ],
+    integration_types: [ApplicationIntegrationType.GuildInstall],
+    contexts: [InteractionContextType.Guild],
     options: [
       {
         type: ApplicationCommandOptionType.Channel,

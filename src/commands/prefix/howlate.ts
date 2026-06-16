@@ -4,8 +4,7 @@ import { ctbl } from '../../config/collectible';
 export default new BaseCommand({
   name: 'howlate',
   aliases: ['hl'],
-  description:
-    `Check how late you were from the user who caught the last ${ctbl.singular} by replying to your message`,
+  description: `Check how late you were from the user who caught the last ${ctbl.singular} by replying to your message`,
   usage: '',
   type: 'messageCreate',
   code: `

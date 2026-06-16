@@ -1,23 +1,19 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
-import { 
-  ApplicationCommandType, 
+import {
+  ApplicationCommandType,
   ApplicationIntegrationType,
   InteractionContextType,
 } from 'discord.js';
-import { config } from '../../config/config';
 import { ctbl } from '../../config/collectible';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'configs',
     description: "Check server's spawn configurations.",
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall
-    ],
-    contexts: [
-      InteractionContextType.Guild,
-    ],
+    integration_types: [ApplicationIntegrationType.GuildInstall],
+    contexts: [InteractionContextType.Guild],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];

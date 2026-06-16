@@ -1,6 +1,7 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { config } from '../config/config';
+// Reserved for collectible naming configurations.
 import { ctbl } from '../config/collectible';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'collectibleCard',
@@ -49,4 +50,4 @@ $appEmoji[heart] HP: $appEmoji[$collectible[$get[id];health_type]] $collectible[
 $attachCanvas[info]
     ]
   `,
-  });
+});

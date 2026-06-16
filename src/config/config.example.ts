@@ -36,4 +36,3 @@ export const config = {
     profile: 'https://discord.com/users/903681538842054686',
   },
 };
-

@@ -1,5 +1,5 @@
-import { ctbl } from '../config/collectible';
 import { ForgeFunction } from '@tryforge/forgescript';
+import { ctbl } from '../config/collectible';
 import { config } from '../config/config';
 
 export default new ForgeFunction({

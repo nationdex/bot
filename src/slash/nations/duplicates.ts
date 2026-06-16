@@ -1,11 +1,11 @@
-import { config } from '../../config/config';
-import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ApplicationIntegrationType
+  ApplicationIntegrationType,
 } from 'discord.js';
+import { ctbl } from '../../config/collectible';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
@@ -14,7 +14,7 @@ export default new ApplicationCommand({
     description: `View your most duplicate ${ctbl.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
@@ -22,9 +22,9 @@ export default new ApplicationCommand({
         name: 'class',
         description: `The class whose ${ctbl.plural} to show`,
         required: false,
-        autocomplete: true
-      }
-    ]
+        autocomplete: true,
+      },
+    ],
   },
   code: `
   $jsonLoad[classes;$collectiblesData[classes]]
@@ -76,5 +76,5 @@ $arrayJoin[natDisp;
 ]
       ;${config.color}]
     ]
-  `
+  `,
 });

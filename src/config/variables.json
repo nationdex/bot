@@ -6,13 +6,7 @@
   },
   "blockedUsers": [],
   "collectiblesData": {
-    "classes": [
-      "common",
-      "uncommon",
-      "rare",
-      "mythic",
-      "legendary"
-    ],
+    "classes": ["common", "uncommon", "rare", "mythic", "legendary"],
     "total": 0,
     "common": 0,
     "uncommon": 0,

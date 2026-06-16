@@ -8,14 +8,14 @@ export default new ForgeFunction({
       name: 'reciever',
       // The ID of the user whom to give
       type: 'String',
-      required: true
+      required: true,
     },
     {
       name: 'id',
       // The ID of the collectible to transfer
       type: 'String',
-      required: true
-    }
+      required: true,
+    },
   ],
   code: `
   $let[reciever;$env[reciever]]
@@ -53,5 +53,5 @@ export default new ForgeFunction({
   $jsonLoad[data;$getVar[collectible;$get[id]]]
   $!jsonSet[data;author;"$get[reciever]"]
   $setVar[collectible;$get[id];$env[data]]
-  `
+  `,
 });

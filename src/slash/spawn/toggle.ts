@@ -1,8 +1,8 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
-import { 
+import {
   ApplicationCommandType,
   ApplicationIntegrationType,
-  InteractionContextType
+  InteractionContextType,
 } from 'discord.js';
 import { ctbl } from '../../config/collectible';
 
@@ -11,12 +11,8 @@ export default new ApplicationCommand({
     type: ApplicationCommandType.ChatInput,
     name: 'toggle',
     description: `Toggle on/off ${ctbl.plural} spawning in the server.`,
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall
-    ],
-    contexts: [
-      InteractionContextType.Guild,
-    ],
+    integration_types: [ApplicationIntegrationType.GuildInstall],
+    contexts: [InteractionContextType.Guild],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];

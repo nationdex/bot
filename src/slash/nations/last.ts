@@ -1,10 +1,10 @@
-import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
+import { ctbl } from '../../config/collectible';
 
 export default new ApplicationCommand({
   data: {
@@ -27,7 +27,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: `View info of the last ${ctbl.singular} you caught of a specific rarity class.`,
         required: false,
-        autocomplete: true
+        autocomplete: true,
       },
     ],
   },
