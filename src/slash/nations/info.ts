@@ -36,11 +36,7 @@ export default new ApplicationCommand({
     $err[Invalid ${ctbl.singular}!;true]
   ]
   $onlyIf[$arrayLength[nations]>0;
-<<<<<<< HEAD
     $err[No ${ctbl.plural} found;true]
-=======
-    $err[No nations found.;true]
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
   ]
 
   $interactionReply[Loading ${ctbl.singular} info...]

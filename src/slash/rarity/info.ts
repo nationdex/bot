@@ -1,29 +1,18 @@
-<<<<<<< HEAD
 import { config } from '../../config/config';
 import { ctbl } from '../../config/collectible';
-=======
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-<<<<<<< HEAD
 import collectibles from './collectibles';
-=======
-import { config } from '../../config/config';
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-<<<<<<< HEAD
     description: `View rarity info of a ${ctbl.singular}`,
-=======
-    description: 'View rarity info of a nation.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

@@ -5,7 +5,4 @@ logs/
 node_modules/
 src/config/config.ts
 src/commands/dev/
-<<<<<<< HEAD
 website/
-=======
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0

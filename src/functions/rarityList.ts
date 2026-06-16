@@ -1,9 +1,6 @@
-import { ForgeFunction } from '@tryforge/forgescript';
-<<<<<<< HEAD
-import { ctbl } from '../config/collectible';
-=======
 import { config } from '../config/config';
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
+import { ForgeFunction } from '@tryforge/forgescript';
+import { ctbl } from '../config/collectible';
 
 export default new ForgeFunction({
   name: 'rarityList',

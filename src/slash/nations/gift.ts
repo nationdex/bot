@@ -1,25 +1,17 @@
-<<<<<<< HEAD
 import { config } from '../../config/config';
 import { ctbl } from '../../config/collectible';
-=======
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'gift',
-<<<<<<< HEAD
     description: `Gift a ${ctbl.singular} to another user`,
-=======
-    description: 'Gift a nation to another user.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -28,21 +20,16 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whom you want to gift.',
+        description: 'The user whom you want to gift',
         required: true,
       },
       {
         type: ApplicationCommandOptionType.String,
-<<<<<<< HEAD
         name: `${ctbl.singular}`,
         description: `The ${ctbl.singular} you want to gift`,
-=======
-        name: 'nation',
-        description: 'The nation you want to gift.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
         required: true,
-        autocomplete: true,
-      },
+        autocomplete: true
+      }
     ],
   },
   code: `
@@ -52,19 +39,19 @@ export default new ApplicationCommand({
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot send gifts to yourself.;true]
+    $err[You cannot send gifts to yourself;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot accept gifts.;true]
+    $err[Bots cannot accept gifts;true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** does not accept gifts.;true]
+    $err[**$userDisplayName[$get[user]]** do not accept gifts;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have blocked **$userDisplayName[$get[user]]**.;true]
+    $err[You have blocked **$userDisplayName[$get[user]]**;true]
   ]
   $onlyIf[$arrayIncludes[userBlocked;$authorID]==false;
-    $err[Something went wrong.;true]
+    $err[Something went wrong;true]
   ]
   $onlyIf[$arrayIncludes[nations;$get[id]];
     $err[Invalid ${ctbl.singular}!;true]

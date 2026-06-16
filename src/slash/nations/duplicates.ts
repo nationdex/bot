@@ -1,42 +1,30 @@
-<<<<<<< HEAD
 import { config } from '../../config/config';
 import { ctbl } from '../../config/collectible';
-=======
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ApplicationIntegrationType,
+  ApplicationIntegrationType
 } from 'discord.js';
-import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'duplicates',
-<<<<<<< HEAD
     description: `View your most duplicate ${ctbl.plural}`,
-=======
-    description: 'View your most duplicate nations.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.GuildInstall
     ],
     options: [
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-<<<<<<< HEAD
         description: `The class whose ${ctbl.plural} to show`,
-=======
-        description: 'The class whose nations to show.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
         required: false,
-        autocomplete: true,
-      },
-    ],
+        autocomplete: true
+      }
+    ]
   },
   code: `
   $jsonLoad[classes;$collectiblesData[classes]]
@@ -63,11 +51,7 @@ export default new ApplicationCommand({
   ]
     
     $onlyIf[$env[data]!={};
-<<<<<<< HEAD
       $err[No ${ctbl.plural} found;true]
-=======
-      $err[No nations found.;true]
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     ]
     
     $jsonLoad[sorted;$sortData[$env[data];total;desc]]
@@ -92,5 +76,5 @@ $arrayJoin[natDisp;
 ]
       ;${config.color}]
     ]
-  `,
+  `
 });

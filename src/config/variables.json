@@ -5,7 +5,6 @@
     "accept_gifts": "true"
   },
   "blockedUsers": [],
-<<<<<<< HEAD
   "collectiblesData": {
     "classes": [
       "common",
@@ -14,10 +13,6 @@
       "mythic",
       "legendary"
     ],
-=======
-  "nationsData": {
-    "classes": ["common", "uncommon", "rare", "mythic", "legendary"],
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     "total": 0,
     "common": 0,
     "uncommon": 0,

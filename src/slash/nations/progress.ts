@@ -10,11 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'progress',
-<<<<<<< HEAD
     description: `View your ${ctbl.plural} progress`,
-=======
-    description: 'View your nations progress.',
->>>>>>> 75fab9078c52d8dafa1292fa3b6accead582b5e0
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
@@ -31,7 +27,7 @@ export default new ApplicationCommand({
         name: 'class',
         description: 'The rarity class to view.',
         required: false,
-        autocomplete: true,
+        autocomplete: true
       },
     ],
   },
@@ -45,11 +41,11 @@ export default new ApplicationCommand({
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> has their inventory private.;true]
+      $err[<@$get[user]> has their inventory private;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong.;true]
+    $err[Something went wrong;true]
   ]
   
   $interactionReply[
