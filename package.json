@@ -42,12 +42,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "typescript": "^6.0.3"
   },
   "overrides": {
     "ws": "8.21.0",
-    "js-yaml": "4.2.0"
+    "js-yaml": "5.1.0",
+    "undici": "8.5.0"
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
