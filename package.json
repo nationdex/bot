@@ -35,13 +35,13 @@
   "homepage": "https://github.com/nationdex/bot#readme",
   "dependencies": {
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forge.db": "github:tryforge/forgedb#main",
+    "@tryforge/forge.db": "github:nationdex/forgedb#main",
     "@tryforge/forgescript": "github:tryforge/forgescript#dev",
     "better-sqlite3": "^12.11.1",
     "pm2": "^7.0.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.0",
+    "@biomejs/biome": "^2.5.1",
     "@types/node": "^26.0.0",
     "typescript": "^6.0.3"
   },
