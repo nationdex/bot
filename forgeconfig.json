@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EdexLabs/ForgeScript/main/forgeconfig.schema.json",
+  "extensions": [
+    "github:tryforge/forgescript#dev",
+    "github:tryforge/ForgeCanvas#dev",
+    "github:nationdex/forge.db#main"
+  ],
+  "custom_functions_path": "src/functions",
+  "custom_colors": ["#ff0000", "#00ff00", "#0000ff"],
+  "constant_custom_colors": true
+}
