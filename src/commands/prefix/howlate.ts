@@ -4,8 +4,7 @@ import { ctbl } from '../../config/collectible';
 export default new BaseCommand({
   name: 'howlate',
   aliases: ['hl'],
-  description:
-    `Check how late you were from the user who caught the last ${ctbl.singular} by replying to your message`,
+  description: `Check how late you were from the user who caught the last ${ctbl.singular} by replying to your message`,
   usage: '',
   type: 'messageCreate',
   code: `
@@ -41,15 +40,15 @@ export default new BaseCommand({
     $err[Not even close, the name was wrong]
   ]
   
-  $let[catcher_time;$divide[$get[caughtin];1000]]
-  $let[user_time;$divide[$sub[$get[timestamp];$get[spawn_at]];1000]]
+  $let[catcher_time;$shortParse[$get[caughtin];-1]]
+  $let[user_time;$shortParse[$sub[$get[timestamp];$get[spawn_at]];-1]]
   
   $sendMessage[$channelID;
   $reply
-<@$get[catcher]>: $get[catcher_time]s
-<@$get[user]>: $get[user_time]s
+<@$get[catcher]>: $get[catcher_time]
+<@$get[user]>: $get[user_time]
 
--# difference of $sub[$get[user_time];$get[catcher_time]]s
+-# difference of $shortParse[$sub[$get[caught_in];$sub[$get[timestamp];$get[spawn_at]]];-1]
   ]
   `,
 });

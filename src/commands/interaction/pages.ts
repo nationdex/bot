@@ -52,6 +52,14 @@ export default new BaseCommand({
       $let[sortType;$arrayAt[cid;6]]
       $interactionUpdate[$rarityList[$get[type];$get[class];$get[sortType];$get[page]]]
     ]
+
+    $elseIf[$get[type]==lb;
+      $let[type;$arrayAt[cid;4]]
+      $let[class;$arrayAt[cid;5]]
+      $interactionUpdate[
+        $leaderboards[$get[type];$get[page];$get[class]]
+      ]
+    ]
   ]
   `,
 });

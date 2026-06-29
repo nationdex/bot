@@ -1,11 +1,11 @@
-import { config } from '../../config/config';
-import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
+import { ctbl } from '../../config/collectible';
+import { config } from '../../config/config';
 import collectibles from './collectibles';
 
 export default new ApplicationCommand({

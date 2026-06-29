@@ -8,14 +8,14 @@ export default new ForgeFunction({
       name: 'reciever',
       // The ID of the user whom to give
       type: 'String',
-      required: true
+      required: true,
     },
     {
       name: 'id',
       // The ID of the collectible to transfer
       type: 'String',
-      required: true
-    }
+      required: true,
+    },
   ],
   code: `
   $let[reciever;$env[reciever]]
@@ -29,7 +29,7 @@ export default new ForgeFunction({
   $jsonLoad[uniques;$env[data;unique]]
   $!jsonDelete[userCollectibles;$arrayIndexOf[userCollectibles;$get[id]]]
   $!jsonSet[data;collectibleIds;$env[userCollectibles]]
-  $arrayMap[userCollectibles;nat;$return[$collectible[$env[nat];collectible]];nids]
+  $arrayMap[userCollectibles;nat;$return[$collectible[$env[nat];id]];nids]
   $if[$arrayIncludes[nids;$get[colId]]==false;
     $!jsonDelete[data;unique;$arrayIndexOf[uniques;$get[colId]]]
   ]
@@ -53,5 +53,5 @@ export default new ForgeFunction({
   $jsonLoad[data;$getVar[collectible;$get[id]]]
   $!jsonSet[data;author;"$get[reciever]"]
   $setVar[collectible;$get[id];$env[data]]
-  `
+  `,
 });

@@ -23,14 +23,18 @@ export default new ForgeFunction({
       required: false,
     },
   ],
-  code: `$return[$js[const json = $env[data];
-const sortKey = "$env[key]";
-const order = "$default[$env[order];desc]";
-
-const isFlat = Object.values(json).every(v => typeof v !== "object" || v === null);
-
-JSON.stringify(Object.fromEntries(
-  Object.entries(json).sort(([aKey, a\\], [bKey, b\\]) => {
+  code: `
+  $if[$isJSON[$env[data]];
+  $return[$js[const json = $env[data];
+    if (json == null || typeof json !== "object") { JSON.stringify(json != null ? json : null) }
+    else if ((Array.isArray(json) && json.length === 0) || Object.keys(json).length === 0) { JSON.stringify(json) }
+    else {
+    const sortKey = "$env[key]";
+    const order = "$default[$env[order];desc]";
+    const isArray = Array.isArray(json);
+    const entries = isArray ? json.map((v, i) => [String(i), v\\]) : Object.entries(json);
+    const isFlat = entries.every(([, v\\]) => typeof v !== "object" || v === null);
+    const sorted = entries.sort(([aKey, a\\], [bKey, b\\]) => {
     const aVal = isFlat ? a : a[sortKey\\];
     const bVal = isFlat ? b : b[sortKey\\];
     if (aVal == null && bVal == null) return 0;
@@ -38,7 +42,8 @@ JSON.stringify(Object.fromEntries(
     if (bVal == null) return -1;
     const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
     return order === "desc" ? -cmp : cmp;
-  })
-), null, 2);]]
+  });
+  JSON.stringify(isArray ? sorted.map(([, v\\]) => v) : Object.fromEntries(sorted), null, 2) }]]
+  ;$return[$env[data]]]
   `,
 });

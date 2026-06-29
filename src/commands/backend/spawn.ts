@@ -12,17 +12,13 @@ export default new BaseCommand({
   $setGuildVar[spawnConfig;$env[config]]
   $let[ch;$if[$channelExists[$env[config;config_channel]];$env[config;config_channel];$channelID]]
   
-  $if[$get[weight]>=50;
+  $onlyIf[$or[$get[weight]>=50;$sub[$getTimestamp;$spawnConfig[timestamp]]>=$parseString[1h30m]]]
+
     $!jsonSet[config;weight;0]
     $setGuildVar[spawnConfig;$env[config]]
     $spawnCollectible[$get[ch]]
-  ]
-  
-  $if[$sub[$getTimestamp;$spawnConfig[timestamp]]>=$parseString[1h30m];
-    $spawnCollectible[$get[ch]]
-  ]
-  
-  $let[wait;$randomNumber[$parseString[20m];$parseString[40m]]]
+
+  $let[wait;$randomNumber[$parseString[1h];$parseString[3h]]]
   
   $setTimeout[
     $jsonLoad[config;$getGuildVar[spawnConfig]]

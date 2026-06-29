@@ -1,6 +1,6 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { config } from '../config/config';
 import { ctbl } from '../config/collectible';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'collectibleCard',
@@ -14,7 +14,6 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $return[
   $let[id;$env[id]]
   $let[colId;$collectible[$get[id];id]]
   $let[bg;${config.cards}/$collectibleInfo[$get[colId];regime].png]
@@ -40,13 +39,14 @@ export default new ForgeFunction({
   $drawText[info;fill;$get[health];100px LemonMilk_Bold;$get[health_color];300;1770]
   $drawText[info;fill;$get[attack];100px LemonMilk_Bold;$get[attack_color];1090;1770]
   $drawText[info;fill;Artwork by:\n$get[artist];50px LemonMilk_Regular;#FFFFFF;70;1950;600;true;character]
-
-  ID: \`#$get[id]\`
-Caught on $discordTimestamp[$collectible[$get[id];timestamp];FullDateShortTime] in $divide[$collectible[$get[id];caught_in];1000]s
+  
+  $return[
+ID: \`#$get[id]\`
+Caught on $discordTimestamp[$collectible[$get[id];timestamp];FullDateShortTime] in $shortParse[$collectible[$get[id];caught_in];5]
 
 $appEmoji[sword] ATK: $appEmoji[$collectible[$get[id];attack_type]] $collectible[$get[id];attack]
 $appEmoji[heart] HP: $appEmoji[$collectible[$get[id];health_type]] $collectible[$get[id];health]
 $attachCanvas[info]
-    ]
+  ]
   `,
-  });
+});

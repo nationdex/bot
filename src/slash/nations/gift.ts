@@ -1,11 +1,11 @@
-import { config } from '../../config/config';
-import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
+import { ctbl } from '../../config/collectible';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
@@ -28,14 +28,16 @@ export default new ApplicationCommand({
         name: `${ctbl.singular}`,
         description: `The ${ctbl.singular} you want to gift`,
         required: true,
-        autocomplete: true
-      }
+        autocomplete: true,
+      },
     ],
   },
   code: `
   $let[user;$option[user]]
   $let[id;$option[${ctbl.singular}]]
   $let[colId;$collectible[$get[id];id]]
+  $jsonLoad[blocked;$getUserVar[blockedUsers]]
+  $jsonLoad[userBlocked;$getUserVar[blockedUsers;$get[user]]]
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   
   $onlyIf[$get[user]!=$authorID;

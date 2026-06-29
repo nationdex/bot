@@ -1,5 +1,8 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
-import { ApplicationCommandType, ApplicationIntegrationType } from 'discord.js';
+import {
+  ApplicationCommandType,
+  ApplicationIntegrationType
+} from 'discord.js';
 
 export default new ApplicationCommand({
   data: {

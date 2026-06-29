@@ -12,11 +12,16 @@ export default new ForgeFunction({
     },
   ],
   code: `
+  $if[$isJSON[$env[data]];
   $return[$js[const data = $env[data];
+    if (data == null || typeof data !== "object" || Array.isArray(data) || Object.keys(data).length === 0) { "" }
+    else {
     const entries = Object.entries(data);
-    const weights = entries.map(([_, val\\]) => val.rarity);
+    const weights = entries.map(([_, val\\]) => val != null && val.rarity != null ? val.rarity : 0);
     const totalWeight = weights.reduce((sum, w) => sum + w, 0);
     
+    if (totalWeight <= 0) { "" }
+    else {
     let random = Math.random() * totalWeight;
     let result = entries[entries.length - 1\\][0\\];
     
@@ -25,6 +30,7 @@ export default new ForgeFunction({
       if (random <= 0) { result = entries[i\\][0\\]; break; }
     }
     
-result]]
+    result } }]]
+  ;$return[$env[data]]]
   `,
 });

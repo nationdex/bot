@@ -1,11 +1,11 @@
-import { config } from '../../config/config';
-import { ctbl } from '../../config/collectible';
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
-  ApplicationIntegrationType
+  ApplicationIntegrationType,
 } from 'discord.js';
+import { ctbl } from '../../config/collectible';
+import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
@@ -14,7 +14,7 @@ export default new ApplicationCommand({
     description: `View your most duplicate ${ctbl.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall
+      ApplicationIntegrationType.GuildInstall,
     ],
     options: [
       {
@@ -22,9 +22,9 @@ export default new ApplicationCommand({
         name: 'class',
         description: `The class whose ${ctbl.plural} to show`,
         required: false,
-        autocomplete: true
-      }
-    ]
+        autocomplete: true,
+      },
+    ],
   },
   code: `
   $jsonLoad[classes;$collectiblesData[classes]]
@@ -53,12 +53,12 @@ export default new ApplicationCommand({
     $onlyIf[$env[data]!={};
       $err[No ${ctbl.plural} found;true]
     ]
-    
     $jsonLoad[sorted;$sortData[$env[data];total;desc]]
+    $log[$env[sorted]]
     $jsonLoad[ids;$jsonKeys[sorted]]
     $let[colId;$env[ids;0]]
     $jsonLoad[colId;$env[sorted;$get[colId]]]
-    $jsonLoad[nations;$sortData[$env[colId;collectibles;;desc]]]
+    $jsonLoad[nations;$sortData[$env[colId;collectibles];;desc]]
     $jsonLoad[nids;$jsonKeys[nations]]
     $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];collectible];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
     $arraySlice[natDisp;natDisp;0;10]
@@ -76,5 +76,5 @@ $arrayJoin[natDisp;
 ]
       ;${config.color}]
     ]
-  `
+  `,
 });

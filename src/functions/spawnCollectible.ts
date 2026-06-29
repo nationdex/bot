@@ -1,6 +1,6 @@
-import { config } from '../config/config';
 import { ForgeFunction } from '@tryforge/forgescript';
 import { ctbl } from '../config/collectible';
+import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'spawnCollectible',
@@ -77,10 +77,10 @@ export default new ForgeFunction({
   $!jsonSet[config;channel;"$get[ch]"]
   $!jsonSet[config;message;"$get[message]"]
   $!jsonSet[config;collectible;$get[ctbl]]
-  $!jsonSet[config;attack;"$get[atck]"]
-  $!jsonSet[config;health;"$get[hlth]"]
-  $!jsonSet[config;attack_bonus;"$get[atck_bns]"]
-  $!jsonSet[config;health_bonus;"$get[hlth_bns]"]
+  $!jsonSet[config;attack;$get[atck]]
+  $!jsonSet[config;health;$get[hlth]]
+  $!jsonSet[config;attack_bonus;$get[atck_bns]]
+  $!jsonSet[config;health_bonus;$get[hlth_bns]]
   $!jsonSet[config;timestamp;"$getTimestamp"]
   $!jsonSet[config;special;$get[special]]
   $setGuildVar[spawnConfig;$env[config]]

@@ -45,8 +45,8 @@ export default new ForgeFunction({
     ;${config.color}]
     $addActionRow
     $addButton[pages-blocklist-$authorID-$sub[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
-        $addButton[pages-blocklist-$authorID-index;$get[page] / $get[pages];Primary;;true]
-        $addButton[pages-blocklist-$authorID-$sum[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
+    $addButton[pages-blocklist-$authorID-index;$get[page] / $get[pages];Primary;;true]
+    $addButton[pages-blocklist-$authorID-$sum[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
   ]
   `,
 });
