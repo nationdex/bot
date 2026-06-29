@@ -8,8 +8,6 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "npm run build && node dist/index.js",
-    "check": "biome check",
-    "check:fix": "biome check --write",
     "fix": "rm -rf dist/ && npm run build",
     "typecheck": "tsc --noEmit",
     "website:install": "npm install --prefix website",
@@ -41,14 +39,12 @@
     "pm2": "^7.0.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.1",
     "@types/node": "^26.0.0",
     "typescript": "^6.0.3"
   },
   "overrides": {
     "ws": "8.21.0",
-    "js-yaml": "5.1.0",
-    "undici": "8.5.0"
+    "js-yaml": "5.1.0"
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
