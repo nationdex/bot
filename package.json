@@ -36,15 +36,16 @@
     "@tryforge/forge.db": "github:nationdex/forgedb#main",
     "@tryforge/forgescript": "github:tryforge/forgescript#dev",
     "better-sqlite3": "^12.11.1",
-    "pm2": "^7.0.1"
+    "pm2": "^7.0.3"
   },
   "devDependencies": {
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "typescript": "^6.0.3"
   },
   "overrides": {
     "ws": "8.21.0",
-    "js-yaml": "5.1.0"
+    "js-yaml": "5.1.0",
+    "undici": "6.27.0"
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
