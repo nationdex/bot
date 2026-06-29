@@ -21,6 +21,7 @@ export const config = {
   spawn_arts: 'assets/spawn_arts',
   icons: 'assets/icons',
   cards: 'assets/cards',
+  collection_cards: 'assets/collection_cards',
 
   // Credits
   author: {

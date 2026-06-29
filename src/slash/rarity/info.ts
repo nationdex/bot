@@ -6,7 +6,6 @@ import {
 } from 'discord.js';
 import { ctbl } from '../../config/collectible';
 import { config } from '../../config/config';
-import collectibles from './collectibles';
 
 export default new ApplicationCommand({
   data: {
