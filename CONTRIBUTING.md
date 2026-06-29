@@ -20,9 +20,9 @@ Before anything, please make sure to install Node.js through their official [web
 
 ## Recommended Extensions
 
-- ForgeVSC
+- ForgeLSP
 
-> THIS IS IMPORTANT SIR! ForgeVSC gives ForgeScript an actual type-safe layer on the codebase, making it easier to develop and maintain.
+> THIS IS IMPORTANT SIR! ForgeLSP gives ForgeScript an actual type-safe layer on the codebase, making it easier to develop and maintain.
 
 - NPM Intellisense
 
