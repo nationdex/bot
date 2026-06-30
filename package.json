@@ -1,7 +1,7 @@
 {
   "name": "nationdex",
   "version": "1.0.0",
-  "description": "The Project NationDex 2.0 is a modern revival of the oldest BallsDex alternative in existence, known as NationDex!",
+  "description": "The Project Nationdex 2026, also known as Nationdex 2.0, is a modern revival from one of the oldest Ballsdex-like dex bots in existence, which is named Nationdex.bot!",
   "type": "commonjs",
   "main": "dist/index.js",
   "scripts": {
