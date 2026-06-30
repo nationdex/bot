@@ -1,10 +1,8 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
-  ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { config } from '../../config/config';
 import { ctbl } from '../../config/collectible';
 export default new ApplicationCommand({
   data: {

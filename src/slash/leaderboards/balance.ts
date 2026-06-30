@@ -1,10 +1,8 @@
 import { ApplicationCommand } from '@tryforge/forgescript';
 import {
-  ApplicationCommandOptionType,
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { config } from '../../config/config';
 import { currency } from '../../config/currency';
 export default new ApplicationCommand({
   data: {
