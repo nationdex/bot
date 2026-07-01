@@ -23,11 +23,7 @@ import {
 import { fadeUp, listItem, staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-export default function Nations({
-	searchQuery = "",
-}: {
-	searchQuery?: string;
-}) {
+export default function Nations({ searchQuery = "" }: { searchQuery?: string }) {
 	const [localQuery, setLocalQuery] = useState(searchQuery);
 	const [classFilter, setClassFilter] = useState<string>("all");
 
@@ -47,17 +43,11 @@ export default function Nations({
 		<div className="w-full space-y-4 sm:space-y-6">
 			<div className="mb-4 sm:mb-6 space-y-3">
 				<div>
-					<h1
-						className={cn(
-							"mb-2 text-xl font-bold sm:text-2xl md:text-3xl capitalize",
-							admin.fg,
-						)}
-					>
+					<h1 className={cn("mb-2 text-xl font-bold sm:text-2xl md:text-3xl capitalize", admin.fg)}>
 						{bot.collectible.plural}
 					</h1>
 					<p className={cn("text-sm", admin.muted)}>
-						Global catalog from{" "}
-						<code className="opacity-80">{bot.vars.globalCatalog}.nations</code>{" "}
+						Global catalog from <code className="opacity-80">{bot.vars.globalCatalog}.nations</code>{" "}
 						— rarity classes: {bot.rarityClasses.join(", ")}.
 					</p>
 				</div>
@@ -69,16 +59,15 @@ export default function Nations({
 						<div className="flex items-center gap-2">
 							<Globe className={cn("h-4 w-4 shrink-0", admin.muted)} />
 							<h3 className={cn("text-sm font-medium capitalize", admin.muted)}>
-								Catalog ({placeholderCatalog.length}{" "}
-								{collectibleLabel(placeholderCatalog.length)})
+								Catalog ({placeholderCatalog.length} {collectibleLabel(placeholderCatalog.length)})
 							</h3>
 						</div>
 
 						<motion.div
-							className="relative z-20 flex flex-col gap-2 md:flex-row md:items-center"
-							variants={fadeUp}
-							initial="hidden"
 							animate="show"
+							className="relative z-20 flex flex-col gap-2 md:flex-row md:items-center"
+							initial="hidden"
+							variants={fadeUp}
 						>
 							<div className="relative min-w-0 flex-1">
 								<Search
@@ -88,13 +77,13 @@ export default function Nations({
 									)}
 								/>
 								<Input
-									value={localQuery}
-									onChange={(e) => setLocalQuery(e.target.value)}
 									className={cn("h-9 w-full pl-9 pr-3", admin.input)}
+									onChange={(e) => setLocalQuery(e.target.value)}
 									placeholder="Search by name or ID..."
+									value={localQuery}
 								/>
 							</div>
-							<Select value={classFilter} onValueChange={setClassFilter}>
+							<Select onValueChange={setClassFilter} value={classFilter}>
 								<SelectTrigger
 									className={cn(
 										"min-h-9 h-9 w-full shrink-0 cursor-pointer touch-manipulation text-xs md:w-36",
@@ -106,11 +95,7 @@ export default function Nations({
 								<SelectContent className={cn(admin.elevated, admin.fg)}>
 									<SelectItem value="all">All classes</SelectItem>
 									{bot.rarityClasses.map((rarity) => (
-										<SelectItem
-											key={rarity}
-											value={rarity}
-											className="capitalize"
-										>
+										<SelectItem className="capitalize" key={rarity} value={rarity}>
 											{formatRarity(rarity)}
 										</SelectItem>
 									))}
@@ -120,20 +105,20 @@ export default function Nations({
 					</div>
 
 					<motion.div
-						variants={staggerContainer}
-						initial="hidden"
 						animate="show"
 						className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+						initial="hidden"
+						variants={staggerContainer}
 					>
 						<AnimatePresence initial={false}>
 							{filteredCatalog.map((entry) => (
 								<motion.div
+									animate="show"
+									className="h-full"
+									exit="exit"
+									initial="hidden"
 									key={entry.id}
 									variants={listItem}
-									initial="hidden"
-									animate="show"
-									exit="exit"
-									className="h-full"
 								>
 									<div
 										className={cn(
@@ -144,19 +129,10 @@ export default function Nations({
 									>
 										<div className="mb-2 flex items-center justify-between gap-2">
 											<div className="min-w-0">
-												<span
-													className={cn(
-														"block truncate text-sm font-medium",
-														admin.fg,
-													)}
-												>
+												<span className={cn("block truncate text-sm font-medium", admin.fg)}>
 													{entry.name}
 												</span>
-												<span
-													className={cn("font-mono text-[10px]", admin.muted)}
-												>
-													{entry.id}
-												</span>
+												<span className={cn("font-mono text-[10px]", admin.muted)}>{entry.id}</span>
 											</div>
 											<span
 												className={cn(
@@ -167,27 +143,16 @@ export default function Nations({
 												{formatRarity(entry.class)}
 											</span>
 										</div>
-										<div
-											className={cn(
-												"flex items-center justify-between text-xs",
-												admin.muted,
-											)}
-										>
-											<span>
-												{entry.globalCaught.toLocaleString()} global caught
-											</span>
+										<div className={cn("flex items-center justify-between text-xs", admin.muted)}>
+											<span>{entry.globalCaught.toLocaleString()} global caught</span>
 											<span>weight {entry.weight}</span>
 										</div>
 										<div className="mt-3 flex justify-end">
 											<Button
-												variant="ghost"
-												size="sm"
-												className={cn(
-													"h-7 text-xs",
-													admin.muted,
-													"hover:text-[var(--admin-fg)]",
-												)}
+												className={cn("h-7 text-xs", admin.muted, "hover:text-[var(--admin-fg)]")}
 												disabled
+												size="sm"
+												variant="ghost"
 											>
 												Edit
 											</Button>
@@ -201,10 +166,10 @@ export default function Nations({
 					<AnimatePresence>
 						{filteredCatalog.length === 0 && (
 							<motion.p
-								initial={{ opacity: 0, y: 8 }}
 								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0 }}
 								className={cn("py-8 text-center text-sm", admin.muted)}
+								exit={{ opacity: 0 }}
+								initial={{ opacity: 0, y: 8 }}
 							>
 								No catalog entries match.
 							</motion.p>

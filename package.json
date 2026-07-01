@@ -31,6 +31,9 @@
     "url": "https://github.com/nationdex/bot/issues"
   },
   "homepage": "https://github.com/nationdex/bot#readme",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "dependencies": {
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forge.db": "github:nationdex/forgedb#main",
@@ -43,14 +46,11 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
-    "ws": "8.21.0",
     "js-yaml": "5.1.0",
-    "undici": "6.27.0"
+    "undici": "6.27.0",
+    "ws": "8.21.0"
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
-  },
-  "engines": {
-    "node": ">=24.0.0"
   }
 }
