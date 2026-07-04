@@ -12,7 +12,7 @@ export default new ForgeFunction({
     },
     {
       name: 'decimals',
-      // The decimals length, put -1 for no limit
+      // The decimal length (use -1 for no limit).
       type: 'String',
       required: false,
     },

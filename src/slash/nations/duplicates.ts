@@ -11,7 +11,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'duplicates',
-    description: `View your most duplicate ${ctbl.plural}`,
+    description: `View your most duplicated ${ctbl.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -67,7 +67,7 @@ export default new ApplicationCommand({
       $addContainer[
         $addTextDisplay[### Your most duplicate $get[class] ${ctbl.singular} is:
 $appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
--# You have total **$env[colId;total]** of this ${ctbl.singular}]
+-# You have a total of **$env[colId;total]** of this ${ctbl.singular}]
         $addSeparator
         $addTextDisplay[
           **Top 10 that you caught**:

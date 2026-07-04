@@ -4,7 +4,7 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'rarityList',
-  // Displays the rarity list of collectibles/specials as a components v2 message
+  // Displays the rarity list of collectibles/specials as a Components v2 message
   params: [
     {
       name: 'type',

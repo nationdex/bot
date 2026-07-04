@@ -4,14 +4,14 @@ import { ctbl } from '../../config/collectible';
 export default new BaseCommand({
   name: 'howlate',
   aliases: ['hl'],
-  description: `Check how late you were from the user who caught the last ${ctbl.singular} by replying to your message`,
+  description: `Check how late someone was compared to the user who caught the last ${ctbl.singular} by replying to their message`,
   usage: '',
   type: 'messageCreate',
   code: `
   $let[msg;$messageReferenceID]
   
   $onlyIf[$get[msg]!=;
-    $err[Please reply to the message you want to compare]
+    $err[Please reply to the message you want to compare.]
   ]
 
   $let[ctbl;$spawnConfig[collectible]]
@@ -25,19 +25,19 @@ export default new BaseCommand({
   $let[user_time;$sub[$getMessage[$channelID;$get[msg];timestamp];$get[spawn_at]]]
   
   $onlyIf[$get[ctbl]!=;
-    $err[No ${ctbl.plural} have spawned in this server yet]
+    $err[No ${ctbl.plural} have spawned in this server yet.]
   ]
   $onlyIf[$get[catcher]!=;
-    $err[No one could catch the last ${ctbl.singular}]
+    $err[No one caught the last ${ctbl.singular}.]
   ]
   $onlyIf[$get[catcher]!=$get[user];
-    $err[You can't compare someone by themselves]
+    $err[You cannot compare a user to themselves.]
   ]
   $onlyIf[$get[user_time]>0;
-    $err[Nahh, that message was sent even before the ${ctbl.singular} summoned]
+    $err[That message was sent before the ${ctbl.singular} was summoned.]
   ]
   $onlyIf[$or[$arrayIncludes[catch_names;$get[content]];$arrayIncludes[translations;$get[content]]];
-    $err[Not even close, the name was wrong]
+    $err[Incorrect name, not even close.]
   ]
   
   $sendMessage[$channelID;

@@ -2,7 +2,7 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: `collectible`,
-  /// Get info of a collectible that has been caught and is available in a user's inventory or auction house from the "collectible" variable.
+  /// Get info on a collectible that has been caught and is available in a user's inventory or the auction house from the "collectible" variable.
   params: [
     {
       name: 'id',

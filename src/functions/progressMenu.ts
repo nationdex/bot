@@ -4,7 +4,7 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'progressMenu',
-  // Shows the collectibles progress of a user as a Components v2 message.
+  // Shows the collectible progress of a user as a Components v2 message.
   params: [
     {
       name: 'user',

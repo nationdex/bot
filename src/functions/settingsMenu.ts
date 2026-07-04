@@ -25,25 +25,25 @@ export default new ForgeFunction({
     $addContainer[
       $addSection[
         $addTextDisplay[### $appEmoji[setting] Player Settings
-Customize your interaction with other players]
+Customize your interaction with other players.]
         $addThumbnail[$userAvatar]
       ]
       $addSeparator
       $addSection[
         $addTextDisplay[**Inventory Privacy**:
-Choose whether people can view your inventory or not]
+Choose whether other players can view your inventory.]
         $addButton[settings-inventory_privacy-$authorID-$if[$get[inv]==private;public;private];$toTitleCase[$get[inv]];$if[$get[inv]==private;Secondary;Primary]]
       ]
       $addSeparator
       $addSection[
         $addTextDisplay[**Profile Privacy**:
-Choose whether people can view your profile or not]
+Choose whether other players can view your profile.]
         $addButton[settings-profile_privacy-$authorID-$if[$get[profile]==private;public;private];$toTitleCase[$get[profile]];$if[$get[profile]==private;Secondary;Primary]]
       ]
       $addSeparator
       $addSection[
         $addTextDisplay[**Accept Gifts?**:
-Choose whether you accept ${ctbl.plural} and ${currency.plural} as a gift]
+Choose whether you accept ${ctbl.plural} and ${currency.plural} as gifts.]
         $addButton[settings-accept_gifts-$authorID-$if[$get[gifts];false;true];$if[$get[gifts];Yes;No];$if[$get[gifts];Primary;Secondary]]
       ]
       $addSeparator

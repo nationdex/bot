@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'last',
-    description: `View info of the last ${ctbl.singular} you caught.`,
+    description: `View info of the last ${ctbl.singular} caught.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -25,7 +25,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: `View info of the last ${ctbl.singular} you caught of a specific rarity class.`,
+        description: `View info of the last ${ctbl.singular} caught of a specific rarity class.`,
         required: false,
         autocomplete: true,
       },
@@ -38,11 +38,11 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect ${ctbl.plural}, sadly.;true]
+    $err[Bots cannot collect ${ctbl.plural}.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> have their inventory private;true]
+      $err[<@$get[user]> has their inventory private;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$authorID]==false;
@@ -61,7 +61,7 @@ export default new ApplicationCommand({
   $let[id;$env[ctbls;$sub[$arrayLength[ctbls];1]]]
   
   $interactionReply[
-**Info of the last ${ctbl.singular} you caught**:
+**Info on the last ${ctbl.singular} caught**:
 $collectibleCard[$get[id]]
   ]
   `,

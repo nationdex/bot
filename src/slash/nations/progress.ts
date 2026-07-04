@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'progress',
-    description: `View your ${ctbl.plural} progress`,
+    description: `View your ${ctbl.singular} collection progress`,
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
@@ -37,7 +37,7 @@ export default new ApplicationCommand({
   $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect ${ctbl.plural}, sadly.;true]
+    $err[Bots cannot collect ${ctbl.plural}.;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
@@ -49,7 +49,7 @@ export default new ApplicationCommand({
   ]
   
   $interactionReply[
-    $addTextDisplay[Fetching ${ctbl.plural} data of **$userDisplayName[$get[user]]**...]
+    $addTextDisplay[Fetching ${ctbl.plural} data for **$userDisplayName[$get[user]]**...]
   ]
   
   $interactionUpdate[

@@ -19,7 +19,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: `The rarity class whose ${ctbl.plural}' rarity to view.`,
+        description: `The rarity class of the ${ctbl.plural} you want to view.`,
         required: false,
         autocomplete: true,
       },

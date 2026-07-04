@@ -40,10 +40,10 @@ export default new ApplicationCommand({
     $err[You cannot give ${currency.plural} to yourself;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot aqcuire ${currency.plural};true]
+    $err[Bots cannot acquire ${currency.plural};true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** do not accept ${currency.plural};true]
+    $err[**$userDisplayName[$get[user]]** does not accept ${currency.plural};true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
     $err[You have blocked **$userDisplayName[$get[user]]**;true]
@@ -52,7 +52,7 @@ export default new ApplicationCommand({
     $err[Something went wrong;true]
   ]
   $onlyIf[$get[amount]>0;
-    $err[Please put a minimum amount of **1**;true]
+    $err[Please specify a minimum amount of **1**;true]
   ]
   $onlyIf[$get[balance]>=$get[amount];
     $err[You don't have enough ${currency.plural}!;true]

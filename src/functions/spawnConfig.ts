@@ -2,7 +2,7 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'spawnConfig',
-  // Get a server's spawns configurations from the "spawnConfig" variable.
+  // Get a server's spawn configuration from the "spawnConfig" variable.
   params: [
     {
       name: 'value',

@@ -11,16 +11,19 @@ const canvas = new ForgeCanvas();
 
 const dex = new ForgeClient({
   intents: [
-    'Guilds',
     'GuildMessages',
-    'GuildMembers',
     'MessageContent',
-    'DirectMessages',
-    'DirectMessageReactions',
   ],
-  events: ['messageCreate', 'interactionCreate', 'clientReady'],
+  events: [
+    'messageCreate',
+    'interactionCreate',
+    'clientReady',
+  ],
   prefixes: config.prefixes,
-  extensions: [db, canvas],
+  extensions: [
+    db,
+    canvas
+  ],
 });
 
 db.variables(require('../src/config/variables.json'));

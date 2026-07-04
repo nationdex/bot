@@ -34,7 +34,7 @@ export default new ApplicationCommand({
     $err[You cannot block bots.;true]
   ]
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot block yourself. Why do you even want to?;true]
+    $err[You cannot block yourself.;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
     $err[You have already blocked this user.;true]
@@ -46,7 +46,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[Blocked <@$get[user]> (\`$username[$get[user]]\`)]
+      $addTextDisplay[Blocked <@$get[user]> (\`$username[$get[user]]\`).]
     ;#00FF00]
   $addActionRow
   $addButton[info-block;;Secondary;$appEmoji[question_mark]]

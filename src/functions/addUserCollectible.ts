@@ -12,7 +12,7 @@ export default new ForgeFunction({
     },
     {
       name: 'collectibleID',
-      // The id of the collectible to add.
+      // The ID of the collectible to add.
       type: 'String',
       required: true,
     },

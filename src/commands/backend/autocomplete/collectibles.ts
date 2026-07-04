@@ -25,7 +25,7 @@ export default new BaseCommand({
   $arraySlice[userCollectibles;userCollectibles;0;25]
   
   $onlyIf[$arrayLength[userCollectibles]>0;
-    $addChoice[You don't have any ${ctbl.singular};null]
+    $addChoice[You don't have any ${ctbl.plural};null]
   ]
       
   $arrayForEach[userCollectibles;nat;

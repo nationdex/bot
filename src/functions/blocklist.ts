@@ -3,11 +3,11 @@ import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'blocklist',
-  // Shows the blocklist of an user as a Components v2 message.
+  // Shows the blocklist of a user as a Components v2 message.
   params: [
     {
       name: 'user',
-      // The user whose blocks list to check.
+      // The user whose blocked users list to check.
       type: 'String',
       required: false,
     },
@@ -29,7 +29,7 @@ export default new ForgeFunction({
   $let[endInd;$get[maxperpage]]
   
   $if[$arrayLength[blocked]<1;
-    $return[$err[You have not blocked any user;true]]
+    $return[$err[You haven't blocked any users;true]]
   ]
   
   $arraySlice[blocked;show;$get[stInd];$get[endInd]]

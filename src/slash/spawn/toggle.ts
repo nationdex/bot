@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'toggle',
-    description: `Toggle on/off ${ctbl.plural} spawning in the server.`,
+    description: `Toggle ${ctbl.plural} spawning on or off in the server.`,
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
   },
@@ -28,7 +28,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[$toTitleCase[$get[toggle]] ${ctbl.plural} spawning in the server.]
+      $addTextDisplay[$toTitleCase[$get[toggle]] ${ctbl.plural} spawning in this server.]
     ;#00FF00]
   ]
   `,

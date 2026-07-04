@@ -30,7 +30,7 @@ export default new BaseCommand({
     $elseIf[$get[act]==cancel;
       $interactionUpdate[
         $addContainer[
-          $addTextDisplay[$randomText[Awhh why could you not give the poor child a ${ctbl.singular} :(;Good choice! They did'nt deserve it anyway;No way... You gave them a hope and then rejected it?]]
+          $addTextDisplay[$randomText[Aw, why couldn't you give the poor child a ${ctbl.singular}? :(;Good choice! They didn't deserve it anyway;No way... You gave them hope and then rejected it?]]
         ;#FF0000]
       ]
     ]

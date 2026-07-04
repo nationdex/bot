@@ -5,8 +5,8 @@ export default new ForgeFunction({
   // Transfer a collectible from one user to another
   params: [
     {
-      name: 'reciever',
-      // The ID of the user whom to give
+      name: 'receiver',
+      // The ID of the user receiving the collectible
       type: 'String',
       required: true,
     },
@@ -18,7 +18,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[reciever;$env[reciever]]
+  $let[receiver;$env[receiver]]
   $let[id;$env[id]]
   $let[author;$collectible[$get[id];author]]
   $let[colId;$collectible[$get[id];collectible]]
@@ -38,7 +38,7 @@ export default new ForgeFunction({
   $!jsonSet[data;total_value;$max[$sub[$env[data;total_value];$collectibleInfo[$get[colId];weight]];0]]
   $setUserVar[userCollectibles;$env[data];$get[author]]
   
-  $jsonLoad[data;$getUserVar[userCollectibles;$get[reciever]]]
+  $jsonLoad[data;$getUserVar[userCollectibles;$get[receiver]]]
   $jsonLoad[userCollectibles;$env[data;collectibleIds]]
   $jsonLoad[uniques;$env[data;unique]]
   $!jsonSet[data;collectibleIds;$arrayLength[userCollectibles];$get[id]]
@@ -48,10 +48,10 @@ export default new ForgeFunction({
   $!jsonSet[data;total;$sum[$env[data;total];1]]
   $!jsonSet[data;$get[class];$sum[$env[data;$get[class]];1]]
   $!jsonSet[data;total_value;$sum[$env[data;total_value];$collectibleInfo[$get[colId];weight]]]
-  $setUserVar[userCollectibles;$env[data];$get[reciever]]
+  $setUserVar[userCollectibles;$env[data];$get[receiver]]
   
   $jsonLoad[data;$getVar[collectible;$get[id]]]
-  $!jsonSet[data;author;"$get[reciever]"]
+  $!jsonSet[data;author;"$get[receiver]"]
   $setVar[collectible;$get[id];$env[data]]
   `,
 });

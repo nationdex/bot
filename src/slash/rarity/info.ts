@@ -11,7 +11,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: `View rarity info of a ${ctbl.singular}`,
+    description: `View the rarity info of a ${ctbl.singular}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

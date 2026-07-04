@@ -34,7 +34,7 @@ export default new ApplicationCommand({
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[**$userDisplayName[$get[user]]** have their inventory private;true]
+      $err[**$userDisplayName[$get[user]]** has their inventory private;true]
     ]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
@@ -46,7 +46,7 @@ export default new ApplicationCommand({
   
   $interactionReply[
     $ephemeral
-    $if[$get[user]==$authorID;You have **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in your wallet;**$userDisplayName[$get[user]]** have **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in their wallet]
+    $if[$get[user]==$authorID;You have **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in your wallet;**$userDisplayName[$get[user]]** has **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in their wallet]
   ]
   `,
 });

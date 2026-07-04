@@ -8,7 +8,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: `value`,
-    description: `Show the leaderboard of ${ctbl.plural} value`,
+    description: `Show the leaderboard for total ${ctbl.plural} value`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

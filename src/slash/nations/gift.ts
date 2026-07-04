@@ -20,7 +20,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: 'The user whom you want to gift',
+        description: 'The user you want to send a gift to',
         required: true,
       },
       {
@@ -47,7 +47,7 @@ export default new ApplicationCommand({
     $err[Bots cannot accept gifts;true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** do not accept gifts;true]
+    $err[**$userDisplayName[$get[user]]** does not accept gifts;true]
   ]
   $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
     $err[You have blocked **$userDisplayName[$get[user]]**;true]

@@ -42,11 +42,11 @@ export default new BaseCommand({
       ]
     ]
 
-    $elseIf[$get[acrt]==cancel;
+    $elseIf[$get[act]==cancel;
       $interactionUpdate[
         $appEmoji[check_mark] | Cancelled the sale of ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[${currency.plural}];${currency.plural}]**
       ]
     ]
   ]
   `
-})
+});

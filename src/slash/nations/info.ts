@@ -10,7 +10,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: `View info card of your ${ctbl.plural}.`,
+    description: `View the info card of one of your ${ctbl.plural}.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

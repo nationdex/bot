@@ -4,7 +4,7 @@ import { ctbl } from '../config/collectible';
 import { currency } from '../config/currency';
 export default new ForgeFunction({
   name: 'leaderboards',
-  // Display the given type of leaderboard as a components v2 message
+  // Display the given type of leaderboard as a Components v2 message
   params: [
     {
       name: 'type',

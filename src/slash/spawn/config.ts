@@ -11,7 +11,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'configs',
-    description: "Check server's spawn configurations.",
+    description: "Check the server's spawn configuration.",
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
   },
@@ -29,14 +29,14 @@ export default new ApplicationCommand({
     $ephemeral
     $addContainer[
       $addSection[
-        $addTextDisplay[$appEmoji[settings] Server Configs
+        $addTextDisplay[$appEmoji[settings] Server Configuration
 -# ${config.name} is $if[$and[$get[status]==enabled;$get[ch]!=];configured;not configured] in this server.]
         $addThumbnail[$default[$guildIcon;$userAvatar]]
       ]
       $addSeparator
       $addTextDisplay[Spawn Channel: $if[$get[ch]!=;<#$get[ch]>;Not Set]
 Status: **$get[status]**
-Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No ${ctbl.plural} spawned]
+Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No ${ctbl.plural} have spawned yet]
 ]
     ;${config.color}]
   ]

@@ -2,7 +2,7 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'getSpecial',
-  // Get information about an special from the "specials" variable
+  // Get information about a special from the "specials" variable
   params: [
     {
       name: 'name',
