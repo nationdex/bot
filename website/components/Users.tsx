@@ -9,11 +9,7 @@ import { bot, collectibleLabel, placeholderUsers } from "@/lib/bot";
 import { listItem, staggerContainer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-export default function UsersPage({
-	searchQuery = "",
-}: {
-	searchQuery?: string;
-}) {
+export default function UsersPage({ searchQuery = "" }: { searchQuery?: string }) {
 	const [localQuery, setLocalQuery] = useState(searchQuery);
 
 	useEffect(() => {
@@ -30,20 +26,11 @@ export default function UsersPage({
 		<div className="w-full space-y-4 sm:space-y-6">
 			<div className="mb-4 sm:mb-6 space-y-3">
 				<div>
-					<h1
-						className={cn(
-							"mb-2 text-xl font-bold sm:text-2xl md:text-3xl",
-							admin.fg,
-						)}
-					>
-						Users
-					</h1>
+					<h1 className={cn("mb-2 text-xl font-bold sm:text-2xl md:text-3xl", admin.fg)}>Users</h1>
 					<p className={cn("text-sm", admin.muted)}>
 						Browse player inventories from{" "}
-						<code className="opacity-80">
-							getUserVar[{bot.vars.userInventory}]
-						</code>{" "}
-						— total, unique, rarity counts, and privacy settings.
+						<code className="opacity-80">getUserVar[{bot.vars.userInventory}]</code> — total,
+						unique, rarity counts, and privacy settings.
 					</p>
 				</div>
 			</div>
@@ -53,22 +40,17 @@ export default function UsersPage({
 					<div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
 						<div className="flex items-center gap-2">
 							<UsersIcon className={cn("h-4 w-4", admin.muted)} />
-							<h3 className={cn("text-sm font-medium", admin.muted)}>
-								Player inventories
-							</h3>
+							<h3 className={cn("text-sm font-medium", admin.muted)}>Player inventories</h3>
 						</div>
 						<div className="relative w-full sm:w-64">
 							<Search
-								className={cn(
-									"absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2",
-									admin.muted,
-								)}
+								className={cn("absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", admin.muted)}
 							/>
 							<Input
-								value={localQuery}
-								onChange={(e) => setLocalQuery(e.target.value)}
 								className={cn("pl-9", admin.input)}
+								onChange={(e) => setLocalQuery(e.target.value)}
 								placeholder="Search by username or Discord ID..."
+								value={localQuery}
 							/>
 						</div>
 					</div>
@@ -77,91 +59,45 @@ export default function UsersPage({
 						<table className="w-full min-w-[640px]">
 							<thead>
 								<tr className="border-b border-[var(--admin-border)]">
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Username
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Discord ID
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Total
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Unique
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Value
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Privacy
-									</th>
-									<th
-										className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}
-									>
-										Gifts
-									</th>
-									<th className={cn("pb-3 text-right text-xs", admin.muted)}>
-										Actions
-									</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Username</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Discord ID</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Total</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Unique</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Value</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Privacy</th>
+									<th className={cn("pb-3 pr-4 text-left text-xs", admin.muted)}>Gifts</th>
+									<th className={cn("pb-3 text-right text-xs", admin.muted)}>Actions</th>
 								</tr>
 							</thead>
 							<motion.tbody
-								variants={staggerContainer}
-								initial="hidden"
 								animate="show"
+								initial="hidden"
 								key={localQuery}
+								variants={staggerContainer}
 							>
 								<AnimatePresence initial={false}>
 									{filteredUsers.map((user) => (
 										<motion.tr
-											key={user.discordId}
-											variants={listItem}
-											initial="hidden"
 											animate="show"
-											exit="exit"
 											className={cn(
 												"border-b border-[var(--admin-border)] last:border-0 transition-colors",
 												admin.hoverRow,
 											)}
+											exit="exit"
+											initial="hidden"
+											key={user.discordId}
+											variants={listItem}
 										>
-											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>
-												{user.username}
-											</td>
-											<td
-												className={cn(
-													"py-3 pr-4 font-mono text-xs",
-													admin.muted,
-												)}
-											>
+											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>{user.username}</td>
+											<td className={cn("py-3 pr-4 font-mono text-xs", admin.muted)}>
 												{user.discordId}
 											</td>
 											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>
 												{user.total} {collectibleLabel(user.total)}
 											</td>
-											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>
-												{user.unique}
-											</td>
-											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>
-												{user.totalValue}
-											</td>
-											<td
-												className={cn(
-													"py-3 pr-4 text-sm capitalize",
-													admin.muted,
-												)}
-											>
+											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>{user.unique}</td>
+											<td className={cn("py-3 pr-4 text-sm", admin.fg)}>{user.totalValue}</td>
+											<td className={cn("py-3 pr-4 text-sm capitalize", admin.muted)}>
 												{user.inventoryPrivacy}
 											</td>
 											<td className={cn("py-3 pr-4 text-sm", admin.muted)}>
@@ -169,12 +105,9 @@ export default function UsersPage({
 											</td>
 											<td className="py-3 text-right">
 												<Button
-													variant="ghost"
+													className={cn(admin.muted, "hover:text-[var(--admin-fg)]")}
 													size="sm"
-													className={cn(
-														admin.muted,
-														"hover:text-[var(--admin-fg)]",
-													)}
+													variant="ghost"
 												>
 													View
 												</Button>
