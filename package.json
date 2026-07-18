@@ -36,21 +36,16 @@
   },
   "dependencies": {
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forge.db": "github:nationdex/forgedb#main",
+    "@tryforge/forge.db": "github:tryforge/forgedb#dev",
     "@tryforge/forgescript": "github:tryforge/forgescript#dev",
     "better-sqlite3": "^12.11.1",
     "pm2": "^7.0.3"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
   },
   "overrides": {
-    "js-yaml": "5.1.0",
-    "undici": "6.27.0",
-    "ws": "8.21.0"
-  },
-  "allowScripts": {
-    "better-sqlite3@12.11.1": true
+    "undici": "6.27.0"
   }
 }
