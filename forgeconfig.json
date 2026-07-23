@@ -1,0 +1,9 @@
+{
+  "urls": [
+    "github:tryforge/forgescript",
+    "github:tryforge/forgedb",
+    "github:tryforge/ForgeCanvas"
+  ],
+  "custom_functions_path": "src/functions",
+  "log_level": "info"
+}
