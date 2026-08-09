@@ -132,13 +132,14 @@ Nationdex as a whole was only possible at some point thanks to the help from the
 
 | Honourable Mentions |             Roles             |
 | ------------------- | ----------------------------- |
-| Luka22r             | Former Head-Developer         |
-| MetroKitten         | Former Dev & Ex-Manager       |
-| Tape                | Former Developer              |
-| Gasvo               | Former BDFD Developer         |
-| Emtyapple           | Former BDFD Developer         |
+| Luka22r             | Former BDFD & Python Head-Dev |
+| MetroKitten         | Former Developer & Ex-Manager |
+| Tape                | Former BDFD & FS Developer    |
+| Econome             | Former FS & DJS Developer     |
+| Gasvo               | Former BDFD Expert Developer  |
+| Emtyapple           | Former BDFD Mid-Range Dev     |
 | Emperor Scorpion    | Leader of Scorpceltic Empire  |
 | Hariri              | Original Idealist             |
-| UG                  | Former Old Shareholder        |
+| UG                  | Former Server Shareholder     |
 
 To all of them, together with all the supporters and contributors, let's make the dex community blue and united once again, as we all stand together, united, and committed for a better environment, one that is built on our own values and principles, one that intends to be with the community in high-regard, and one that turns creativity and passion into a norm!
