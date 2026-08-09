@@ -14,22 +14,22 @@ To install dependencies:
 npm install
 ```
 
-To configure the bot through `config.ts`:
-
-```bash
-cp src/config/config.example.ts src/config/config.ts
-```
-
 To run on dev:
 
 ```bash
 npm run dev
 ```
 
-to start:
+To start:
 
 ```bash
 npm run start
+```
+
+To prepare for production:
+
+```bash
+npm run prod:build
 ```
 
 ## 🛠️ Troubleshooting
@@ -48,6 +48,64 @@ In order to check for any errors and warnings on the codebase, run:
 npm run typecheck
 ```
 
+## 🚀 Production
+
+To start the bot in production:
+
+```bash
+npm run pm2:start
+```
+
+To stop:
+
+```bash
+npm run pm2:stop
+```
+
+To restart:
+
+```bash
+npm run pm2:restart
+```
+
+To delete:
+
+```bash
+npm run pm2:delete
+```
+
+To view the status:
+
+```bash
+npm run pm2:status
+```
+
+To view the logs:
+
+```bash
+npm run pm2:logs
+```
+
+## 🐳 Docker
+
+To build and run the bot in a Docker container:
+
+```bash
+docker compose up -d --build
+```
+
+To stop the instance:
+
+```bash
+docker compose down
+```
+
+To check the logs:
+
+```bash
+docker compose logs
+```
+
 ## 🤝 Contributions
 
 For those who are interested in contributing for Nationdex's development, you are always encouraged to open a Pull Request or Issue. For more information about how to contribute, please check out [our full contribution guidance](https://github.com/nationdex/bot/blob/main/CONTRIBUTING.md).
@@ -56,26 +114,31 @@ For those who are interested in contributing for Nationdex's development, you ar
 
 Made with great honor and dedication by the Nationdex Team.
 
-| Developers |        Roles        |
-| ---------- | ------------------- |
-| Ariel Aram |   Founding Father   |
-|   Aditya   |  Frontend Developer |
-|   Ayansh   |  Backend Developer  |
+|     Developers      |             Roles             |
+| ------------------- | ----------------------------- |
+| Ariel Aram          | Founding Father               |
+| Aditya              | Frontend Developer            |
+| Ayansh              | Backend Developer             |
 
-|  Staff   |         Roles         |
-| -------- | --------------------- |
-| Mr. Lore |     Staff Member      |
-| Bloxy    | Staff & Code Reviewer |
-| F.m.e    |    Staff & Artist     |
-| HiboMan  | Staff & Code Reviewer |
+|        Staff        |             Roles             |
+| ------------------- | ----------------------------- |
+| Mr. Lore            | Staff Member                  |
+| BloxyBlitz          | Staff & Code Reviewer         |
+| F.m.e               | Staff & Artist                |
+| HiboMan             | Staff & Code Reviewer         |
+| AhmedTheWarrior     | Staff Member                  |
 
-Nationdex as a whole was only possible at some point thanks to the help from the following people:
+Nationdex as a whole was only possible at some point thanks to the help from the following people.
 
-| Honourable Mentions |
-| ------------------- |
-| Luka22r             |
-| MetroKitten         |
-| Hariri              |
-| UG                  |
+| Honourable Mentions |             Roles             |
+| ------------------- | ----------------------------- |
+| Luka22r             | Former Head-Developer         |
+| MetroKitten         | Former Dev & Ex-Manager       |
+| Tape                | Former Developer              |
+| Gasvo               | Former BDFD Developer         |
+| Emtyapple           | Former BDFD Developer         |
+| Emperor Scorpion    | Leader of Scorpceltic Empire  |
+| Hariri              | Original Idealist             |
+| UG                  | Former Old Shareholder        |
 
-To all of them, together with all the supporters and contributors, let's make the dex community blue and united once again, as we all stand together, united, and committed for a better environment, one that is built on our own values and principles, one that intends to be with the community in high-regard, and one that turns creativity and passion into a norm.
+To all of them, together with all the supporters and contributors, let's make the dex community blue and united once again, as we all stand together, united, and committed for a better environment, one that is built on our own values and principles, one that intends to be with the community in high-regard, and one that turns creativity and passion into a norm!
