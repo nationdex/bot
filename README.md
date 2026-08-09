@@ -48,7 +48,11 @@ In order to check for any errors and warnings on the codebase, run:
 npm run typecheck
 ```
 
-===
+## 🤝 Contributions
+
+For those who are interested in contributing for Nationdex's development, you are always encouraged to open a Pull Request or Issue. For more information about how to contribute, please check out [our full contribution guidance](https://github.com/nationdex/bot/blob/main/CONTRIBUTING.md).
+
+## 👥 Devs and Mentions
 
 Made with great honor and dedication by the Nationdex Team.
 
@@ -65,7 +69,7 @@ Made with great honor and dedication by the Nationdex Team.
 | F.m.e    |    Staff & Artist     |
 | HiboMan  | Staff & Code Reviewer |
 
-Nationdex as a whole was only possible thanks to the following people:
+Nationdex as a whole was only possible at some point thanks to the help from the following people:
 
 | Honourable Mentions |
 | ------------------- |

@@ -30,4 +30,10 @@ Before anything, please make sure to install Node.js through its [website](https
 
 ## Important Note
 
-Linting and formatting is not needed for the codebase, since ForgeScript codes could end up being ruined by the formatter, causing the bot to break. Therefore, it is recommended to only use linting and formatting checks on the admin panel code instead of the root ForgeScript files.
+Linting and formatting is not needed for the codebase, since ForgeScript codes could end up being ruined by the formatter, causing the bot to break. Therefore, it is recommended to only use linting and formatting checks on the admin panel code instead of the root ForgeScript files. However, you are always recommended to run typecheck solutions across the codebase to check for any issues.
+
+## Pull Requests and Issues
+
+In a large-scale project such as Project Nationdex 2026, you are always encouraged to create a fork and contribute to the codebase whenever necessary or whenever you dislike something on the project, but let's not forget that if you do not have any programming knowledge, you can always voice your criticisms and inputs on the Issues tab of our repository.
+
+> **One thing to clarify**, we do NOT tolerate any blind or straight up invalid criticism towards the project, even if you're a developer or whatever. Make sure you review the codebase and understand how the structure works, together with the stack used on it, before giving any input or opinion.
