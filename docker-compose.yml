@@ -1,0 +1,30 @@
+services:
+  bot:
+    image: nationdex-bot:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-bot
+    container_name: nationdex-bot
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./database:/app/database
+      - ./logs:/app/logs
+      - ./assets:/app/assets
+
+  admin:
+    image: nationdex-admin:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-admin
+    container_name: nationdex-admin
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs

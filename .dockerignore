@@ -1,0 +1,28 @@
+# Dependencies (rebuilt inside the image)
+node_modules/
+website/node_modules/
+
+# Build output (rebuilt inside the image)
+dist/
+website/dist/
+
+# Runtime data (bind-mounted, not baked)
+database/
+logs/
+assets/
+
+# VCS / tooling / editor
+.git/
+.gitignore
+.github/
+.vscode/
+.forgevsc.json
+.cache/
+
+# PM2 config (not used by Docker)
+ecosystem.config.cjs
+
+# Docs / license (not needed at runtime)
+README.md
+CONTRIBUTING.md
+LICENSE
