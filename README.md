@@ -48,6 +48,13 @@ In order to check for any errors and warnings on the codebase, run:
 npm run typecheck
 ```
 
+## 🗄️ Database
+
+Nationdex uses **SurrealDB embedded** (SurrealKV) via `@nationdex/db`.  
+Database files are stored locally in the `./database` directory and are ignored by Git.
+
+No external database container or `DATABASE_URL` is required.
+
 ## 🚀 Production
 
 To start the bot in production:
@@ -105,6 +112,9 @@ To check the logs:
 ```bash
 docker compose logs
 ```
+
+The bot service mounts `./database:/app/database` so SurrealDB embedded data persists on the host.  
+No MySQL container or `DATABASE_URL` environment variable is needed.
 
 ## 🤝 Contributions
 

@@ -35,13 +35,13 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
+    "@nationdex/db": "github:nationdex/db#af554d276fb1a55c691b03c881166958f8c594f9",
+    "@surrealdb/node": "^2.0.0",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forge.db": "github:tryforge/forgedb#dev",
     "@tryforge/forgescript": "github:tryforge/forgescript#dev",
-    "better-sqlite3": "^13.0.3"
+    "surrealdb": "^2.0.8"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2",
     "pm2": "^7.0.3"
