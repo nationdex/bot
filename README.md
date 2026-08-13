@@ -113,9 +113,6 @@ To check the logs:
 docker compose logs
 ```
 
-The bot service mounts `./database:/app/database` so SurrealDB embedded data persists on the host.  
-No MySQL container or `DATABASE_URL` environment variable is needed.
-
 ## 🤝 Contributions
 
 For those who are interested in contributing for Nationdex's development, you are always encouraged to open a Pull Request or Issue. For more information about how to contribute, please check out [our full contribution guidance](https://github.com/nationdex/bot/blob/main/CONTRIBUTING.md).
