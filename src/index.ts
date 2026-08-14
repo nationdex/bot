@@ -5,7 +5,7 @@ import { config } from "./config/config";
 
 const db = new ForgeDB({
 	type: "surrealdb",
-	engine: "surrealkv",
+	engine: "rocksdb",
 	folder: "./database",
 	namespace: "forge",
 	database: "forge.db",
