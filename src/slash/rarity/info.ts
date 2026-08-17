@@ -36,7 +36,7 @@ export default new ApplicationCommand({
   $let[chance;$cropText[$math[($get[rarity]/$get[totalRarity])*100];0;5]%]
   
   $onlyIf[$arrayIncludes[ids;$get[colId]];
-    $err[Invalid ${ctbl.singular}!;true]
+    $err[invalid_collectible;true]
   ]
   
   $interactionReply[

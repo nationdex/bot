@@ -33,10 +33,10 @@ export default new ApplicationCommand({
   $let[next;$env[nations;$sum[$get[ind];1]]]
   
   $onlyIf[$arrayIncludes[nations;$get[id]];
-    $err[Invalid ${ctbl.singular}!;true]
+    $err[invalid_collectible;true]
   ]
   $onlyIf[$arrayLength[nations]>0;
-    $err[No ${ctbl.plural} found;true]
+    $err[no_collectibles_found;true]
   ]
 
   $interactionReply[Loading ${ctbl.singular} info...]

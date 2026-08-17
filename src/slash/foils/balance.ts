@@ -26,22 +26,14 @@ export default new ApplicationCommand({
   code: `
   $let[user;$findUser[$option[user];true]]
   $let[balance;$getUserVar[balance;$get[user]]]
-  $jsonLoad[blocked;$getUserVar[blockedUsers]]
-  $jsonLoad[userBlocked;$getUserVar[blockedUsers;$get[user]]]
 
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots do not have ${currency.plural}!;true]
+    $err[bots_no_bal;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[**$userDisplayName[$get[user]]** has their inventory private;true]
+      $err[inv_private;true]
     ]
-  ]
-  $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have blocked **$userDisplayName[$get[user]]**;true]
-  ]
-  $onlyIf[$arrayIncludes[userBlocked;$authorID]==false;
-    $err[Something went wrong;true]
   ]
   
   $interactionReply[

@@ -35,18 +35,14 @@ export default new ApplicationCommand({
   $let[user;$findUser[$option[user];true]]
   $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
-  $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect ${ctbl.plural}.;true]
+    $err[bots_cant_collect;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> has their inventory private;true]
+      $err[inv_private;true]
     ]
-  ]
-  $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
   ]
   
   $jsonLoad[ctbls;$getUserData[$get[user];collectibleIds]]
@@ -55,7 +51,7 @@ export default new ApplicationCommand({
   ]
   
   $onlyIf[$arrayLength[ctbls]>0;
-    $err[No ${ctbl.plural} found;true]
+    $err[no_collectibles_found;true]
   ]
   
   $let[id;$env[ctbls;$sub[$arrayLength[ctbls];1]]]

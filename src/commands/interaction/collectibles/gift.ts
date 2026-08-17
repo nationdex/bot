@@ -7,7 +7,7 @@ export default new BaseCommand({
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==gift]
   $onlyIf[$arrayAt[cid;2]==$authorID;
-    $err[You cannot use this!;true]
+    $err[not_author;true]
   ]
   
   $let[act;$arrayAt[cid;1]]

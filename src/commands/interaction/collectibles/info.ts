@@ -8,7 +8,7 @@ export default new BaseCommand({
   $arrayLoad[cid;-;$customID]
   $onlyIf[$and[$arrayAt[cid;0]==collectibles;$arrayAt[cid;1]==info]]
   $onlyIf[$arrayAt[cid;2]==$authorID;
-    $err[You cannot use this!;true]
+    $err[not_author;true]
   ]
   
   $let[id;$default[$selectMenuValues[0];$arrayAt[cid;3]]]

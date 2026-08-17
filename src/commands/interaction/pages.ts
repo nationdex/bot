@@ -8,7 +8,7 @@ export default new BaseCommand({
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==pages]
   $onlyIf[$arrayAt[cid;2]==$authorID;
-    $err[You cannot use this!;true]
+    $err[not_author;true]
   ]
   
   $let[type;$arrayAt[cid;1]]
@@ -20,12 +20,6 @@ export default new BaseCommand({
       $let[class;$arrayAt[cid;5]]
       $interactionUpdate[
         $progressMenu[$get[user];$get[class];$get[page]]
-      ]
-    ]
-    $elseIf[$get[type]==blocklist;
-      $let[user;$arrayAt[cid;4]]
-      $interactionUpdate[
-        $blocklist[$get[user];$get[page]]
       ]
     ]
     $elseIf[$get[type]==collectibleInfo;

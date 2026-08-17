@@ -6,7 +6,7 @@ export default new BaseCommand({
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==settings]
   $onlyIf[$arrayAt[cid;2]==$authorID;
-    $err[You cannot use this!;true]
+    $err[not_author;true]
   ]
   
   $let[key;$arrayAt[cid;1]]

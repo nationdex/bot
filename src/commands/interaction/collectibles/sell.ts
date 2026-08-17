@@ -1,5 +1,4 @@
-import { BaseCommand } from "@tryforge/forgescript";
-import { ctbl } from '../../../config/collectible';
+import { BaseCommand } from '@tryforge/forgescript';
 import { currency } from '../../../config/currency';
 
 export default new BaseCommand({
@@ -16,7 +15,7 @@ export default new BaseCommand({
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIds]]
 
   $onlyIf[$arrayIncludes[collectibles;$get[id]];
-    $err[$toTitleCase[${ctbl.singular}] not found in your inventory!;true]
+    $err[no_collectibles_found;true]
   ]
 
   $ifx[

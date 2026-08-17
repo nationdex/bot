@@ -11,7 +11,7 @@ export default new BaseCommand({
   $let[msg;$messageReferenceID]
   
   $onlyIf[$get[msg]!=;
-    $err[Please reply to the message you want to compare.]
+    $err[reply_to_message]
   ]
 
   $let[ctbl;$spawnConfig[collectible]]
@@ -25,19 +25,19 @@ export default new BaseCommand({
   $let[user_time;$sub[$getMessage[$channelID;$get[msg];timestamp];$get[spawn_at]]]
   
   $onlyIf[$get[ctbl]!=;
-    $err[No ${ctbl.plural} have spawned in this server yet.]
+    $err[no_spawn]
   ]
   $onlyIf[$get[catcher]!=;
-    $err[No one caught the last ${ctbl.singular}.]
+    $err[collectible_not_caught]
   ]
   $onlyIf[$get[catcher]!=$get[user];
-    $err[You cannot compare a user to themselves.]
+    $err[compare_self]
   ]
   $onlyIf[$get[user_time]>0;
-    $err[That message was sent before the ${ctbl.singular} was summoned.]
+    $err[message_sent_early]
   ]
   $onlyIf[$or[$arrayIncludes[catch_names;$get[content]];$arrayIncludes[translations;$get[content]]];
-    $err[Incorrect name, not even close.]
+    $err[wrong_collectible]
   ]
   
   $sendMessage[$channelID;

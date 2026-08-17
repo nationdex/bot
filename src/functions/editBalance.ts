@@ -1,4 +1,4 @@
-import { ForgeFunction } from "@tryforge/forgescript";
+import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'editBalance',

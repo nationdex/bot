@@ -16,7 +16,7 @@ export default new ApplicationCommand({
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
-    $err[You need **Manage Server** permissions to use this command.;true]
+    $err[no_perms;true]
   ]
   
   $jsonLoad[config;$getGuildVar[spawnConfig]]

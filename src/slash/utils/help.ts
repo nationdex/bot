@@ -8,7 +8,7 @@ import { config } from '../../config/config';
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: 'commands',
+    name: 'help',
     description: 'Get a list of commands',
     integration_types: [
       ApplicationIntegrationType.GuildInstall,

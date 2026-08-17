@@ -34,18 +34,14 @@ export default new ApplicationCommand({
   code: `
   $let[user;$findUser[$option[user];true]]
   $let[class;$option[class]]
-  $jsonLoad[blocked;$getUserVar[blockedUsers;$get[user]]]
   
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot collect ${ctbl.plural}.;true]
+    $err[bots_cant_collect;true]
   ]
   $if[$get[user]!=$authorID;
     $onlyIf[$userSettings[$get[user];inventory_privacy]==public;
-      $err[<@$get[user]> has their inventory private;true]
+      $err[inv_private;true]
     ]
-  ]
-  $onlyIf[$arrayIncludes[blocked;$authorID]==false;
-    $err[Something went wrong;true]
   ]
   
   $interactionReply[

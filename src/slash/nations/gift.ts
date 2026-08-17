@@ -36,27 +36,19 @@ export default new ApplicationCommand({
   $let[user;$option[user]]
   $let[id;$option[${ctbl.singular}]]
   $let[colId;$collectible[$get[id];id]]
-  $jsonLoad[blocked;$getUserVar[blockedUsers]]
-  $jsonLoad[userBlocked;$getUserVar[blockedUsers;$get[user]]]
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot send gifts to yourself;true]
+    $err[gift_self;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot accept gifts;true]
+    $err[bots_cant_gift;true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** does not accept gifts;true]
-  ]
-  $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have blocked **$userDisplayName[$get[user]]**;true]
-  ]
-  $onlyIf[$arrayIncludes[userBlocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[decline_gifts;true]
   ]
   $onlyIf[$arrayIncludes[nations;$get[id]];
-    $err[Invalid ${ctbl.singular}!;true]
+    $err[invalid_collectible;true]
   ]
   
   $let[msg;$interactionReply[

@@ -51,7 +51,7 @@ export default new ApplicationCommand({
   ]
     
     $onlyIf[$env[data]!={};
-      $err[No ${ctbl.plural} found;true]
+      $err[no_collectibles_found;true]
     ]
     $jsonLoad[sorted;$sortData[$env[data];total;desc]]
     $log[$env[sorted]]

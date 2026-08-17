@@ -4,6 +4,7 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
   InteractionContextType,
+  ChannelType,
 } from 'discord.js';
 import { ctbl } from '../../config/collectible';
 
@@ -20,13 +21,13 @@ export default new ApplicationCommand({
         name: 'channel',
         description: `The channel to spawn ${ctbl.plural} in. Leave empty to reset.`,
         required: false,
-        channel_types: [0],
+        channel_types: [ChannelType.GuildText],
       },
     ],
   },
   code: `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
-    $err[You need **Manage Server** permissions to use this command.;true]
+    $err[no_perms;true]
   ]
   
   $let[ch;$option[channel]]

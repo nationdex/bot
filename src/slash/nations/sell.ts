@@ -30,7 +30,7 @@ export default new ApplicationCommand({
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
 
   $onlyIf[$arrayIncludes[nations;$get[id]];
-    $err[Invalid ${ctbl.singular}!;true]
+    $err[invalid_collectible;true]
   ]
 
   $let[colId;$collectible[$get[id];id]]

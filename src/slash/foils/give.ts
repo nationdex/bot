@@ -33,29 +33,21 @@ export default new ApplicationCommand({
   $let[user;$findUser[$option[user];true]]
   $let[amount;$round[$option[amount]]]
   $let[balance;$getUserVar[balance]]
-  $jsonLoad[blocked;$getUserVar[blockedUsers]]
-  $jsonLoad[userBlocked;$getUserVar[blockedUsers;$get[user]]]
 
   $onlyIf[$get[user]!=$authorID;
-    $err[You cannot give ${currency.plural} to yourself;true]
+    $err[give_self;true]
   ]
   $onlyIf[$isBot[$get[user]]==false;
-    $err[Bots cannot acquire ${currency.plural};true]
+    $err[bots_cant_earn;true]
   ]
   $onlyIf[$userSettings[$get[user];accept_gifts];
-    $err[**$userDisplayName[$get[user]]** does not accept ${currency.plural};true]
-  ]
-  $onlyIf[$arrayIncludes[blocked;$get[user]]==false;
-    $err[You have blocked **$userDisplayName[$get[user]]**;true]
-  ]
-  $onlyIf[$arrayIncludes[userBlocked;$authorID]==false;
-    $err[Something went wrong;true]
+    $err[decline_currency;true]
   ]
   $onlyIf[$get[amount]>0;
-    $err[Please specify a minimum amount of **1**;true]
+    $err[min_amount;true]
   ]
   $onlyIf[$get[balance]>=$get[amount];
-    $err[You don't have enough ${currency.plural}!;true]
+    $err[low_bal;true]
   ]
 
   $setUserVar[balance;$sub[$get[balance];$get[amount]];$authorID]
