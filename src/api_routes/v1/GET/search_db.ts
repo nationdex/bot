@@ -1,4 +1,4 @@
-import { RouteDefinition } from '@quoriel/api';
+import { RouteDefinition } from '@nationdex/api';
 
 const route: RouteDefinition = {
   url: 'v1/search_db/:variable',

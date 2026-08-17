@@ -35,11 +35,11 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
+    "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#main",
     "@surrealdb/node": "^3.0.3",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#dev",
-    "@nationdex/api": "github:nationdex/api#nain",
     "better-sqlite3": "^12.11.1",
     "pm2": "^7.0.3",
     "surrealdb": "^2.0.8",
@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^7.0.2",
-    "pm2": "^7.0.3"
+    "pm2": "^7.0.3",
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "undici": "6.28.0",

@@ -1,4 +1,4 @@
-import { QuorielApi } from '@quoriel/api';
+import { QuorielApi } from '@nationdex/api';
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { ForgeDB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
