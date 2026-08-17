@@ -13,12 +13,12 @@
     "website:install": "npm install --prefix website",
     "website:build": "npm run build --prefix website",
     "prod:build": "npm run build && npm run website:install && npm run website:build",
-    "pm2:start": "pm2 start ecosystem.config.cjs",
-    "pm2:stop": "pm2 stop ecosystem.config.cjs",
-    "pm2:restart": "pm2 restart ecosystem.config.cjs",
-    "pm2:delete": "pm2 delete ecosystem.config.cjs",
-    "pm2:logs": "pm2 logs",
-    "pm2:status": "pm2 status"
+    "pm2:start": "npm run prod:build && npx pm2 start ecosystem.config.cjs",
+    "pm2:stop": "npx pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "npx pm2 restart ecosystem.config.cjs",
+    "pm2:delete": "npx pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "npx pm2 logs",
+    "pm2:status": "npx pm2 status"
   },
   "author": "NationDex Team (https://github.com/nationdex)",
   "license": "Apache-2.0",
@@ -46,15 +46,14 @@
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.55.0"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "pm2": "^7.0.3"
   },
   "overrides": {
-    "js-yaml": "5.1.0",
-    "undici": "6.27.0",
-    "ws": "8.21.0"
-  },
-  "allowScripts": {
-    "better-sqlite3@12.11.1": true
+    "undici": "6.28.0",
+    "ip-address": "10.5.0",
+    "brace-expansion": "2.1.4",
+    "js-yaml": "5.2.3"
   }
 }

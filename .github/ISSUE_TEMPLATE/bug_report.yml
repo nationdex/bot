@@ -1,0 +1,65 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve Project Nationdex 2026
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug in **Project Nationdex 2026 (PND26)**!
+        Please fill out the form below as completely as possible.
+  - type: input
+    id: description
+    attributes:
+      label: Bug Summary
+      description: A clear and concise description of what the bug is.
+      placeholder: "e.g. Using command /dex card fails to render image when..."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run command '...'
+        2. Click on '...'
+        3. See error '...'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant Logs & Screenshots
+      description: Please paste any console output, logs, or attach screenshots if applicable.
+      render: shell
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of Nationdex 2.0 is affected?
+      options:
+        - "Bot Commands / Slash Commands"
+        - "ForgeScript / Functions"
+        - "Canvas / Image Generation"
+        - "Database / Storage (ForgeDB / SQLite)"
+        - "Website / Admin Panel"
+        - "Other / Unknown"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Self-Check
+      options:
+        - label: I have searched existing issues to make sure this isn't a duplicate.
+          required: true
+        - label: I am using the latest version of Nationdex 2.0.
+          required: false

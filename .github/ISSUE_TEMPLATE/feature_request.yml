@@ -1,0 +1,42 @@
+name: 🚀 Feature Request
+description: Suggest an idea or feature for Project Nationdex 2026
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea to make Project Nationdex 2026 even better? We'd love to hear it!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Need
+      description: Is your feature request related to a problem or limitation? Please describe.
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see added to Nationdex.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Target Area
+      description: Where should this feature be implemented?
+      options:
+        - "Bot Commands & Features"
+        - "Card Trading & Economy System"
+        - "Canvas / Visual Customizations"
+        - "Website & Admin Dashboard"
+        - "Developer / Infrastructure Tools"
+    validations:
+      required: true
