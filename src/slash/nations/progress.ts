@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'progress',
-    description: `View your ${ctbl.singular} collection progress`,
+    description: `View your ${variables.keywords.collectible.singular} collection progress`,
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
@@ -19,7 +19,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: `The user whose ${ctbl.plural} progress to view.`,
+        description: `The user whose ${variables.keywords.collectible.plural} progress to view.`,
         required: false,
       },
       {
@@ -45,7 +45,7 @@ export default new ApplicationCommand({
   ]
   
   $interactionReply[
-    $addTextDisplay[Fetching ${ctbl.plural} data for **$userDisplayName[$get[user]]**...]
+    $addTextDisplay[Fetching $jsonVar[keywords;collectible.plural] data for **$userDisplayName[$get[user]]**...]
   ]
   
   $interactionUpdate[

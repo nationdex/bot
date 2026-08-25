@@ -1,6 +1,6 @@
-export const variables = {
+const defaultVariables = {
   config: {
-    info: {
+    bot: {
       name: 'Nationdex',
       description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
       version: '1.0.0',
@@ -29,9 +29,19 @@ export const variables = {
       name: 'Aditya',
       profile: 'https://discord.com/users/903681538842054686',
     },
-    prefixes: ['n.'],
+    prefix: 'n.',
     logChannel: '',
     accent: '#4000ff'
+  },
+  keywords: {
+    collectible: {
+      singular: 'nation',
+      plural: 'nations'
+    },
+    currency: {
+      singular: 'foil',
+      plural: 'foils'
+    }
   },
   balance: 0,
   settings: {
@@ -58,15 +68,15 @@ export const variables = {
     rare: 0,
     mythic: 0,
     legendary: 0,
-    unique: [] as string[],
-    collectibleIds: [] as string[]
+    unique: [],
+    collectibleIds: []
   },
   auctionHouse: {},
   auction: {
     total: 0,
     sold: 0,
     earnings: 0,
-    onSale: [] as string[],
+    onSale: [],
   },
   collectible: {
     id: '',
@@ -85,7 +95,7 @@ export const variables = {
     message: '',
     expires_at: '',
     uses_left: '',
-    used_by: [] as string[],
+    used_by: [],
   },
   spawnConfig: {
     config_channel: '',
@@ -105,3 +115,37 @@ export const variables = {
   },
   specials: {},
 };
+
+export const variables = JSON.parse(JSON.stringify(defaultVariables));
+
+export async function syncVariables(client?: any): Promise<void> {
+  try {
+    const DataBase = client?.db ?? require('@nationdex/db/dist/util').DataBase;
+    for (const name of Object.keys(defaultVariables)) {
+      const data = await DataBase.get({ name, type: 'custom' }).then((x: any) => x?.value);
+      if (data !== null && data !== undefined) {
+        const val =
+          typeof data === 'string'
+            ? (() => {
+                try {
+                  return JSON.parse(data);
+                } catch {
+                  return data;
+                }
+              })()
+            : data;
+
+        if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+          (variables as any)[name] = {
+            ...(defaultVariables as any)[name],
+            ...val,
+          };
+        } else {
+          (variables as any)[name] = val;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Failed to synchronize variables from database:', err);
+  }
+}

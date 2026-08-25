@@ -1,7 +1,5 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { config } from '../config/config';
-import { ctbl } from '../config/collectible';
-import { currency } from '../config/currency';
+
 export default new ForgeFunction({
   name: 'leaderboards',
   // Display the given type of leaderboard as a Components v2 message
@@ -43,7 +41,7 @@ export default new ForgeFunction({
       $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
       $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid];$get[class]]]** $appEmoji[$get[class]]];display]
-      $let[title;$toTitleCase[$replace[$get[class];total;] ${ctbl.plural} leaderboard]]
+      $let[title;$toTitleCase[$replace[$get[class];total;] $jsonVar[keywords;collectible.plural] leaderboard]]
     ]
 
     $elseIf[$get[type]==value;
@@ -55,7 +53,7 @@ export default new ForgeFunction({
       $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
       $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid];total_value]]**];display]
-      $let[title;$toTitleCase[${ctbl.plural} value leaderboard]]
+      $let[title;$toTitleCase[$jsonVar[keywords;collectible.plural] value leaderboard]]
     ]
 
     $elseIf[$get[type]==balance;
@@ -66,8 +64,8 @@ export default new ForgeFunction({
       $jsonLoad[userIDs;$jsonKeys[data]]
       $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid]]]** $appEmoji[${currency.plural}]];display]
-      $let[title;$toTitleCase[${currency.plural} leaderboard]]
+      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid]]]** $appEmoji[$jsonVar[keywords;currency.plural]]];display]
+      $let[title;$toTitleCase[$jsonVar[keywords;currency.plural] leaderboard]]
     ]
   ]
   
@@ -82,7 +80,7 @@ export default new ForgeFunction({
 ];Nothing to see here...]]
       $addSeparator
       $addTextDisplay[-# You are $get[position] on the leaderboard]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
     $addActionRow
     $addButton[pages-lb-$authorID-$sub[$get[page];1]-$get[type]-$get[class];;Primary;$appEmoji[arrow_left];$checkCondition[$get[page]<=1]]
     $addButton[pages-lb-$authorID-jump-$get[type]-$get[class];$get[page] / $get[pages];Secondary;;true]

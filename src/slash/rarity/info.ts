@@ -4,14 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { config } from '../../config/config';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: `View the rarity info of a ${ctbl.singular}`,
+    description: `View the rarity info of a ${variables.keywords.collectible.singular}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,15 +18,15 @@ export default new ApplicationCommand({
     options: [
       {
         type: ApplicationCommandOptionType.String,
-        name: `${ctbl.singular}`,
-        description: `The ${ctbl.singular} whose rarity info to view.`,
+        name: `${variables.keywords.collectible.singular}`,
+        description: `The ${variables.keywords.collectible.singular} whose rarity info to view.`,
         required: true,
         autocomplete: true,
       },
     ],
   },
   code: `
-  $let[colId;$option[${ctbl.singular}]]
+  $let[colId;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[sorted;$sortData[$collectiblesData[collectibles];rarity;desc]]
   $jsonLoad[ids;$jsonKeys[sorted]]
   $let[value;$collectibleInfo[$get[colId];weight]]
@@ -48,7 +47,7 @@ export default new ApplicationCommand({
 - Spawn Chance: \`$get[chance]\`
 - Rarity Weight: \`$get[rarity]\`
 - Rarity Rank: \`#$sum[$arrayIndexOf[ids;$get[colId]];1]\`]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
   ]
   `,
 });

@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { currency } from '../../config/currency';
+import { variables } from '../../config/variables';
+
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: `sell`,
-    description: `Sell a ${ctbl.singular} for ${currency.plural}`,
+    description: `Sell a ${variables.keywords.collectible.singular} for ${variables.keywords.currency.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,15 +18,15 @@ export default new ApplicationCommand({
     options: [
       {
         type: ApplicationCommandOptionType.String,
-        name: `${ctbl.singular}`,
-        description: `The ${ctbl.singular} to sell.`,
+        name: `${variables.keywords.collectible.singular}`,
+        description: `The ${variables.keywords.collectible.singular} to sell.`,
         required: true,
         autocomplete: true,
       },
     ],
   },
   code: `
-  $let[id;$option[${ctbl.singular}]]
+  $let[id;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
 
   $onlyIf[$arrayIncludes[nations;$get[id]];
@@ -38,8 +38,8 @@ export default new ApplicationCommand({
   
   $interactionReply[
     $ephemeral
-    Are you sure you want to sell ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[${currency.plural}];${currency.plural}]**?
--# ⚠️ This action is irreversible. Once sold, you can't get your ${ctbl.singular} back!
+    Are you sure you want to sell ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**?
+-# ⚠️ This action is irreversible. Once sold, you can't get your $jsonVar[keywords;collectible.singular] back!
     $addActionRow
     $addButton[collectible-sell-confirm-$get[id];Sell;Success]
     $addButton[collectible-sell-cancel-$get[id];Cancel;Danger]

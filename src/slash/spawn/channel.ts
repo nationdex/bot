@@ -6,20 +6,20 @@ import {
   InteractionContextType,
   ChannelType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'channel',
-    description: `Set the channel where ${ctbl.plural} will spawn.`,
+    description: `Set the channel where ${variables.keywords.collectible.plural} will spawn.`,
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
     options: [
       {
         type: ApplicationCommandOptionType.Channel,
         name: 'channel',
-        description: `The channel to spawn ${ctbl.plural} in. Leave empty to reset.`,
+        description: `The channel to spawn ${variables.keywords.collectible.plural} in. Leave empty to reset.`,
         required: false,
         channel_types: [ChannelType.GuildText],
       },
@@ -39,7 +39,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[$if[$get[ch]==;Removed the spawn channel. ${ctbl.plural} will now spawn in the most active channel of the server.;${ctbl.plural} will now spawn in <#$get[ch]>]]
+      $addTextDisplay[$if[$get[ch]==;Removed the spawn channel. $jsonVar[keywords;collectible.plural] will now spawn in the most active channel of the server.;$jsonVar[keywords;collectible.plural] will now spawn in <#$get[ch]>]]
     ;#00FF00]
   ]
   `,

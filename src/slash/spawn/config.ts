@@ -4,8 +4,6 @@ import {
   ApplicationIntegrationType,
   InteractionContextType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
@@ -30,15 +28,15 @@ export default new ApplicationCommand({
     $addContainer[
       $addSection[
         $addTextDisplay[$appEmoji[settings] Server Configuration
--# ${config.name} is $if[$and[$get[status]==enabled;$get[ch]!=];configured;not configured] in this server.]
+-# $jsonVar[config;bot.name] is $if[$and[$get[status]==enabled;$get[ch]!=];configured;not configured] in this server.]
         $addThumbnail[$default[$guildIcon;$userAvatar]]
       ]
       $addSeparator
       $addTextDisplay[Spawn Channel: $if[$get[ch]!=;<#$get[ch]>;Not Set]
 Status: **$get[status]**
-Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No ${ctbl.plural} have spawned yet]
+Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No $jsonVar[keywords;collectible.plural] have spawned yet]
 ]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
   ]
   `,
 });

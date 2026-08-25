@@ -3,12 +3,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { currency } from '../../config/currency';
+import { variables } from '../../config/variables';
+
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: `${currency.plural}`,
-    description: `Show the leaderboard of ${currency.plural}`,
+    name: `${variables.keywords.currency.plural}`,
+    description: `Show the leaderboard of ${variables.keywords.currency.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,

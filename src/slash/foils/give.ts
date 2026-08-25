@@ -4,12 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { currency } from '../../config/currency';
+import { variables } from '../../config/variables';
+
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: `give`,
-    description: `Give your ${currency.plural} to another user`,
+    description: `Give your ${variables.keywords.currency.plural} to another user`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,13 +19,13 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: `user`,
-        description: `The user to give your ${currency.plural} to`,
+        description: `The user to give your ${variables.keywords.currency.plural} to`,
         required: true,
       },
       {
         type: ApplicationCommandOptionType.Integer,
         name: `amount`,
-        description: `The amount of ${currency.plural} to give`,
+        description: `The amount of ${variables.keywords.currency.plural} to give`,
         required: true,
       },
     ],
@@ -55,7 +56,7 @@ export default new ApplicationCommand({
 
   $interactionReply[
     $ephemeral
-    Given **$separateNumber[$get[amount]]** $default[$appEmoji[${currency.plural}];${currency.plural}] to **$userDisplayName[$get[user]]**
+    Given **$separateNumber[$get[amount]]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] to **$userDisplayName[$get[user]]**
   ]
   `
 });

@@ -1,10 +1,10 @@
 import { BaseCommand } from '@tryforge/forgescript';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new BaseCommand({
   name: 'howlate',
   aliases: ['hl'],
-  description: `Check how late someone was compared to the user who caught the last ${ctbl.singular} by replying to their message`,
+  description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular} by replying to their message`,
   usage: '',
   type: 'messageCreate',
   code: `

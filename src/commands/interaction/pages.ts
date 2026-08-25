@@ -1,5 +1,4 @@
 import { BaseCommand } from '@tryforge/forgescript';
-import { ctbl } from '../../config/collectible';
 
 export default new BaseCommand({
   hide: true,
@@ -29,7 +28,7 @@ export default new BaseCommand({
       $let[prev;$env[userCollectibles;$sub[$get[ind];1]]]
       $let[next;$env[userCollectibles;$sum[$get[ind];1]]]
 
-      $interactionUpdate[Loading ${ctbl.singular} info...]
+      $interactionUpdate[Loading $jsonVar[keywords;collectible.singular] info...]
 
       $!editMessage[$channelID;$messageID;
         $collectibleCard[$get[id]]

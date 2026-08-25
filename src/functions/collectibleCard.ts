@@ -1,5 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'collectibleCard',
@@ -15,10 +14,10 @@ export default new ForgeFunction({
   code: `
   $let[id;$env[id]]
   $let[colId;$collectible[$get[id];id]]
-  $let[bg;${config.cards}/$collectibleInfo[$get[colId];regime].png]
+  $let[bg;$jsonVar[config;paths.cards]/$collectibleInfo[$get[colId];regime].png]
   $let[name;$toUpperCase[$default[$replace[$collectibleInfo[$get[colId];short_name];null;];$collectibleInfo[$get[colId];name]]]]
-  $let[economyIcon;${config.icons}/$collectibleInfo[$get[colId];economy].png]
-  $let[card;${config.collection_cards}/$collectibleInfo[$get[colId];collection_card]]
+  $let[economyIcon;$jsonVar[config;paths.icons]/$collectibleInfo[$get[colId];economy].png]
+  $let[card;$jsonVar[config;paths.collection_cards]/$collectibleInfo[$get[colId];collection_card]]
   $let[capacity;$collectibleInfo[$get[colId];capacity_name]]
   $let[description;$collectibleInfo[$get[colId];capacity_description]]
   $let[attack;$collectible[$get[id];attack]]

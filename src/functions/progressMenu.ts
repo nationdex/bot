@@ -1,6 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { ctbl } from '../config/collectible';
-import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'progressMenu',
@@ -64,8 +62,8 @@ export default new ForgeFunction({
         $addContainer[
           $addSection[
             $addTextDisplay[## $userDisplayName[$get[user]]'s $toTitleCase[$get[class]] Progress: $get[progress]%
-Unique $toTitleCase[$get[class]] ${ctbl.plural}: **$get[unique] / $get[total]**
-Total $toTitleCase[$get[class]] ${ctbl.plural}: **$get[user$toTitleCase[$get[class]]]**]
+Unique $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$get[unique] / $get[total]**
+Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$get[user$toTitleCase[$get[class]]]**]
             $addThumbnail[$userAvatar[$get[user]]]
           ]
           $addSeparator
@@ -76,16 +74,16 @@ Total $toTitleCase[$get[class]] ${ctbl.plural}: **$get[user$toTitleCase[$get[cla
           $addSeparator
           $addActionRow
         $if[$arrayLength[colId]>0;
-          $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a ${ctbl.singular} to view its info]
+          $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info]
           $arrayForEach[colId;nat;
             $let[id;$env[nat]]
             $let[colId;$collectible[$get[id];id]]
             $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $collectibleInfo[$get[colId];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$collectibleInfo[$get[colId];emoji_id]]]
           ]
-          ;$addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a ${ctbl.singular} to view its info;true]
+          ;$addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info;true]
           $addOption[null;null;null]
         ]
-        ;${config.color}]
+        ;$jsonVar[config;accent]]
         $addActionRow
         $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-$get[class];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
         $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]
@@ -102,9 +100,9 @@ Total $toTitleCase[$get[class]] ${ctbl.plural}: **$get[user$toTitleCase[$get[cla
       $return[
         $addContainer[
           $addSection[
-            $addTextDisplay[## $userDisplayName[$get[user]]'s ${config.name} Progress: $get[progress]%
-Unique ${ctbl.plural}: **$get[owned] / $get[total]**
-Total ${ctbl.plural} Owned: **$getUserData[$get[user];total]**]
+            $addTextDisplay[## $userDisplayName[$get[user]]'s $jsonVar[config;bot.name] Progress: $get[progress]%
+Unique $jsonVar[keywords;collectible.plural]: **$get[owned] / $get[total]**
+Total $jsonVar[keywords;collectible.plural] Owned: **$getUserData[$get[user];total]**]
             $addThumbnail[$userAvatar[$get[user]]]
           ]
         $arrayForEach[classes;class;$let[class;$env[class]]
@@ -123,16 +121,16 @@ Total ${ctbl.plural} Owned: **$getUserData[$get[user];total]**]
           $addSeparator
           $addActionRow
         $if[$arrayLength[colId]>0;
-          $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a ${ctbl.singular} to view its info]
+          $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info]
           $arrayForEach[colId;nat;
             $let[id;$env[nat]]
             $let[colId;$collectible[$get[id];id]]
             $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $collectibleInfo[$get[colId];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$collectibleInfo[$get[colId];emoji_id]]]
           ]
-          ;$addStringSelectMenu[collectibles-info-$authorID;Select a ${ctbl.singular} to view its info;true]
+          ;$addStringSelectMenu[collectibles-info-$authorID;Select a $jsonVar[keywords;collectible.singular] to view its info;true]
           $addOption[null;null;null]
         ]
-        ;${config.color}]
+        ;$jsonVar[config;accent]]
         $addActionRow
         $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
         $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]

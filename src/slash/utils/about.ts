@@ -3,14 +3,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { config } from '../../config/config';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'about',
-    description: `About ${config.name}`,
+    description: `About ${variables.config.bot.name}`,
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
@@ -21,31 +20,31 @@ export default new ApplicationCommand({
   $interactionReply[
     $addContainer[
       $addSection[
-        $addTextDisplay[## $appEmoji[info] ${config.name}
-${config.description}]
+        $addTextDisplay[## $appEmoji[info] $jsonVar[config;bot.name]
+$jsonVar[config;bot.description]]
         $addThumbnail[$userAvatar[$botID]]
       ]
       $addSeparator
       $addTextDisplay[**Stats**
-**$collectiblesData[total]** ${ctbl.plural} to collect • **$guildCount** servers • **$userCount** users • **$collectiblesData[total_caught]** ${ctbl.plural} caught
-Version **${config.version}**
+**$collectiblesData[total]** $jsonVar[keywords;collectible.plural] to collect • **$guildCount** servers • **$userCount** users • **$collectiblesData[total_caught]** $jsonVar[keywords;collectible.plural] caught
+Version **$jsonVar[config;bot.version]**
 Uptime: **$parseMS[$uptime;2]**]
       $addTextDisplay[**Credits**
-$appEmoji[crown] **[${config.author.name}\\](${config.author.profile})** Founder
-$appEmoji[code] **[${config.dev.name}\\](${config.dev.profile})** Bot Developer
-$appEmoji[code] **[${config.webDev.name}\\](${config.webDev.profile})** Web Developer
+$appEmoji[crown] **[$jsonVar[config;author.name]\\]($jsonVar[config;author.profile])** Founder
+$appEmoji[code] **[$jsonVar[config;dev.name]\\]($jsonVar[config;dev.profile])** Bot Developer
+$appEmoji[code] **[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profile])** Web Developer
 -# Made with 💙 using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
 ]
       
       $addSeparator
       $addActionRow
-      $addButton[${config.server};Support;Link]
+      $addButton[$jsonVar[config;urls.server];Support;Link]
       $addButton[$botInvite;Invite;Link]
-      $addButton[${config.repo};Source Code;Link]
+      $addButton[$jsonVar[config;urls.repo];Source Code;Link]
       $addActionRow
-      $addButton[${config.terms};ToS;Link]
-      $addButton[${config.policy};Privacy Policy;Link]
-    ;${config.color}]
+      $addButton[$jsonVar[config;urls.terms];ToS;Link]
+      $addButton[$jsonVar[config;urls.policy];Privacy Policy;Link]
+    ;$jsonVar[config;accent]]
   ]
   `,
 });

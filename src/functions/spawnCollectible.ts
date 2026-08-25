@@ -1,6 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { ctbl } from '../config/collectible';
-import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'spawnCollectible',
@@ -64,12 +62,12 @@ export default new ForgeFunction({
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $let[lastCollectible;$env[config;collectible]]
   $let[message;$sendMessage[$get[ch];
-    $attachment[${config.spawn_arts}/$collectibleInfo[$get[ctbl];wild_card];collectible.png]
+    $attachment[$jsonVar[config;paths.spawn_arts]/$collectibleInfo[$get[ctbl];wild_card];collectible.png]
     $if[$and[$get[lastCollectible]!=;$spawnConfig[caught_by]==];It looks like no one caught the $appEmoji[$collectibleInfo[$get[lastCollectible];emoji_id]] **$collectibleInfo[$get[lastCollectible];name]**]
-    $title[$if[$spawnConfig[caught_by]==;Another;A] wild ${ctbl.singular} just $randomText[spawned!;dropped!;summoned!;landed!;exploded!;appeared!]]
+    $title[$if[$spawnConfig[caught_by]==;Another;A] wild $jsonVar[keywords;collectible.singular] just $randomText[spawned!;dropped!;summoned!;landed!;exploded!;appeared!]]
     $image[attachment://collectible.png]
     $footer[Type its name in the chat to catch it!]
-    $color[${config.color}]
+    $color[$jsonVar[config;accent]]
   ;true]]
   
   $!jsonSet[config;caught_by;""]

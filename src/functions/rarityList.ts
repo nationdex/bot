@@ -1,6 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { ctbl } from '../config/collectible';
-import { config } from '../config/config';
 
 export default new ForgeFunction({
   name: 'rarityList',
@@ -60,13 +58,13 @@ export default new ForgeFunction({
   $return[
     $addContainer[
       $addSection[
-        $addTextDisplay[## Rarity List of ${ctbl.plural}
--# Total $arrayLength[ids] ${ctbl.plural}]
+        $addTextDisplay[## Rarity List of $jsonVar[keywords;collectible.plural]
+-# Total $arrayLength[ids] $jsonVar[keywords;collectible.plural]]
         $addThumbnail[$userAvatar[$botID]]
       ]
       $addTextDisplay[$arrayJoin[display;
 ]]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
     $addActionRow
         $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
         $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]

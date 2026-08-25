@@ -3,7 +3,6 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { config } from '../../config/config';
 
 export default new ApplicationCommand({
   data: {
@@ -32,7 +31,7 @@ $arrayJoin[option;
   $interactionReply[
     $addContainer[
       $addSection[
-        $addTextDisplay[## ${config.name} Commands
+        $addTextDisplay[## $jsonVar[config;bot.name] Commands
 -# $applicationCommandCount commands
 -# $get[total] subcommands]
         $addThumbnail[$userAvatar[$botID]]
@@ -46,7 +45,7 @@ $arrayJoin[miscs;
 ]
       $addSeparator
       $addTextDisplay[-# Made with 💙 by NationDex Team™]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
   ]
   `,
 });

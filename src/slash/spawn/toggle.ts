@@ -4,13 +4,13 @@ import {
   ApplicationIntegrationType,
   InteractionContextType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'toggle',
-    description: `Toggle ${ctbl.plural} spawning on or off in the server.`,
+    description: `Toggle ${variables.keywords.collectible.plural} spawning on or off in the server.`,
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
   },
@@ -28,7 +28,7 @@ export default new ApplicationCommand({
   $interactionReply[
     $ephemeral
     $addContainer[
-      $addTextDisplay[$toTitleCase[$get[toggle]] ${ctbl.plural} spawning in this server.]
+      $addTextDisplay[$toTitleCase[$get[toggle]] $jsonVar[keywords;collectible.plural] spawning in this server.]
     ;#00FF00]
   ]
   `,

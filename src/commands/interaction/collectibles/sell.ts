@@ -1,5 +1,4 @@
 import { BaseCommand } from '@tryforge/forgescript';
-import { currency } from '../../../config/currency';
 
 export default new BaseCommand({
   type: 'interactionCreate',
@@ -37,13 +36,13 @@ export default new BaseCommand({
       $editBalance[$authorID;add;$get[price]]
   
       $interactionUpdate[
-        $appEmoji[check_mark] | Sold ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[${currency.plural}];${currency.plural}]**
+        $appEmoji[check_mark] | Sold ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
       ]
     ]
 
     $elseIf[$get[act]==cancel;
       $interactionUpdate[
-        $appEmoji[check_mark] | Cancelled the sale of ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[${currency.plural}];${currency.plural}]**
+        $appEmoji[check_mark] | Cancelled the sale of ×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectible[$get[id];emoji_id]] **$collectibleInfo[$get[colId];name]** for **$collectibleInfo[$get[colId];sell_price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
       ]
     ]
   ]

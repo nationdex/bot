@@ -1,7 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { ctbl } from '../config/collectible';
-import { config } from '../config/config';
-import { currency } from '../config/currency';
 
 export default new ForgeFunction({
   name: 'settingsMenu',
@@ -43,12 +40,12 @@ Choose whether other players can view your profile.]
       $addSeparator
       $addSection[
         $addTextDisplay[**Accept Gifts?**:
-Choose whether you accept ${ctbl.plural} and ${currency.plural} as gifts.]
+Choose whether you accept $jsonVar[keywords;collectible.plural] and $jsonVar[keywords;currency.plural] as gifts.]
         $addButton[settings-accept_gifts-$authorID-$if[$get[gifts];false;true];$if[$get[gifts];Yes;No];$if[$get[gifts];Primary;Secondary]]
       ]
       $addSeparator
       $addTextDisplay[Made with 💙 by NationDex™ Team]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
   ]
   `,
 });

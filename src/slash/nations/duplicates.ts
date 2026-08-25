@@ -4,14 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { config } from '../../config/config';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'duplicates',
-    description: `View your most duplicated ${ctbl.plural}`,
+    description: `View your most duplicated ${variables.keywords.collectible.plural}`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -20,7 +19,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: `The class whose ${ctbl.plural} to show`,
+        description: `The class whose ${variables.keywords.collectible.plural} to show`,
         required: false,
         autocomplete: true,
       },
@@ -65,16 +64,16 @@ export default new ApplicationCommand({
     
     $interactionReply[
       $addContainer[
-        $addTextDisplay[### Your most duplicate $get[class] ${ctbl.singular} is:
+        $addTextDisplay[### Your most duplicate $get[class] $jsonVar[keywords;collectible.singular] is:
 $appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
--# You have a total of **$env[colId;total]** of this ${ctbl.singular}]
+-# You have a total of **$env[colId;total]** of this $jsonVar[keywords;collectible.singular]]
         $addSeparator
         $addTextDisplay[
           **Top 10 that you caught**:
 $arrayJoin[natDisp;
 ]
 ]
-      ;${config.color}]
+      ;$jsonVar[config;accent]]
     ]
   `,
 });

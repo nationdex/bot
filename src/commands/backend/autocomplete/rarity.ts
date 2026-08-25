@@ -1,11 +1,10 @@
 import { BaseCommand } from '@tryforge/forgescript';
-import { ctbl } from '../../../config/collectible';
 
 export default new BaseCommand({
   type: 'interactionCreate',
   allowedInteractionTypes: ['autocomplete'],
   code: `
-  $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==${ctbl.singular}];]
+  $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==$jsonVar[keywords;collectible.singular]];]
   
   $jsonLoad[ctbls;$collectiblesData[id]]
   $let[val;$replace[$toLowerCase[$focusedOptionValue];#;]]
@@ -21,7 +20,7 @@ export default new BaseCommand({
   $arraySlice[ctbls;ctbls;0;25]
   
   $onlyIf[$arrayLength[ctbls]>0;
-    $addChoice[No ${ctbl.plural} found;null]
+    $addChoice[No $jsonVar[keywords;collectible.plural] found;null]
   ]
   
   $arrayForEach[ctbls;nat;$addChoice[#$env[nat]: $collectibleInfo[$env[nat];name];$env[nat]]]

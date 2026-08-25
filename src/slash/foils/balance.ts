@@ -4,12 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { currency } from '../../config/currency';
+import { variables } from '../../config/variables';
+
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: `balance`,
-    description: `View your or another player's ${currency.plural} balance`,
+    description: `View your or another player's ${variables.keywords.currency.plural} balance`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -38,7 +39,7 @@ export default new ApplicationCommand({
   
   $interactionReply[
     $ephemeral
-    $if[$get[user]==$authorID;You have **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in your wallet;**$userDisplayName[$get[user]]** has **$get[balance]** $default[$appEmoji[${currency.plural}];${currency.plural}] in their wallet]
+    $if[$get[user]==$authorID;You have **$get[balance]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] in your wallet;**$userDisplayName[$get[user]]** has **$get[balance]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] in their wallet]
   ]
   `,
 });

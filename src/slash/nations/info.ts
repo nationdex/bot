@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'info',
-    description: `View the info card of one of your ${ctbl.plural}.`,
+    description: `View the info card of one of your ${variables.keywords.collectible.plural}.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -18,8 +18,8 @@ export default new ApplicationCommand({
     options: [
       {
         type: ApplicationCommandOptionType.String,
-        name: `${ctbl.singular}`,
-        description: `The ${ctbl.singular} whose info card to view.`,
+        name: `${variables.keywords.collectible.singular}`,
+        description: `The ${variables.keywords.collectible.singular} whose info card to view.`,
         required: false,
         autocomplete: true,
       },
@@ -27,7 +27,7 @@ export default new ApplicationCommand({
   },
   code: `
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
-  $let[id;$default[$option[${ctbl.singular}];$env[nations;0]]]
+  $let[id;$default[$option[$jsonVar[keywords;collectible.singular]];$env[nations;0]]]
   $let[ind;$arrayIndexOf[nations;$get[id]]]
   $let[prev;$env[nations;$sub[$get[ind];1]]]
   $let[next;$env[nations;$sum[$get[ind];1]]]
@@ -39,7 +39,7 @@ export default new ApplicationCommand({
     $err[no_collectibles_found;true]
   ]
 
-  $interactionReply[Loading ${ctbl.singular} info...]
+  $interactionReply[Loading $jsonVar[keywords;collectible.singular] info...]
   
   $interactionUpdate[
     $collectibleCard[$get[id]]

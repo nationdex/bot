@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'last',
-    description: `View info of the last ${ctbl.singular} caught.`,
+    description: `View info of the last ${variables.keywords.collectible.singular} caught.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,13 +19,13 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.User,
         name: 'user',
-        description: `The user whose last ${ctbl.singular} to check.`,
+        description: `The user whose last ${variables.keywords.collectible.singular} to check.`,
         required: false,
       },
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: `View info of the last ${ctbl.singular} caught of a specific rarity class.`,
+        description: `View info of the last ${variables.keywords.collectible.singular} caught of a specific rarity class.`,
         required: false,
         autocomplete: true,
       },
@@ -57,7 +57,7 @@ export default new ApplicationCommand({
   $let[id;$env[ctbls;$sub[$arrayLength[ctbls];1]]]
   
   $interactionReply[
-**Info on the last ${ctbl.singular} caught**:
+**Info on the last $jsonVar[keywords;collectible.singular] caught**:
 $collectibleCard[$get[id]]
   ]
   `,

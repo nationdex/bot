@@ -1,4 +1,5 @@
 import { ForgeFunction } from '@tryforge/forgescript';
+import { errors } from '../config/errors';
 
 export default new ForgeFunction({
   name: 'err',
@@ -24,7 +25,8 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[message;$env[message]]
+  $jsonLoad[errors;${JSON.stringify(errors)}]
+  $let[message;$if[$jsonHas[errors;$env[message]];$env[errors;$env[message]];$env[message]]]
   $let[delete;$if[$isBoolean[$env[delete?]];$env[delete?];true]]
   
   $ifx[

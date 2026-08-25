@@ -1,5 +1,4 @@
 import { BaseCommand } from '@tryforge/forgescript';
-import { ctbl } from '../../../config/collectible';
 
 export default new BaseCommand({
   hide: true,
@@ -13,7 +12,7 @@ export default new BaseCommand({
   
   $let[id;$default[$selectMenuValues[0];$arrayAt[cid;3]]]
   
-  $interactionReply[Loading ${ctbl.singular} info...]
+  $interactionReply[Loading $jsonVar[keywords;collectible.singular] info...]
   
   $interactionUpdate[
     $collectibleCard[$get[id]]

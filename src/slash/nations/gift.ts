@@ -4,14 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
-import { config } from '../../config/config';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'gift',
-    description: `Gift a ${ctbl.singular} to another user`,
+    description: `Gift a ${variables.keywords.collectible.singular} to another user`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -25,8 +24,8 @@ export default new ApplicationCommand({
       },
       {
         type: ApplicationCommandOptionType.String,
-        name: `${ctbl.singular}`,
-        description: `The ${ctbl.singular} you want to gift`,
+        name: `${variables.keywords.collectible.singular}`,
+        description: `The ${variables.keywords.collectible.singular} you want to gift`,
         required: true,
         autocomplete: true,
       },
@@ -34,7 +33,7 @@ export default new ApplicationCommand({
   },
   code: `
   $let[user;$option[user]]
-  $let[id;$option[${ctbl.singular}]]
+  $let[id;$option[$jsonVar[keywords;collectible.singular]]]
   $let[colId;$collectible[$get[id];id]]
   $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
   
@@ -53,10 +52,10 @@ export default new ApplicationCommand({
   
   $let[msg;$interactionReply[
     $addContainer[
-      $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following ${ctbl.singular}:
-\`#$get[id]\` $getSpecial[$collectible[$get[id];event];emoji]$appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
+      $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following $jsonVar[keywords;collectible.singular]:
+\`#$get[id]\` $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
 -# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
-    ;${config.color}]
+    ;$jsonVar[config;accent]]
     $addActionRow
     $addButton[gift-confirm-$authorID-$get[user]-$get[id];Confirm;Success;$appEmoji[check_mark]]
     $addButton[gift-cancel-$authorID;Cancel;Danger;$appEmoji[cross_mark]]

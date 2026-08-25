@@ -4,13 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
 
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'collectibles',
-    description: `View the rarity list of ${ctbl.plural}.`,
+    description: `View the rarity list of ${variables.keywords.collectible.plural}.`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
@@ -19,7 +19,7 @@ export default new ApplicationCommand({
       {
         type: ApplicationCommandOptionType.String,
         name: 'class',
-        description: `The rarity class of the ${ctbl.plural} you want to view.`,
+        description: `The rarity class of the ${variables.keywords.collectible.plural} you want to view.`,
         required: false,
         autocomplete: true,
       },

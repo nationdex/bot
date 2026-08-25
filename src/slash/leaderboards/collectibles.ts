@@ -4,12 +4,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType
 } from 'discord.js';
-import { ctbl } from '../../config/collectible';
+import { variables } from '../../config/variables';
+
 export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
-    name: `${ctbl.plural}`,
-    description: `Show the leaderboard of ${ctbl.plural} caught`,
+    name: `${variables.keywords.collectible.plural}`,
+    description: `Show the leaderboard of ${variables.keywords.collectible.plural} caught`,
     integration_types: [
       ApplicationIntegrationType.UserInstall,
       ApplicationIntegrationType.GuildInstall,
