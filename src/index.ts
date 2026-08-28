@@ -1,8 +1,14 @@
 import 'dotenv/config';
+import { QuorielApi } from '@nationdex/api';
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { ForgeDB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { variables, syncVariables } from './config/variables';
+
+const api = new QuorielApi({
+  port: 3000,
+  path: "dist/api_routes",
+})
 
 const db = new ForgeDB({
   type: "surrealdb",
@@ -26,8 +32,9 @@ const dex = new ForgeClient({
   ],
   prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
-    db,
-    canvas
+    db as any,
+    canvas,
+    api,
   ],
 });
 

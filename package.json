@@ -35,6 +35,7 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
+    "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#main",
     "@surrealdb/node": "^3.0.3",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
