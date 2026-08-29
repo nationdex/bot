@@ -40,7 +40,6 @@
     "@surrealdb/node": "^3.0.3",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "better-sqlite3": "^13.0.3",
     "dotenv": "^17.4.2",
     "pm2": "^7.0.4",
     "surrealdb": "^2.0.8",
