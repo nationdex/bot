@@ -1,8 +1,14 @@
 import 'dotenv/config';
 import { ForgeCanvas } from '@tryforge/forge.canvas';
+import { Api } from '@nationdex/api';
 import { ForgeDB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { variables, syncVariables } from './config/variables';
+
+const api = new Api({
+  path: "dist/api_routes",
+  port: 2222
+});
 
 const db = new ForgeDB({
   type: "surrealdb",
@@ -26,8 +32,9 @@ const dex = new ForgeClient({
   ],
   prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
-    db,
-    canvas
+    api,
+    canvas,
+    db
   ],
 });
 
@@ -64,6 +71,7 @@ async function main() {
   dex.applicationCommands.load('dist/slash');
 
   dex.login(process.env.TOKEN);
+  api.init(dex);
 }
 
 main().catch((err) => {

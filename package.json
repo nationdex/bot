@@ -35,10 +35,11 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
+    "@nationdex/api": "github:nationdex/api",
     "@nationdex/db": "github:nationdex/db#main",
     "@surrealdb/node": "^3.0.3",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forgescript": "github:tryforge/ForgeScript#dev",
+    "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
     "better-sqlite3": "^12.11.1",
     "dotenv": "^17.4.2",
     "pm2": "^7.0.3",
