@@ -40,14 +40,18 @@ export default new ForgeFunction({
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
   
   $if[$get[type]==collectibles;
-    $jsonLoad[nations;$collectiblesData[collectibles]]
-    $jsonLoad[ids;$collectiblesData[id]]
+    $jsonLoad[collectibles;$collectiblesData[collectibles]]
+    $jsonLoad[ids;$collectibleIDs]
     $if[$get[class]!=;
-      $arrayForEach[ids;nid;$if[$collectibleInfo[$env[nid];class]!=$get[class];$!jsonDelete[nations;$env[nid]]]]
+      $arrayForEach[ids;nid;$if[$collectibleInfo[$env[nid];class]!=$get[class];$!jsonDelete[collectibles;$env[nid]]]]
     ]
-    
-    $jsonLoad[sortedData;$sortData[$env[nations];rarity;$get[sortType]]]
+
+    $jsonLoad[sortedData;$sortData[$env[collectibles];rarity;$get[sortType]]]
     $jsonLoad[ids;$jsonKeys[sortedData]]
+    $if[$arrayLength[ids]<1;
+      $return[$err[No $jsonVar[keywords;collectible.plural] found;true]]
+    ]
+
     $let[totalRarity;$math[$collectiblesData[rarity;+]]]
     
     $arrayMap[ids;id;$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]] **$collectibleInfo[$env[id];name]**: \`$cropText[$math[($collectibleInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
@@ -66,9 +70,9 @@ export default new ForgeFunction({
 ]]
     ;$jsonVar[config;accent]]
     $addActionRow
-        $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
-        $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]
-        $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
+      $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
+      $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]
+      $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
   ]
   `,
 });

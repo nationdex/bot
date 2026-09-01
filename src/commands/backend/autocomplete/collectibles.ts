@@ -6,16 +6,16 @@ export default new BaseCommand({
   code: `
   $onlyIf[$and[$applicationCommandName==$jsonVar[keywords;collectible.plural];$focusedOptionName==$jsonVar[keywords;collectible.singular]]]
   
-  $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIds]]
+  $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIDs]]
   $let[val;$replace[$toLowerCase[$focusedOptionValue];#;]]
   
   $if[$get[val]!=;
     $arrayMap[userCollectibles;nat;
-      $let[colId;$collectible[$env[nat];id]]
-      $jsonLoad[trs;$collectibleInfo[$get[colId];translations]]
-      $jsonLoad[cns;$collectibleInfo[$get[colId];catching_names]]
+      $let[colID;$collectible[$env[nat];id]]
+      $jsonLoad[trs;$collectibleInfo[$get[colID];translations]]
+      $jsonLoad[cns;$collectibleInfo[$get[colID];catching_names]]
       
-      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colId];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colId];short_name]];$get[val]];$arrayIncludes[trs;$get[val]];$arrayIncludes[cns;$get[val]]];
+      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];short_name]];$get[val]];$arrayIncludes[trs;$get[val]];$arrayIncludes[cns;$get[val]]];
         $return[$env[nat]]
       ]
     ;userCollectibles]
@@ -28,8 +28,8 @@ export default new BaseCommand({
   ]
       
   $arrayForEach[userCollectibles;nat;
-    $let[colId;$collectible[$env[nat];id]]
-    $addChoice[#$env[nat]: $getSpecial[$collectible[$env[nat];special];emoji] $collectibleInfo[$get[colId];name] | ($collectible[$env[nat];attack] $collectible[$env[nat];health]) | $parseDate[$collectible[$env[nat];timestamp];Locale];$env[nat]]
+    $let[colID;$collectible[$env[nat];id]]
+    $addChoice[#$env[nat]: $getSpecial[$collectible[$env[nat];special];emoji] $collectibleInfo[$get[colID];name] | ($collectible[$env[nat];attack] $collectible[$env[nat];health]) | $parseDate[$collectible[$env[nat];timestamp];Locale];$env[nat]]
   ]
   `,
 });

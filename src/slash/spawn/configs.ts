@@ -9,7 +9,7 @@ export default new ApplicationCommand({
   data: {
     type: ApplicationCommandType.ChatInput,
     name: 'configs',
-    description: 'Check thespawn configuration of the server.',
+    description: 'Check the spawn configuration of the server.',
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
   },
@@ -21,7 +21,7 @@ export default new ApplicationCommand({
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $let[ch;$env[config;config_channel]]
   $let[status;$env[config;status]]
-  $let[lastNation;$env[config;timestamp]]
+  $let[lastCollectible;$env[config;timestamp]]
   
   $interactionReply[
     $ephemeral
@@ -34,7 +34,7 @@ export default new ApplicationCommand({
       $addSeparator
       $addTextDisplay[Spawn Channel: $if[$get[ch]!=;<#$get[ch]>;Not Set]
 Status: **$get[status]**
-Last spawn: $if[$get[lastNation]!=;$discordTimestamp[$get[lastNation];RelativeTime];No $jsonVar[keywords;collectible.plural] have spawned yet]
+Last spawn: $if[$get[lastCollectible]!=;$discordTimestamp[$get[lastCollectible];RelativeTime];No $jsonVar[keywords;collectible.plural] have spawned yet]
 ]
     ;$jsonVar[config;accent]]
   ]

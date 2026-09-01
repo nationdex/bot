@@ -28,18 +28,18 @@ export default new ForgeFunction({
   $let[value;$env[value]]
   $let[sep;$env[separator]]
   $jsonLoad[data;$getGlobalVar[collectiblesData]]
-  $jsonLoad[colId;$env[data;collectibles;$get[id]]]
+  $jsonLoad[colID;$env[data;collectibles;$get[id]]]
   
   $if[$get[value]!=null;
-    $if[$isJSON[$env[colId;$get[value]]];
-      $jsonLoad[values;$env[colId;$env[value]]]
+    $if[$isJSON[$env[colID;$get[value]]];
+      $jsonLoad[values;$env[colID;$env[value]]]
       $if[$get[sep]!=null;
         $return[$arrayJoin[values;$get[sep]]]
         ;$return[$env[values]]
       ]
-      ;$return[$env[colId;$get[value]]]
+      ;$return[$env[colID;$get[value]]]
     ]
-    ;$return[$env[colId]]
+    ;$return[$env[colID]]
   ]
   `,
 });

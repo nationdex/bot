@@ -13,7 +13,7 @@ const defaultVariables = {
     },
     paths: {
       collection_cards: 'assets/collection_cards',
-      spawn_arts: 'assets/spawn_arts',
+      wild_cards: 'assets/wild_cards',
       icons: 'assets/icons',
       cards: 'assets/cards',
     },
@@ -69,7 +69,7 @@ const defaultVariables = {
     mythic: 0,
     legendary: 0,
     unique: [],
-    collectibleIds: []
+    collectibleIDs: []
   },
   auctionHouse: {},
   auction: {
@@ -121,6 +121,10 @@ export const variables = JSON.parse(JSON.stringify(defaultVariables));
 export async function syncVariables(client?: any): Promise<void> {
   try {
     const DataBase = client?.db ?? require('@nationdex/db/dist/util').DataBase;
+    if (!DataBase || !DataBase.db) {
+      console.warn('Database is not ready yet, skipping variable synchronization.');
+      return;
+    }
     for (const name of Object.keys(defaultVariables)) {
       const data = await DataBase.get({ name, type: 'custom' }).then((x: any) => x?.value);
       if (data !== null && data !== undefined) {

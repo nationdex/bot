@@ -1,27 +1,28 @@
 import 'dotenv/config';
 import { ForgeCanvas } from '@tryforge/forge.canvas';
-import { Api } from '@nationdex/api';
-import { ForgeDB } from '@nationdex/db';
+import { API } from '@nationdex/api';
+import { DB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { variables, syncVariables } from './config/variables';
 
-const api = new Api({
+const api = new API({
   path: "dist/api_routes",
   port: 2222
 });
 
-const db = new ForgeDB({
+const db = new DB({
   type: "surrealdb",
   engine: "rocksdb",
   folder: "./database",
   namespace: "forge",
-  database: "forge.db",
+  database: "forge.db"
 });
 
 const canvas = new ForgeCanvas();
 
 const dex = new ForgeClient({
   intents: [
+    'Guilds',
     'GuildMessages',
     'MessageContent',
   ],
@@ -32,7 +33,6 @@ const dex = new ForgeClient({
   ],
   prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
-    api,
     canvas,
     db
   ],
@@ -57,7 +57,7 @@ process.on("SIGTERM", flushAndExit);
 async function main() {
   db.variables(variables);
   await new Promise<void>((resolve) => {
-    if ((dex as any).db?.driver?.db) {
+    if ((dex as any).db?.db) {
       return resolve();
     }
     db.emitter.once('connect', () => {
@@ -67,11 +67,11 @@ async function main() {
   await syncVariables(dex);
 
   dex.functions.load('dist/functions');
+  api.init(dex);
   dex.commands.load('dist/commands');
   dex.applicationCommands.load('dist/slash');
 
-  dex.login(process.env.TOKEN);
-  api.init(dex);
+  await dex.login(process.env.TOKEN);
 }
 
 main().catch((err) => {

@@ -26,16 +26,16 @@ export default new ApplicationCommand({
     ],
   },
   code: `
-  $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
-  $let[id;$default[$option[$jsonVar[keywords;collectible.singular]];$env[nations;0]]]
-  $let[ind;$arrayIndexOf[nations;$get[id]]]
-  $let[prev;$env[nations;$sub[$get[ind];1]]]
-  $let[next;$env[nations;$sum[$get[ind];1]]]
+  $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
+  $let[id;$default[$option[$jsonVar[keywords;collectible.singular]];$env[collectibles;0]]]
+  $let[ind;$arrayIndexOf[collectibles;$get[id]]]
+  $let[prev;$env[collectibles;$sub[$get[ind];1]]]
+  $let[next;$env[collectibles;$sum[$get[ind];1]]]
   
-  $onlyIf[$arrayIncludes[nations;$get[id]];
+  $onlyIf[$arrayIncludes[collectibles;$get[id]];
     $err[invalid_collectible;true]
   ]
-  $onlyIf[$arrayLength[nations]>0;
+  $onlyIf[$arrayLength[collectibles]>0;
     $err[no_collectibles_found;true]
   ]
 
@@ -45,7 +45,7 @@ export default new ApplicationCommand({
     $collectibleCard[$get[id]]
     $addActionRow
     $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
-    $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[nations];Primary;;true]
+    $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[collectibles];Primary;;true]
     $addButton[pages-collectibleInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
   ]
   `,

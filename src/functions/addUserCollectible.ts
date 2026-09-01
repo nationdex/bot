@@ -31,8 +31,8 @@ export default new ForgeFunction({
   
   $jsonLoad[userData;$getUserVar[userCollectibles;$get[user]]]
   $jsonLoad[unique;$env[userData;unique]]
-  $jsonLoad[userCollectibles;$env[userData;collectibleIds]]
-  $!jsonSet[userData;collectibleIds;$arrayLength[userCollectibles];$get[id]]
+  $jsonLoad[userCollectibles;$env[userData;collectibleIDs]]
+  $!jsonSet[userData;collectibleIDs;$arrayLength[userCollectibles];$get[id]]
   $!jsonSet[userData;$collectibleInfo[$get[ctbl];class];$sum[$env[userData;$collectibleInfo[$get[ctbl];class]];1]]
   $!jsonSet[userData;total;$sum[$env[userData;total];1]]
   $!jsonSet[userData;total_value;$sum[$env[userData;total_value];$collectibleInfo[$get[ctbl];weight]]]

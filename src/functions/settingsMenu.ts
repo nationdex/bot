@@ -44,7 +44,7 @@ Choose whether you accept $jsonVar[keywords;collectible.plural] and $jsonVar[key
         $addButton[settings-accept_gifts-$authorID-$if[$get[gifts];false;true];$if[$get[gifts];Yes;No];$if[$get[gifts];Primary;Secondary]]
       ]
       $addSeparator
-      $addTextDisplay[Made with 💙 by NationDex™ Team]
+      $addTextDisplay[Made with 💙 by CollectibleDex™ Team]
     ;$jsonVar[config;accent]]
   ]
   `,

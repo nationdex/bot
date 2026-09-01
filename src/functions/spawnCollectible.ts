@@ -43,42 +43,44 @@ export default new ForgeFunction({
   ],
   code: `
   $let[ch;$env[channel]]
-  $let[class;$replace[$env[class];null;]]
-  
   $jsonLoad[collectibles;$collectiblesData[collectibles]]
-  $jsonLoad[ids;$jsonKeys[collectibles]]
-  $if[$get[class]!=;
-    $jsonLoad[classCollectibles;{}]
-    $arrayForEach[ids;id;$if[$env[collectibles;$env[id];class]==$get[class];$!jsonSet[classCollectibles;$env[id];$env[collectibles;$env[id]]]]]
-    $jsonLoad[collectibles;$env[classCollectibles]]
-  ]
+  $jsonLoad[ids;$collectibleIDs[;$env[class]]]
+
+  $onlyIf[$channelExists[$get[ch]]]
+  $onlyIf[$channelHasPerms[$get[ch];$botID;ViewChannel;SendMessages;EmbedLinks;AttachFiles]]
+  $onlyIf[$arrayLength[ids]>0]
+
   $let[ctbl;$default[$replace[$env[collectibleID];null;];$randomRarity[$env[collectibles]]]]
-  $let[atck_bns;$default[$replace[$env[attackBonus];null;];$randomText[+;-]$randomNumber[1;20]]]
-  $let[hlth_bns;$default[$replace[$env[healthBonus];null;];$randomText[+;-]$randomNumber[1;20]]]
-  $let[special;$replace[$env[special];null;]]
+  $let[wildPath;$jsonVar[config;paths.wild_cards]/$collectibleInfo[$get[ctbl];wild_card]]
+
+  $onlyIf[$fileExists[$get[wildPath]]]
+
+  $let[atck_bns;$default[$replace[$env[attackBonus];null;];$randomText[+;-]$randomNumber[0;20]]]
+  $let[hlth_bns;$default[$replace[$env[healthBonus];null;];$randomText[+;-]$randomNumber[0;20]]]
   $let[atck;$ceil[$math[$collectibleInfo[$get[ctbl];attack]$cropText[$get[atck_bns];0;1](($collectibleInfo[$get[ctbl];attack]*$cropText[$get[atck_bns];1;4])/100)]]]
   $let[hlth;$ceil[$math[$collectibleInfo[$get[ctbl];health]$cropText[$get[hlth_bns];0;1](($collectibleInfo[$get[ctbl];health]*$cropText[$get[hlth_bns];1;4])/100)]]]
-  
-  $jsonLoad[config;$getGuildVar[spawnConfig]]
-  $let[lastCollectible;$env[config;collectible]]
+  $let[special;$replace[$env[special];null;]]
+  $let[lastCaught;$and[$spawnConfig[collectible]!=;$spawnConfig[caught_by]!=]]
+
   $let[message;$sendMessage[$get[ch];
-    $attachment[$jsonVar[config;paths.spawn_arts]/$collectibleInfo[$get[ctbl];wild_card];collectible.png]
-    $if[$and[$get[lastCollectible]!=;$spawnConfig[caught_by]==];It looks like no one caught the $appEmoji[$collectibleInfo[$get[lastCollectible];emoji_id]] **$collectibleInfo[$get[lastCollectible];name]**]
-    $title[$if[$spawnConfig[caught_by]==;Another;A] wild $jsonVar[keywords;collectible.singular] just $randomText[spawned!;dropped!;summoned!;landed!;exploded!;appeared!]]
-    $image[attachment://collectible.png]
+    $if[$get[lastCaught]==false;It looks like no one caught the $appEmoji[$collectibleInfo[$get[lastCollectible];emoji_id]] **$collectibleInfo[$get[lastCollectible];name]**]
+    $attachment[$get[wildPath];wild_$jsonVar[keywords;collectible.singular].png]
+    $title[$if[$get[lastCaught]==false;Another;A] wild $jsonVar[keywords;collectible.singular] just $randomText[spawned!;dropped!;summoned!;landed!;exploded!;appeared!;crashed!]]
+    $image[attachment://wild_$jsonVar[keywords;collectible.singular].png]
     $footer[Type its name in the chat to catch it!]
     $color[$jsonVar[config;accent]]
   ;true]]
   
+  $jsonLoad[config;$getGuildVar[spawnConfig]]
   $!jsonSet[config;caught_by;""]
   $!jsonSet[config;caught_in;""]
   $!jsonSet[config;channel;"$get[ch]"]
   $!jsonSet[config;message;"$get[message]"]
   $!jsonSet[config;collectible;$get[ctbl]]
-  $!jsonSet[config;attack;$get[atck]]
-  $!jsonSet[config;health;$get[hlth]]
   $!jsonSet[config;attack_bonus;$get[atck_bns]]
   $!jsonSet[config;health_bonus;$get[hlth_bns]]
+  $!jsonSet[config;attack;$get[atck]]
+  $!jsonSet[config;health;$get[hlth]]
   $!jsonSet[config;timestamp;"$getTimestamp"]
   $!jsonSet[config;special;$get[special]]
   $setGuildVar[spawnConfig;$env[config]]

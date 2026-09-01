@@ -23,7 +23,7 @@ export default new BaseCommand({
     ]
     $elseIf[$get[type]==collectibleInfo;
       $let[id;$arrayAt[cid;3]]
-      $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIds]]
+      $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIDs]]
       $let[ind;$arrayIndexOf[userCollectibles;$get[id]]]
       $let[prev;$env[userCollectibles;$sub[$get[ind];1]]]
       $let[next;$env[userCollectibles;$sum[$get[ind];1]]]

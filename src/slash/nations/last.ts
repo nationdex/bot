@@ -45,9 +45,9 @@ export default new ApplicationCommand({
     ]
   ]
   
-  $jsonLoad[ctbls;$getUserData[$get[user];collectibleIds]]
+  $jsonLoad[ctbls;$getUserData[$get[user];collectibleIDs]]
   $if[$get[class]!=;
-    $arrayMap[ctbls;colId;$if[$collectibleInfo[$collectible[$env[colId];id];class]==$get[class];$return[$env[colId]]];ctbls]
+    $arrayMap[ctbls;colID;$if[$collectibleInfo[$collectible[$env[colID];id];class]==$get[class];$return[$env[colID]]];ctbls]
   ]
   
   $onlyIf[$arrayLength[ctbls]>0;

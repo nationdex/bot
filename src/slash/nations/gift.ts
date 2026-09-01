@@ -34,8 +34,8 @@ export default new ApplicationCommand({
   code: `
   $let[user;$option[user]]
   $let[id;$option[$jsonVar[keywords;collectible.singular]]]
-  $let[colId;$collectible[$get[id];id]]
-  $jsonLoad[nations;$getUserData[$authorID;collectibleIds]]
+  $let[colID;$collectible[$get[id];id]]
+  $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
   
   $onlyIf[$get[user]!=$authorID;
     $err[gift_self;true]
@@ -46,14 +46,14 @@ export default new ApplicationCommand({
   $onlyIf[$userSettings[$get[user];accept_gifts];
     $err[decline_gifts;true]
   ]
-  $onlyIf[$arrayIncludes[nations;$get[id]];
+  $onlyIf[$arrayIncludes[collectibles;$get[id]];
     $err[invalid_collectible;true]
   ]
   
   $let[msg;$interactionReply[
     $addContainer[
       $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following $jsonVar[keywords;collectible.singular]:
-\`#$get[id]\` $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colId];emoji_id]] **$collectibleInfo[$get[colId];name]**
+\`#$get[id]\` $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]**
 -# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
     ;$jsonVar[config;accent]]
     $addActionRow
