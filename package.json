@@ -38,17 +38,19 @@
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db",
     "@surrealdb/node": "^2.6.1",
+    "@nationdex/api": "github:nationdex/api#main",
+    "@nationdex/db": "github:nationdex/db#main",
+    "@surrealdb/node": "^3.0.3",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "better-sqlite3": "^12.11.1",
     "dotenv": "^17.4.2",
-    "pm2": "^7.0.3",
+    "pm2": "^7.0.4",
     "surrealdb": "^2.0.8",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.55.0"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "pm2": "^7.0.3",
+    "@types/node": "^26.4.0",
+    "pm2": "^7.0.4",
     "typescript": "^7.0.2"
   },
   "overrides": {
