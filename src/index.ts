@@ -4,6 +4,7 @@ import { API } from '@nationdex/api';
 import { DB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { variables, syncVariables } from './config/variables';
+import { validateCollectibles } from './util/validateCollectibles';
 
 const api = new API({
   path: "dist/api_routes",
@@ -65,6 +66,7 @@ async function main() {
     });
   });
   await syncVariables(dex);
+  validateCollectibles();
 
   dex.functions.load('dist/functions');
   api.init(dex);

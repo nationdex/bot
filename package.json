@@ -10,6 +10,7 @@
     "dev": "npm run build && node dist/index.js",
     "fix": "rm -rf dist/ && npm run build",
     "typecheck": "tsc --noEmit",
+    "validate:collectibles": "npm run build && node dist/util/validateCollectibles.js",
     "website:install": "npm install --prefix website",
     "website:build": "npm run build --prefix website",
     "prod:build": "npm run build && npm run website:install && npm run website:build",
@@ -35,9 +36,6 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "@nationdex/api": "github:nationdex/api#main",
-    "@nationdex/db": "github:nationdex/db",
-    "@surrealdb/node": "^2.6.1",
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#main",
     "@surrealdb/node": "^3.0.3",

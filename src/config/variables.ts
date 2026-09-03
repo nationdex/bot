@@ -114,6 +114,12 @@ const defaultVariables = {
     caught_in: ''
   },
   specials: {},
+  userStats: {
+    catches_total: 0,
+    battles_won: 0,
+    trades_completed: 0,
+    gifts_sent: 0,
+  },
 };
 
 export const variables = JSON.parse(JSON.stringify(defaultVariables));
