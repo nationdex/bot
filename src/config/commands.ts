@@ -1,4 +1,3 @@
-import { BaseCommand, ForgeClient } from '@tryforge/forgescript';
 import { variables } from './variables';
 
 export interface CommandConfig {
@@ -16,7 +15,7 @@ export interface CommandConfig {
 
 export const commands = {
   prefix: {
-      howlate: {
+    howlate: {
       name: 'howlate',
       aliases: ['hl'],
       description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular} by replying to their message`,
@@ -50,7 +49,7 @@ export const commands = {
     description: 'Allows users to catch a spawned collectible',
     unprefixed: true,
   },
-  
+
   autocomplete: {
     class: {
       type: 'interactionCreate',
@@ -93,40 +92,4 @@ export const commands = {
       },
     },
   },
-
-  init(client: ForgeClient, path = 'dist/commands') {
-    client.commands.load(path);
-  },
 };
-
-export function command(
-  pathKey: string,
-  codeOrOptions: string | { code?: string; [key: string]: any }
-): BaseCommand<any> {
-  const parts = pathKey.split('.');
-  let cfg: any = commands;
-  for (const part of parts) {
-    if (cfg && typeof cfg === 'object' && part in cfg) {
-      cfg = cfg[part];
-    } else {
-      cfg = undefined;
-      break;
-    }
-  }
-
-  if (!cfg) {
-    cfg = (commands as any)[pathKey];
-  }
-
-  if (!cfg) {
-    throw new Error(`[commands] Command configuration for '${pathKey}' not found in commands.ts.`);
-  }
-
-  const options = typeof codeOrOptions === 'string' ? { code: codeOrOptions } : codeOrOptions;
-
-  return new BaseCommand({
-    ...cfg,
-    ...options,
-    code: options.code ?? '',
-  });
-}

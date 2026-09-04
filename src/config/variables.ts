@@ -1,4 +1,4 @@
-const defaultVariables = {
+export const variables = {
   config: {
     bot: {
       name: 'Nationdex',
@@ -121,41 +121,3 @@ const defaultVariables = {
     gifts_sent: 0,
   },
 };
-
-export const variables = JSON.parse(JSON.stringify(defaultVariables));
-
-export async function syncVariables(client?: any): Promise<void> {
-  try {
-    const DataBase = client?.db ?? require('@nationdex/db/dist/util').DataBase;
-    if (!DataBase || !DataBase.db) {
-      console.warn('Database is not ready yet, skipping variable synchronization.');
-      return;
-    }
-    for (const name of Object.keys(defaultVariables)) {
-      const data = await DataBase.get({ name, type: 'custom' }).then((x: any) => x?.value);
-      if (data !== null && data !== undefined) {
-        const val =
-          typeof data === 'string'
-            ? (() => {
-                try {
-                  return JSON.parse(data);
-                } catch {
-                  return data;
-                }
-              })()
-            : data;
-
-        if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
-          (variables as any)[name] = {
-            ...(defaultVariables as any)[name],
-            ...val,
-          };
-        } else {
-          (variables as any)[name] = val;
-        }
-      }
-    }
-  } catch (err) {
-    console.error('Failed to synchronize variables from database:', err);
-  }
-}

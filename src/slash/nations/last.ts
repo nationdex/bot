@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('collectibles.last', `
+export default SlashCommand('collectibles.last', `
   $let[user;$findUser[$option[user];true]]
   $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]

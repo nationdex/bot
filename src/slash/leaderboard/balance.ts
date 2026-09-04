@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('leaderboard.balance', `
+export default SlashCommand('leaderboard.balance', `
   $interactionReply[
     $leaderboards[balance;1]
   ]

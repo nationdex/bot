@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('player.settings', `
+export default SlashCommand('player.settings', `
   $jsonLoad[settings;$getUserVar[settings]]
   
   $interactionReply[

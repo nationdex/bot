@@ -1,6 +1,18 @@
 import fs from 'fs';
 import path from 'path';
-import { variables, syncVariables } from '../config/variables';
+import { REST, Routes } from 'discord.js';
+import { ForgeClient, ForgeExtension } from '@tryforge/forgescript';
+import { variables } from '../config/variables';
+import { syncVariables } from './variables';
+
+export interface ValidateCollectiblesOptions {
+  applicationEmojis?: Set<string> | Array<{ id: string; name?: string } | string>;
+}
+
+export interface CollectiblesOptions extends ValidateCollectiblesOptions {
+  fetchEmojis?: boolean;
+  token?: string;
+}
 
 export interface ValidationReport {
   success: boolean;
@@ -11,19 +23,67 @@ export interface ValidationReport {
   stats: {
     totalRarityWeight: number;
     totalAliases: number;
+    totalEmojis: number;
   };
 }
 
-export function validateCollectibles(): ValidationReport {
+export async function fetchApplicationEmojis(token?: string): Promise<Set<string> | null> {
+  const authToken = token || process.env.TOKEN;
+  if (!authToken) {
+    return null;
+  }
+
+  try {
+    const rest = new REST({ version: '10' }).setToken(authToken);
+    const app: any = await rest.get(Routes.currentApplication());
+    if (!app?.id) return null;
+
+    const res: any = await rest.get(Routes.applicationEmojis(app.id));
+    const emojis = Array.isArray(res) ? res : res?.items || [];
+    const emojiSet = new Set<string>();
+
+    for (const em of emojis) {
+      if (typeof em === 'string') {
+        emojiSet.add(em);
+      } else if (em && typeof em === 'object') {
+        if (em.id) emojiSet.add(em.id);
+        if (em.name) emojiSet.add(em.name);
+      }
+    }
+
+    return emojiSet;
+  } catch (err: any) {
+    console.warn(`[WARN] [validateCollectibles] Could not fetch application emojis from Discord API: ${err?.message ?? err}`);
+    return null;
+  }
+}
+
+export function validateCollectibles(options?: ValidateCollectiblesOptions): ValidationReport {
   const rootDir = process.cwd();
   const errors: string[] = [];
   const warnings: string[] = [];
+
+  let appEmojiSet: Set<string> | null = null;
+  if (options?.applicationEmojis) {
+    if (options.applicationEmojis instanceof Set) {
+      appEmojiSet = options.applicationEmojis;
+    } else if (Array.isArray(options.applicationEmojis)) {
+      appEmojiSet = new Set();
+      for (const item of options.applicationEmojis) {
+        if (typeof item === 'string') {
+          appEmojiSet.add(item);
+        } else if (item && typeof item === 'object') {
+          if (item.id) appEmojiSet.add(item.id);
+          if (item.name) appEmojiSet.add(item.name);
+        }
+      }
+    }
+  }
 
   const configPaths = (variables as any)?.config?.paths || {};
   const requiredPathKeys = ['wild_cards', 'collection_cards', 'icons', 'cards'];
   const resolvedPaths: Record<string, string> = {};
 
-  // Validate configured asset directories from variables.config.paths
   for (const key of requiredPathKeys) {
     const rawPath = configPaths[key];
     if (!rawPath || typeof rawPath !== 'string') {
@@ -47,6 +107,7 @@ export function validateCollectibles(): ValidationReport {
   const aliasMap = new Map<string, string>();
   let totalRarityWeight = 0;
   let totalAliases = 0;
+  let totalEmojis = 0;
   let validCollectibles = 0;
   let totalCollectibles = 0;
 
@@ -63,7 +124,7 @@ export function validateCollectibles(): ValidationReport {
         validCollectibles: 0,
         errors,
         warnings,
-        stats: { totalRarityWeight: 0, totalAliases: 0 },
+        stats: { totalRarityWeight: 0, totalAliases: 0, totalEmojis: 0 },
       };
     }
   }
@@ -113,6 +174,21 @@ export function validateCollectibles(): ValidationReport {
       isItemValid = false;
     } else {
       totalRarityWeight += col.rarity;
+    }
+
+    const emoji = col.emoji_id || col.emoji;
+    if (!emoji || typeof emoji !== 'string' || emoji.trim().length === 0) {
+      errors.push(`[${id}] Missing or invalid 'emoji_id' in collectiblesData (must be a valid application emoji)`);
+      isItemValid = false;
+    } else {
+      totalEmojis++;
+      if (appEmojiSet && appEmojiSet.size > 0) {
+        const cleanEmoji = emoji.trim();
+        if (!appEmojiSet.has(cleanEmoji)) {
+          errors.push(`[${id}] Application emoji '${cleanEmoji}' was not found in Discord application emojis`);
+          isItemValid = false;
+        }
+      }
     }
 
     if (!col.wild_card) {
@@ -179,7 +255,12 @@ export function validateCollectibles(): ValidationReport {
 
   console.log(`Total Audited: ${totalCollectibles}`);
   console.log(`Valid: ${validCollectibles} / ${totalCollectibles}`);
+  console.log(`Total Emojis Validated: ${totalEmojis}`);
   console.log(`Total Aliases Indexed: ${totalAliases}`);
+
+  if (appEmojiSet && appEmojiSet.size > 0) {
+    console.log(`Application Emojis Verified via Discord API: ${appEmojiSet.size} emoji(s) indexed`);
+  }
 
   if (errors.length > 0) {
     console.log(`Found ${errors.length} error(s):`);
@@ -198,7 +279,7 @@ export function validateCollectibles(): ValidationReport {
   }
 
   if (success && warnings.length === 0) {
-    console.log('All Nation Assets and aliases are valid!');
+    console.log('All Nation Assets, emojis, and aliases are valid!');
   } else if (success) {
     console.log(`Audit passed with ${warnings.length} warning(s).`);
   } else {
@@ -214,11 +295,54 @@ export function validateCollectibles(): ValidationReport {
     stats: {
       totalRarityWeight,
       totalAliases,
+      totalEmojis,
     },
   };
 }
 
+export async function initCollectibles(
+  options: CollectiblesOptions = {},
+  _instance?: ForgeClient
+): Promise<ValidationReport> {
+  let appEmojis = options.applicationEmojis;
+
+  if (!appEmojis && options.fetchEmojis !== false) {
+    const fetched = await fetchApplicationEmojis(options.token);
+    if (fetched) {
+      appEmojis = fetched;
+    }
+  }
+
+  return validateCollectibles({
+    ...options,
+    applicationEmojis: appEmojis,
+  });
+}
+
+export class Collectibles extends ForgeExtension {
+  public name = 'Collectibles';
+  public description = 'Collectibles validator for Nationdex';
+  public version = '1.0.0';
+  public options: CollectiblesOptions;
+
+  public constructor(options: CollectiblesOptions = {}) {
+    super();
+    this.options = options;
+  }
+
+  public async init(client?: ForgeClient): Promise<ValidationReport> {
+    return await initCollectibles(this.options, client);
+  }
+
+  public validate(options?: ValidateCollectiblesOptions): ValidationReport {
+    return validateCollectibles(options ?? this.options);
+  }
+}
+
+export const collectibles = new Collectibles();
+
 export async function runCliValidation(): Promise<ValidationReport> {
+  require('dotenv').config();
   const { DataBase } = require('@nationdex/db/dist/util/database');
   const { TypedEmitter } = require('tiny-typed-emitter');
 
@@ -234,7 +358,7 @@ export async function runCliValidation(): Promise<ValidationReport> {
   await db.init();
   await syncVariables();
 
-  const report = validateCollectibles();
+  const report = await initCollectibles();
 
   try {
     if (typeof DataBase.db?.close === 'function') {

@@ -3,22 +3,24 @@ import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { API } from '@nationdex/api';
 import { DB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
-import { variables, syncVariables } from './config/variables';
-import { commands } from './config/commands';
-import { slashCommands } from './config/slash';
-import { validateCollectibles } from './util/validateCollectibles';
+import {
+  variables,
+  commands,
+  slashes,
+  collectibles,
+} from './util';
 
 const api = new API({
-  path: "dist/api_routes",
-  port: 2222
+  path: 'dist/api_routes',
+  port: 2222,
 });
 
 const db = new DB({
-  type: "surrealdb",
-  engine: "rocksdb",
-  folder: "./database",
-  namespace: "forge",
-  database: "forge.db"
+  type: 'surrealdb',
+  engine: 'rocksdb',
+  folder: './database',
+  namespace: 'forge',
+  database: 'forge.db',
 });
 
 const canvas = new ForgeCanvas();
@@ -37,16 +39,19 @@ const dex = new ForgeClient({
   prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
     canvas,
-    db
+    db,
   ],
 });
 
 const flushAndExit = async () => {
   try {
     const dataSource = (dex as any)?.db?.db;
-    if (typeof dataSource?.close === "function") {
+    if (typeof dataSource?.close === 'function') {
       await dataSource.close();
-      console.log("database connection closed");
+      console.log('database connection closed');
+    } else if (typeof dataSource?.destroy === 'function') {
+      await dataSource.destroy();
+      console.log('database connection closed');
     }
   } catch {
     // ignore
@@ -54,28 +59,34 @@ const flushAndExit = async () => {
   process.exit(0);
 };
 
-process.on("SIGINT", flushAndExit);
-process.on("SIGTERM", flushAndExit);
+process.on('SIGINT', flushAndExit);
+process.on('SIGTERM', flushAndExit);
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] Unhandled Promise Rejection:', reason);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught Exception:', err);
+  process.exit(1);
+});
 
 async function main() {
-  db.variables(variables);
-  await new Promise<void>((resolve) => {
-    if ((dex as any).db?.db) {
-      return resolve();
-    }
-    db.emitter.once('connect', () => {
-      resolve();
-    });
-  });
-  await syncVariables(dex);
-  validateCollectibles();
+  const token = process.env.TOKEN;
+  if (!token || token.trim() === '' || token === 'YOUR_DISCORD_APP_TOKEN') {
+    throw new Error('Discord bot token is missing or not configured. Please set a valid TOKEN in your .env file.');
+  }
+
+  await variables.init(dex, db);
+  await collectibles.init(dex);
 
   dex.functions.load('dist/functions');
   commands.init(dex);
-  slashCommands.init(dex);
+  slashes.init(dex);
   api.init(dex);
 
-  await dex.login(process.env.TOKEN);
+  await dex.login(token);
 }
 
 main().catch((err) => {

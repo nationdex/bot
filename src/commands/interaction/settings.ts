@@ -1,4 +1,4 @@
-import { command } from '../../config/commands';
+import { command } from '../../util/commands';
 
 export default command('interaction.settings', `
   $arrayLoad[cid;-;$customID]

@@ -1,4 +1,4 @@
-import { slashCommand } from '../../config/slash';
+import { slashCommand } from '../../util/slashes';
 
 export default slashCommand('about', `
   $interactionReply[

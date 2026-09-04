@@ -1,4 +1,4 @@
-import { slashCommand } from '../../config/slash';
+import { slashCommand } from '../../util/slashes';
 
 export default slashCommand('spawn.toggle', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -9,7 +9,6 @@ export default slashCommand('spawn.toggle', `
   $let[toggle;$if[$env[config;status]==enabled;disabled;enabled]]
   $!jsonSet[config;status;$get[toggle]]
   $setGuildVar[spawnConfig;$env[config]]
-  
  
   $interactionReply[
     $ephemeral

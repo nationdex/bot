@@ -1,4 +1,4 @@
-import { slashCommand } from '../../config/slash';
+import { slashCommand } from '../../util/slashes';
 
 export default slashCommand('spawn.channel', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];

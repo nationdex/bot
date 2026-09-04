@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('collectibles.duplicates', `
+export default SlashCommand('collectibles.duplicates', `
   $let[class;$if[$isValidClass[$env[class]];$env[class]]]
   $let[special;$option[special]]
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]

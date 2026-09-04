@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('rarity.collectibles', `
+export default SlashCommand('rarity.collectibles', `
   $interactionReply[Loading $jsonVar[keywords;collectible.plural] data...]
 
   $interactionUpdate[

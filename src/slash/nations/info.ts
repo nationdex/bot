@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('collectibles.info', `
+export default SlashCommand('collectibles.info', `
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
   $let[id;$default[$option[$jsonVar[keywords;collectible.singular]];$env[collectibles;0]]]
   $let[ind;$arrayIndexOf[collectibles;$get[id]]]

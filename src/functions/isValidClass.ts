@@ -15,4 +15,4 @@ export default new ForgeFunction({
   $jsonLoad[classes;$collectiblesData[classes]]
   $return[$arrayIncludes[classes;$env[class]]]
   `
-})
+});

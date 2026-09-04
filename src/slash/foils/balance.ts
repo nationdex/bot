@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('economy.balance', `
+export default SlashCommand('economy.balance', `
   $let[user;$findUser[$option[user];true]]
   $let[balance;$getUserVar[balance;$get[user]]]
 

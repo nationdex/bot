@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('rarity.info', `
+export default SlashCommand('rarity.info', `
   $let[colID;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[sorted;$sortData[$collectiblesData[collectibles];rarity;desc]]
   $jsonLoad[ids;$jsonKeys[sorted]]

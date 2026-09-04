@@ -22,4 +22,4 @@ export default new ForgeFunction({
   $jsonLoad[uniques;$env[data;unique]]
   $return[$arrayIncludes[uniques;$env[collectibleID]]]
   `
-})
+});

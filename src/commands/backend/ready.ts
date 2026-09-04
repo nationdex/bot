@@ -1,4 +1,4 @@
-import { command } from '../../config/commands';
+import { command } from '../../util/commands';
 
 export default command('ready', `
   $registerFont[assets/fonts]

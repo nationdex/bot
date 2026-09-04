@@ -1,6 +1,6 @@
-import { slashCommand } from '../../config/slash';
+import { SlashCommand } from '../../util/slashes';
 
-export default slashCommand('collectibles.progress', `
+export default SlashCommand('collectibles.progress', `
   $let[user;$findUser[$option[user];true]]
   $let[class;$option[class]]
   

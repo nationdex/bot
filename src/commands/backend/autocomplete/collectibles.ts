@@ -1,4 +1,4 @@
-import { command } from '../../../config/commands';
+import { command } from '../../../util/commands';
 
 export default command('autocomplete.collectibles', `
   $onlyIf[$and[$applicationCommandName==$jsonVar[keywords;collectible.plural];$focusedOptionName==$jsonVar[keywords;collectible.singular]]]

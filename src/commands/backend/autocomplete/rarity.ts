@@ -1,4 +1,4 @@
-import { command } from '../../../config/commands';
+import { command } from '../../../util/commands';
 
 export default command('autocomplete.rarity', `
   $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==$jsonVar[keywords;collectible.singular]];]
