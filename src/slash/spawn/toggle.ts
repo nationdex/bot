@@ -1,20 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  InteractionContextType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'toggle',
-    description: `Toggle ${variables.keywords.collectible.plural} spawning on or off in the server.`,
-    integration_types: [ApplicationIntegrationType.GuildInstall],
-    contexts: [InteractionContextType.Guild],
-  },
-  code: `
+export default slashCommand('spawn.toggle', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
     $err[no_perms;true]
   ]
@@ -31,5 +17,4 @@ export default new ApplicationCommand({
       $addTextDisplay[$toTitleCase[$get[toggle]] $jsonVar[keywords;collectible.plural] spawning in this server.]
     ;#00FF00]
   ]
-  `,
-});
+`);

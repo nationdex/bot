@@ -2,7 +2,7 @@
 
 **The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
 
-That is right, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative in Bot Designer for Discord, has returned.
+That is right, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative, has returned.
 
 Join our cause at the Nationdex [headquarters](https://dsc.nationdex.com/)!
 
@@ -50,7 +50,7 @@ npm run typecheck
 
 ## 🗄️ Database
 
-Nationdex uses **SurrealDB embedded** (RocksDB) via `@nationdex/db`.  
+Nationdex uses **SurrealDB embedded** (RocksDB) via `@nationdex/db`.
 Database files are stored locally in the `./database` directory and are ignored by Git.
 
 No external database container or `DATABASE_URL` is required.

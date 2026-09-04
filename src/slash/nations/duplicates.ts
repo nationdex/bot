@@ -1,31 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'duplicates',
-    description: `View your most duplicated ${variables.keywords.collectible.plural}`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'class',
-        description: `The class whose ${variables.keywords.collectible.plural} to show`,
-        required: false,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.duplicates', `
   $let[class;$if[$isValidClass[$env[class]];$env[class]]]
   $let[special;$option[special]]
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
@@ -48,31 +23,30 @@ export default new ApplicationCommand({
     ]
   ]
     
-    $onlyIf[$env[data]!={};
-      $err[no_collectibles_found;true]
-    ]
-    $jsonLoad[sorted;$sortData[$env[data];total;desc]]
-    $log[$env[sorted]]
-    $jsonLoad[ids;$jsonKeys[sorted]]
-    $let[colID;$env[ids;0]]
-    $jsonLoad[colID;$env[sorted;$get[colID]]]
-    $jsonLoad[collectibles;$sortData[$env[colID;collectibles];;desc]]
-    $jsonLoad[nids;$jsonKeys[collectibles]]
-    $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];collectible];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
-    $arraySlice[natDisp;natDisp;0;10]
-    
-    $interactionReply[
-      $addContainer[
-        $addTextDisplay[### Your most duplicate $get[class] $jsonVar[keywords;collectible.singular] is:
+  $onlyIf[$env[data]!={};
+    $err[no_collectibles_found;true]
+  ]
+  $jsonLoad[sorted;$sortData[$env[data];total;desc]]
+  $log[$env[sorted]]
+  $jsonLoad[ids;$jsonKeys[sorted]]
+  $let[colID;$env[ids;0]]
+  $jsonLoad[colID;$env[sorted;$get[colID]]]
+  $jsonLoad[collectibles;$sortData[$env[colID;collectibles];;desc]]
+  $jsonLoad[nids;$jsonKeys[collectibles]]
+  $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];collectible];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
+  $arraySlice[natDisp;natDisp;0;10]
+  
+  $interactionReply[
+    $addContainer[
+      $addTextDisplay[### Your most duplicate $get[class] $jsonVar[keywords;collectible.singular] is:
 $appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]**
 -# You have a total of **$env[colID;total]** of this $jsonVar[keywords;collectible.singular]]
-        $addSeparator
-        $addTextDisplay[
-          **Top 10 that you caught**:
+      $addSeparator
+      $addTextDisplay[
+        **Top 10 that you caught**:
 $arrayJoin[natDisp;
 ]
 ]
-      ;$jsonVar[config;accent]]
-    ]
-  `,
-});
+    ;$jsonVar[config;accent]]
+  ]
+`);

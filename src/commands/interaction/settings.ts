@@ -1,8 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  type: 'interactionCreate',
-  code: `
+export default command('interaction.settings', `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==settings]
   $onlyIf[$arrayAt[cid;2]==$authorID;
@@ -17,5 +15,4 @@ export default new BaseCommand({
   $setUserVar[settings;$env[settings]]
   
   $interactionUpdate[$settingsMenu[$authorID]]
-  `,
-});
+`);

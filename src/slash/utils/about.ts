@@ -1,22 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'about',
-    description: `About ${variables.config.bot.name}`,
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall,
-    ],
-  },
-  independent: true,
-  code: `
+export default slashCommand('about', `
   $interactionReply[
     $addContainer[
       $addSection[
@@ -33,7 +17,7 @@ Uptime: **$parseMS[$uptime;2]**]
 $appEmoji[crown] **[$jsonVar[config;author.name]\\]($jsonVar[config;author.profile])** Founder
 $appEmoji[code] **[$jsonVar[config;dev.name]\\]($jsonVar[config;dev.profile])** Bot Developer
 $appEmoji[code] **[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profile])** Web Developer
--# Made with 💙 using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
+-# Made with ❤️ using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
 ]
       
       $addSeparator
@@ -46,5 +30,4 @@ $appEmoji[code] **[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profil
       $addButton[$jsonVar[config;urls.policy];Privacy Policy;Link]
     ;$jsonVar[config;accent]]
   ]
-  `,
-});
+`);

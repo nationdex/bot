@@ -1,37 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'gift',
-    description: `Gift a ${variables.keywords.collectible.singular} to another user`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: 'The user you want to send a gift to',
-        required: true,
-      },
-      {
-        type: ApplicationCommandOptionType.String,
-        name: `${variables.keywords.collectible.singular}`,
-        description: `The ${variables.keywords.collectible.singular} you want to gift`,
-        required: true,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.gift', `
   $let[user;$option[user]]
   $let[id;$option[$jsonVar[keywords;collectible.singular]]]
   $let[colID;$collectible[$get[id];id]]
@@ -66,5 +35,4 @@ export default new ApplicationCommand({
     $deleteMessageVar[messageData;$get[msg]]
     $disableComponents
   ]
-  `,
-});
+`);

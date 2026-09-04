@@ -1,36 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: `give`,
-    description: `Give your ${variables.keywords.currency.plural} to another user`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: `user`,
-        description: `The user to give your ${variables.keywords.currency.plural} to`,
-        required: true,
-      },
-      {
-        type: ApplicationCommandOptionType.Integer,
-        name: `amount`,
-        description: `The amount of ${variables.keywords.currency.plural} to give`,
-        required: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('economy.give', `
   $let[user;$findUser[$option[user];true]]
   $let[amount;$round[$option[amount]]]
   $let[balance;$getUserVar[balance]]
@@ -59,4 +29,4 @@ export default new ApplicationCommand({
     Given **$separateNumber[$get[amount]]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] to **$userDisplayName[$get[user]]**
   ]
   `
-});
+);

@@ -1,8 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../../config/commands';
 
-export default new BaseCommand({
-  type: 'interactionCreate',
-  code: `
+export default command('interaction.collectibles.gift', `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==gift]
   $onlyIf[$arrayAt[cid;2]==$authorID;
@@ -21,7 +19,7 @@ export default new BaseCommand({
       
       $interactionUpdate[
         $addContainer[
-          $addTextDisplay[Gifted **×1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] $collectibleInfo[$get[colID];name]** to **$userDisplayName[$get[user]]**
+          $addTextDisplay[Gifted **A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] $collectibleInfo[$get[colID];name]** to **$userDisplayName[$get[user]]**
 -# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
         ;#00FF00]
       ]
@@ -34,5 +32,4 @@ export default new BaseCommand({
       ]
     ]
   ]
-  `,
-});
+`);

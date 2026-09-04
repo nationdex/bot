@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../../config/commands';
 
-export default new BaseCommand({
-  type: 'interactionCreate',
-  allowedInteractionTypes: ['autocomplete'],
-  code: `
+export default command('autocomplete.rarity', `
   $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==$jsonVar[keywords;collectible.singular]];]
   
   $jsonLoad[ctbls;$collectiblesData[id]]
@@ -24,5 +21,4 @@ export default new BaseCommand({
   ]
   
   $arrayForEach[ctbls;nat;$addChoice[#$env[nat]: $collectibleInfo[$env[nat];name];$env[nat]]]
-  `,
-});
+`);

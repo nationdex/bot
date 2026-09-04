@@ -1,22 +1,7 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType
-} from 'discord.js';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'ping',
-    description: `Check bot's latency`,
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall,
-    ],
-  },
-  code: `
+export default slashCommand('ping', `
   $interactionReply[
     
   ]
-  `
-});
+`);

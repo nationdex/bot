@@ -1,20 +1,17 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  hide: true,
-  type: 'interactionCreate',
-  code: `
+export default command('interaction.pages', `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==pages]
   $onlyIf[$arrayAt[cid;2]==$authorID;
     $err[not_author;true]
   ]
-  
+
   $let[type;$arrayAt[cid;1]]
   $let[page;$arrayAt[cid;3]]
   
   $ifx[
-    $if[$get[type]==progress;
+    $if[$get[type]==collectibles;
       $let[user;$arrayAt[cid;4]]
       $let[class;$arrayAt[cid;5]]
       $interactionUpdate[
@@ -54,5 +51,4 @@ export default new BaseCommand({
       ]
     ]
   ]
-  `,
-});
+`);

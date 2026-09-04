@@ -1,19 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-  InteractionContextType,
-} from 'discord.js';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'configs',
-    description: 'Check the spawn configuration of the server.',
-    integration_types: [ApplicationIntegrationType.GuildInstall],
-    contexts: [InteractionContextType.Guild],
-  },
-  code: `
+export default slashCommand('spawn.configs', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
     $err[no_perms;true]
   ]
@@ -38,5 +25,4 @@ Last spawn: $if[$get[lastCollectible]!=;$discordTimestamp[$get[lastCollectible];
 ]
     ;$jsonVar[config;accent]]
   ]
-  `,
-});
+`);

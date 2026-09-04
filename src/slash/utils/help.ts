@@ -1,21 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandType,
-  ApplicationIntegrationType
-} from 'discord.js';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'help',
-    description: 'Get a list of commands',
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall,
-    ],
-  },
-  independent: true,
-  code: `
+export default slashCommand('help', `
   $jsonLoad[commands;$applicationCommands]
   $jsonLoad[miscs;[\\]]
   $arrayMap[commands;cmd;$let[id;$env[cmd;id]]
@@ -47,5 +32,4 @@ $arrayJoin[miscs;
       $addTextDisplay[-# Made with 💙 by NationDex Team™]
     ;$jsonVar[config;accent]]
   ]
-  `,
-});
+`);

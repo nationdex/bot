@@ -1,8 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
-export default new BaseCommand({
-  unprefixed: true,
-  type: 'messageCreate',
-  code: `
+import { command } from '../../config/commands';
+
+export default command('spawn', `
   $onlyIf[$spawnConfig[status]==enabled]
   
   $guildCooldown[spawn;1m]
@@ -28,5 +26,4 @@ export default new BaseCommand({
       $spawnCollectible[$get[ch]]
     ]
   ;$get[wait]]
-  `,
-});
+`);

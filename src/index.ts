@@ -4,6 +4,8 @@ import { API } from '@nationdex/api';
 import { DB } from '@nationdex/db';
 import { ForgeClient } from '@tryforge/forgescript';
 import { variables, syncVariables } from './config/variables';
+import { commands } from './config/commands';
+import { slashCommands } from './config/slash';
 import { validateCollectibles } from './util/validateCollectibles';
 
 const api = new API({
@@ -69,9 +71,9 @@ async function main() {
   validateCollectibles();
 
   dex.functions.load('dist/functions');
+  commands.init(dex);
+  slashCommands.init(dex);
   api.init(dex);
-  dex.commands.load('dist/commands');
-  dex.applicationCommands.load('dist/slash');
 
   await dex.login(process.env.TOKEN);
 }

@@ -1,11 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  name: 'eval',
-  aliases: ['ev'],
-  type: 'messageCreate',
-  code: `
-    $onlyForUsers[;$botOwnerID;910837428862984213;903681538842054686]
-    $eval[$message]
-  `,
-});
+export default command('dev.eval', `
+  $onlyForUsers[;$botOwnerID;910837428862984213;903681538842054686]
+  $eval[$message]
+`);

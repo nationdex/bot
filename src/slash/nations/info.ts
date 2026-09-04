@@ -1,31 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'info',
-    description: `View the info card of one of your ${variables.keywords.collectible.plural}.`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: `${variables.keywords.collectible.singular}`,
-        description: `The ${variables.keywords.collectible.singular} whose info card to view.`,
-        required: false,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.info', `
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
   $let[id;$default[$option[$jsonVar[keywords;collectible.singular]];$env[collectibles;0]]]
   $let[ind;$arrayIndexOf[collectibles;$get[id]]]
@@ -48,5 +23,4 @@ export default new ApplicationCommand({
     $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[collectibles];Primary;;true]
     $addButton[pages-collectibleInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
   ]
-  `,
-});
+`);

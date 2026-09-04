@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../../config/commands';
 
-export default new BaseCommand({
-  hide: true,
-  type: 'interactionCreate',
-  code: `
+export default command('interaction.collectibles.info', `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$and[$arrayAt[cid;0]==collectibles;$arrayAt[cid;1]==info]]
   $onlyIf[$arrayAt[cid;2]==$authorID;
@@ -17,5 +14,4 @@ export default new BaseCommand({
   $interactionUpdate[
     $collectibleCard[$get[id]]
   ]
-  `,
-});
+`);

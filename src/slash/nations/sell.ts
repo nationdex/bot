@@ -1,31 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: `sell`,
-    description: `Sell a ${variables.keywords.collectible.singular} for ${variables.keywords.currency.plural}`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: `${variables.keywords.collectible.singular}`,
-        description: `The ${variables.keywords.collectible.singular} to sell.`,
-        required: true,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.sell', `
   $let[id;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
 
@@ -44,5 +19,4 @@ export default new ApplicationCommand({
     $addButton[collectible-sell-confirm-$get[id];Sell;Success]
     $addButton[collectible-sell-cancel-$get[id];Cancel;Danger]
   ]
-  `
-});
+`);

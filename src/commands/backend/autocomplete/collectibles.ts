@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../../config/commands';
 
-export default new BaseCommand({
-  type: 'interactionCreate',
-  allowedInteractionTypes: ['autocomplete'],
-  code: `
+export default command('autocomplete.collectibles', `
   $onlyIf[$and[$applicationCommandName==$jsonVar[keywords;collectible.plural];$focusedOptionName==$jsonVar[keywords;collectible.singular]]]
   
   $jsonLoad[userCollectibles;$getUserData[$authorID;collectibleIDs]]
@@ -31,5 +28,4 @@ export default new BaseCommand({
     $let[colID;$collectible[$env[nat];id]]
     $addChoice[#$env[nat]: $getSpecial[$collectible[$env[nat];special];emoji] $collectibleInfo[$get[colID];name] | ($collectible[$env[nat];attack] $collectible[$env[nat];health]) | $parseDate[$collectible[$env[nat];timestamp];Locale];$env[nat]]
   ]
-  `,
-});
+`);

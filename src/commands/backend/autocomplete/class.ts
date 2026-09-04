@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../../config/commands';
 
-export default new BaseCommand({
-  type: 'interactionCreate',
-  allowedInteractionTypes: ['autocomplete'],
-  code: `
+export default command('autocomplete.class', `
   $onlyIf[$focusedOptionName==class]
   $jsonLoad[classes;$collectiblesData[classes]]
   
@@ -12,5 +9,4 @@ export default new BaseCommand({
   ]
   
   $arrayForEach[classes;class;$addChoice[$toTitleCase[$env[class]];$env[class]]]
-  `,
-});
+`);

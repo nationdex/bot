@@ -1,31 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'info',
-    description: `View the rarity info of a ${variables.keywords.collectible.singular}`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: `${variables.keywords.collectible.singular}`,
-        description: `The ${variables.keywords.collectible.singular} whose rarity info to view.`,
-        required: true,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('rarity.info', `
   $let[colID;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[sorted;$sortData[$collectiblesData[collectibles];rarity;desc]]
   $jsonLoad[ids;$jsonKeys[sorted]]
@@ -49,5 +24,4 @@ export default new ApplicationCommand({
 - Rarity Rank: \`#$sum[$arrayIndexOf[ids;$get[colID]];1]\`]
     ;$jsonVar[config;accent]]
   ]
-  `,
-});
+`);

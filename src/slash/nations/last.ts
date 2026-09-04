@@ -1,37 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'last',
-    description: `View info of the last ${variables.keywords.collectible.singular} caught.`,
-    integration_types: [
-      ApplicationIntegrationType.UserInstall,
-      ApplicationIntegrationType.GuildInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: `The user whose last ${variables.keywords.collectible.singular} to check.`,
-        required: false,
-      },
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'class',
-        description: `View info of the last ${variables.keywords.collectible.singular} caught of a specific rarity class.`,
-        required: false,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.last', `
   $let[user;$findUser[$option[user];true]]
   $jsonLoad[classes;$collectiblesData[classes]]
   $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class]]]
@@ -60,5 +29,4 @@ export default new ApplicationCommand({
 **Info on the last $jsonVar[keywords;collectible.singular] caught**:
 $collectibleCard[$get[id]]
   ]
-  `,
-});
+`);

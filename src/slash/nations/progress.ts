@@ -1,37 +1,6 @@
-import { ApplicationCommand } from '@tryforge/forgescript';
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-  ApplicationIntegrationType,
-} from 'discord.js';
-import { variables } from '../../config/variables';
+import { slashCommand } from '../../config/slash';
 
-export default new ApplicationCommand({
-  data: {
-    type: ApplicationCommandType.ChatInput,
-    name: 'progress',
-    description: `View your ${variables.keywords.collectible.singular} collection progress`,
-    integration_types: [
-      ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall,
-    ],
-    options: [
-      {
-        type: ApplicationCommandOptionType.User,
-        name: 'user',
-        description: `The user whose ${variables.keywords.collectible.plural} progress to view.`,
-        required: false,
-      },
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'class',
-        description: 'The rarity class to view.',
-        required: false,
-        autocomplete: true,
-      },
-    ],
-  },
-  code: `
+export default slashCommand('collectibles.progress', `
   $let[user;$findUser[$option[user];true]]
   $let[class;$option[class]]
   
@@ -51,5 +20,4 @@ export default new ApplicationCommand({
   $interactionUpdate[
     $progressMenu[$get[user];$get[class];1]
   ]
-  `,
-});
+`);

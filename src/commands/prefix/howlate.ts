@@ -1,13 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
-import { variables } from '../../config/variables';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  name: 'howlate',
-  aliases: ['hl'],
-  description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular} by replying to their message`,
-  usage: '',
-  type: 'messageCreate',
-  code: `
+export default command('prefix.howlate', `
   $let[msg;$messageReferenceID]
   
   $onlyIf[$get[msg]!=;
@@ -47,5 +40,4 @@ export default new BaseCommand({
 
 -# difference of $shortParse[$sub[$get[user_time];$get[catcher_time]];-1]
   ]
-  `,
-});
+`);

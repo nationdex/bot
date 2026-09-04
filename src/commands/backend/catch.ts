@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  unprefixed: true,
-  type: 'messageCreate',
-  code: `
+export default command('catch', `
   $let[ctbl;$spawnConfig[collectible]]
   $onlyIf[$get[ctbl]!=]
   $onlyIf[$channelID==$spawnConfig[channel]]
@@ -37,5 +34,4 @@ export default new BaseCommand({
 Congratulations <@$authorID>! You caught a $collectibleInfo[$get[ctbl];class] $appEmoji[$collectibleInfo[$get[ctbl];emoji_id]] **$collectibleInfo[$get[ctbl];name]**!
 \`$spawnConfig[attack_bonus]%\` / \`$spawnConfig[health_bonus]%\`
 -# Caught in $shortParse[$get[caughtin];-1]
-  `,
-});
+`);

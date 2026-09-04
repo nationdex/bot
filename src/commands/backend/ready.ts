@@ -1,9 +1,6 @@
-import { BaseCommand } from '@tryforge/forgescript';
+import { command } from '../../config/commands';
 
-export default new BaseCommand({
-  type: 'clientReady',
-  code: `
+export default command('ready', `
   $registerFont[assets/fonts]
   $log[Ready as $username[$botID]]
-  `,
-});
+`);
