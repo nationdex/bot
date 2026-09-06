@@ -37,13 +37,11 @@
   },
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",
-    "@nationdex/db": "github:nationdex/db#main",
-    "@surrealdb/node": "^3.0.3",
+    "@nationdex/db": "github:nationdex/db#dev",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
     "dotenv": "^17.4.2",
     "pm2": "^7.0.4",
-    "surrealdb": "^2.0.8",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.55.0"
   },
   "devDependencies": {

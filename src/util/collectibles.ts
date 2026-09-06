@@ -348,11 +348,7 @@ export async function runCliValidation(): Promise<ValidationReport> {
 
   const emitter = new TypedEmitter();
   const db = new DataBase(emitter, {
-    type: 'surrealdb',
-    engine: 'rocksdb',
     folder: './database',
-    namespace: 'forge',
-    database: 'forge.db',
   });
 
   await db.init();
@@ -361,8 +357,8 @@ export async function runCliValidation(): Promise<ValidationReport> {
   const report = await initCollectibles();
 
   try {
-    if (typeof DataBase.db?.close === 'function') {
-      await DataBase.db.close();
+    if (typeof DataBase.pg?.close === 'function') {
+      await DataBase.pg.close();
     }
   } catch {}
 

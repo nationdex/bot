@@ -12,7 +12,7 @@ let currentDb: any = null;
 export async function syncVariables(clientInstance?: any): Promise<void> {
   try {
     const DataBase = clientInstance?.db ?? client?.db ?? require('@nationdex/db/dist/util').DataBase;
-    if (!DataBase || !DataBase.db) {
+    if (!DataBase || !DataBase.pg) {
       console.warn('Database is not ready yet, skipping variable synchronization.');
       return;
     }
@@ -55,7 +55,7 @@ export async function initVariables(options: VariablesOptions = {}, instance: Fo
 
   if (targetDb?.emitter) {
     await new Promise<void>((resolve, reject) => {
-      if (targetDb.db || (client as any)?.db?.db) {
+      if (targetDb.pg || (client as any)?.db?.pg) {
         return resolve();
       }
 
@@ -86,7 +86,7 @@ export async function initVariables(options: VariablesOptions = {}, instance: Fo
         cleanup();
         reject(
           new Error(
-            `Database connection timed out after ${timeoutMs / 1000}s. Check your database configuration, engine (${targetDb?.options?.engine || 'rocksdb'}), and storage directory (${targetDb?.options?.folder || './database'}).`
+            `Database connection timed out after ${timeoutMs / 1000}s. Check your storage directory (${targetDb?.options?.folder || './database'}).`
           )
         );
       }, timeoutMs);

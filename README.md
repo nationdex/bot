@@ -50,7 +50,7 @@ npm run typecheck
 
 ## 🗄️ Database
 
-Nationdex uses **SurrealDB embedded** (RocksDB) via `@nationdex/db`.
+Nationdex uses an embedded **PGlite** (WASM Postgres) instance via `@nationdex/db`.
 Database files are stored locally in the `./database` directory and are ignored by Git.
 
 No external database container or `DATABASE_URL` is required.

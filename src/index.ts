@@ -16,11 +16,7 @@ const api = new API({
 });
 
 const db = new DB({
-  type: 'surrealdb',
-  engine: 'rocksdb',
   folder: './database',
-  namespace: 'forge',
-  database: 'forge.db',
 });
 
 const canvas = new ForgeCanvas();
@@ -45,12 +41,9 @@ const dex = new ForgeClient({
 
 const flushAndExit = async () => {
   try {
-    const dataSource = (dex as any)?.db?.db;
-    if (typeof dataSource?.close === 'function') {
-      await dataSource.close();
-      console.log('database connection closed');
-    } else if (typeof dataSource?.destroy === 'function') {
-      await dataSource.destroy();
+    const pg = (dex as any)?.db?.pg;
+    if (typeof pg?.close === 'function') {
+      await pg.close();
       console.log('database connection closed');
     }
   } catch {
