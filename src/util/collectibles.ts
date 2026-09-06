@@ -81,7 +81,7 @@ export function validateCollectibles(options?: ValidateCollectiblesOptions): Val
   }
 
   const configPaths = (variables as any)?.config?.paths || {};
-  const requiredPathKeys = ['wild_cards', 'collection_cards', 'icons', 'cards'];
+  const requiredPathKeys = ['spawn_art', 'window_art', 'icons', 'cards'];
   const resolvedPaths: Record<string, string> = {};
 
   for (const key of requiredPathKeys) {
@@ -137,8 +137,8 @@ export function validateCollectibles(options?: ValidateCollectiblesOptions): Val
     warnings.push('collectiblesData has 0 collectibles loaded.');
   }
 
-  const wildCardsDir = resolvedPaths.wild_cards;
-  const collectionCardsDir = resolvedPaths.collection_cards;
+  const spawnArtDir = resolvedPaths.spawn_art;
+  const windowArtDir = resolvedPaths.window_art;
 
   for (const id of collectibleKeys) {
     const col = collectibles[id];
@@ -194,15 +194,15 @@ export function validateCollectibles(options?: ValidateCollectiblesOptions): Val
     if (!col.wild_card) {
       errors.push(`[${id}] Missing 'wild_card' image filename specification`);
       isItemValid = false;
-    } else if (fs.existsSync(wildCardsDir)) {
-      const wildCardPath = path.join(wildCardsDir, col.wild_card);
-      if (!fs.existsSync(wildCardPath)) {
-        errors.push(`[${id}] Missing wild card image file: ${col.wild_card} in ${configPaths.wild_cards}`);
+    } else if (fs.existsSync(spawnArtDir)) {
+      const spawnArtPath = path.join(spawnArtDir, col.wild_card);
+      if (!fs.existsSync(spawnArtPath)) {
+        errors.push(`[${id}] Missing spawn art image file: ${col.wild_card} in ${configPaths.spawn_art}`);
         isItemValid = false;
       } else {
-        const stats = fs.statSync(wildCardPath);
+        const stats = fs.statSync(spawnArtPath);
         if (stats.size === 0) {
-          errors.push(`[${id}] Corrupt/empty (0-byte) wild card image file: ${col.wild_card}`);
+          errors.push(`[${id}] Corrupt/empty (0-byte) spawn art image file: ${col.wild_card}`);
           isItemValid = false;
         }
       }
@@ -210,14 +210,14 @@ export function validateCollectibles(options?: ValidateCollectiblesOptions): Val
 
     if (!col.collection_card) {
       warnings.push(`[${id}] Missing 'collection_card' image filename specification`);
-    } else if (fs.existsSync(collectionCardsDir)) {
-      const collectionCardPath = path.join(collectionCardsDir, col.collection_card);
-      if (!fs.existsSync(collectionCardPath)) {
-        warnings.push(`[${id}] Missing collection card image file: ${col.collection_card} in ${configPaths.collection_cards}`);
+    } else if (fs.existsSync(windowArtDir)) {
+      const windowArtPath = path.join(windowArtDir, col.collection_card);
+      if (!fs.existsSync(windowArtPath)) {
+        warnings.push(`[${id}] Missing window art image file: ${col.collection_card} in ${configPaths.window_art}`);
       } else {
-        const stats = fs.statSync(collectionCardPath);
+        const stats = fs.statSync(windowArtPath);
         if (stats.size === 0) {
-          warnings.push(`[${id}] Corrupt/empty (0-byte) collection card image file: ${col.collection_card}`);
+          warnings.push(`[${id}] Corrupt/empty (0-byte) window art image file: ${col.collection_card}`);
         }
       }
     }

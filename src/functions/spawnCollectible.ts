@@ -51,7 +51,7 @@ export default new ForgeFunction({
   $onlyIf[$arrayLength[ids]>0]
 
   $let[ctbl;$default[$replace[$env[collectibleID];null;];$randomRarity[$env[collectibles]]]]
-  $let[wildPath;$jsonVar[config;paths.wild_cards]/$collectibleInfo[$get[ctbl];wild_card]]
+  $let[wildPath;$jsonVar[config;paths.spawn_art]/$collectibleInfo[$get[ctbl];wild_card]]
 
   $onlyIf[$fileExists[$get[wildPath]]]
 
@@ -63,7 +63,7 @@ export default new ForgeFunction({
   $let[lastCaught;$and[$spawnConfig[collectible]!=;$spawnConfig[caught_by]!=]]
 
   $let[message;$sendMessage[$get[ch];
-    $if[$get[lastCaught]==false;It looks like no one caught the $appEmoji[$collectibleInfo[$get[lastCollectible];emoji_id]] **$collectibleInfo[$get[lastCollectible];name]**]
+    $if[$get[lastCaught]==false;It looks like no one caught the $appEmoji[$collectibleInfo[$spawnConfig[collectible];emoji_id]] **$collectibleInfo[$spawnConfig[collectible];name]**]
     $attachment[$get[wildPath];wild_$jsonVar[keywords;collectible.singular].png]
     $title[$if[$get[lastCaught]==false;Another;A] wild $jsonVar[keywords;collectible.singular] just $randomText[spawned!;dropped!;summoned!;landed!;exploded!;appeared!;crashed!]]
     $image[attachment://wild_$jsonVar[keywords;collectible.singular].png]

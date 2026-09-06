@@ -1,5 +1,6 @@
 .vscode/
-assets/
+assets/window_art
+assets/spawn_art
 database/
 dist/
 logs/

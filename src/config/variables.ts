@@ -12,8 +12,8 @@ export const variables = {
       policy: 'https://arielaram.com/privacy-policy',
     },
     paths: {
-      collection_cards: 'assets/collection_cards',
-      wild_cards: 'assets/wild_cards',
+      window_art: 'assets/window_art',
+      spawn_art: 'assets/spawn_art',
       icons: 'assets/icons',
       cards: 'assets/cards',
     },

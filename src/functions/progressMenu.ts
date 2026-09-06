@@ -32,10 +32,11 @@ export default new ForgeFunction({
   $let[stInd;$multi[$get[maxperpage];$max[$sub[$get[page];1];0]]]
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
   
-  $jsonLoad[classes;$collectiblesData[classes]]
+  $jsonLoad[catalog;$getGlobalVar[collectiblesData]]
+  $jsonLoad[classes;$env[catalog;classes]]
   $jsonLoad[ids;$collectibleIDs]
-  $let[total;$collectiblesData[total]]
-  $arrayForEach[classes;class;$let[$env[class];$collectiblesData[$env[class]]]]
+  $let[total;$env[catalog;total]]
+  $arrayForEach[classes;class;$let[$env[class];$env[catalog;$env[class]]]]
   
   $jsonLoad[userCollectibles;$getUserData[$get[user];collectibleIDs]]
   $jsonLoad[userUniques;$collectibleIDs[$get[user]]]
@@ -45,12 +46,16 @@ export default new ForgeFunction({
   $ifx[
     $if[$isValidClass[$get[class]];
       $arrayMap[userCollectibles;unid;
-        $if[$collectibleInfo[$collectible[$env[unid];collectible];class]==$get[class];$return[$env[unid]]]
+        $if[$env[catalog;collectibles;$collectible[$env[unid];collectible];class]==$get[class];$return[$env[unid]]]
       ;clids]
       $let[pages;$ceil[$divide[$max[$arrayLength[clids];1];$get[maxperpage]]]]
       $arraySlice[clids;colID;$get[stInd];$get[endInd]]
-      $arrayMap[userUniques;uu;$if[$collectibleInfo[$env[uu];class]==$get[class];$return[$appEmoji[$collectibleInfo[$env[uu];emoji_id]]]];owned]
-      $arrayMap[ids;id;$if[$and[$collectibleInfo[$env[id];class]==$get[class];$arrayIncludes[owned;$appEmoji[$collectibleInfo[$env[id];emoji_id]]]==false];$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]]]];missing]
+      $arrayMap[userUniques;uu;$if[$env[catalog;collectibles;$env[uu];class]==$get[class];$return[$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]];owned]
+      $arrayMap[ids;id;
+        $if[$and[$env[catalog;collectibles;$env[id];class]==$get[class];$arrayIncludes[userUniques;$env[id]]==false];
+          $return[$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+        ]
+      ;missing]
       
       $let[classTotal;$default[$get[$get[class]];0]]
       $let[owned;$arrayLength[owned]]
@@ -80,16 +85,18 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
             $arrayForEach[colID;nat;
               $let[id;$env[nat]]
               $let[colID;$collectible[$get[id];id]]
-              $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $collectibleInfo[$get[colID];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$collectibleInfo[$get[colID];emoji_id]]]
+              $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
             ]
             ;$addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info;true]
             $addOption[null;null;null]
           ]
           ;$jsonVar[config;accent]]
           $addActionRow
-          $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-$get[class];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
+          $let[prevEmoji;$appEmoji[arrow_left]]
+          $let[nextEmoji;$appEmoji[arrow_right]]
+          $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-$get[class];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
           $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]
-          $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user]-$get[class];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
+          $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user]-$get[class];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$get[page]==$get[pages]]]
         ]
       ]
     ]
@@ -111,22 +118,46 @@ Unique $jsonVar[keywords;collectible.plural]: **$get[owned] / $get[total]**
 Total $jsonVar[keywords;collectible.plural] Owned: **$default[$getUserData[$get[user];total];0]**]
               $addThumbnail[$userAvatar[$get[user]]]
             ]
-          $arrayForEach[classes;class;$let[class;$env[class]]
-            $arrayMap[userUniques;uu;$if[$collectibleInfo[$env[uu];class]==$get[class];$return[$appEmoji[$collectibleInfo[$env[uu];emoji_id]]]];owned]
-            $arrayMap[ids;id;$if[$and[$collectibleInfo[$env[id];class]==$get[class];$arrayIncludes[owned;$appEmoji[$collectibleInfo[$env[id];emoji_id]]]==false];$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]]]];missing]
+          $arrayForEach[classes;c;
+            $arrayCreate[classOwned$env[c]]
+            $arrayCreate[classMissing$env[c]]
+          ]
+          $arrayCreate[noClassOwned]
+          $arrayCreate[noClassMissing]
 
+          $arrayForEach[userUniques;uu;
+            $let[uuClass;$env[catalog;collectibles;$env[uu];class]]
+            $let[uuEmoji;$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]
+            $if[$arrayIncludes[classes;$get[uuClass]];
+              $arrayPush[classOwned$get[uuClass];$get[uuEmoji]]
+            ;
+              $arrayPush[noClassOwned;$get[uuEmoji]]
+            ]
+          ]
+
+          $arrayForEach[ids;id;
+            $if[$arrayIncludes[userUniques;$env[id]]==false;
+              $let[idClass;$env[catalog;collectibles;$env[id];class]]
+              $let[idEmoji;$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+              $if[$arrayIncludes[classes;$get[idClass]];
+                $arrayPush[classMissing$get[idClass];$get[idEmoji]]
+              ;
+                $arrayPush[noClassMissing;$get[idEmoji]]
+              ]
+            ]
+          ]
+
+          $arrayForEach[classes;class;$let[class;$env[class]]
             $let[classTotal;$default[$get[$get[class]];0]]
-            $let[owned;$arrayLength[owned]]
-            $let[missing;$arrayLength[missing]]
+            $let[ownedCount;$arrayLength[classOwned$get[class]]]
+            $let[missingCount;$arrayLength[classMissing$get[class]]]
             $addSeparator
-            $addTextDisplay[$appEmoji[$get[class]] **$toTitleCase[$get[class]] ($get[owned] / $get[classTotal])**$if[$get[classTotal]==0;
-No $jsonVar[keywords;collectible.plural] in this class;$if[$get[owned]>0;
-**Owned**: $arrayJoin[owned;  ]]$if[$get[missing]>0;
-**Missing**: $arrayJoin[missing;  ]]
+            $addTextDisplay[$appEmoji[$get[class]] **$toTitleCase[$get[class]] ($get[ownedCount] / $get[classTotal])**$if[$get[classTotal]==0;
+No $jsonVar[keywords;collectible.plural] in this class;$if[$get[ownedCount]>0;
+**Owned**: $arrayJoin[classOwned$get[class];  ]]$if[$get[missingCount]>0;
+**Missing**: $arrayJoin[classMissing$get[class];  ]]
 ]]
             ]
-          $arrayMap[userUniques;uu;$if[$or[$collectibleInfo[$env[uu];class]==;$collectibleInfo[$env[uu];class]==null;$arrayIncludes[classes;$collectibleInfo[$env[uu];class]]==false];$return[$appEmoji[$collectibleInfo[$env[uu];emoji_id]]]];noClassOwned]
-          $arrayMap[ids;id;$if[$and[$or[$collectibleInfo[$env[id];class]==;$collectibleInfo[$env[id];class]==null;$arrayIncludes[classes;$collectibleInfo[$env[id];class]]==false];$arrayIncludes[noClassOwned;$appEmoji[$collectibleInfo[$env[id];emoji_id]]]==false];$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]]]];noClassMissing]
           $let[noClassOwnedCount;$arrayLength[noClassOwned]]
           $let[noClassMissingCount;$arrayLength[noClassMissing]]
           $let[noClassTotal;$sum[$get[noClassOwnedCount];$get[noClassMissingCount]]]
@@ -144,16 +175,18 @@ No $jsonVar[keywords;collectible.plural] in this class;$if[$get[owned]>0;
             $arrayForEach[colID;nat;
               $let[id;$env[nat]]
               $let[colID;$collectible[$get[id];id]]
-              $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $collectibleInfo[$get[colID];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$collectibleInfo[$get[colID];emoji_id]]]
+              $addOption[$cropText[$getSpecial[$collectible[$get[id];special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $collectible[$get[id];attack] | HEALTH: $collectible[$get[id];health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
             ]
             ;$addStringSelectMenu[collectibles-info-$authorID;Select a $jsonVar[keywords;collectible.singular] to view its info;true]
             $addOption[null;null;null]
           ]
           ;$jsonVar[config;accent]]
           $addActionRow
-          $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
+          $let[prevEmoji;$appEmoji[arrow_left]]
+          $let[nextEmoji;$appEmoji[arrow_right]]
+          $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
           $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]
-          $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
+          $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$get[page]==$get[pages]]]
         ]
       ]
     ]

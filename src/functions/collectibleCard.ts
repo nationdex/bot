@@ -16,8 +16,8 @@ export default new ForgeFunction({
   $let[colID;$collectible[$get[id];id]]
   $let[bg;$jsonVar[config;paths.cards]/$collectibleInfo[$get[colID];regime].png]
   $let[name;$toUpperCase[$default[$replace[$collectibleInfo[$get[colID];short_name];null;];$collectibleInfo[$get[colID];name]]]]
-  $let[economyIcon;$jsonVar[config;paths.icons]/$collectibleInfo[$get[colID];economy].png]
-  $let[card;$jsonVar[config;paths.collection_cards]/$collectibleInfo[$get[colID];collection_card]]
+  $let[economyIcon;$jsonVar[config;paths.icons]/$collectibleInfo[$get[colID];economy]]
+  $let[card;$jsonVar[config;paths.window_art]/$collectibleInfo[$get[colID];collection_card]]
   $let[capacity;$collectibleInfo[$get[colID];capacity_name]]
   $let[description;$collectibleInfo[$get[colID];capacity_description]]
   $let[attack;$collectible[$get[id];attack]]
@@ -26,17 +26,41 @@ export default new ForgeFunction({
   $let[health_color;$if[$collectible[$get[id];health_type]==buffed;#00FF00;#FF0000]]
   $let[artist;$collectibleInfo[$get[colID];credits]]
 
-  $createCanvas[info;1500;2100]
-  $drawImage[info;$get[bg];0;0;1500;2100]
-  $drawText[info;fill;$get[name];140px Posterama-Bold;#FFFFFF;70;230]
-  $drawImage[info;$get[economyIcon];1255;100;150;150]
-  $drawImage[info;$get[card];70;280;1360;730]
-  $drawText[info;fill;$get[capacity];90px Roboto-Bold;#FFFFFF;120;1160]
-  $drawText[info;fill;$get[description];75px Coolvetica;#EEEEEE;120;1300;1250;true;character]
+  $createCanvas[info;1428;2000]
+  $drawImage[info;$get[bg];0;0;1428;2000]
+  $drawText[info;fill;$get[name];133px collectible_name;#FFFFFF;67;219;1100]
+  $drawImage[info;$get[economyIcon];1195;95;143;143]
+  $drawImage[info;$get[card];67;267;1295;695]
+  $drawText[info;fill;$get[capacity];70px ability_name;#FFFFFF;114;1104;1270]
+
+  $arrayLoad[words; ;$get[description]]
+  $arrayCreate[wrapLines]
+  $let[currentLine;]
+  $arrayForEach[words;word;
+    $let[candidate;$if[$get[currentLine]==;$env[word];$get[currentLine] $env[word]]]
+    $ifx[
+      $if[$and[$get[currentLine]!=;$measureText[info;$get[candidate];71px ability_description;width]>1190];
+        $arrayPush[wrapLines;$get[currentLine]]
+        $let[currentLine;$env[word]]
+      ]
+      $else[
+        $let[currentLine;$get[candidate]]
+      ]
+    ]
+  ]
+  $if[$get[currentLine]!=;$arrayPush[wrapLines;$get[currentLine]]]
+
+  $let[lineIndex;0]
+  $arrayForEach[wrapLines;line;
+    $drawText[info;fill;$env[line];71px ability_description;#EEEEEE;114;$sum[1238;$multi[$get[lineIndex];89]]]
+    $let[lineIndex;$sum[$get[lineIndex];1]]
+  ]
+
   $textBaseline[info;middle]
-  $drawText[info;fill;$get[health];100px LemonMilk_Bold;$get[health_color];300;1770]
-  $drawText[info;fill;$get[attack];100px LemonMilk_Bold;$get[attack_color];1090;1770]
-  $drawText[info;fill;Artwork by:\n$get[artist];50px LemonMilk_Regular;#FFFFFF;70;1950;600;true;character]
+  $drawText[info;fill;$get[health];95px stats;$get[health_color];286;1685]
+  $drawText[info;fill;$get[attack];95px stats;$get[attack_color];1038;1685]
+  $drawText[info;fill;Artwork by:;48px credits;#FFFFFF;67;1856]
+  $drawText[info;fill;$get[artist];48px credits;#FFFFFF;67;1916]
   
   $return[
 ID: \`#$get[id]\`
