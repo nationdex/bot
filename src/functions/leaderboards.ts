@@ -82,9 +82,11 @@ export default new ForgeFunction({
       $addTextDisplay[-# You are $get[position] on the leaderboard]
     ;$jsonVar[config;accent]]
     $addActionRow
-    $addButton[pages-lb-$authorID-$sub[$get[page];1]-$get[type]-$get[class];;Primary;$appEmoji[arrow_left];$checkCondition[$get[page]<=1]]
+    $let[prevEmoji;$appEmoji[arrow_left]]
+    $let[nextEmoji;$appEmoji[arrow_right]]
+    $addButton[pages-lb-$authorID-$sub[$get[page];1]-$get[type]-$get[class];$if[$get[prevEmoji]==;Previous];Primary;$get[prevEmoji];$checkCondition[$get[page]<=1]]
     $addButton[pages-lb-$authorID-jump-$get[type]-$get[class];$get[page] / $get[pages];Secondary;;true]
-    $addButton[pages-lb-$authorID-$sum[$get[page];1]-$get[type]-$get[class];;Primary;$appEmoji[arrow_right];$checkCondition[$get[page]>=$get[pages]]]
+    $addButton[pages-lb-$authorID-$sum[$get[page];1]-$get[type]-$get[class];$if[$get[nextEmoji]==;Next];Primary;$get[nextEmoji];$checkCondition[$get[page]>=$get[pages]]]
   ]
   `
 });

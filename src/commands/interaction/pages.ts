@@ -25,14 +25,17 @@ export default command('interaction.pages', `
       $let[prev;$env[userCollectibles;$sub[$get[ind];1]]]
       $let[next;$env[userCollectibles;$sum[$get[ind];1]]]
 
+      $let[prevEmoji;$appEmoji[arrow_left]]
+      $let[nextEmoji;$appEmoji[arrow_right]]
+
       $interactionUpdate[Loading $jsonVar[keywords;collectible.singular] info...]
 
       $!editMessage[$channelID;$messageID;
         $collectibleCard[$get[id]]
         $addActionRow
-        $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;;Secondary;$appEmoji[arrow_left];$if[$get[prev]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$if[$get[prev]==;true]]
         $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[userCollectibles];Primary;;true]
-        $addButton[pages-collectibleInfo-$authorID-$get[next]-next;;Secondary;$appEmoji[arrow_right];$if[$get[next]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-$get[next]-next;$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$if[$get[next]==;true]]
       ]
     ]
     

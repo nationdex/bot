@@ -25,7 +25,8 @@ export default new ForgeFunction({
     $jsonLoad[data;$getUserVar[userCollectibles]]
     $jsonLoad[ids;$env[data;unique]]
   ;
-    $jsonLoad[ids;$collectiblesData[id]]
+    $jsonLoad[allCollectibles;$collectiblesData[collectibles]]
+    $jsonLoad[ids;$jsonKeys[allCollectibles]]
   ]
 
   $if[$get[classExists];

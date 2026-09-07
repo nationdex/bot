@@ -50,10 +50,18 @@ export default new ForgeFunction({
       ;clids]
       $let[pages;$ceil[$divide[$max[$arrayLength[clids];1];$get[maxperpage]]]]
       $arraySlice[clids;colID;$get[stInd];$get[endInd]]
-      $arrayMap[userUniques;uu;$if[$env[catalog;collectibles;$env[uu];class]==$get[class];$return[$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]];owned]
+      $arrayMap[userUniques;uu;
+        $if[$env[catalog;collectibles;$env[uu];class]==$get[class];
+          $let[uuEmojiVal;$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]
+          $let[uuName;$default[$replace[$env[catalog;collectibles;$env[uu];short_name];null;];$env[catalog;collectibles;$env[uu];name]]]
+          $return[$if[$get[uuEmojiVal]==;\`$get[uuName]\` ;$get[uuEmojiVal]]]
+        ]
+      ;owned]
       $arrayMap[ids;id;
         $if[$and[$env[catalog;collectibles;$env[id];class]==$get[class];$arrayIncludes[userUniques;$env[id]]==false];
-          $return[$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+          $let[idEmojiVal;$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+          $let[idName;$default[$replace[$env[catalog;collectibles;$env[id];short_name];null;];$env[catalog;collectibles;$env[id];name]]]
+          $return[$if[$get[idEmojiVal]==;\`$get[idName]\` ;$get[idEmojiVal]]]
         ]
       ;missing]
       
@@ -75,8 +83,8 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
             ]
             $addSeparator
             $addTextDisplay[$appEmoji[$get[class]] **$toTitleCase[$get[class]]**$if[$get[owned]>0;
-**Owned**: $arrayJoin[owned;  ]]$if[$get[missing]>0;
-**Missing**: $arrayJoin[missing;  ]]
+**Owned**: $arrayJoin[owned;]]$if[$get[missing]>0;
+**Missing**: $arrayJoin[missing;]]
 ]
             $addSeparator
             $addActionRow
@@ -127,7 +135,9 @@ Total $jsonVar[keywords;collectible.plural] Owned: **$default[$getUserData[$get[
 
           $arrayForEach[userUniques;uu;
             $let[uuClass;$env[catalog;collectibles;$env[uu];class]]
-            $let[uuEmoji;$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]
+            $let[uuEmojiVal;$appEmoji[$env[catalog;collectibles;$env[uu];emoji_id]]]
+            $let[uuName;$default[$replace[$env[catalog;collectibles;$env[uu];short_name];null;];$env[catalog;collectibles;$env[uu];name]]]
+            $let[uuEmoji;$if[$get[uuEmojiVal]==;\`$get[uuName]\` ;$get[uuEmojiVal]]]
             $if[$arrayIncludes[classes;$get[uuClass]];
               $arrayPush[classOwned$get[uuClass];$get[uuEmoji]]
             ;
@@ -138,7 +148,9 @@ Total $jsonVar[keywords;collectible.plural] Owned: **$default[$getUserData[$get[
           $arrayForEach[ids;id;
             $if[$arrayIncludes[userUniques;$env[id]]==false;
               $let[idClass;$env[catalog;collectibles;$env[id];class]]
-              $let[idEmoji;$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+              $let[idEmojiVal;$appEmoji[$env[catalog;collectibles;$env[id];emoji_id]]]
+              $let[idName;$default[$replace[$env[catalog;collectibles;$env[id];short_name];null;];$env[catalog;collectibles;$env[id];name]]]
+              $let[idEmoji;$if[$get[idEmojiVal]==;\`$get[idName]\` ;$get[idEmojiVal]]]
               $if[$arrayIncludes[classes;$get[idClass]];
                 $arrayPush[classMissing$get[idClass];$get[idEmoji]]
               ;
@@ -154,8 +166,8 @@ Total $jsonVar[keywords;collectible.plural] Owned: **$default[$getUserData[$get[
             $addSeparator
             $addTextDisplay[$appEmoji[$get[class]] **$toTitleCase[$get[class]] ($get[ownedCount] / $get[classTotal])**$if[$get[classTotal]==0;
 No $jsonVar[keywords;collectible.plural] in this class;$if[$get[ownedCount]>0;
-**Owned**: $arrayJoin[classOwned$get[class];  ]]$if[$get[missingCount]>0;
-**Missing**: $arrayJoin[classMissing$get[class];  ]]
+**Owned**: $arrayJoin[classOwned$get[class];]]$if[$get[missingCount]>0;
+**Missing**: $arrayJoin[classMissing$get[class];]]
 ]]
             ]
           $let[noClassOwnedCount;$arrayLength[noClassOwned]]
@@ -164,8 +176,8 @@ No $jsonVar[keywords;collectible.plural] in this class;$if[$get[ownedCount]>0;
           $if[$get[noClassTotal]>0;
             $addSeparator
             $addTextDisplay[**Unclassified $jsonVar[keywords;collectible.plural] ($get[noClassOwnedCount] / $get[noClassTotal])**$if[$get[noClassOwnedCount]>0;
-**Owned**: $arrayJoin[noClassOwned;  ]]$if[$get[noClassMissingCount]>0;
-**Missing**: $arrayJoin[noClassMissing;  ]]
+**Owned**: $arrayJoin[noClassOwned;]]$if[$get[noClassMissingCount]>0;
+**Missing**: $arrayJoin[noClassMissing;]]
 ]
           ]
             $addSeparator

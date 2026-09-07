@@ -70,9 +70,11 @@ export default new ForgeFunction({
 ]]
     ;$jsonVar[config;accent]]
     $addActionRow
-      $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_left];$checkCondition[$get[page]==1]]
+      $let[prevEmoji;$appEmoji[arrow_left]]
+      $let[nextEmoji;$appEmoji[arrow_right]]
+      $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
       $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]
-      $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];;Secondary;$appEmoji[arrow_right];$checkCondition[$get[page]==$get[pages]]]
+      $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$get[page]==$get[pages]]]
   ]
   `,
 });
