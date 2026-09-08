@@ -3,7 +3,8 @@ import { command } from '../../../util/commands';
 export default command('autocomplete.rarity', `
   $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==$jsonVar[keywords;collectible.singular]];]
   
-  $jsonLoad[ctbls;$collectiblesData[id]]
+  $jsonLoad[allCtbls;$collectiblesData[collectibles]]
+  $jsonLoad[ctbls;$jsonKeys[allCtbls]]
   $let[val;$replace[$toLowerCase[$focusedOptionValue];#;]]
   $if[$get[val]!=;
     $arrayMap[ctbls;nat;
