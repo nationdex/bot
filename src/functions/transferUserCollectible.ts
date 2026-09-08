@@ -21,7 +21,7 @@ export default new ForgeFunction({
   $let[receiver;$env[receiver]]
   $let[id;$env[id]]
   $let[author;$collectible[$get[id];author]]
-  $let[colID;$collectible[$get[id];collectible]]
+  $let[colID;$collectible[$get[id];id]]
   $let[class;$collectibleInfo[$get[colID];class]]
   
   $jsonLoad[data;$getUserVar[userCollectibles;$get[author]]]
