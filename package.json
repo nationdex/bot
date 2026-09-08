@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npm run build && node dist/index.js",
+    "dev": "npm run build && node --watch dist/index.js",
     "fix": "rm -rf dist/ && npm run build",
     "typecheck": "tsc --noEmit",
     "validate:collectibles": "npm run build && node dist/util/validateCollectibles.js",
@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "@types/node": "^26.4.1",
-    "pm2": "^7.0.4",
     "typescript": "^7.0.2"
   },
   "overrides": {

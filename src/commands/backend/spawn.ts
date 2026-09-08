@@ -17,12 +17,13 @@ export default command('spawn', `
     $spawnCollectible[$get[ch]]
 
   $let[wait;$randomNumber[$parseString[1h];$parseString[3h]]]
-  
+  $let[guildID;$guildID]
+
   $setTimeout[
-    $jsonLoad[config;$getGuildVar[spawnConfig]]
-    $if[$spawnConfig[message]==$get[message];
+    $jsonLoad[config;$getGuildVar[spawnConfig;$get[guildID]]]
+    $if[$spawnConfig[message;$get[guildID]]==$get[message];
       $!jsonSet[config;weight;0]
-      $setGuildVar[spawnConfig;$env[config]]
+      $setGuildVar[spawnConfig;$env[config];$get[guildID]]
       $spawnCollectible[$get[ch]]
     ]
   ;$get[wait]]

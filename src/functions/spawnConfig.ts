@@ -10,9 +10,19 @@ export default new ForgeFunction({
       type: 'String',
       required: true,
     },
+    {
+      name: 'guild',
+      // The guild ID to get the spawn config for, defaults to the current guild.
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
-  $jsonLoad[config;$getGuildVar[spawnConfig]]
+  $if[$env[guild]!=null;
+    $jsonLoad[config;$getGuildVar[spawnConfig;$env[guild]]]
+    ;
+    $jsonLoad[config;$getGuildVar[spawnConfig]]
+  ]
   $return[$env[config;$env[value]]]
   `,
 });

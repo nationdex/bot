@@ -6,7 +6,7 @@ export default command('catch', `
   $onlyIf[$channelID==$spawnConfig[channel]]
   
   $jsonLoad[names;$collectibleInfo[$get[ctbl];catch_names]]
-  $jsonLoad[trNames;$collectibleInfo[translations]]
+  $jsonLoad[trNames;$collectibleInfo[$get[ctbl];translations]]
   $let[msg;$toLowerCase[$message]]
   
   $onlyIf[$and[$or[$arrayIncludes[names;$get[msg]];$arrayIncludes[trNames;$get[msg]]];$spawnConfig[caught_by]==]]
