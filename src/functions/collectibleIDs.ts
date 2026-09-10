@@ -22,7 +22,7 @@ export default new ForgeFunction({
   $let[classExists;$isValidClass[$env[class]]]
 
   $if[$userExists[$get[user]];
-    $jsonLoad[data;$getUserVar[userCollectibles]]
+    $jsonLoad[data;$getUserVar[userCollectibles;$get[user]]]
     $jsonLoad[ids;$env[data;unique]]
   ;
     $jsonLoad[allCollectibles;$collectiblesData[collectibles]]
