@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/nationdex/bot#readme",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",

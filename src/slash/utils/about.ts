@@ -10,7 +10,7 @@ $jsonVar[config;bot.description]]
       ]
       $addSeparator
       $addTextDisplay[**Stats**
-**$collectiblesData[total]** $jsonVar[keywords;collectible.plural] to collect • **$guildCount** servers • **$userCount** users • **$collectiblesData[total_caught]** $jsonVar[keywords;collectible.plural] caught
+**$collectiblesData[total]** $jsonVar[keywords;collectible.plural] to collect • **$guildCount** servers • **$totalPlayers** players • **$collectiblesData[total_caught]** $jsonVar[keywords;collectible.plural] caught
 Version **$jsonVar[config;bot.version]**
 Uptime: **$parseMS[$uptime;2]**]
       $addTextDisplay[**Credits**
