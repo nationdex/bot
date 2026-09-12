@@ -92,7 +92,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
               $addThumbnail[$userAvatar[$get[user]]]
             ]
             $addSeparator
-            $addTextDisplay[$appEmoji[$get[class]] **$toTitleCase[$get[class]]**$if[$get[owned]>0;
+            $addTextDisplay[## $appEmoji[$get[class]] $toTitleCase[$get[class]]$if[$get[owned]>0;
 **Owned**: $arrayJoin[owned;]]$if[$get[missing]>0;
 **Missing**: $arrayJoin[missing;]]
 ]
@@ -188,7 +188,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
             $addButton[pages-progress-$authorID-index2;$get[listPage] / $get[listPages];Primary;;true]
             $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sum[$get[listPage];1];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$or[$get[listPage]==$get[listPages];$get[listPages]<=1]]]
               $addSeparator
-              $addTextDisplay[$appEmoji[$get[pageClass]] **$toTitleCase[$get[pageClass]]**$if[$get[ownedCount]>0;
+              $addTextDisplay[## $appEmoji[$get[pageClass]] $toTitleCase[$get[pageClass]]$if[$get[ownedCount]>0;
 **Owned**: $arrayJoin[classOwned$get[pageClass];]]$if[$get[missingCount]>0;
 **Missing**: $arrayJoin[classMissing$get[pageClass];]]
 ]
@@ -223,7 +223,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
                 $addThumbnail[$userAvatar[$get[user]]]
               ]
               $addSeparator
-              $addTextDisplay[**Unclassified $jsonVar[keywords;collectible.plural]**$if[$get[noClassOwnedCount]>0;
+              $addTextDisplay[## Unclassified $jsonVar[keywords;collectible.plural]$if[$get[noClassOwnedCount]>0;
 **Owned**: $arrayJoin[noClassOwned;]]$if[$get[noClassMissingCount]>0;
 **Missing**: $arrayJoin[noClassMissing;]]
 ]
