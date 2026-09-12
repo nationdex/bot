@@ -13,6 +13,7 @@
         "pm2": "^7.0.4",
       },
       "devDependencies": {
+        "@napi-rs/canvas-linux-arm64-gnu": "1.0.9",
         "@types/node": "^26.4.1",
         "typescript": "^7.0.2",
       },

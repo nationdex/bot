@@ -1,3 +1,5 @@
+import './init-native';
+
 if (typeof (globalThis as any).Bun === 'undefined') {
   require('dotenv/config');
 }

@@ -5,44 +5,29 @@ No Node.js, Bun, Go, or build tools are required on the host system to run these
 
 ---
 
-## Included Binaries
+## Included Binaries & Native Addons
 
-| Binary File | Target Platform | C Library | Use Cases |
-| :--- | :--- | :--- | :--- |
-| `nationdex-bot-linux-arm64` | Linux ARM64 | `glibc` | **Native Termux (via `glibc-runner`)**, Galaxy Tab S10 Lite, Raspberry Pi 4/5, ARM64 servers |
-| `nationdex-bot-linux-arm64-musl` | Linux ARM64 | `musl` | **iSH (iOS)**, Alpine Linux ARM64, Termux `gcompat` |
-| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 | `glibc` | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
-| `nationdex-bot-windows-x64.exe` | Windows x86_64 | MSVC/Win32 | Windows 10/11 64-bit |
-
----
-
-## How to Run in Native Termux (Without PRoot)
-
-Android uses Bionic libc instead of standard GNU libc, so running standard Linux ELF binaries natively in Termux requires the official Termux `glibc-runner` package:
-
-1. In native Termux, install `glibc-runner`:
-   ```bash
-   pkg install glibc-runner
-   ```
-2. Make the binary executable:
-   ```bash
-   chmod +x nationdex-bot-linux-arm64
-   ```
-3. Run directly with `grun`:
-   ```bash
-   grun ./nationdex-bot-linux-arm64
-   ```
-   *(No PRoot, no container, no root required!)*
+| File | Target Platform | Description |
+| :--- | :--- | :--- |
+| `nationdex-bot-linux-arm64` | Linux ARM64 | Precompiled bot executable for ARM64 (Galaxy Tab, PRoot Ubuntu, Raspberry Pi) |
+| `skia.linux-arm64-gnu.node` | Linux ARM64 | Precompiled Skia canvas rendering library (auto-detected by bot) |
+| `gifsx.linux-arm64-gnu.node` | Linux ARM64 | Precompiled GIF processing library (auto-detected by bot) |
+| `nationdex-bot-linux-arm64-musl` | Linux ARM64 | For iSH (iOS) & Alpine Linux ARM64 |
+| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
+| `nationdex-bot-windows-x64.exe` | Windows x86_64 | Windows 10/11 64-bit |
 
 ---
 
-## How to Run in iSH / Alpine Linux
+## How to Run on Android (PRoot-Distro)
 
-iSH runs Alpine Linux which uses the `musl` standard library. Run the musl-targeted binary directly:
 ```bash
-chmod +x nationdex-bot-linux-arm64-musl
-./nationdex-bot-linux-arm64-musl
+# 1. Pull the latest files
+git pull origin dev
+
+# 2. Enter PRoot Ubuntu (or run via 1-liner from Termux):
+proot-distro login ubuntu -- ./binaries/nationdex-bot-linux-arm64
 ```
+*(The bot will automatically detect `skia.linux-arm64-gnu.node` and initialize the canvas engine with zero manual configuration!)*
 
 ---
 
