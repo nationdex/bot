@@ -9,6 +9,7 @@ src/commands/dev/
 website/
 .cache/
 .env
-# Ignore uncompressed x64 binaries exceeding GitHub's 100MB limit (tracked as .tar.gz)
+# Ignore uncompressed binaries exceeding GitHub's 100MB limit (tracked as .tar.gz)
 binaries/nationdex-bot-linux-x64
 binaries/nationdex-bot-linux-x64-musl
+binaries/nationdex-bot-linux-arm64

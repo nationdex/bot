@@ -1,48 +1,53 @@
 # Nationdex 2026 Standalone Binaries
 
 Standalone native executables for Project Nationdex 2026, compiled with Bun.
+All required native graphic engines (Skia & GIFSX) are bundled inside.
 No Node.js, Bun, Go, or build tools are required on the host system to run these.
 
 ---
 
-## Included Binaries & Native Addons
+## Included Binaries
 
-| File | Target Platform | Description |
+| Binary File | Target Platform | Description |
 | :--- | :--- | :--- |
-| `nationdex-bot-linux-arm64` | Linux ARM64 | Precompiled bot executable for ARM64 (Galaxy Tab, PRoot Ubuntu, Raspberry Pi) |
-| `skia.linux-arm64-gnu.node` | Linux ARM64 | Precompiled Skia canvas rendering library (auto-detected by bot) |
-| `gifsx.linux-arm64-gnu.node` | Linux ARM64 | Precompiled GIF processing library (auto-detected by bot) |
-| `nationdex-bot-linux-arm64-musl` | Linux ARM64 | For iSH (iOS) & Alpine Linux ARM64 |
-| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
+| `nationdex-bot-linux-arm64.tar.gz` | Linux ARM64 (glibc) | **Galaxy Tab S10 Lite, PRoot Ubuntu, Raspberry Pi 4/5, ARM64 servers** |
+| `nationdex-bot-linux-arm64-musl` | Linux ARM64 (musl) | iSH (iOS) & Alpine Linux ARM64 |
+| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 (glibc) | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
 | `nationdex-bot-windows-x64.exe` | Windows x86_64 | Windows 10/11 64-bit |
 
 ---
 
-## How to Run on Android (PRoot-Distro)
+## How to Run on Android (PRoot-Distro / Galaxy Tab S10 Lite)
 
 ```bash
 # 1. Pull the latest files
 git pull origin dev
 
-# 2. Enter PRoot Ubuntu (or run via 1-liner from Termux):
+# 2. Extract the ARM64 binary
+tar -xzf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries
+
+# 3. Make executable (if needed)
+chmod +x binaries/nationdex-bot-linux-arm64
+
+# 4. Run inside PRoot Ubuntu (or from Termux via 1-liner):
 proot-distro login ubuntu -- ./binaries/nationdex-bot-linux-arm64
 ```
-*(The bot will automatically detect `skia.linux-arm64-gnu.node` and initialize the canvas engine with zero manual configuration!)*
+*(Zero npm commands, zero build tools, zero optional dependency bugs!)*
 
 ---
 
 ## How to Run on Linux x86_64
 ```bash
-tar -xzf nationdex-bot-linux-x64.tar.gz
-chmod +x nationdex-bot-linux-x64
-./nationdex-bot-linux-x64
+tar -xzf binaries/nationdex-bot-linux-x64.tar.gz -C binaries
+chmod +x binaries/nationdex-bot-linux-x64
+./binaries/nationdex-bot-linux-x64
 ```
 
 ---
 
 ## How to Run on Windows
 ```powershell
-.\nationdex-bot-windows-x64.exe
+.\binaries\nationdex-bot-windows-x64.exe
 ```
 
 ---
