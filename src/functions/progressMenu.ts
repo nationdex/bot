@@ -56,6 +56,9 @@ export default new ForgeFunction({
     $if[$isValidClass[$get[class]];
       $jsonLoad[clids;$classCatchIDs[$jsonStringify[userCollectibles];$jsonStringify[catalog];$get[class]]]
       $let[pages;$ceil[$divide[$max[$arrayLength[clids];1];$get[maxperpage]]]]
+      $let[page;$min[$max[$get[page];1];$get[pages]]]
+      $let[stInd;$multi[$get[maxperpage];$sub[$get[page];1]]]
+      $let[endInd;$multi[$get[maxperpage];$get[page]]]
       $arraySlice[clids;colID;$get[stInd];$get[endInd]]
       $arrayMap[userUniques;uu;
         $if[$env[catalog;collectibles;$env[uu];class]==$get[class];
@@ -110,9 +113,9 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
           $addActionRow
           $let[prevEmoji;$appEmoji[arrow_left]]
           $let[nextEmoji;$appEmoji[arrow_right]]
-          $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-$get[class];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
-          $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]
-          $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user]-$get[class];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$get[page]==$get[pages]]]
+          $addButton[pages-collectibles-$authorID-$sub[$get[page];1]-$get[user]-$get[class];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
+          $addButton[pages-collectibles-$authorID-index;$get[page] / $get[pages];Primary;;true]
+          $addButton[pages-collectibles-$authorID-$sum[$get[page];1]-$get[user]-$get[class];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$or[$get[page]==$get[pages];$get[pages]<=1]]]
         ]
       ]
     ]
@@ -156,7 +159,9 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
           $let[missingCount;$arrayLength[classMissing$get[pageClass]]]
           $jsonLoad[clids;$classCatchIDs[$jsonStringify[userCollectibles];$jsonStringify[catalog];$get[pageClass]]]
           $let[listPages;$ceil[$divide[$max[$arrayLength[clids];1];$get[maxperpage]]]]
-          $let[listPage;$min[$get[listPage];$get[listPages]]]
+          $let[listPage;$min[$max[$get[listPage];1];$get[listPages]]]
+          $let[listStInd;$multi[$get[maxperpage];$sub[$get[listPage];1]]]
+          $let[listEndInd;$multi[$get[maxperpage];$get[listPage]]]
           $arraySlice[clids;colID;$get[listStInd];$get[listEndInd]]
           $return[
             $addContainer[
@@ -178,12 +183,10 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
               ;$addStringSelectMenu[collectibles-info-$authorID-$get[pageClass];Select a $jsonVar[keywords;collectible.singular] to view its info;true]
               $addOption[null;null;null]
             ]
-            $if[$get[listPages]>1;
-              $addActionRow
-              $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sub[$get[listPage];1];Prev list;Secondary;;$checkCondition[$get[listPage]==1]]
-              $addButton[pages-progress-$authorID-index2;List $get[listPage] / $get[listPages];Primary;;true]
-              $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sum[$get[listPage];1];Next list;Secondary;;$checkCondition[$get[listPage]==$get[listPages]]]
-            ]
+            $addActionRow
+            $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sub[$get[listPage];1];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[listPage]==1]]
+            $addButton[pages-progress-$authorID-index2;$get[listPage] / $get[listPages];Primary;;true]
+            $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sum[$get[listPage];1];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$or[$get[listPage]==$get[listPages];$get[listPages]<=1]]]
               $addSeparator
               $addTextDisplay[$appEmoji[$get[pageClass]] **$toTitleCase[$get[pageClass]]**$if[$get[ownedCount]>0;
 **Owned**: $arrayJoin[classOwned$get[pageClass];]]$if[$get[missingCount]>0;

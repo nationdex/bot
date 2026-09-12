@@ -21,10 +21,16 @@ export default command('interaction.pages', `
     ]
     $elseIf[$get[type]==progress;
       $let[user;$arrayAt[cid;4]]
-      $let[listPage;$arrayAt[cid;5]]
+      $let[arg5;$arrayAt[cid;5]]
       $deferUpdate
-      $!editMessage[$channelID;$messageID;
-        $progressMenu[$get[user];;$get[page];$get[listPage]]
+      $if[$isValidClass[$get[arg5]];
+        $!editMessage[$channelID;$messageID;
+          $progressMenu[$get[user];$get[arg5];$get[page]]
+        ]
+      ;
+        $!editMessage[$channelID;$messageID;
+          $progressMenu[$get[user];;$get[page];$get[arg5]]
+        ]
       ]
     ]
     $elseIf[$get[type]==collectibleInfo;
