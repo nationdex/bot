@@ -7,46 +7,66 @@ No Node.js, Bun, Go, or build tools are required on the host system to run these
 
 ## Included Binaries
 
-| Binary File | Target Platform | Architecture / C Lib | Use Cases |
+| Binary File | Target Platform | C Library | Use Cases |
 | :--- | :--- | :--- | :--- |
-| `nationdex-bot-linux-arm64` | Linux ARM64 | `aarch64` (glibc) | **Termux (PRoot Ubuntu / glibc)**, Galaxy Tab S10 Lite, Raspberry Pi 4/5, ARM64 servers |
-| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 | `x86_64` (glibc) | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
-| `nationdex-bot-windows-x64.exe` | Windows x86_64 | `x86_64` | Windows 10/11 64-bit |
+| `nationdex-bot-linux-arm64` | Linux ARM64 | `glibc` | **Native Termux (via `glibc-runner`)**, Galaxy Tab S10 Lite, Raspberry Pi 4/5, ARM64 servers |
+| `nationdex-bot-linux-arm64-musl` | Linux ARM64 | `musl` | **iSH (iOS)**, Alpine Linux ARM64, Termux `gcompat` |
+| `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 | `glibc` | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
+| `nationdex-bot-windows-x64.exe` | Windows x86_64 | MSVC/Win32 | Windows 10/11 64-bit |
 
 ---
 
-## How to Run
+## How to Run in Native Termux (Without PRoot)
 
-### 1. Requirements in the Run Directory
-Every binary expects the following files in the same working directory from which it is executed:
-1. **`.env`**: A text file containing your Discord bot token:
-   ```env
-   TOKEN=your_discord_bot_token_here
+Android uses Bionic libc instead of standard GNU libc, so running standard Linux ELF binaries natively in Termux requires the official Termux `glibc-runner` package:
+
+1. In native Termux, install `glibc-runner`:
+   ```bash
+   pkg install glibc-runner
    ```
-2. **`assets/`**: The directory containing fonts, card frames, and graphics (from the root of the repository).
+2. Make the binary executable:
+   ```bash
+   chmod +x nationdex-bot-linux-arm64
+   ```
+3. Run directly with `grun`:
+   ```bash
+   grun ./nationdex-bot-linux-arm64
+   ```
+   *(No PRoot, no container, no root required!)*
 
-### 2. Running on Android / Termux PRoot (Galaxy Tab S10 Lite)
+---
+
+## How to Run in iSH / Alpine Linux
+
+iSH runs Alpine Linux which uses the `musl` standard library. Run the musl-targeted binary directly:
 ```bash
-# Inside Termux PRoot Ubuntu:
-chmod +x nationdex-bot-linux-arm64
-./nationdex-bot-linux-arm64
+chmod +x nationdex-bot-linux-arm64-musl
+./nationdex-bot-linux-arm64-musl
 ```
 
-### 3. Running on Linux x86_64
+---
+
+## How to Run on Linux x86_64
 ```bash
 tar -xzf nationdex-bot-linux-x64.tar.gz
 chmod +x nationdex-bot-linux-x64
 ./nationdex-bot-linux-x64
 ```
 
-### 4. Running on Windows
+---
+
+## How to Run on Windows
 ```powershell
 .\nationdex-bot-windows-x64.exe
 ```
 
 ---
 
-## Security & Isolation
-- **No credentials or tokens are bundled into any binary.**
-- **No database files are bundled into any binary.**
-- Databases (`./database`) and `.env` configs are loaded locally at runtime from disk.
+## Environment & Database
+Every binary loads:
+- **`.env`** from the current working directory for your bot credentials:
+  ```env
+  TOKEN=your_bot_token_here
+  ```
+- **`assets/`** from the current working directory for card templates and fonts.
+- **`database/`** is initialized locally on disk wherever the binary is executed.
