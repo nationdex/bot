@@ -15,7 +15,7 @@ let path = 'dist/slash';
 
 export function initSlashCommands(options: SlashesOptions = {}, instance: ForgeClient): void {
   client = instance;
-  path = options.path ?? 'dist/slash';
+  path = options.path !== undefined ? options.path : 'dist/slash';
 
   const mgr = client.applicationCommands as any;
   const originalLoadOne = mgr.loadOne?.bind(mgr);
@@ -31,10 +31,12 @@ export function initSlashCommands(options: SlashesOptions = {}, instance: ForgeC
     };
   }
 
-  try {
-    client.applicationCommands.load(path);
-  } catch (err: any) {
-    console.warn(`[WARN] [slashes] Error while loading slash commands from '${path}':`, err?.message ?? err);
+  if (path) {
+    try {
+      client.applicationCommands.load(path);
+    } catch (err: any) {
+      console.warn(`[WARN] [slashes] Error while loading slash commands from '${path}':`, err?.message ?? err);
+    }
   }
 
   const allCommands: ApplicationCommand[] = [];

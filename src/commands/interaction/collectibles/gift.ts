@@ -19,7 +19,7 @@ export default command('interaction.collectibles.gift', `
       
       $interactionUpdate[
         $addContainer[
-          $addTextDisplay[Gifted **A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] $collectibleInfo[$get[colID];name]** to **$userDisplayName[$get[user]]**
+          $addTextDisplay[Gifted **#$get[id] $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] $collectibleInfo[$get[colID];name]** to **$userDisplayName[$get[user]]**
 -# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
         ;#00FF00]
       ]

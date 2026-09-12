@@ -10,8 +10,10 @@ let path = 'dist/commands';
 
 export function initCommands(options: CommandsOptions = {}, instance: ForgeClient): void {
   client = instance;
-  path = options.path ?? 'dist/commands';
-  client.commands.load(path);
+  path = options.path !== undefined ? options.path : 'dist/commands';
+  if (path) {
+    client.commands.load(path);
+  }
 }
 
 const initializer = initCommands;

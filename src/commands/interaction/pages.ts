@@ -14,8 +14,17 @@ export default command('interaction.pages', `
     $if[$get[type]==collectibles;
       $let[user;$arrayAt[cid;4]]
       $let[class;$arrayAt[cid;5]]
-      $interactionUpdate[
+      $deferUpdate
+      $!editMessage[$channelID;$messageID;
         $progressMenu[$get[user];$get[class];$get[page]]
+      ]
+    ]
+    $elseIf[$get[type]==progress;
+      $let[user;$arrayAt[cid;4]]
+      $let[listPage;$arrayAt[cid;5]]
+      $deferUpdate
+      $!editMessage[$channelID;$messageID;
+        $progressMenu[$get[user];;$get[page];$get[listPage]]
       ]
     ]
     $elseIf[$get[type]==collectibleInfo;

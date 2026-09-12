@@ -31,15 +31,14 @@ export default new ForgeFunction({
   $jsonLoad[colID;$env[data;collectibles;$get[id]]]
   
   $if[$get[value]!=null;
-    $if[$isJSON[$env[colID;$get[value]]];
-      $jsonLoad[values;$env[colID;$env[value]]]
-      $if[$get[sep]!=null;
-        $return[$arrayJoin[values;$get[sep]]]
-        ;$return[$env[values]]
-      ]
-      ;$return[$env[colID;$get[value]]]
+    $let[val;$env[colID;$get[value]]]
+    $if[$and[$get[sep]!=null;$isArray[$get[val]]];
+      $jsonLoad[values;$get[val]]
+      $return[$arrayJoin[values;$get[sep]]]
     ]
-    ;$return[$env[colID]]
+    $return[$get[val]]
   ]
+
+  $return[$env[colID]]
   `,
 });

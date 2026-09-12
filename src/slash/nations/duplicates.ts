@@ -33,7 +33,7 @@ export default SlashCommand('collectibles.duplicates', `
   $jsonLoad[colID;$env[sorted;$get[colID]]]
   $jsonLoad[collectibles;$sortData[$env[colID;collectibles];;desc]]
   $jsonLoad[nids;$jsonKeys[collectibles]]
-  $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];collectible];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
+  $arrayMap[nids;nat;$return[\`#$env[nat]\` $getSpecial[$collectible[$env[nat];special];emoji]$appEmoji[$collectibleInfo[$collectible[$env[nat];id];emoji_id]]: ATK: $appEmoji[$collectible[$env[nat];attack_type]] **$collectible[$env[nat];attack]** | HP: $appEmoji[$collectible[$env[nat];health_type]] **$collectible[$env[nat];health]**];natDisp]
   $arraySlice[natDisp;natDisp;0;10]
   
   $interactionReply[

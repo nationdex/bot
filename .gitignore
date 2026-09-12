@@ -9,3 +9,4 @@ src/commands/dev/
 website/
 .cache/
 .env
+nationdex-bot*

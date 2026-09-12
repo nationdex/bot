@@ -32,7 +32,6 @@ export default SlashCommand('collectibles.gift', `
   
   $setTimeout[
     $onlyIf[$and[$channelExists[$channelID];$messageExists[$channelID;$get[msg]]]]
-    $deleteMessageVar[messageData;$get[msg]]
-    $disableComponents
-  ]
+    $disableComponentsOf[$channelID;$get[msg]]
+  ;1m]
 `);

@@ -1,0 +1,5 @@
+[install]
+# uWebSockets.js is an optionalDependency here because of Bun.
+optional = true
+
+[run]

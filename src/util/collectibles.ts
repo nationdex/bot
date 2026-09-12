@@ -42,14 +42,26 @@ export async function fetchApplicationEmojis(token?: string): Promise<Set<string
     const emojis = Array.isArray(res) ? res : res?.items || [];
     const emojiSet = new Set<string>();
 
+    const emojiMap = new Map<string, any>();
     for (const em of emojis) {
       if (typeof em === 'string') {
         emojiSet.add(em);
       } else if (em && typeof em === 'object') {
         if (em.id) emojiSet.add(em.id);
         if (em.name) emojiSet.add(em.name);
+        const id = String(em.id);
+        const name = String(em.name);
+        const animated = Boolean(em.animated);
+        const formatted = `<${animated ? 'a' : ''}:${name}:${id}>`;
+        const data = { id, name, animated, formatted };
+        emojiMap.set(id.toLowerCase(), data);
+        emojiMap.set(name.toLowerCase(), data);
       }
     }
+
+    (globalThis as any).__ndxEmojiMap = emojiMap;
+    (globalThis as any).__ndxEmojiCache = emojis;
+    (globalThis as any).__ndxEmojiCacheAt = Date.now();
 
     return emojiSet;
   } catch (err: any) {

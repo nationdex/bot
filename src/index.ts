@@ -1,18 +1,25 @@
-import 'dotenv/config';
+if (typeof (globalThis as any).Bun === 'undefined') {
+  require('dotenv/config');
+}
+
+import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
+import * as recursiveReaddirSyncModule from '@tryforge/forgescript/dist/functions/recursiveReaddirSync';
+(recursiveReaddirSyncModule as any).default = () => [];
+
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { API } from '@nationdex/api';
 import { DB } from '@nationdex/db';
-import { ForgeClient } from '@tryforge/forgescript';
+import { ForgeClient, FunctionManager, EventManager } from '@tryforge/forgescript';
 import {
   variables,
-  commands,
-  slashes,
   collectibles,
+  initCommands,
+  initSlashCommands,
 } from './util';
 
 const api = new API({
   path: 'dist/api_routes',
-  port: 2222,
+  port: 2223,
 });
 
 const db = new DB({
@@ -21,16 +28,19 @@ const db = new DB({
 
 const canvas = new ForgeCanvas();
 
+const getReq = (arr: any[]) => arr.map(a => a.default ?? a).filter(Boolean);
+
+// Register native and extension functions before initializing client
+FunctionManager.addMany(getReq(get_forgescriptNative()));
+FunctionManager.addMany(getReq(get_canvasFunctions()));
+FunctionManager.addMany(getReq(get_dbFunctions()));
+FunctionManager.addMany(getReq(get_apiFunctions()));
+
 const dex = new ForgeClient({
   intents: [
     'Guilds',
     'GuildMessages',
     'MessageContent',
-  ],
-  events: [
-    'messageCreate',
-    'interactionCreate',
-    'clientReady',
   ],
   prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
@@ -38,6 +48,28 @@ const dex = new ForgeClient({
     db,
   ],
 });
+
+// Register client events
+EventManager.Loaded['native'] = {};
+for (const req of getReq(get_forgescriptEvents())) {
+  EventManager.Loaded['native'][req.name] = req;
+}
+
+dex.options.events = [
+  'messageCreate',
+  'interactionCreate',
+  'clientReady',
+];
+dex.events.load('native', dex.options.events);
+
+// Register DB events
+EventManager.Loaded['DBEvents'] = {};
+for (const req of getReq(get_dbEvents())) {
+  EventManager.Loaded['DBEvents'][req.name] = req;
+}
+if (db.options?.events?.length) {
+  dex.events.load('DBEvents', db.options.events);
+}
 
 const flushAndExit = async () => {
   try {
@@ -74,9 +106,19 @@ async function main() {
   await variables.init(dex, db);
   await collectibles.init(dex);
 
-  dex.functions.load('dist/functions');
-  commands.init(dex);
-  slashes.init(dex);
+  // Load custom bot functions
+  for (const fn of getReq(get_botFunctions())) {
+    dex.functions.add(fn);
+  }
+
+  // Load commands (bundled)
+  dex.commands.add(...getReq(get_botCommands()));
+  initCommands({ path: '' }, dex);
+
+  // Load slash commands (bundled)
+  dex.applicationCommands.add(...getReq(get_botSlash()));
+  initSlashCommands({ path: '' }, dex);
+
   api.init(dex);
 
   await dex.login(token);
