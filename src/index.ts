@@ -21,11 +21,11 @@ import {
 
 const api = new API({
   path: 'dist/api_routes',
-  port: 2223,
+  port: parseInt(process.env.API_PORT || '2223', 10),
 });
 
 const db = new DB({
-  folder: './database',
+  folder: process.env.DATABASE_FOLDER || './database',
 });
 
 const canvas = new ForgeCanvas();

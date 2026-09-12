@@ -11,9 +11,8 @@ No Node.js, Bun, Go, or build tools are required on the host system to run these
 | Binary File | Target Platform | Description |
 | :--- | :--- | :--- |
 | `nationdex-bot-linux-arm64.tar.gz` | Linux ARM64 (glibc) | **Galaxy Tab S10 Lite, PRoot Ubuntu, Raspberry Pi 4/5, ARM64 servers** |
-| `nationdex-bot-linux-arm64-musl` | Linux ARM64 (musl) | iSH (iOS) & Alpine Linux ARM64 |
 | `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 (glibc) | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
-| `nationdex-bot-windows-x64.exe` | Windows x86_64 | Windows 10/11 64-bit |
+| `nationdex-bot-windows-x64.zip` | Windows x86_64 | Windows 10/11 64-bit |
 
 ---
 
@@ -29,10 +28,10 @@ tar -xzf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries
 # 3. Make executable (if needed)
 chmod +x binaries/nationdex-bot-linux-arm64
 
-# 4. Run inside PRoot Ubuntu (or from Termux via 1-liner):
+# 4. Run inside PRoot Ubuntu:
 proot-distro login ubuntu -- ./binaries/nationdex-bot-linux-arm64
 ```
-*(Zero npm commands, zero build tools, zero optional dependency bugs!)*
+*(Embedded PGlite WASM, Skia, and GIFSX are pre-bundled inside the binary!)*
 
 ---
 
@@ -46,8 +45,9 @@ chmod +x binaries/nationdex-bot-linux-x64
 ---
 
 ## How to Run on Windows
+Extract `binaries/nationdex-bot-windows-x64.zip` and run:
 ```powershell
-.\binaries\nationdex-bot-windows-x64.exe
+.\nationdex-bot-windows-x64.exe
 ```
 
 ---
