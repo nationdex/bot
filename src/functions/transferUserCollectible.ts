@@ -30,7 +30,7 @@ export default new ForgeFunction({
   $!jsonDelete[userCollectibles;$arrayIndexOf[userCollectibles;$get[id]]]
   $!jsonSet[data;collectibleIDs;$env[userCollectibles]]
   $arrayMap[userCollectibles;nat;$return[$collectible[$env[nat];id]];nids]
-  $if[$arrayIncludes[nids;$get[colID]]==false;
+  $if[$arrayIndexOf[nids;$get[colID]]==-1;
     $!jsonDelete[data;unique;$arrayIndexOf[uniques;$get[colID]]]
   ]
   $!jsonSet[data;total;$sub[$env[data;total];1]]

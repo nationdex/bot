@@ -8,7 +8,7 @@ export default command('interaction.collectibles.sell', `
   $let[id;$arrayAt[cid;3]]
   $let[colID;$collectible[$get[id];id]]
   $let[class;$collectibleInfo[$get[colID];class]]
-  $let[price;$collectibleInfo[$get[colID];sell_price]]
+  $let[price;$collectiblePrice[$get[id]]]
   $jsonLoad[collectibles;$getUserData[$authorID;collectibleIDs]]
 
   $onlyIf[$arrayIncludes[collectibles;$get[id]];
@@ -23,7 +23,7 @@ export default command('interaction.collectibles.sell', `
       $!jsonDelete[userCollectibles;$arrayIndexOf[userCollectibles;$get[id]]]
       $!jsonSet[data;collectibleIDs;$env[userCollectibles]]
       $arrayMap[userCollectibles;nat;$return[$collectible[$env[nat];id]];nids]
-      $if[$arrayIncludes[nids;$get[colID]]==false;
+      $if[$arrayIndexOf[nids;$get[colID]]==-1;
         $!jsonDelete[data;unique;$arrayIndexOf[uniques;$get[colID]]]
       ]
       $!jsonSet[data;total;$sub[$env[data;total];1]]
@@ -34,13 +34,13 @@ export default command('interaction.collectibles.sell', `
       $editBalance[$authorID;add;$get[price]]
   
       $interactionUpdate[
-        $appEmoji[check_mark] | Sold A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$collectibleInfo[$get[colID];sell_price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
+        $appEmoji[check_mark] | Sold A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
       ]
     ]
 
     $elseIf[$get[act]==cancel;
       $interactionUpdate[
-        $appEmoji[check_mark] | Cancelled the sale of A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$collectibleInfo[$get[colID];sell_price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
+        $appEmoji[check_mark] | Cancelled the sale of A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
       ]
     ]
   ]

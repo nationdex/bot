@@ -1445,6 +1445,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/classCatchIDs.js"),
   require("../dist/functions/spawnCollectible.js"),
   require("../dist/functions/appEmoji.js"),
+  require("../dist/functions/collectiblePrice.js"),
 ];
 export const get_botCommands = () => [
   require("../dist/commands/interaction/collectibles/info.js"),
