@@ -8,18 +8,75 @@ import { slashes as slashesConfig, SlashCommandConfig } from '../config/slash';
 
 export interface SlashesOptions {
   path?: string;
+  commands?: any[];
 }
 
 let client: ForgeClient | null = null;
 let path = 'dist/slash';
+
+function registerSlashCommand(targetCollection: Collection<string, any>, cmd: any) {
+  if (!cmd) return;
+  if (Array.isArray(cmd)) {
+    for (const c of cmd) registerSlashCommand(targetCollection, c);
+    return;
+  }
+  const resolved = cmd instanceof ApplicationCommand ? cmd : (cmd.default ?? cmd);
+  if (!resolved) return;
+
+  const meta = (resolved as any)?.__meta;
+  if (!meta || !meta.root) {
+    if (resolved?.name) {
+      targetCollection.set(resolved.name, resolved);
+    }
+    return;
+  }
+
+  const { parts, root, group, sub } = meta;
+
+  if (parts.length === 1) {
+    targetCollection.set(root.name, resolved);
+  } else if (parts.length === 2) {
+    if (!sub) return;
+    let rootCol = targetCollection.get(root.name);
+    if (!(rootCol instanceof Collection)) {
+      rootCol = new Collection();
+      targetCollection.set(root.name, rootCol);
+    }
+    rootCol.set(sub.name, resolved);
+  } else if (parts.length === 3) {
+    if (!group || !sub) return;
+    let rootCol = targetCollection.get(root.name);
+    if (!(rootCol instanceof Collection)) {
+      rootCol = new Collection();
+      targetCollection.set(root.name, rootCol);
+    }
+    let groupCol = rootCol.get(group.name);
+    if (!(groupCol instanceof Collection)) {
+      groupCol = new Collection();
+      rootCol.set(group.name, groupCol);
+    }
+    groupCol.set(sub.name, resolved);
+  }
+}
 
 export function initSlashCommands(options: SlashesOptions = {}, instance: ForgeClient): void {
   client = instance;
   path = options.path !== undefined ? options.path : 'dist/slash';
 
   const mgr = client.applicationCommands as any;
-  const originalLoadOne = mgr.loadOne?.bind(mgr);
 
+  // Intercept mgr.add so any commands added via client.applicationCommands.add() are registered hierarchically without overwriting subcommands
+  mgr.add = function (...values: any[]) {
+    for (const value of values) {
+      if (Array.isArray(value)) {
+        mgr.add(...value);
+      } else {
+        registerSlashCommand(mgr.commands, value);
+      }
+    }
+  };
+
+  const originalLoadOne = mgr.loadOne?.bind(mgr);
   if (originalLoadOne) {
     mgr.loadOne = function (reqPath: string) {
       try {
@@ -31,67 +88,61 @@ export function initSlashCommands(options: SlashesOptions = {}, instance: ForgeC
     };
   }
 
+  const newCommands = new Collection<string, any>();
+
+  // If commands were already present in mgr.commands, extract and preserve them
+  if (mgr.commands && (mgr.commands instanceof Collection || mgr.commands instanceof Map)) {
+    const existing: any[] = [];
+    function extractExisting(val: any) {
+      if (!val) return;
+      if (val instanceof ApplicationCommand) {
+        existing.push(val);
+      } else if (val instanceof Collection || val instanceof Map) {
+        for (const item of val.values()) {
+          extractExisting(item);
+        }
+      }
+    }
+    extractExisting(mgr.commands);
+    for (const cmd of existing) {
+      registerSlashCommand(newCommands, cmd);
+    }
+  }
+
+  // Set mgr.commands to newCommands early
+  mgr.commands = newCommands;
+
+  // Load from options.commands if provided
+  if (options.commands && Array.isArray(options.commands)) {
+    for (const cmd of options.commands) {
+      registerSlashCommand(newCommands, cmd);
+    }
+  }
+
+  // Load from path if provided and not empty
   if (path) {
     try {
       client.applicationCommands.load(path);
+      const loaded: any[] = [];
+      function extractLoaded(val: any) {
+        if (!val) return;
+        if (val instanceof ApplicationCommand) {
+          loaded.push(val);
+        } else if (val instanceof Collection || val instanceof Map) {
+          for (const item of val.values()) {
+            extractLoaded(item);
+          }
+        }
+      }
+      extractLoaded(newCommands);
+      for (const cmd of loaded) {
+        registerSlashCommand(newCommands, cmd);
+      }
     } catch (err: any) {
       console.warn(`[WARN] [slashes] Error while loading slash commands from '${path}':`, err?.message ?? err);
     }
   }
 
-  const allCommands: ApplicationCommand[] = [];
-  function extract(val: any) {
-    if (!val) return;
-    if (val instanceof ApplicationCommand) {
-      allCommands.push(val);
-    } else if (val instanceof Collection || val instanceof Map) {
-      for (const item of val.values()) {
-        extract(item);
-      }
-    }
-  }
-  extract((client.applicationCommands as any).commands);
-
-  const newCommands = new Collection<string, any>();
-
-  for (const cmd of allCommands) {
-    const meta = (cmd as any)?.__meta;
-    if (!meta || !meta.root) {
-      if (cmd?.name) {
-        newCommands.set(cmd.name, cmd);
-      }
-      continue;
-    }
-
-    const { parts, root, group, sub } = meta;
-
-    if (parts.length === 1) {
-      newCommands.set(root.name, cmd);
-    } else if (parts.length === 2) {
-      if (!sub) continue;
-      let rootCol = newCommands.get(root.name);
-      if (!(rootCol instanceof Collection)) {
-        rootCol = new Collection();
-        newCommands.set(root.name, rootCol);
-      }
-      rootCol.set(sub.name, cmd);
-    } else if (parts.length === 3) {
-      if (!group || !sub) continue;
-      let rootCol = newCommands.get(root.name);
-      if (!(rootCol instanceof Collection)) {
-        rootCol = new Collection();
-        newCommands.set(root.name, rootCol);
-      }
-      let groupCol = rootCol.get(group.name);
-      if (!(groupCol instanceof Collection)) {
-        groupCol = new Collection();
-        rootCol.set(group.name, groupCol);
-      }
-      groupCol.set(sub.name, cmd);
-    }
-  }
-
-  (client.applicationCommands as any).commands = newCommands;
 
   client.applicationCommands.toJSON = function (type: any) {
     const arr: any[] = [];

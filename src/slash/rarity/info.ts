@@ -4,14 +4,15 @@ export default SlashCommand('rarity.info', `
   $let[colID;$option[$jsonVar[keywords;collectible.singular]]]
   $jsonLoad[sorted;$sortData[$collectiblesData[collectibles];rarity;desc]]
   $jsonLoad[ids;$jsonKeys[sorted]]
-  $let[value;$collectibleInfo[$get[colID];weight]]
-  $let[rarity;$collectibleInfo[$get[colID];rarity]]
-  $let[totalRarity;$math[$collectiblesData[rarity;+]]]
-  $let[chance;$cropText[$math[($get[rarity]/$get[totalRarity])*100];0;5]%]
   
   $onlyIf[$arrayIncludes[ids;$get[colID]];
     $err[invalid_collectible;true]
   ]
+
+  $let[value;$collectibleInfo[$get[colID];weight]]
+  $let[rarity;$collectibleInfo[$get[colID];rarity]]
+  $let[totalRarity;$math[$collectiblesData[rarity;+]]]
+  $let[chance;$cropText[$math[($get[rarity]/$get[totalRarity])*100];0;5]%]
   
   $interactionReply[
     $addContainer[

@@ -118,8 +118,7 @@ async function main() {
   initCommands({ path: '' }, dex);
 
   // Load slash commands (bundled)
-  dex.applicationCommands.add(...getReq(get_botSlash()));
-  initSlashCommands({ path: '' }, dex);
+  initSlashCommands({ path: '', commands: getReq(get_botSlash()) }, dex);
 
   api.init(dex);
 
