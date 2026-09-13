@@ -5,7 +5,7 @@ const route: RouteDefinition = {
   method: 'GET',
   code: `
   $jsonLoad[registeredUsers;$default[$searchDB[userCollectibles];[\\]]]
-  $jsonLoad[registeredGuilds;$default[$searchDB[spawnconfig];[\\]]]
+  $jsonLoad[registeredGuilds;$default[$searchDB[spawnConfig];[\\]]]
 
   $jsonLoad[result;{}]
   $!jsonSet[result;collectibles_caught_global;$collectiblesData[total_caught]]

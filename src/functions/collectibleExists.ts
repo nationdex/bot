@@ -5,14 +5,15 @@ export default new ForgeFunction({
   // Checjs if a collectible with the givenn ID string exists
   params: [
     {
-      name: 'ID',
+      name: 'id',
       // The string to check if it's associated with a collectible
       type: 'String',
       required: true
     }
   ],
   code: `
-  $jsonLoad[ids;$collectiblesData[id]]
-  $return[$arrayIncludes[ids;$env[id]]]
+  $jsonLoad[collectibles;$collectiblesData[collectibles]]
+  $jsonLoad[ids;$jsonKeys[collectibles]]
+  $return[$if[$arrayIndexOf[ids;$env[id]]!=-1;true;false]]
   `
 });

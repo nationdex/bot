@@ -9,10 +9,10 @@ export default command('autocomplete.collectibles', `
   $if[$get[val]!=;
     $arrayMap[userCollectibles;nat;
       $let[colID;$collectible[$env[nat];id]]
-      $jsonLoad[trs;$collectibleInfo[$get[colID];translations]]
-      $jsonLoad[cns;$collectibleInfo[$get[colID];catching_names]]
+      $let[cns;$toLowerCase[$collectibleInfo[$get[colID];catch_names;,]]]
+      $let[trs;$toLowerCase[$collectibleInfo[$get[colID];translations;,]]]
       
-      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];short_name]];$get[val]];$arrayIncludes[trs;$get[val]];$arrayIncludes[cns;$get[val]]];
+      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$get[colID];short_name]];$get[val]];$checkContains[$get[trs];$get[val]];$checkContains[$get[cns];$get[val]]];
         $return[$env[nat]]
       ]
     ;userCollectibles]

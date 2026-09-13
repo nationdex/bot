@@ -10,7 +10,7 @@ const route: RouteDefinition = {
 
   $ifx[
     $if[$get[id]!=;
-      $if[$arrayIncludes[ids;$get[id]];
+      $if[$arrayIndexOf[ids;$get[id]]!=-1;
         $sendJson[$env[collectibles;$get[id]]]
       ;
         $writeStatus[404;Not Found]
