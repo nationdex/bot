@@ -13,3 +13,5 @@ website/
 binaries/nationdex-bot-linux-x64
 binaries/nationdex-bot-linux-x64-musl
 binaries/nationdex-bot-linux-arm64
+binaries/nationdex-bot-darwin-arm64
+binaries/nationdex-bot-darwin-x64

@@ -13,6 +13,8 @@ No Node.js, Bun, Go, or build tools are required on the host system to run these
 | `nationdex-bot-linux-arm64.tar.gz` | Linux ARM64 (glibc) | **Galaxy Tab S10 Lite, PRoot Ubuntu, Raspberry Pi 4/5, ARM64 servers** |
 | `nationdex-bot-linux-x64.tar.gz` | Linux x86_64 (glibc) | Standard Ubuntu, Debian, Arch, Fedora x86_64 |
 | `nationdex-bot-windows-x64.zip` | Windows x86_64 | Windows 10/11 64-bit |
+| `nationdex-bot-darwin-arm64.tar.gz` | macOS Apple Silicon | Macs with M1, M2, M3, M4 chips |
+| `nationdex-bot-darwin-x64.tar.gz` | macOS Intel | Macs with Intel processors |
 
 ---
 
@@ -40,6 +42,27 @@ proot-distro login ubuntu -- ./binaries/nationdex-bot-linux-arm64
 tar -xzf binaries/nationdex-bot-linux-x64.tar.gz -C binaries
 chmod +x binaries/nationdex-bot-linux-x64
 ./binaries/nationdex-bot-linux-x64
+```
+
+---
+
+## How to Run on macOS (Darwin)
+### Apple Silicon (M1 / M2 / M3 / M4):
+```bash
+tar -xzf binaries/nationdex-bot-darwin-arm64.tar.gz -C binaries
+chmod +x binaries/nationdex-bot-darwin-arm64
+# If macOS Gatekeeper marks the binary as untrusted, remove the quarantine attribute:
+xattr -d com.apple.quarantine binaries/nationdex-bot-darwin-arm64 2>/dev/null || true
+./binaries/nationdex-bot-darwin-arm64
+```
+
+### Intel Macs:
+```bash
+tar -xzf binaries/nationdex-bot-darwin-x64.tar.gz -C binaries
+chmod +x binaries/nationdex-bot-darwin-x64
+# If macOS Gatekeeper marks the binary as untrusted, remove the quarantine attribute:
+xattr -d com.apple.quarantine binaries/nationdex-bot-darwin-x64 2>/dev/null || true
+./binaries/nationdex-bot-darwin-x64
 ```
 
 ---

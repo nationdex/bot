@@ -37,10 +37,19 @@ try {
   const platform = process.platform;
   const abi = platform === 'linux' ? '-gnu' : (platform === 'win32' ? '-msvc' : '');
 
+  const findCandidate = (baseName: string) => {
+    const locations = [
+      path.join(process.cwd(), 'binaries', baseName),
+      path.join(path.dirname(process.execPath), baseName),
+      path.join(process.cwd(), baseName),
+    ];
+    return locations.find(loc => fs.existsSync(loc));
+  };
+
   // 1. Canvas / Skia
-  const skiaCandidate = path.join(process.cwd(), 'binaries', `skia.${platform}-${arch}${abi}.node`);
+  const skiaCandidate = findCandidate(`skia.${platform}-${arch}${abi}.node`);
   const skiaModuleDir = path.join(process.cwd(), 'node_modules', '@napi-rs', `canvas-${platform}-${arch}${abi}`);
-  if (fs.existsSync(skiaCandidate) && !fs.existsSync(skiaModuleDir)) {
+  if (skiaCandidate && !fs.existsSync(skiaModuleDir)) {
     fs.mkdirSync(skiaModuleDir, { recursive: true });
     fs.copyFileSync(skiaCandidate, path.join(skiaModuleDir, `skia.${platform}-${arch}${abi}.node`));
     fs.writeFileSync(
@@ -50,9 +59,9 @@ try {
   }
 
   // 2. Gifsx
-  const gifsxCandidate = path.join(process.cwd(), 'binaries', `gifsx.${platform}-${arch}${abi}.node`);
+  const gifsxCandidate = findCandidate(`gifsx.${platform}-${arch}${abi}.node`);
   const gifsxModuleDir = path.join(process.cwd(), 'node_modules', '@gifsx', `gifsx-${platform}-${arch}${abi}`);
-  if (fs.existsSync(gifsxCandidate) && !fs.existsSync(gifsxModuleDir)) {
+  if (gifsxCandidate && !fs.existsSync(gifsxModuleDir)) {
     fs.mkdirSync(gifsxModuleDir, { recursive: true });
     fs.copyFileSync(gifsxCandidate, path.join(gifsxModuleDir, `gifsx.${platform}-${arch}${abi}.node`));
     fs.writeFileSync(

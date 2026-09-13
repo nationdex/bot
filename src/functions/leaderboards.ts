@@ -41,7 +41,13 @@ export default new ForgeFunction({
       $jsonLoad[data;$sortData[$env[data];$get[class];desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid];$get[class]];0]]**$if[$get[class]!=total; $appEmoji[$get[class]]]]];display]
+      $arrayMap[leaderboard;uid;
+        $let[rank;$sum[$arrayIndexOf[userIDs;$env[uid]];1]]
+        $let[name;$default[$username[$env[uid]];$env[uid]]]
+        $let[count;$separateNumber[$default[$env[data;$env[uid];$get[class]];0]]]
+        $let[emoji;$if[$get[class]!=total; $appEmoji[$get[class]]]]
+        $return[$get[rank]. : [$get[name]\\](https://discord.com/users/$env[uid]) - **$get[count]**$get[emoji]]
+      ;display]
       $let[title;$if[$get[class]!=total;$toTitleCase[$get[class]] ]$toTitleCase[$jsonVar[keywords;collectible.plural]] Leaderboard]
     ]
 
@@ -52,7 +58,12 @@ export default new ForgeFunction({
       $jsonLoad[data;$sortData[$env[data];total_value;desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid];total_value];0]]**];display]
+      $arrayMap[leaderboard;uid;
+        $let[rank;$sum[$arrayIndexOf[userIDs;$env[uid]];1]]
+        $let[name;$default[$username[$env[uid]];$env[uid]]]
+        $let[val;$separateNumber[$default[$env[data;$env[uid];total_value];0]]]
+        $return[$get[rank]. : [$get[name]\\](https://discord.com/users/$env[uid]) - **$get[val]**]
+      ;display]
       $let[title;$toTitleCase[$jsonVar[keywords;collectible.plural]] Value Leaderboard]
     ]
 
@@ -63,7 +74,12 @@ export default new ForgeFunction({
       $jsonLoad[data;$sortData[$env[data];;desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid]];0]]** $appEmoji[$jsonVar[keywords;currency.plural]]];display]
+      $arrayMap[leaderboard;uid;
+        $let[rank;$sum[$arrayIndexOf[userIDs;$env[uid]];1]]
+        $let[name;$default[$username[$env[uid]];$env[uid]]]
+        $let[bal;$separateNumber[$default[$env[data;$env[uid]];0]]]
+        $return[$get[rank]. : [$get[name]\\](https://discord.com/users/$env[uid]) - **$get[bal]** $appEmoji[$jsonVar[keywords;currency.plural]]]
+      ;display]
       $let[title;$toTitleCase[$jsonVar[keywords;currency.plural]] Leaderboard]
     ]
   ]
