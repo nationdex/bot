@@ -62,10 +62,11 @@ export default command('interaction.pages', `
     ]
 
     $elseIf[$get[type]==lb;
-      $let[type;$arrayAt[cid;4]]
+      $let[lbType;$arrayAt[cid;4]]
       $let[class;$arrayAt[cid;5]]
-      $interactionUpdate[
-        $leaderboards[$get[type];$get[page];$get[class]]
+      $deferUpdate
+      $!editMessage[$channelID;$messageID;
+        $leaderboards[$get[lbType];$get[page];$get[class]]
       ]
     ]
   ]

@@ -1418,6 +1418,7 @@ export const get_apiFunctions = () => [
 ];
 export const get_botFunctions = () => [
   require("../dist/functions/editBalance.js"),
+  require("../dist/functions/collectiblePrice.js"),
   require("../dist/functions/collectiblesData.js"),
   require("../dist/functions/getSpecial.js"),
   require("../dist/functions/rarityList.js"),
@@ -1445,7 +1446,6 @@ export const get_botFunctions = () => [
   require("../dist/functions/classCatchIDs.js"),
   require("../dist/functions/spawnCollectible.js"),
   require("../dist/functions/appEmoji.js"),
-  require("../dist/functions/collectiblePrice.js"),
 ];
 export const get_botCommands = () => [
   require("../dist/commands/interaction/collectibles/info.js"),

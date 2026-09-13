@@ -50,7 +50,7 @@ export default new ForgeFunction({
   $jsonLoad[userCollectibles;$getUserData[$get[user];collectibleIDs]]
   $jsonLoad[userUniques;$collectibleIDs[$get[user]]]
   $let[userTotal;$getUserData[$get[user];total]]
-  $arrayForEach[classes;class;$let[user$env[class];$collectibleIDs[$get[user];$env[class]]]]
+  $arrayForEach[classes;class;$let[user$env[class];$default[$getUserData[$get[user];$env[class]];0]]]
       
   $ifx[
     $if[$isValidClass[$get[class]];
