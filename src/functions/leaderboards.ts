@@ -28,6 +28,7 @@ export default new ForgeFunction({
   $let[maxperpage;25]
   $let[stInd;$multi[$get[maxperpage];$max[$sub[$get[page];1];0]]]
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
+  $let[class;none]
   
   $ifx[
     $if[$get[type]==collectibles;
@@ -35,13 +36,13 @@ export default new ForgeFunction({
       $jsonLoad[data;{}]
       $arrayForEach[db;val;$!jsonSet[data;$env[val;id];$env[val;value]]]
       $jsonLoad[classes;$collectiblesData[classes]]
-      $let[class;$if[$arrayIncludes[classes;$env[class]];$env[class];total]]
+      $let[rawClass;$toLowerCase[$default[$replace[$env[class];null;];total]]]
+      $let[class;$if[$arrayIncludes[classes;$get[rawClass]];$get[rawClass];total]]
       $jsonLoad[data;$sortData[$env[data];$get[class];desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
-      $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid];$get[class]]]** $appEmoji[$get[class]]];display]
-      $let[title;$toTitleCase[$replace[$get[class];total;] $jsonVar[keywords;collectible.plural] leaderboard]]
+      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid];$get[class]];0]]**$if[$get[class]!=total; $appEmoji[$get[class]]]]];display]
+      $let[title;$if[$get[class]!=total;$toTitleCase[$get[class]] ]$toTitleCase[$jsonVar[keywords;collectible.plural]] Leaderboard]
     ]
 
     $elseIf[$get[type]==value;
@@ -50,10 +51,9 @@ export default new ForgeFunction({
       $arrayForEach[db;val;$!jsonSet[data;$env[val;id];$env[val;value]]]
       $jsonLoad[data;$sortData[$env[data];total_value;desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
-      $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid];total_value]]**];display]
-      $let[title;$toTitleCase[$jsonVar[keywords;collectible.plural] value leaderboard]]
+      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid];total_value];0]]**];display]
+      $let[title;$toTitleCase[$jsonVar[keywords;collectible.plural]] Value Leaderboard]
     ]
 
     $elseIf[$get[type]==balance;
@@ -62,15 +62,15 @@ export default new ForgeFunction({
       $arrayForEach[db;val;$!jsonSet[data;$env[val;id];$env[val;value]]]
       $jsonLoad[data;$sortData[$env[data];;desc]]
       $jsonLoad[userIDs;$jsonKeys[data]]
-      $arrayForEach[userIDs;id;$if[$userExists[$env[id]]==false;$!jsonDelete[userIDs;$arrayIndexOf[userIDs;$env[id]]]]]
       $arraySlice[userIDs;leaderboard;$get[stInd];$get[endInd]]
-      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$username[$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$env[data;$env[uid]]]** $appEmoji[$jsonVar[keywords;currency.plural]]];display]
-      $let[title;$toTitleCase[$jsonVar[keywords;currency.plural] leaderboard]]
+      $arrayMap[leaderboard;uid;$return[$sum[$arrayIndexOf[userIDs;$env[uid]];1]. : [$default[$username[$env[uid]];$env[uid]]\\](https://discord.com/users/$env[uid]) - **$separateNumber[$default[$env[data;$env[uid]];0]]** $appEmoji[$jsonVar[keywords;currency.plural]]];display]
+      $let[title;$toTitleCase[$jsonVar[keywords;currency.plural]] Leaderboard]
     ]
   ]
   
   $let[pages;$max[$ceil[$divide[$arrayLength[userIDs];$get[maxperpage]]];1]]
-  $let[position;$if[$arrayIncludes[userIDs;$authorID];at #$sum[$arrayIndexOf[userIDs;$authorID];1];unranked]]
+  $let[uIndex;$arrayIndexOf[userIDs;$authorID]]
+  $let[position;$if[$get[uIndex]!=-1;at #$sum[$get[uIndex];1];unranked]]
 
   $return[
     $addContainer[
