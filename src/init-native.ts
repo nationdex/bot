@@ -4,15 +4,19 @@ import fs from 'fs';
 // Auto-wire N-API native library paths for Canvas (Skia) and GIFSX across platforms
 if (!process.env.NAPI_RS_NATIVE_LIBRARY_PATH) {
   const isGnu = process.platform === 'linux' ? '-gnu' : '';
+  const isMsvc = process.platform === 'win32' ? '-msvc' : '';
+  const abi = isGnu || isMsvc;
   const candidateNames = [
-    `skia.${process.platform}-${process.arch}${isGnu}.node`,
+    `skia.${process.platform}-${process.arch}${abi}.node`,
     `skia.${process.platform}-${process.arch}.node`,
+    `skia.node`,
   ];
   const candidateDirs = [
     process.cwd(),
     path.join(process.cwd(), 'binaries'),
     path.dirname(process.execPath),
-    path.join(process.cwd(), 'node_modules', `@napi-rs/canvas-${process.platform}-${process.arch}${isGnu}`),
+    path.join(process.cwd(), 'node_modules', `@napi-rs/canvas-${process.platform}-${process.arch}${abi}`),
+    path.join(process.cwd(), 'node_modules', `@napi-rs/canvas-${process.platform}-${process.arch}`),
   ];
 
   for (const dir of candidateDirs) {
@@ -31,29 +35,29 @@ if (!process.env.NAPI_RS_NATIVE_LIBRARY_PATH) {
 try {
   const arch = process.arch;
   const platform = process.platform;
-  const isGnu = platform === 'linux' ? '-gnu' : '';
+  const abi = platform === 'linux' ? '-gnu' : (platform === 'win32' ? '-msvc' : '');
 
   // 1. Canvas / Skia
-  const skiaCandidate = path.join(process.cwd(), 'binaries', `skia.${platform}-${arch}${isGnu}.node`);
-  const skiaModuleDir = path.join(process.cwd(), 'node_modules', '@napi-rs', `canvas-${platform}-${arch}${isGnu}`);
+  const skiaCandidate = path.join(process.cwd(), 'binaries', `skia.${platform}-${arch}${abi}.node`);
+  const skiaModuleDir = path.join(process.cwd(), 'node_modules', '@napi-rs', `canvas-${platform}-${arch}${abi}`);
   if (fs.existsSync(skiaCandidate) && !fs.existsSync(skiaModuleDir)) {
     fs.mkdirSync(skiaModuleDir, { recursive: true });
-    fs.copyFileSync(skiaCandidate, path.join(skiaModuleDir, `skia.${platform}-${arch}${isGnu}.node`));
+    fs.copyFileSync(skiaCandidate, path.join(skiaModuleDir, `skia.${platform}-${arch}${abi}.node`));
     fs.writeFileSync(
       path.join(skiaModuleDir, 'index.js'),
-      `module.exports = require('./skia.${platform}-${arch}${isGnu}.node');\n`
+      `module.exports = require('./skia.${platform}-${arch}${abi}.node');\n`
     );
   }
 
   // 2. Gifsx
-  const gifsxCandidate = path.join(process.cwd(), 'binaries', `gifsx.${platform}-${arch}${isGnu}.node`);
-  const gifsxModuleDir = path.join(process.cwd(), 'node_modules', '@gifsx', `gifsx-${platform}-${arch}${isGnu}`);
+  const gifsxCandidate = path.join(process.cwd(), 'binaries', `gifsx.${platform}-${arch}${abi}.node`);
+  const gifsxModuleDir = path.join(process.cwd(), 'node_modules', '@gifsx', `gifsx-${platform}-${arch}${abi}`);
   if (fs.existsSync(gifsxCandidate) && !fs.existsSync(gifsxModuleDir)) {
     fs.mkdirSync(gifsxModuleDir, { recursive: true });
-    fs.copyFileSync(gifsxCandidate, path.join(gifsxModuleDir, `gifsx.${platform}-${arch}${isGnu}.node`));
+    fs.copyFileSync(gifsxCandidate, path.join(gifsxModuleDir, `gifsx.${platform}-${arch}${abi}.node`));
     fs.writeFileSync(
       path.join(gifsxModuleDir, 'index.js'),
-      `module.exports = require('./gifsx.${platform}-${arch}${isGnu}.node');\n`
+      `module.exports = require('./gifsx.${platform}-${arch}${abi}.node');\n`
     );
   }
 } catch {
