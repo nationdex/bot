@@ -21,7 +21,7 @@ import {
 
 const api = new API({
   path: 'dist/api_routes',
-  port: parseInt(process.env.API_PORT || '2223', 10),
+  port: parseInt(process.env.API_PORT || '2222', 10),
 });
 
 const db = new DB({
