@@ -144,7 +144,7 @@ export function initSlashCommands(options: SlashesOptions = {}, instance: ForgeC
   }
 
 
-  client.applicationCommands.toJSON = function (type: any) {
+  client.applicationCommands.toJSON = function (type: any = 0) {
     const arr: any[] = [];
 
     for (const rootCfg of Object.values(slashesConfig)) {

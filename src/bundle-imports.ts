@@ -1453,8 +1453,6 @@ export const get_botCommands = () => [
   require("../dist/commands/interaction/collectibles/sell.js"),
   require("../dist/commands/interaction/settings.js"),
   require("../dist/commands/interaction/pages.js"),
-  require("../dist/commands/prefix/howlate.js"),
-  require("../dist/commands/dev/eval.js"),
   require("../dist/commands/backend/ready.js"),
   require("../dist/commands/backend/catch.js"),
   require("../dist/commands/backend/spawn.js"),
@@ -1467,6 +1465,7 @@ export const get_botSlash = () => [
   require("../dist/slash/rarity/collectibles.js"),
   require("../dist/slash/utils/help.js"),
   require("../dist/slash/utils/ping.js"),
+  require("../dist/slash/utils/howlate.js"),
   require("../dist/slash/utils/about.js"),
   require("../dist/slash/nations/info.js"),
   require("../dist/slash/nations/duplicates.js"),
@@ -1483,4 +1482,5 @@ export const get_botSlash = () => [
   require("../dist/slash/leaderboard/value.js"),
   require("../dist/slash/leaderboard/balance.js"),
   require("../dist/slash/leaderboard/collectibles.js"),
+  require("../dist/slash/admin/eval.js"),
 ];

@@ -6,8 +6,8 @@ const route: RouteDefinition = {
   code: `
   $jsonLoad[data;$djsEval[
     const path = require('path');
-    const { slashCommands } = require(path.resolve(process.cwd(), 'dist/config/slash.js'));
-    JSON.stringify(slashCommands)
+    const { slashes } = require(path.resolve(process.cwd(), 'dist/config/slash.js'));
+    JSON.stringify(slashes)
   ]]
   $sendJson[$env[data]]
 `};

@@ -1,6 +1,6 @@
 import { slashCommand } from '../../util/slashes';
 
-export default slashCommand('ping', `
+export default slashCommand('utils.ping', `
   $let[start;$getTimestamp]
   $interactionReply[Pinging $jsonVar[config;bot.name]...]
   $let[roundtrip;$sub[$getTimestamp;$get[start]]]

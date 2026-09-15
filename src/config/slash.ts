@@ -374,14 +374,48 @@ export const slashes = {
       ApplicationIntegrationType.UserInstall,
     ],
   },
-  ping: {
-    name: 'ping',
-    description: `Check bot's latency`,
-    independent: true,
-    tags: ['ping', 'utility', 'latency'],
+  utils: {
+    name: 'utils',
+    description: `Utility commands for ${variables.config.bot.name}`,
+    tags: ['utils', 'utility'],
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
     ],
+    subcommands: {
+      ping: {
+        name: 'ping',
+        description: `Check bot's latency`,
+        tags: ['ping', 'utility', 'latency'],
+      },
+      howlate: {
+        name: 'howlate',
+        description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular}`,
+        tags: ['utility', 'spawn', 'timing'],
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'message',
+            description: 'The message ID or link of the late guess to compare',
+            required: false,
+          },
+        ],
+      },
+    },
+  },
+  admin: {
+    name: 'admin',
+    description: `Administrative and developer tools for ${variables.config.bot.name}`,
+    tags: ['admin', 'developer'],
+    default_member_permissions: '8',
+    integration_types: [ApplicationIntegrationType.GuildInstall],
+    contexts: [InteractionContextType.Guild],
+    subcommands: {
+      eval: {
+        name: 'eval',
+        description: 'Start an evaluation session in a dedicated thread (Bot Owner & Developers only)',
+        tags: ['admin', 'dev', 'eval'],
+      },
+    },
   },
 };

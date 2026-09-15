@@ -3,7 +3,7 @@ import { command } from '../../util/commands';
 export default command('spawn', `
   $onlyIf[$spawnConfig[status]==enabled]
   
-  $guildCooldown[spawn;1m]
+  $guildCooldown[$guildID;1m;$stop]
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $let[weight;$sum[$spawnConfig[weight];$randomNumber[3;5]]]
   $!jsonSet[config;weight;$get[weight]]

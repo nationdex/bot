@@ -1,4 +1,3 @@
-import { variables } from './variables';
 
 export interface CommandConfig {
   name?: string;
@@ -14,26 +13,8 @@ export interface CommandConfig {
 }
 
 export const commands = {
-  prefix: {
-    howlate: {
-      name: 'howlate',
-      aliases: ['hl'],
-      description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular} by replying to their message`,
-      usage: '',
-      type: 'messageCreate',
-      tags: ['utility', 'spawn', 'collectibles', 'timing'],
-    },
-  },
-  dev: {
-    eval: {
-      name: 'eval',
-      aliases: ['ev'],
-      description: 'Evaluate ForgeScript code (Developer only)',
-      usage: '<code>',
-      type: 'messageCreate',
-      tags: ['dev', 'utility', 'admin'],
-    },
-  },
+  prefix: {},
+  dev: {},
 
   ready: {
     type: 'clientReady',

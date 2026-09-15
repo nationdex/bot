@@ -18,6 +18,7 @@ import {
   initCommands,
   initSlashCommands,
 } from './util';
+import { initEvalSessionEvents } from './util/evalSession';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -44,12 +45,14 @@ const dex = new ForgeClient({
     'GuildMessages',
     'MessageContent',
   ],
-  prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
+  prefixes: ['<@$botID>'],
   extensions: [
     canvas,
     db,
   ],
 });
+
+initEvalSessionEvents(dex);
 
 // Register client events
 EventManager.Loaded['native'] = {};
