@@ -59,26 +59,6 @@ No external database container or `DATABASE_URL` is required.
 
 Run the bot under a process manager such as systemd. Build it first with `bun run build` and start it with `bun dist/index.js`.
 
-## 🐳 Docker
-
-To build and run the bot in a Docker container:
-
-```bash
-docker compose up -d --build
-```
-
-To stop the instance:
-
-```bash
-docker compose down
-```
-
-To check the logs:
-
-```bash
-docker compose logs
-```
-
 ## 🤝 Contributions
 
 For those who are interested in contributing for Nationdex's development, you are always encouraged to open a Pull Request or Issue. For more information about how to contribute, please check out [our full contribution guidance](https://github.com/nationdex/bot/blob/main/CONTRIBUTING.md).
