@@ -180,6 +180,31 @@ try {
         started_at TEXT NOT NULL,
         duration BIGINT NOT NULL
       );
+      -- mirrors the @nationdex/db suggestion schema, since this patch replaces its connect()
+      CREATE TABLE IF NOT EXISTS suggestion (
+        id SERIAL PRIMARY KEY,
+        type TEXT NOT NULL,
+        submitter_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        fields JSONB NOT NULL,
+        image_url TEXT,
+        alt_image_url TEXT,
+        message_id TEXT,
+        channel_id TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS suggestion_vote (
+        suggestion_id INTEGER NOT NULL REFERENCES suggestion(id) ON DELETE CASCADE,
+        user_id TEXT NOT NULL,
+        PRIMARY KEY (suggestion_id, user_id)
+      );
+    `);
+    // an earlier suggestion system used a different type name for nations and capitalised classes
+    await DataBase.pg.exec(`
+      UPDATE suggestion SET type = 'nation' WHERE type NOT IN ('nation', 'feature');
+      UPDATE suggestion SET fields = jsonb_set(fields, '{class}', to_jsonb(lower(fields->>'class')))
+        WHERE type = 'nation' AND fields ? 'class' AND fields->>'class' <> lower(fields->>'class');
     `);
     DataBase.emitter.emit('connect');
   };

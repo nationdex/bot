@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { ApplicationCommand, ForgeClient, ForgeExtension } from '@tryforge/forgescript';
 import { slashes as slashesConfig, SlashCommandConfig } from '../config/slash';
+import { withBlacklistGuard } from './blacklistGuard';
 
 export interface SlashesOptions {
   path?: string;
@@ -327,7 +328,7 @@ export function SlashCommand(
       ...options,
       data,
       independent,
-      code: options.code ?? '',
+      code: withBlacklistGuard(options.code ?? '', 'reply'),
     });
 
     (appCmd as any).__meta = {

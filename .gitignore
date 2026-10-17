@@ -1,6 +1,7 @@
 .vscode/
 assets/window_art
 assets/spawn_art
+assets/suggestions
 database/
 dist/
 logs/

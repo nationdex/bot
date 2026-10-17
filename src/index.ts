@@ -18,7 +18,8 @@ import {
   initCommands,
   initSlashCommands,
 } from './util';
-import { initEvalSessionEvents } from './util/evalSession';
+import { blacklistFunctions, initBlacklistEvents } from './util/blacklist';
+import { staffFunctions } from './util/staff';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -38,6 +39,8 @@ FunctionManager.addMany(getReq(get_forgescriptNative()));
 FunctionManager.addMany(getReq(get_canvasFunctions()));
 FunctionManager.addMany(getReq(get_dbFunctions()));
 FunctionManager.addMany(getReq(get_apiFunctions()));
+FunctionManager.addMany(blacklistFunctions);
+FunctionManager.addMany(staffFunctions);
 
 const dex = new ForgeClient({
   intents: [
@@ -45,14 +48,14 @@ const dex = new ForgeClient({
     'GuildMessages',
     'MessageContent',
   ],
-  prefixes: ['<@$botID>'],
+  prefixes: ['<@$botID>', '$callFunction[jsonVar;config;prefix]'],
   extensions: [
     canvas,
     db,
   ],
 });
 
-initEvalSessionEvents(dex);
+initBlacklistEvents(dex);
 
 // Register client events
 EventManager.Loaded['native'] = {};

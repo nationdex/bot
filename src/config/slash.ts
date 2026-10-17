@@ -5,6 +5,9 @@ import {
   InteractionContextType,
 } from 'discord.js';
 import { variables } from './variables';
+import { auctionConfig } from './auction';
+import { blacklistGroups } from './blacklist';
+import { suggestionAdminCommand, suggestionsCommand } from './suggestions';
 
 export interface SlashOptionConfig {
   type: ApplicationCommandOptionType;
@@ -403,6 +406,58 @@ export const slashes = {
       },
     },
   },
+  auction: {
+    name: 'auction',
+    description: `Auction your ${variables.keywords.collectible.plural} for ${variables.keywords.currency.plural}`,
+    tags: ['auction', 'economy', 'trade'],
+    integration_types: [
+      ApplicationIntegrationType.UserInstall,
+      ApplicationIntegrationType.GuildInstall,
+    ],
+    subcommands: {
+      create: {
+        name: 'create',
+        description: `List one of your ${variables.keywords.collectible.plural} in the auction house`,
+        tags: ['auction', 'sell', 'list'],
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: `${variables.keywords.collectible.singular}`,
+            description: `The ${variables.keywords.collectible.singular} to auction`,
+            required: true,
+            autocomplete: true,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'starting_bid',
+            description: `The minimum first bid in ${variables.keywords.currency.plural}`,
+            required: true,
+            min_value: 1,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'duration',
+            description: 'How long the auction runs',
+            required: true,
+            choices: auctionConfig.durations,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'buyout',
+            description: `Optional instant-win price in ${variables.keywords.currency.plural} (must exceed the starting bid)`,
+            required: false,
+            min_value: 2,
+          },
+        ],
+      },
+      browse: {
+        name: 'browse',
+        description: 'Browse, bid on and manage auctions in a private panel',
+        tags: ['auction', 'browse', 'bid', 'list', 'cancel'],
+      },
+    },
+  },
+
   admin: {
     name: 'admin',
     description: `Administrative and developer tools for ${variables.config.bot.name}`,
@@ -411,11 +466,12 @@ export const slashes = {
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
     subcommands: {
-      eval: {
-        name: 'eval',
-        description: 'Start an evaluation session in a dedicated thread (Bot Owner & Developers only)',
-        tags: ['admin', 'dev', 'eval'],
-      },
+      suggestions: suggestionAdminCommand,
+    },
+    subcommandGroups: {
+      ...blacklistGroups,
     },
   },
+
+  suggestions: suggestionsCommand,
 };

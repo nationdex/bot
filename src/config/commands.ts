@@ -1,3 +1,4 @@
+import { variables } from './variables';
 
 export interface CommandConfig {
   name?: string;
@@ -13,7 +14,16 @@ export interface CommandConfig {
 }
 
 export const commands = {
-  prefix: {},
+  prefix: {
+    howlate: {
+      name: 'howlate',
+      aliases: ['hl'],
+      description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular} by replying to their message`,
+      usage: '',
+      type: 'messageCreate',
+      tags: ['utility', 'spawn', 'collectibles', 'timing'],
+    },
+  },
   dev: {},
 
   ready: {
@@ -47,6 +57,11 @@ export const commands = {
       allowedInteractionTypes: ['autocomplete'],
       description: 'Autocomplete for collectible rarities info',
     },
+    auction: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['autocomplete'],
+      description: 'Autocomplete for auction commands',
+    },
   },
 
   interaction: {
@@ -54,9 +69,22 @@ export const commands = {
       type: 'interactionCreate',
       description: 'Pagination interactions',
     },
+    auction: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['button', 'selectMenu', 'modal'],
+      description: 'Auction browse menus, buttons and the custom bid modal',
+    },
     settings: {
       type: 'interactionCreate',
       description: 'Settings page interactions',
+    },
+    blacklist: {
+      type: 'interactionCreate',
+      description: 'Blacklist panel menus and buttons',
+    },
+    suggestions: {
+      type: 'interactionCreate',
+      description: 'Community suggestions browse panel, edit and staff queue buttons, menus and modals',
     },
     collectibles: {
       gift: {

@@ -1,5 +1,6 @@
 import { BaseCommand, ForgeClient, ForgeExtension } from '@tryforge/forgescript';
 import { commands as commandsConfig } from '../config/commands';
+import { GUARDED_EVENTS, withBlacklistGuard } from './blacklistGuard';
 
 export interface CommandsOptions {
   path?: string;
@@ -62,9 +63,10 @@ export function command(
 
   const options = typeof codeOrOptions === 'string' ? { code: codeOrOptions } : codeOrOptions;
 
+  const type = options.type ?? cfg.type;
   return new BaseCommand({
     ...cfg,
     ...options,
-    code: options.code ?? '',
+    code: GUARDED_EVENTS.has(type) ? withBlacklistGuard(options.code ?? '', 'silent') : (options.code ?? ''),
   });
 };

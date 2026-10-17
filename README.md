@@ -2,7 +2,7 @@
 
 **The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
 
-That is right, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative, has returned.
+That is right, one of the oldest dex bots in existence, created in December 2022, has returned.
 
 Join our cause at the Nationdex [headquarters](https://dsc.nationdex.com/)!
 

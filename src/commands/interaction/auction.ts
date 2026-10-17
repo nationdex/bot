@@ -1,0 +1,134 @@
+import { command } from '../../util/commands';
+
+// customIDs: browse acts auction-<filter|pick|page|settle>-<owner>-<filter>-<page>
+//            detail acts auction-<bid|buyout|custom|modal|refresh|cancel|force>-<aid>-<arg>-<mode>-<owner>-<filter>-<page>
+export default command('interaction.auction', `
+  $arrayLoad[cid;-;$customID]
+  $onlyIf[$arrayAt[cid;0]==auction]
+  $let[act;$arrayAt[cid;1]]
+  $let[browseAct;$or[$get[act]==filter;$get[act]==pick;$get[act]==page;$get[act]==settle]]
+
+  $if[$get[browseAct];
+    $onlyIf[$arrayAt[cid;2]==$authorID;
+      $err[not_author;true]
+    ]
+    $let[filter;$arrayAt[cid;3]]
+    $let[page;$arrayAt[cid;4]]
+  ;
+    $let[aid;$arrayAt[cid;2]]
+    $let[arg;$arrayAt[cid;3]]
+    $let[mode;$arrayAt[cid;4]]
+    $let[filter;$arrayAt[cid;6]]
+    $let[page;$arrayAt[cid;7]]
+    $onlyIf[$or[$get[mode]!=panel;$arrayAt[cid;5]==$authorID];
+      $err[not_author;true]
+    ]
+  ]
+
+  $ifx[
+    $if[$get[act]==filter;
+      $interactionUpdate[
+        $auctionBrowse[$authorID;$selectMenuValues[0];1]
+      ]
+    ]
+    $elseIf[$get[act]==page;
+      $interactionUpdate[
+        $auctionBrowse[$authorID;$get[filter];$get[page]]
+      ]
+    ]
+    $elseIf[$get[act]==pick;
+      $interactionUpdate[
+        $auctionView[$selectMenuValues[0];$authorID;panel;$get[filter];$get[page]]
+      ]
+    ]
+    $elseIf[$get[act]==settle;
+      $onlyIf[$isBotStaff[$authorID];
+        $err[not_bot_staff;true]
+      ]
+      $let[count;$auctionSettle]
+      $interactionUpdate[
+        $auctionBrowse[$authorID;$get[filter];$get[page]]
+      ]
+      $ephemeral
+      $interactionFollowUp[Settled **$get[count]** expired auction(s).]
+    ]
+    $elseIf[$get[act]==refresh;
+      $interactionUpdate[
+        $auctionView[$get[aid];$authorID;$get[mode];$get[filter];$get[page]]
+      ]
+    ]
+    $elseIf[$get[act]==custom;
+      $modal[auction-modal-$get[aid]-0-$get[mode]-$arrayAt[cid;5]-$get[filter]-$get[page];Custom bid · Auction #$get[aid]]
+      $addTextInput[amount;Bid amount in $jsonVar[keywords;currency.plural];Short;true;At least $get[arg];;1;12]
+      $showModal
+    ]
+    $elseIf[$or[$get[act]==bid;$get[act]==buyout;$get[act]==modal];
+      $let[amount;$get[arg]]
+      $if[$get[act]==modal;
+        $let[amount;$trim[$input[amount]]]
+        $onlyIf[$and[$isInteger[$get[amount]];$get[amount]>0];
+          $err[auction_bad_amount;true]
+        ]
+      ]
+      $let[res;$auctionBid[$get[aid];$authorID;$get[amount]]]
+      $jsonLoad[r;$get[res]]
+      $let[msg;$auctionBidMessage[$get[res]]]
+      $onlyIf[$or[$env[r;status]==ok;$env[r;status]==buyout];
+        $err[$get[msg];true]
+      ]
+      $interactionUpdate[
+        $auctionView[$get[aid];$authorID;$get[mode];$get[filter];$get[page]]
+      ]
+      $ephemeral
+      $interactionFollowUp[$get[msg]]
+      $!auctionBidNotify[$get[res];$authorID]
+    ]
+    $elseIf[$get[act]==cancel;
+      $let[token;$auctionLock[acquire]]
+      $onlyIf[$get[token]!=;
+        $err[auction_busy;true]
+      ]
+      $jsonLoad[house;$default[$getGlobalVar[auctionHouse];{}]]
+      $let[raw;$env[house;auctions;$get[aid]]]
+      $jsonLoad[a;$default[$get[raw];{}]]
+      $let[error;]
+      $ifx[
+        $if[$get[raw]==;$let[error;auction_not_found]]
+        $elseIf[$env[a;seller]!=$authorID;$let[error;auction_not_seller]]
+        $elseIf[$env[a;bidder]!=;$let[error;auction_has_bids]]
+        $else[$!auctionClose[$get[aid];cancel]]
+      ]
+      $!auctionLock[release;$get[token]]
+      $onlyIf[$get[error]==;
+        $err[$get[error];true]
+      ]
+      $interactionUpdate[
+        $auctionBrowse[$authorID;$get[filter];$get[page]]
+      ]
+      $ephemeral
+      $interactionFollowUp[$appEmoji[check_mark] Cancelled auction **#$get[aid]**. **$collectibleInfo[$env[a;colID];name]** (\`#$env[a;nation]\`) was returned to your inventory.]
+    ]
+    $elseIf[$get[act]==force;
+      $onlyIf[$isBotStaff[$authorID];
+        $err[not_bot_staff;true]
+      ]
+      $let[token;$auctionLock[acquire]]
+      $onlyIf[$get[token]!=;
+        $err[auction_busy;true]
+      ]
+      $let[res;$auctionClose[$get[aid];admin]]
+      $!auctionLock[release;$get[token]]
+      $jsonLoad[r;$get[res]]
+      $onlyIf[$env[r;id]!=;
+        $err[auction_not_found;true]
+      ]
+      $interactionUpdate[
+        $auctionBrowse[$authorID;$get[filter];$get[page]]
+      ]
+      $ephemeral
+      $interactionFollowUp[$appEmoji[check_mark] Force-cancelled auction **#$get[aid]**. The listing was returned to \`$fetchUsername[$env[r;seller]]\`$if[$env[r;bidder]!=; and **$separateNumber[$env[r;bid]] $jsonVar[keywords;currency.plural]** were refunded to \`$fetchUsername[$env[r;bidder]]\`].]
+      $!auctionNotify[$get[res]]
+    ]
+  ]
+  $!auctionSettle
+`);
