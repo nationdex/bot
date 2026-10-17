@@ -354,7 +354,6 @@ export class Collectibles extends ForgeExtension {
 export const collectibles = new Collectibles();
 
 export async function runCliValidation(): Promise<ValidationReport> {
-  require('dotenv').config();
   const { DataBase } = require('@nationdex/db/dist/util/database');
   const { TypedEmitter } = require('tiny-typed-emitter');
 

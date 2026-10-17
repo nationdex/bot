@@ -57,41 +57,7 @@ No external database container or `DATABASE_URL` is required.
 
 ## 🚀 Production
 
-To start the bot in production:
-
-```bash
-npm run pm2:start
-```
-
-To stop:
-
-```bash
-npm run pm2:stop
-```
-
-To restart:
-
-```bash
-npm run pm2:restart
-```
-
-To delete:
-
-```bash
-npm run pm2:delete
-```
-
-To view the status:
-
-```bash
-npm run pm2:status
-```
-
-To view the logs:
-
-```bash
-npm run pm2:logs
-```
+Run the bot under a process manager such as systemd. Build it first with `bun run build` and start it with `bun dist/index.js`.
 
 ## 🐳 Docker
 

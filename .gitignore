@@ -16,3 +16,16 @@ binaries/nationdex-bot-linux-x64-musl
 binaries/nationdex-bot-linux-arm64
 binaries/nationdex-bot-darwin-arm64
 binaries/nationdex-bot-darwin-x64
+
+# AI agent files
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.claude/
+.cursor/
+.windsurf/
+.opencode/
+.aider*
+.lsp.json
+forgeconfig.json
+tests/temp/

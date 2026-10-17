@@ -1,5 +1,5 @@
 [install]
-# uWebSockets.js is an optionalDependency here because of Bun.
+# Optional deps (e.g. @napi-rs/canvas platform binaries) must install.
 optional = true
 
 [run]

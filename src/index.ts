@@ -1,9 +1,5 @@
 import './init-native';
 
-if (typeof (globalThis as any).Bun === 'undefined') {
-  require('dotenv/config');
-}
-
 import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
 import * as recursiveReaddirSyncModule from '@tryforge/forgescript/dist/functions/recursiveReaddirSync';
 (recursiveReaddirSyncModule as any).default = () => [];

@@ -19,8 +19,6 @@ assets/
 .forgevsc.json
 .cache/
 
-# PM2 config (not used by Docker)
-ecosystem.config.cjs
 
 # Docs / license (not needed at runtime)
 README.md
