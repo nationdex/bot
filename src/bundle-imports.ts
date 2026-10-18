@@ -1496,6 +1496,7 @@ export const get_botCommands = () => [
   require("../dist/commands/interaction/pages.js"),
   require("../dist/commands/interaction/blacklist.js"),
   require("../dist/commands/prefix/howlate.js"),
+  require("../dist/commands/dev/eval.js"),
   require("../dist/commands/backend/ready.js"),
   require("../dist/commands/backend/catch.js"),
   require("../dist/commands/backend/spawn.js"),

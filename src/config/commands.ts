@@ -24,7 +24,16 @@ export const commands = {
       tags: ['utility', 'spawn', 'collectibles', 'timing'],
     },
   },
-  dev: {},
+  dev: {
+    eval: {
+      name: 'eval',
+      aliases: ['ev'],
+      description: 'Evaluate ForgeScript code (Developer only)',
+      usage: '<code>',
+      type: 'messageCreate',
+      tags: ['dev', 'utility', 'admin'],
+    },
+  },
 
   ready: {
     type: 'clientReady',
