@@ -94,6 +94,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
             $addSeparator
             $addTextDisplay[### $appEmoji[$get[class]] $toTitleCase[$get[class]]$if[$get[owned]>0;
 **Owned**: $arrayJoin[owned;]]$if[$get[missing]>0;
+
 **Missing**: $arrayJoin[missing;]]
 ]
             $addSeparator
@@ -157,9 +158,24 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
 
           $let[ownedCount;$arrayLength[classOwned$get[pageClass]]]
           $let[missingCount;$arrayLength[classMissing$get[pageClass]]]
-          $jsonLoad[clids;$classCatchIDs[$jsonStringify[userCollectibles];$jsonStringify[catalog];$get[pageClass]]]
+          $jsonLoad[summary;$classCatchSummary[$jsonStringify[userCollectibles];$jsonStringify[catalog];$get[pageClass]]]
+          $jsonLoad[clids;$env[summary;ids]]
+          $jsonLoad[counts;$env[summary;counts]]
           $let[listPages;$ceil[$divide[$max[$arrayLength[clids];1];$get[maxperpage]]]]
           $let[listPage;$min[$max[$get[listPage];1];$get[listPages]]]
+          $let[prevPage;$get[page]]
+          $let[prevList;$sub[$get[listPage];1]]
+          $if[$and[$get[listPage]<=1;$get[page]>1];
+            $let[prevPage;$sub[$get[page];1]]
+            $let[prevClass;$arrayAt[classes;$sub[$get[page];2]]]
+            $let[prevList;$max[$ceil[$divide[$max[$default[$env[counts;$get[prevClass]];0];1];$get[maxperpage]]];1]]
+          ]
+          $let[nextPage;$get[page]]
+          $let[nextList;$sum[$get[listPage];1]]
+          $if[$get[listPage]>=$get[listPages];
+            $let[nextPage;$sum[$get[page];1]]
+            $let[nextList;1]
+          ]
           $let[listStInd;$multi[$get[maxperpage];$sub[$get[listPage];1]]]
           $let[listEndInd;$multi[$get[maxperpage];$get[listPage]]]
           $arraySlice[clids;colID;$get[listStInd];$get[listEndInd]]
@@ -170,6 +186,12 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
 **$get[ownedCount] / $get[classTotal]** owned]
                 $addThumbnail[$userAvatar[$get[user]]]
               ]
+              $addSeparator
+              $addTextDisplay[### $appEmoji[$get[pageClass]] $toTitleCase[$get[pageClass]]$if[$get[ownedCount]>0;
+**Owned**: $arrayJoin[classOwned$get[pageClass];]]$if[$get[missingCount]>0;
+
+**Missing**: $arrayJoin[classMissing$get[pageClass];]]
+]
               $addSeparator
               $addActionRow
             $if[$arrayLength[colID]>0;
@@ -184,19 +206,9 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
               $addOption[null;null;null]
             ]
             $addActionRow
-            $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sub[$get[listPage];1];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[listPage]==1]]
-            $addButton[pages-progress-$authorID-index2;$get[listPage] / $get[listPages];Primary;;true]
-            $addButton[pages-progress-$authorID-$get[page]-$get[user]-$sum[$get[listPage];1];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$or[$get[listPage]==$get[listPages];$get[listPages]<=1]]]
-              $addSeparator
-              $addTextDisplay[### $appEmoji[$get[pageClass]] $toTitleCase[$get[pageClass]]$if[$get[ownedCount]>0;
-**Owned**: $arrayJoin[classOwned$get[pageClass];]]$if[$get[missingCount]>0;
-**Missing**: $arrayJoin[classMissing$get[pageClass];]]
-]
-              $addSeparator
-              $addActionRow
-              $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-1;$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$get[page]==1]]
-              $addButton[pages-progress-$authorID-index;$get[page] / $get[pages];Primary;;true]
-              $addButton[pages-progress-$authorID-$sum[$get[page];1]-$get[user]-1;$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$get[page]==$get[pages]]]
+            $addButton[pages-progress-$authorID-$get[prevPage]-$get[user]-$get[prevList];$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$checkCondition[$and[$get[page]<=1;$get[listPage]<=1]]]
+            $addButton[pages-progress-$authorID-index;$toTitleCase[$get[pageClass]] · $get[listPage] / $get[listPages];Primary;;true]
+            $addButton[pages-progress-$authorID-$get[nextPage]-$get[user]-$get[nextList];$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$checkCondition[$and[$get[page]>=$get[pages];$get[listPage]>=$get[listPages]]]]
             ;$jsonVar[config;accent]]
           ]
           ;
@@ -225,6 +237,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
               $addSeparator
               $addTextDisplay[### Unclassified $jsonVar[keywords;collectible.plural]$if[$get[noClassOwnedCount]>0;
 **Owned**: $arrayJoin[noClassOwned;]]$if[$get[noClassMissingCount]>0;
+
 **Missing**: $arrayJoin[noClassMissing;]]
 ]
               $addSeparator

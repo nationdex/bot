@@ -1476,6 +1476,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/collectibleInfo.js"),
   require("../dist/functions/getUserData.js"),
   require("../dist/functions/auctionLock.js"),
+  require("../dist/functions/classCatchSummary.js"),
   require("../dist/functions/auctionBid.js"),
   require("../dist/functions/classCatchIDs.js"),
   require("../dist/functions/approveNationSuggestion.js"),
