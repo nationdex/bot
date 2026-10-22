@@ -3,7 +3,7 @@ import { command } from '../../util/commands';
 export default command('interaction.blacklist', `
   $arrayLoad[cid;-;$customID]
   $onlyIf[$arrayAt[cid;0]==blacklist]
-  $onlyIf[$isBotStaff[$authorID];$err[not_bot_staff;true]]
+  $onlyIf[$hasCap[$authorID;blacklist.read];$err[not_bot_staff;true]]
   $onlyIf[$arrayAt[cid;2]==$authorID;$err[not_author;true]]
 
   $let[act;$arrayAt[cid;1]]
@@ -20,6 +20,7 @@ export default command('interaction.blacklist', `
       $interactionUpdate[$blacklistDetailView[$get[type];$selectMenuValues[0];$authorID;$arrayAt[cid;4]]]
     ]
     $elseIf[$get[act]==remove;
+      $onlyIf[$hasCap[$authorID;blacklist.write];$err[not_bot_staff;true]]
       $!blacklistRemove[$get[type];$arrayAt[cid;4];$authorID;removed via panel]
       $interactionUpdate[$blacklistDetailView[$get[type];$arrayAt[cid;4];$authorID;$arrayAt[cid;5]]]
     ]

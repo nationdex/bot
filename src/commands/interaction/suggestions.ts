@@ -6,8 +6,13 @@ export default command('interaction.suggestions', `
   $onlyIf[$arrayAt[cid;0]==suggestion]
   $let[action;$arrayAt[cid;1]]
   $if[$startsWith[$get[action];q];
-    $onlyIf[$isBotStaff[$authorID];
+    $onlyIf[$hasCap[$authorID;suggestions.review];
       $err[not_bot_staff;true]
+    ]
+    $if[$or[$get[action]==qa;$get[action]==qam;$get[action]==qc;$get[action]==qcm;$get[action]==qd;$get[action]==qdm;$get[action]==qch;$get[action]==qoff];
+      $onlyIf[$hasCap[$authorID;suggestions.approve];
+        $err[not_bot_staff;true]
+      ]
     ]
   ]
 
@@ -41,7 +46,7 @@ export default command('interaction.suggestions', `
         $if[$env[s;submitterId]==$authorID;
           $let[hint;This is your suggestion. Open \`/suggestions browse\`, pick it and use **Edit** or **Withdraw** while it is open.]
         ]
-        $elseif[$isBotStaff[$authorID];
+        $elseif[$hasCap[$authorID;suggestions.review];
           $let[hint;Staff: review it from \`/admin suggestions\`.]
         ]
         $else[

@@ -72,7 +72,7 @@ export default new ForgeFunction({
   $let[isLeading;$and[$get[panel];$get[bidder]!=;$get[viewer]==$get[bidder]]]
   $let[lockBids;$or[$get[ended]==true;$get[isSeller];$get[isLeading]]]
   $let[canCancel;$and[$get[isSeller];$get[bidder]==;$get[ended]==false]]
-  $let[isStaff;$if[$get[panel];$isBotStaff[$get[viewer]];false]]
+  $let[isStaff;$if[$get[panel];$hasCap[$get[viewer];auction.moderate];false]]
 
   $addContainer[
     $addTextDisplay[## Auction #$get[aid]

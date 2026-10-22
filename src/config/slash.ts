@@ -6,6 +6,8 @@ import {
 } from 'discord.js';
 import { variables } from './variables';
 import { auctionConfig } from './auction';
+import { RegistrationType } from '@tryforge/forgescript';
+import { accessCommand } from './access';
 import { blacklistGroups } from './blacklist';
 import { suggestionAdminCommand, suggestionsCommand } from './suggestions';
 
@@ -462,7 +464,9 @@ export const slashes = {
     name: 'admin',
     description: `Administrative and developer tools for ${variables.config.bot.name}`,
     tags: ['admin', 'developer'],
-    default_member_permissions: '8',
+    // staff only: registered in the home server and gated by bot capabilities, never by Discord permissions
+    type: RegistrationType.Guild,
+    default_member_permissions: null,
     integration_types: [ApplicationIntegrationType.GuildInstall],
     contexts: [InteractionContextType.Guild],
     subcommands: {
@@ -474,4 +478,6 @@ export const slashes = {
   },
 
   suggestions: suggestionsCommand,
+
+  access: accessCommand,
 };

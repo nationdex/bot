@@ -15,7 +15,8 @@ import {
   initSlashCommands,
 } from './util';
 import { blacklistFunctions, initBlacklistEvents } from './util/blacklist';
-import { staffFunctions } from './util/staff';
+import { accessFunctions, initAccessEvents } from './util/access';
+import { evalFunctions } from './util/evalRunner';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -36,7 +37,8 @@ FunctionManager.addMany(getReq(get_canvasFunctions()));
 FunctionManager.addMany(getReq(get_dbFunctions()));
 FunctionManager.addMany(getReq(get_apiFunctions()));
 FunctionManager.addMany(blacklistFunctions);
-FunctionManager.addMany(staffFunctions);
+FunctionManager.addMany(accessFunctions);
+FunctionManager.addMany(evalFunctions);
 
 const dex = new ForgeClient({
   intents: [
@@ -52,6 +54,7 @@ const dex = new ForgeClient({
 });
 
 initBlacklistEvents(dex);
+initAccessEvents(dex);
 
 // Register client events
 EventManager.Loaded['native'] = {};

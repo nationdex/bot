@@ -1,7 +1,7 @@
 import { ArgType, ForgeClient, NativeFunction } from '@tryforge/forgescript';
 import { DataBase } from '@nationdex/db/dist/util';
 import { errors } from '../config/errors';
-import { isAuthorizedDev, isAuthorizedDevSync } from './staff';
+import { hasAnyAccess } from './access';
 import { fetchUsername, usernameTag } from './usernames';
 
 export type BlacklistTarget = 'user' | 'guild';
@@ -96,14 +96,6 @@ async function pushHistory(type: BlacklistTarget, id: string, entry: BlacklistHi
   await DataBase.set({ name: HISTORY_VAR, type, id, value: JSON.stringify(history.slice(0, HISTORY_LIMIT)) });
 }
 
-export function isStaffSync(userId: string | null | undefined, client?: any): boolean {
-  return isAuthorizedDevSync(userId, client);
-}
-
-export async function isStaff(userId: string | null | undefined, client?: any): Promise<boolean> {
-  return isAuthorizedDev(userId, client);
-}
-
 export async function addBlacklist(
   type: BlacklistTarget,
   id: string,
@@ -112,7 +104,7 @@ export async function addBlacklist(
   client?: any,
 ): Promise<BlacklistAddResult> {
   await ensureBlacklistLoaded();
-  if (type === 'user' && (id === moderator || id === client?.user?.id || (await isStaff(id, client)))) {
+  if (type === 'user' && (id === moderator || id === client?.user?.id || (await hasAnyAccess(id)))) {
     return 'protected';
   }
   if (cache[type].has(id)) return 'exists';
@@ -316,7 +308,7 @@ export const blacklistFunctions = [
       let reason: string | null = null;
       if (await isBlacklisted('user', userId)) reason = errors.blacklisted_user;
       else if (await isBlacklisted('guild', guildId)) reason = errors.blacklisted_guild;
-      if (!reason || isStaffSync(userId, ctx.client)) return this.success();
+      if (!reason || (await hasAnyAccess(userId))) return this.success();
 
       const i: any = ctx.interaction;
       if (mode === 'reply' && i?.isRepliable?.() && !i.replied && !i.deferred) {
@@ -341,19 +333,6 @@ export const blacklistFunctions = [
     async execute(_ctx, [type, id]) {
       if (!isTarget(type)) return this.customError('Type must be "user" or "guild"');
       return this.success(await isBlacklisted(type, id));
-    },
-  }),
-
-  new NativeFunction({
-    name: '$isBotStaff',
-    version: '1.0.0',
-    description: 'Returns whether a user is a bot developer or application owner',
-    unwrap: true,
-    brackets: true,
-    output: ArgType.Boolean,
-    args: [{ name: 'user', description: 'The user id', rest: false, required: true, type: ArgType.String }],
-    async execute(ctx, [user]) {
-      return this.success(await isStaff(user, ctx.client));
     },
   }),
 

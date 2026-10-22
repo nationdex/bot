@@ -69,7 +69,7 @@ export default new ForgeFunction({
   $let[pages;$env[pg;pages]]
   $let[total;$env[pg;total]]
   $jsonLoad[items;$env[pg;items]]
-  $let[staff;$isBotStaff[$get[viewer]]]
+  $let[staff;$hasCap[$get[viewer];auction.moderate]]
 
   $arrayMap[items;it;
     $return[- **#$env[it;id]** · $getSpecial[$collectible[$env[it;nation];special];emoji]$appEmoji[$collectibleInfo[$env[it;colID];emoji_id]] **$collectibleInfo[$env[it;colID];name]** · $env[it;price] $get[curName] ($env[it;bidsText]) · ends <t:$env[it;endsSec]:R>]

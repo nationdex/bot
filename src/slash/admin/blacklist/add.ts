@@ -1,7 +1,7 @@
 import { SlashCommand } from '../../../util/slashes';
 
 export default SlashCommand('admin.blacklist.add', `
-  $onlyIf[$isBotStaff[$authorID];$err[not_bot_staff;true]]
+  $onlyIf[$hasCap[$authorID;blacklist.write];$err[not_bot_staff;true]]
   $let[type;$blacklistTarget[$option[user];$option[guild_id];type]]
   $onlyIf[$and[$get[type]!=none;$get[type]!=invalid];$err[blacklist_target;true]]
   $let[target;$blacklistTarget[$option[user];$option[guild_id];id]]

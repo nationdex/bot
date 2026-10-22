@@ -328,6 +328,7 @@ export function SlashCommand(
       ...options,
       data,
       independent,
+      type: root.type,
       code: withBlacklistGuard(options.code ?? '', 'reply'),
     });
 

@@ -28,7 +28,7 @@ export const commands = {
     eval: {
       name: 'eval',
       aliases: ['ev'],
-      description: 'Evaluate ForgeScript code (Developer only)',
+      description: 'Run code in the isolated eval worker (requires the eval.run capability)',
       usage: '<code>',
       type: 'messageCreate',
       tags: ['dev', 'utility', 'admin'],

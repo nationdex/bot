@@ -55,6 +55,17 @@ Database files are stored locally in the `./database` directory and are ignored 
 
 No external database container or `DATABASE_URL` is required.
 
+## 🔐 Staff access
+
+Staff tools (`/admin`, `/access`, auction moderation and `n.eval`) are controlled by capabilities stored in the database, never by Discord permissions such as Administrator and never by user IDs in the code.
+
+- Set `HOME_GUILD_ID` in `.env` to the main server's ID. Staff commands are registered in, and only work from, that server. Without it every staff capability is denied.
+- On a fresh database nobody has access. The Discord application owner (the owner of the team that owns the application) runs `/access claim` in the home server once to become the first owner.
+- Owners then use `/access grant`, `/access revoke`, `/access role`, `/access roles`, `/access list`, `/access audit` and `/access evalchannel`.
+- Capabilities: `eval.run`, `suggestions.review`, `suggestions.approve`, `blacklist.read`, `blacklist.write`, `auction.moderate`, `users.edit`, `nations.edit`, `cards.edit`, `config.edit` (owner-grant only), `access.manage`. Default roles: `owner`, `developer`, `moderator`, `reviewer`, `curator` (nations and cards), `support` (users).
+- `n.eval` runs in a separate worker process with an empty environment (no bot token) and no database handle. Run the bot under a dedicated, unprivileged OS user with no access to files it does not need.
+- Per-server `/spawn` configuration is a community feature gated by Manage Server in that server and is not part of this system.
+
 ## 🚀 Production
 
 Run the bot under a process manager such as systemd. Build it first with `bun run build` and start it with `bun dist/index.js`.

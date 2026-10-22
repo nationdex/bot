@@ -42,7 +42,7 @@ export default command('interaction.auction', `
       ]
     ]
     $elseIf[$get[act]==settle;
-      $onlyIf[$isBotStaff[$authorID];
+      $onlyIf[$hasCap[$authorID;auction.moderate];
         $err[not_bot_staff;true]
       ]
       $let[count;$auctionSettle]
@@ -109,7 +109,7 @@ export default command('interaction.auction', `
       $interactionFollowUp[$appEmoji[check_mark] Cancelled auction **#$get[aid]**. **$collectibleInfo[$env[a;colID];name]** (\`#$env[a;nation]\`) was returned to your inventory.]
     ]
     $elseIf[$get[act]==force;
-      $onlyIf[$isBotStaff[$authorID];
+      $onlyIf[$hasCap[$authorID;auction.moderate];
         $err[not_bot_staff;true]
       ]
       $let[token;$auctionLock[acquire]]

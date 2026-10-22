@@ -199,6 +199,41 @@ try {
         user_id TEXT NOT NULL,
         PRIMARY KEY (suggestion_id, user_id)
       );
+      -- bot staff access control: roles are capability bundles, grants bind users to a role or one capability
+      CREATE TABLE IF NOT EXISTS access_role (
+        name TEXT PRIMARY KEY,
+        capabilities JSONB NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS access_grant (
+        user_id TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        expires_at TIMESTAMPTZ,
+        granted_by TEXT NOT NULL,
+        granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reason TEXT,
+        PRIMARY KEY (user_id, subject)
+      );
+      CREATE TABLE IF NOT EXISTS access_audit (
+        id SERIAL PRIMARY KEY,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        target_id TEXT,
+        detail TEXT,
+        at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS access_setting (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
+      INSERT INTO access_role (name, capabilities) VALUES
+        ('owner', '["*"]'::jsonb),
+        ('developer', '["eval.run"]'::jsonb),
+        ('moderator', '["suggestions.review","suggestions.approve","blacklist.read","blacklist.write","auction.moderate"]'::jsonb),
+        ('reviewer', '["suggestions.review","blacklist.read"]'::jsonb),
+        ('curator', '["nations.edit","cards.edit"]'::jsonb),
+        ('support', '["users.edit"]'::jsonb)
+      ON CONFLICT (name) DO NOTHING;
     `);
     // an earlier suggestion system used a different type name for nations and capitalised classes
     await DataBase.pg.exec(`
