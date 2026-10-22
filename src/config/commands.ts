@@ -35,6 +35,11 @@ export const commands = {
     },
   },
 
+  guildCreate: {
+    type: 'guildCreate',
+    description: 'Leaves a server the moment it is added when it is blacklisted',
+  },
+
   ready: {
     type: 'clientReady',
     description: 'Fires when the app is ready',

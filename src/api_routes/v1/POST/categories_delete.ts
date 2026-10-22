@@ -4,11 +4,8 @@ const route: RouteDefinition = {
   url: 'v1/categories/:name/delete',
   method: 'POST',
   code: `
-  $let[user;$apiAuth[$getHeader[authorization]]]
-  $let[body;$if[$get[user]==;;$getBody]]
-  $jsonLoad[r;$apiCategoryDelete[$get[user];$getParameter[0];$get[body]]]
-  $writeStatus[$env[r;status];$env[r;statusText]]
-  $sendJson[$env[r]]
+  $!apiAuth[$getHeader[authorization];cards.edit]
+  $try[$apiRespond[$catalogEdit[categoryDelete;$getParameter[0]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

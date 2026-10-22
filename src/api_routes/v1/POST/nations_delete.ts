@@ -4,11 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/nations/:id/delete',
   method: 'POST',
   code: `
-  $let[user;$apiAuth[$getHeader[authorization]]]
-  $let[body;$if[$get[user]==;;$getBody]]
-  $jsonLoad[r;$apiNationDelete[$get[user];$getParameter[0];$get[body]]]
-  $writeStatus[$env[r;status];$env[r;statusText]]
-  $sendJson[$env[r]]
+  $!apiAuth[$getHeader[authorization];nations.edit]
+  $let[body;$getBody]
+  $try[$apiRespond[$nationDelete[$getParameter[0];$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

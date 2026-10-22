@@ -14,10 +14,7 @@ import {
   initCommands,
   initSlashCommands,
 } from './util';
-import { blacklistFunctions, initBlacklistEvents } from './util/blacklist';
-import { accessFunctions, initAccessEvents } from './util/access';
 import { evalFunctions } from './util/evalRunner';
-import { apiAdminFunctions } from './util/apiAdmin';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -37,10 +34,7 @@ FunctionManager.addMany(getReq(get_forgescriptNative()));
 FunctionManager.addMany(getReq(get_canvasFunctions()));
 FunctionManager.addMany(getReq(get_dbFunctions()));
 FunctionManager.addMany(getReq(get_apiFunctions()));
-FunctionManager.addMany(blacklistFunctions);
-FunctionManager.addMany(accessFunctions);
 FunctionManager.addMany(evalFunctions);
-FunctionManager.addMany(apiAdminFunctions);
 
 const dex = new ForgeClient({
   intents: [
@@ -55,8 +49,6 @@ const dex = new ForgeClient({
   ],
 });
 
-initBlacklistEvents(dex);
-initAccessEvents(dex);
 
 // Register client events
 EventManager.Loaded['native'] = {};
@@ -68,6 +60,7 @@ dex.options.events = [
   'messageCreate',
   'interactionCreate',
   'clientReady',
+  'guildCreate',
 ];
 dex.events.load('native', dex.options.events);
 

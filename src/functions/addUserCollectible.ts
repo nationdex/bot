@@ -39,7 +39,7 @@ export default new ForgeFunction({
   $if[$arrayIncludes[unique;$get[ctbl]]==false;
     $!jsonSet[userData;unique;$arrayLength[unique];$get[ctbl]]
   ]
-  $setUserVar[userCollectibles;$env[userData]]
+  $setUserVar[userCollectibles;$env[userData];$get[user]]
   $setVar[collectible;$get[id];$env[data]]
   
   $jsonLoad[data;$getGlobalVar[collectiblesData]]

@@ -6,5 +6,9 @@ export default command('ready', `
   $!clearInterval[auctionSweep]
   $!auctionSettle
   $setInterval[$!auctionSettle;${auctionConfig.sweepInterval};auctionSweep]
+  $jsonLoad[blocked;$searchDB[blacklist]]
+  $arrayForEach[blocked;row;
+    $if[$env[row;type]==guild;$try[$!guildLeave[$env[row;id]];]]
+  ]
   $log[Ready as $username[$botID]]
 `);

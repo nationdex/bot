@@ -1,0 +1,229 @@
+import { ForgeFunction } from '@tryforge/forgescript';
+
+export default new ForgeFunction({
+  name: 'catalogEdit',
+  // Applies one validated catalog edit (nations, categories, card backgrounds) and returns {status,error,value} as JSON.
+  params: [
+    {
+      name: 'op',
+      // nationAdd, nationEdit, nationCategory, nationCard, categoryAdd, categoryDelete, backgroundAdd or backgroundDelete
+      type: 'String',
+      required: true,
+    },
+    {
+      name: 'id',
+      // The nation id, category or background name
+      type: 'String',
+      required: false,
+    },
+    {
+      name: 'body',
+      // The JSON request body
+      type: 'String',
+      required: false,
+    },
+  ],
+  code: `
+  $let[catalog;$getGlobalVar[collectiblesData]]
+  $let[specials;$getGlobalVar[specials]]
+  $let[cardsDir;$jsonVar[config;paths.cards]]
+  $let[iconsDir;$jsonVar[config;paths.icons]]
+  $let[result;$js[(() => {
+    const fs = require('fs');
+    const path = require('path');
+    const kw = (k) => String(ctx.getKeyword(k) ?? '');
+    const op = String(ctx.getEnvironmentKey('op'));
+    const id = String(ctx.getEnvironmentKey('id') ?? '').replace(/^null$/, '');
+    const bodyText = String(ctx.getEnvironmentKey('body') ?? '').replace(/^null$/, '');
+    const err = (status, error) => JSON.stringify({ status: status, error: error });
+    let body = {};
+    if (bodyText.trim()) {
+      try { body = JSON.parse(bodyText); } catch (e) { return err(400, 'The body is not valid JSON.'); }
+      if (!body || typeof body !== 'object' || Array.isArray(body)) return err(400, 'The body must be a JSON object.');
+    }
+    const catalog = JSON.parse(kw('catalog') || 'null') || {};
+    catalog.collectibles = catalog.collectibles || {};
+    catalog.classes = catalog.classes || new Array();
+    const collectibles = catalog.collectibles;
+    const classes = catalog.classes;
+    const listPng = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith('.png')).map((f) => f.slice(0, -4)).sort() : new Array();
+    const listIcons = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => new Array('.png', '.jpg', '.jpeg', '.webp').some((e) => f.toLowerCase().endsWith(e))).sort() : new Array();
+    const done = (value, extra) => JSON.stringify(Object.assign({ status: 200, value: value, catalog: catalog }, extra || {}));
+    const fields = {
+      name: { kind: 'text', max: 48, label: 'Name' },
+      short_name: { kind: 'text', max: 24, optional: true, label: 'Short name' },
+      emoji_id: { kind: 'text', max: 64, label: 'Emoji' },
+      credits: { kind: 'text', max: 64, optional: true, label: 'Credit' },
+      attack: { kind: 'int', min: 0, label: 'Power' },
+      health: { kind: 'int', min: 0, label: 'Health' },
+      rarity: { kind: 'int', min: 1, label: 'Spawn weight' },
+      price: { kind: 'int', min: 0, label: 'Buy price' },
+      sell_price: { kind: 'int', min: 0, label: 'Sell price' },
+      capacity_name: { kind: 'text', max: 48, optional: true, label: 'Capacity name' },
+      capacity_description: { kind: 'text', max: 400, optional: true, label: 'Description' },
+      catch_names: { kind: 'list', max: 300, label: 'Catch names' },
+      translations: { kind: 'list', max: 300, optional: true, label: 'Translations' },
+    };
+    const coerce = (key, raw) => {
+      const f = Reflect.get(fields, key);
+      const v = Array.isArray(raw) ? raw.join(', ') : String(raw ?? '').trim();
+      if (!v) return f.optional ? { value: f.kind === 'list' ? new Array() : f.kind === 'int' ? 0 : '' } : { error: f.label + ' is required.' };
+      if (f.kind === 'int') {
+        if (!v.split('').every((c) => c >= '0' && c <= '9')) return { error: f.label + ' must be a whole number.' };
+        const n = parseInt(v, 10);
+        if (n < f.min) return { error: f.label + ' must be at least ' + f.min + '.' };
+        if (n > 999999999) return { error: f.label + ' is too large.' };
+        return { value: n };
+      }
+      if (v.length > f.max) return { error: f.label + ' is too long (' + f.max + ' characters max).' };
+      return { value: f.kind === 'list' ? Array.from(new Set(v.split(',').map((x) => x.trim().toLowerCase()).filter((x) => x))) : v };
+    };
+    const clash = (names, own) => {
+      let found = '';
+      Object.keys(collectibles).filter((k) => k !== own).forEach((k) => {
+        const c = Reflect.get(collectibles, k);
+        const taken = new Set((c.catch_names || new Array()).concat(c.translations || new Array()).map((a) => String(a).toLowerCase()));
+        const hit = names.find((n) => taken.has(n));
+        if (hit && !found) found = 'The catch name ' + hit + ' is already used by #' + k + '.';
+      });
+      return found;
+    };
+    const nameTaken = (name, own) => Object.keys(collectibles).some((k) => k !== own && String(Reflect.get(collectibles, k).name || '').toLowerCase() === name.toLowerCase());
+    const nation = Reflect.get(collectibles, id);
+
+    if (op === 'nationAdd') {
+      const values = {};
+      for (const key of new Array('name', 'emoji_id', 'attack', 'health', 'rarity')) {
+        const r = coerce(key, key === 'rarity' && body.rarity === undefined ? '10' : Reflect.get(body, key));
+        if (r.error) return err(400, r.error);
+        Reflect.set(values, key, r.value);
+      }
+      const cls = String(body.class ?? '');
+      if (!classes.includes(cls)) return err(400, 'Unknown category: ' + cls);
+      if (nameTaken(values.name, '')) return err(400, 'A nation named ' + values.name + ' already exists.');
+      const lower = values.name.toLowerCase();
+      const taken = clash(new Array(lower), '');
+      if (taken) return err(400, taken);
+      const nextId = String(Object.keys(collectibles).map((k) => parseInt(k, 10)).filter(Number.isFinite).reduce((a, b) => Math.max(a, b), 0) + 1);
+      Reflect.set(collectibles, nextId, { class: cls, rarity: values.rarity, weight: values.rarity, name: values.name, short_name: null, regime: listPng(kw('cardsDir')).at(0) || '', economy: listIcons(kw('iconsDir')).at(0) || '', collection_card: '', wild_card: '', capacity_name: '', capacity_description: '', credits: '', attack: values.attack, health: values.health, emoji_id: values.emoji_id, translations: new Array(), catch_names: new Array(lower), global_caught: 0, price: 0, sell_price: 0 });
+      catalog.total = Object.keys(collectibles).length;
+      Reflect.set(catalog, cls, (Number(Reflect.get(catalog, cls)) || 0) + 1);
+      return done({ id: nextId });
+    }
+    if (op === 'nationEdit' || op === 'nationCategory' || op === 'nationCard') {
+      if (!nation) return err(400, 'That nation no longer exists.');
+    }
+    if (op === 'nationEdit') {
+      const patch = {};
+      for (const key of Object.keys(fields)) {
+        if (!(key in body)) continue;
+        const r = coerce(key, Reflect.get(body, key));
+        if (r.error) return err(400, r.error);
+        Reflect.set(patch, key, r.value);
+      }
+      if (!Object.keys(patch).length) return err(400, 'Send at least one of: ' + Object.keys(fields).join(', ') + '.');
+      if (typeof patch.name === 'string' && nameTaken(patch.name, id)) return err(400, 'A nation named ' + patch.name + ' already exists.');
+      if (patch.catch_names !== undefined || patch.translations !== undefined) {
+        const catches = patch.catch_names ?? nation.catch_names ?? new Array();
+        if (!catches.length) return err(400, 'At least one catch name is required.');
+        const taken = clash(catches.concat(patch.translations ?? nation.translations ?? new Array()), id);
+        if (taken) return err(400, taken);
+      }
+      if ('short_name' in patch && patch.short_name === '') patch.short_name = null;
+      const weightChanged = 'rarity' in patch && patch.rarity !== nation.rarity;
+      if ('rarity' in patch) patch.weight = patch.rarity;
+      Object.assign(nation, patch);
+      return done({}, weightChanged ? { recount: id } : {});
+    }
+    if (op === 'nationCategory') {
+      const cls = String(body.class ?? '');
+      if (!classes.includes(cls)) return err(400, 'Unknown category: ' + cls);
+      if (nation.class === cls) return done({});
+      Reflect.set(catalog, nation.class, Math.max((Number(Reflect.get(catalog, nation.class)) || 0) - 1, 0));
+      Reflect.set(catalog, cls, (Number(Reflect.get(catalog, cls)) || 0) + 1);
+      nation.class = cls;
+      return done({}, { recount: id });
+    }
+    if (op === 'nationCard') {
+      if (body.regime === undefined && body.economy === undefined) return err(400, 'Send regime (card background) and/or economy (icon).');
+      if (body.regime !== undefined) {
+        if (!listPng(kw('cardsDir')).includes(String(body.regime))) return err(400, 'No such card background: ' + body.regime);
+        nation.regime = String(body.regime);
+      }
+      if (body.economy !== undefined) {
+        if (!listIcons(kw('iconsDir')).includes(String(body.economy))) return err(400, 'No such icon: ' + body.economy);
+        nation.economy = String(body.economy);
+      }
+      return done({});
+    }
+    if (op === 'categoryAdd') {
+      const name = String(body.name ?? '').trim().toLowerCase();
+      const first = 'abcdefghijklmnopqrstuvwxyz';
+      if (!(name.length >= 2 && name.length <= 20 && first.includes(name.charAt(0)) && name.split('').every((c) => (first + '0123456789_-').includes(c)))) return err(400, 'Category names are 2-20 lowercase letters, numbers, - or _.');
+      if (classes.includes(name)) return err(400, 'That category already exists.');
+      if (new Array('total', 'total_caught', 'classes', 'collectibles').includes(name)) return err(400, 'That name is reserved.');
+      classes.push(name);
+      Reflect.set(catalog, name, 0);
+      return done({}, { addClass: name });
+    }
+    if (op === 'categoryDelete') {
+      if (!classes.includes(id)) return err(400, 'That category does not exist.');
+      if (classes.length <= 1) return err(400, 'The last category cannot be deleted.');
+      const used = Object.keys(collectibles).filter((k) => Reflect.get(collectibles, k).class === id).length;
+      if (used) return err(400, used + ' nation(s) still use this category. Move them first.');
+      catalog.classes = classes.filter((c) => c !== id);
+      Reflect.deleteProperty(catalog, id);
+      return done({});
+    }
+    const safe = (name) => name.length > 0 && name.length <= 40 && !name.includes('.') && !name.includes('/') && !name.includes(String.fromCharCode(92));
+    if (op === 'backgroundAdd') {
+      const name = String(body.name ?? '').trim();
+      if (!safe(name)) return err(400, 'Names use letters, numbers, - and _ (40 max).');
+      if (typeof body.data !== 'string' || !body.data) return err(400, 'Send data as a base64 encoded PNG.');
+      const buf = Buffer.from(body.data, 'base64');
+      if (buf.length > 10485760) return err(400, 'The file is larger than 10 MB.');
+      if (buf.length < 24 || buf.readUInt32BE(0) !== 0x89504e47 || buf.toString('ascii', 12, 16) !== 'IHDR') return err(400, 'The file must be a PNG image.');
+      const w = buf.readUInt32BE(16);
+      const h = buf.readUInt32BE(20);
+      if (w !== 1428 || h !== 2000) return err(400, 'Card backgrounds must be 1428x2000 pixels (this one is ' + w + 'x' + h + ').');
+      const file = path.join(kw('cardsDir'), name + '.png');
+      if (fs.existsSync(file)) return err(400, 'A background with that name already exists.');
+      fs.mkdirSync(kw('cardsDir'), { recursive: true });
+      fs.writeFileSync(file, buf);
+      return JSON.stringify({ status: 200, value: {} });
+    }
+    if (op === 'backgroundDelete') {
+      if (!safe(id) || !listPng(kw('cardsDir')).includes(id)) return err(400, 'That background does not exist.');
+      const used = Object.keys(collectibles).filter((k) => Reflect.get(collectibles, k).regime === id).map((k) => '#' + k);
+      if (used.length) return err(400, 'Still used by ' + used.slice(0, 8).join(', ') + (used.length > 8 ? '...' : '') + '. Change those nations first.');
+      const specials = JSON.parse(kw('specials') || 'null') || {};
+      if (Object.values(specials).some((s) => s && String(s.card ?? '').endsWith(id + '.png'))) return err(400, 'A special uses this background.');
+      fs.rmSync(path.join(kw('cardsDir'), id + '.png'));
+      return JSON.stringify({ status: 200, value: {} });
+    }
+    return err(400, 'Unknown operation.');
+  })()]]
+  $let[catalogJson;$js[const c = JSON.parse(ctx.getKeyword('result')).catalog; c ? JSON.stringify(c) : '']]
+  $if[$get[catalogJson]!=;$setGlobalVar[collectiblesData;$get[catalogJson]]]
+  $let[addCls;$js[JSON.parse(ctx.getKeyword('result')).addClass ?? '']]
+  $if[$get[addCls]!=;
+    $jsonLoad[users;$searchDB[userCollectibles]]
+    $arrayForEach[users;row;
+      $setUserVar[userCollectibles;$js[
+        const inv = JSON.parse(ctx.getEnvironmentKey('row').value || 'null') || {};
+        if (!(ctx.getKeyword('addCls') in inv)) Reflect.set(inv, ctx.getKeyword('addCls'), 0);
+        JSON.stringify(inv)
+      ];$env[row;id]]
+    ]
+  ]
+  $let[recountId;$js[JSON.parse(ctx.getKeyword('result')).recount ?? '']]
+  $if[$get[recountId]!=;$!recountOwners[$get[recountId]]]
+  $return[$js[
+    const r = JSON.parse(ctx.getKeyword('result'));
+    Reflect.deleteProperty(r, 'catalog');
+    Reflect.deleteProperty(r, 'recount');
+    Reflect.deleteProperty(r, 'addClass');
+    JSON.stringify(r)
+  ]]
+  `,
+});

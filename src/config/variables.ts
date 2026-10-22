@@ -71,6 +71,27 @@ export const variables = {
     unique: [],
     collectibleIDs: []
   },
+  // Bot staff access: roles are capability bundles; tokens map a sha256 hash to the user who owns the API token.
+  access: {
+    roles: {
+      owner: ['*'],
+      developer: ['eval.run'],
+      moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate'],
+      reviewer: ['suggestions.review', 'blacklist.read'],
+      curator: ['nations.edit', 'cards.edit'],
+      support: ['users.edit'],
+    },
+    tokens: {},
+    evalChannel: '',
+  },
+  // Per user: the roles and capabilities granted to them, plus their mutation window for rate limiting.
+  userAccess: {
+    grants: [],
+    window: { start: 0, count: 0 },
+  },
+  accessAudit: [],
+  blacklist: { reason: '', moderator: '', timestamp: 0 },
+  blacklistHistory: [],
   auctionHouse: {},
   auction: {
     total: 0,
@@ -121,3 +142,7 @@ export const variables = {
     gifts_sent: 0,
   },
 };
+
+// Untouched copy of the shipped defaults, taken before database values are merged in. Built-in settings are told
+// apart from custom ones by comparing against it.
+export const baseSettings = JSON.parse(JSON.stringify({ config: variables.config, keywords: variables.keywords }));

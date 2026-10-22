@@ -4,11 +4,8 @@ const route: RouteDefinition = {
   url: 'v1/users/:id/settings/reset',
   method: 'POST',
   code: `
-  $let[user;$apiAuth[$getHeader[authorization]]]
-  $let[body;$if[$get[user]==;;$getBody]]
-  $jsonLoad[r;$apiUserSettingsReset[$get[user];$getParameter[0];$get[body]]]
-  $writeStatus[$env[r;status];$env[r;statusText]]
-  $sendJson[$env[r]]
+  $!apiAuth[$getHeader[authorization];users.edit]
+  $try[$apiRespond[$userEdit[settingsReset;$getParameter[0]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

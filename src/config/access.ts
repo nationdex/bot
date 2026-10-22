@@ -2,6 +2,26 @@ import { ApplicationCommandOptionType, ApplicationIntegrationType, ChannelType, 
 import { RegistrationType } from '@tryforge/forgescript';
 import type { SlashCommandConfig, SlashOptionConfig } from './slash';
 
+// Every capability a role or grant can hold. Namespace wildcards such as suggestions.* and * are also accepted.
+export const accessCapabilities = [
+  'eval.run',
+  'suggestions.review',
+  'suggestions.approve',
+  'blacklist.read',
+  'blacklist.write',
+  'auction.moderate',
+  'users.edit',
+  'nations.edit',
+  'cards.edit',
+  'config.edit',
+  'access.manage',
+] as const;
+
+// Only an owner may grant or hold-delegate these.
+export const ownerOnlyCapabilities = ['*', 'eval.run', 'config.edit'] as const;
+// Changes to these notify every owner.
+export const sensitiveCapabilities = ['*', 'eval.run', 'access.manage', 'config.edit', 'users.edit'] as const;
+
 const userOpt = (description: string, required = true): SlashOptionConfig => ({
   type: ApplicationCommandOptionType.User,
   name: 'user',

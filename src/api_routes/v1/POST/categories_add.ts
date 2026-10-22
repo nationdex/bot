@@ -4,11 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/categories',
   method: 'POST',
   code: `
-  $let[user;$apiAuth[$getHeader[authorization]]]
-  $let[body;$if[$get[user]==;;$getBody]]
-  $jsonLoad[r;$apiCategoryAdd[$get[user];$get[body]]]
-  $writeStatus[$env[r;status];$env[r;statusText]]
-  $sendJson[$env[r]]
+  $!apiAuth[$getHeader[authorization];cards.edit]
+  $let[body;$getBody]
+  $try[$apiRespond[$catalogEdit[categoryAdd;;$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

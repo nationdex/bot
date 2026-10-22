@@ -3,7 +3,6 @@ import { spawn } from 'child_process';
 import { mkdtempSync, rmSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
-import { audit, can, evalAllowedIn } from './access';
 import { createHash } from 'crypto';
 
 const TIMEOUT_MS = 10_000;
@@ -100,7 +99,7 @@ export const evalFunctions = [
   new NativeFunction({
     name: '$evalPrefixCode',
     version: '2.0.0',
-    description: 'Runs code from the prefix command in the isolated eval worker. Requires the eval.run capability',
+    description: 'Runs the code of the prefix command in the isolated eval worker, replies with the result and returns an audit line. Permission checks happen in the command (hasCap, accessEvalAllowed)',
     unwrap: false,
     brackets: false,
     args: [],
@@ -111,8 +110,6 @@ export const evalFunctions = [
 
       const guildId = message.guild?.id ?? null;
       const channelId = message.channel?.id ?? null;
-      if (!(await can(authorId, 'eval.run', { guildId, dm: !guildId }))) return this.stop();
-      if (!(await evalAllowedIn(guildId, channelId))) return this.stop();
 
       let rawContent = '';
       const full = message.content || '';
@@ -127,7 +124,7 @@ export const evalFunctions = [
 
       if (!rawContent) {
         await message.reply('**Usage**: `n.eval <code>` or `n.eval js: <code>`');
-        return this.success();
+        return this.success('');
       }
 
       let code = rawContent;
@@ -146,11 +143,11 @@ export const evalFunctions = [
 
       if (running.has(authorId)) {
         await message.reply('An eval is already running for you.');
-        return this.success();
+        return this.success('');
       }
       if (!runLimited(authorId)) {
         await message.reply('You are running eval too quickly. Wait a minute.');
-        return this.success();
+        return this.success('');
       }
 
       running.add(authorId);
@@ -168,20 +165,11 @@ export const evalFunctions = [
       }
       const elapsed = (performance.now() - started).toFixed(2);
 
-      try {
-        await audit(
-          authorId,
-          'eval',
-          null,
-          `${isJs ? 'js' : 'forge'} sha256:${createHash('sha256').update(actualCode).digest('hex').slice(0, 16)} ${elapsed}ms ${result.ok ? 'ok' : 'error'} in ${guildId ?? 'dm'}/${channelId ?? ''}`,
-        );
-      } catch {
-        // auditing must not hide the result
-      }
+      const detail = `${isJs ? 'js' : 'forge'} sha256:${createHash('sha256').update(actualCode).digest('hex').slice(0, 16)} ${elapsed}ms ${result.ok ? 'ok' : 'error'} in ${guildId ?? 'dm'}/${channelId ?? ''}`;
 
       if (!result.ok) {
         await message.reply({ content: `**Eval Error** (\`${elapsed}ms\`):\n\`\`\`\n${result.output.slice(0, 1900)}\n\`\`\`` });
-        return this.success();
+        return this.success(detail);
       }
       const display = result.output === '' ? '[No output / return value]' : result.output;
       if (display.length > 1900) {
@@ -192,7 +180,7 @@ export const evalFunctions = [
       } else {
         await message.reply({ content: `**Eval Result** (\`${elapsed}ms\`):\n\`\`\`${isJs ? 'js' : ''}\n${display}\n\`\`\`` });
       }
-      return this.success();
+      return this.success(detail);
     },
   }),
 ];

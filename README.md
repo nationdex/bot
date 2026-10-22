@@ -63,9 +63,28 @@ Staff tools (`/admin`, `/access`, auction moderation and `n.eval`) are controlle
 - On a fresh database nobody has access. The Discord application owner (the owner of the team that owns the application) runs `/access claim` in the home server once to become the first owner.
 - Owners then use `/access grant`, `/access revoke`, `/access role`, `/access roles`, `/access list`, `/access audit` and `/access evalchannel`.
 - Capabilities: `eval.run`, `suggestions.review`, `suggestions.approve`, `blacklist.read`, `blacklist.write`, `auction.moderate`, `users.edit`, `nations.edit`, `cards.edit`, `config.edit` (owner-grant only), `access.manage`. Default roles: `owner`, `developer`, `moderator`, `reviewer`, `curator` (nations and cards), `support` (users).
-- Edits to users, nations, cards and bot settings go through the staff API (`POST /v1/...`, see below). Create a token with `/access token`; it is sent as `Authorization: Bearer <token>` and every call is checked against your current capabilities (`nations.edit`, `cards.edit`, `users.edit`, `config.edit`). `/access tokenrevoke` removes your tokens.
+- Edits to users, nations, cards and bot settings go through the staff API (`POST /v1/...`, ForgeScript routes in `src/api_routes/v1/POST`, see below). Create a token with `/access token`; it is sent as `Authorization: Bearer <token>` and every call is checked against your current capabilities (`nations.edit`, `cards.edit`, `users.edit`, `config.edit`). `/access tokenrevoke` removes your tokens.
 - `n.eval` runs in a separate worker process with an empty environment (no bot token) and no database handle. Run the bot under a dedicated, unprivileged OS user with no access to files it does not need.
 - Per-server `/spawn` configuration is a community feature gated by Manage Server in that server and is not part of this system.
+
+### Staff API
+
+All routes are `POST`, answer JSON (`{"ok", "status", "error", "value"}`) and need `Authorization: Bearer <token>`.
+
+| Route | Needs | Body |
+|---|---|---|
+| `/v1/nations` | `nations.edit` | `name`, `class`, `emoji_id`, `attack`, `health`, optional `rarity` |
+| `/v1/nations/:id` | `nations.edit` | any of `name`, `short_name`, `emoji_id`, `credits`, `attack`, `health`, `rarity`, `price`, `sell_price`, `capacity_name`, `capacity_description`, `catch_names`, `translations` |
+| `/v1/nations/:id/category` | `nations.edit` | `class` |
+| `/v1/nations/:id/delete` | `nations.edit` | optional `cascade: true` to remove its catches |
+| `/v1/nations/:id/card` | `cards.edit` | `regime` (card background) and/or `economy` (icon) |
+| `/v1/categories`, `/v1/categories/:name/delete` | `cards.edit` | `name` |
+| `/v1/cards/backgrounds`, `/v1/cards/backgrounds/:name/delete` | `cards.edit` | `name`, `data` (base64 PNG, 1428x2000) |
+| `/v1/users/:id/balance` | `users.edit` | `mode` (`set`, `add`, `remove`), `amount` |
+| `/v1/users/:id/settings`, `/settings/reset` | `users.edit` | `key` (`inventory_privacy`, `profile_privacy`, `accept_gifts`), `value` |
+| `/v1/users/:id/stats` | `users.edit` | `key`, `value` |
+| `/v1/users/:id/nations/give`, `/nations/remove` | `users.edit` | `nation`, `count` / `catch` |
+| `/v1/config`, `/config/add`, `/config/delete`, `/config/reset` | `config.edit` | `root` (`config` or `keywords`), `path`, `value`, `parent`, `key` |
 
 ## 🚀 Production
 
