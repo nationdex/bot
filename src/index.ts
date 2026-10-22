@@ -17,6 +17,7 @@ import {
 import { blacklistFunctions, initBlacklistEvents } from './util/blacklist';
 import { accessFunctions, initAccessEvents } from './util/access';
 import { evalFunctions } from './util/evalRunner';
+import { apiAdminFunctions } from './util/apiAdmin';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -39,6 +40,7 @@ FunctionManager.addMany(getReq(get_apiFunctions()));
 FunctionManager.addMany(blacklistFunctions);
 FunctionManager.addMany(accessFunctions);
 FunctionManager.addMany(evalFunctions);
+FunctionManager.addMany(apiAdminFunctions);
 
 const dex = new ForgeClient({
   intents: [

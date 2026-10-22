@@ -83,6 +83,17 @@ export const accessCommand: SlashCommandConfig = {
         { type: ApplicationCommandOptionType.Channel, name: 'channel', description: 'The eval channel', required: false, channel_types: [ChannelType.GuildText] },
       ],
     },
+    token: {
+      name: 'token',
+      description: 'Create an API token for the staff API (shown once)',
+      tags: ['access', 'api'],
+    },
+    tokenrevoke: {
+      name: 'tokenrevoke',
+      description: 'Revoke every API token of yourself, or of another user if you manage access',
+      tags: ['access', 'api'],
+      options: [userOpt('Another user (empty for yourself)', false)],
+    },
     audit: {
       name: 'audit',
       description: 'Show recent access changes and eval runs',

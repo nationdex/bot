@@ -1,5 +1,6 @@
 import { ArgType, ForgeClient, NativeFunction } from '@tryforge/forgescript';
 import { DataBase } from '@nationdex/db/dist/util';
+import { createHash } from 'crypto';
 import { fetchUsername } from './usernames';
 
 // Bot staff access control. Identity is a Discord user id stored in the database; Discord permissions
@@ -230,6 +231,7 @@ export type AccessStatus =
   | 'invalid'
   | 'protected'
   | 'claimed'
+  | 'limit'
   | 'not_app_owner';
 
 export async function grantAccess(
@@ -384,6 +386,33 @@ export async function claimOwnership(client: any, userId: string, guildId: strin
   );
   invalidate(userId);
   await audit(userId, 'claim', userId, 'application owner');
+  return 'ok';
+}
+
+const MAX_TOKENS = 3;
+
+// API tokens only identify a user. Every API call re-checks that user's capabilities, so revoking a role also cuts API access.
+export async function createToken(userId: string, guildId: string | null | undefined): Promise<{ status: AccessStatus; token?: string }> {
+  const home = homeGuildId();
+  if (!home || guildId !== home || !(await hasAnyAccess(userId))) return { status: 'denied' };
+  if (!rateOk(userId)) return { status: 'rate' };
+  const held = await pg().query('SELECT count(*)::int AS n FROM access_token WHERE user_id = $1', [userId]);
+  if ((held.rows[0]?.n ?? 0) >= MAX_TOKENS) return { status: 'limit' };
+  const token = `ndx_${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}`;
+  await pg().query('INSERT INTO access_token (hash, user_id) VALUES ($1, $2)', [createHash('sha256').update(token).digest('hex'), userId]);
+  await audit(userId, 'token-create', userId, null);
+  return { status: 'ok', token };
+}
+
+export async function revokeTokens(actor: string, guildId: string | null | undefined, target: string): Promise<AccessStatus> {
+  const home = homeGuildId();
+  if (!home || guildId !== home) return 'denied';
+  if (target !== actor && !(await can(actor, 'access.manage', { guildId }))) return 'denied';
+  if (!rateOk(actor)) return 'rate';
+  if (!SNOWFLAKE.test(target)) return 'invalid';
+  const res = await pg().query('DELETE FROM access_token WHERE user_id = $1 RETURNING hash', [target]);
+  if (!res.rows.length) return 'missing';
+  await audit(actor, 'token-revoke', target, `${res.rows.length} token(s)`);
   return 'ok';
 }
 
@@ -559,6 +588,32 @@ export const accessFunctions = [
     async execute(ctx, [channel]) {
       const id = String(channel ?? '').replace(/^null$/, '');
       return this.success(await setEvalChannel(ctx.client, ctx.user?.id ?? '', guildOf(ctx), id || null));
+    },
+  }),
+
+  new NativeFunction({
+    name: '$accessToken',
+    version: '1.0.0',
+    description: 'Creates an API token for the caller and returns it once, or a status such as denied or limit',
+    unwrap: true,
+    brackets: false,
+    args: [],
+    async execute(ctx) {
+      const r = await createToken(ctx.user?.id ?? '', guildOf(ctx));
+      return this.success(r.status === 'ok' ? `ok:${r.token}` : r.status);
+    },
+  }),
+
+  new NativeFunction({
+    name: '$accessTokenRevoke',
+    version: '1.0.0',
+    description: 'Revokes every API token of a user (the caller when empty). Returns a status',
+    unwrap: true,
+    brackets: true,
+    args: [str('user', 'The user id, or empty for yourself', false)],
+    async execute(ctx, [user]) {
+      const id = String(user ?? '').replace(/^null$/, '') || (ctx.user?.id ?? '');
+      return this.success(await revokeTokens(ctx.user?.id ?? '', guildOf(ctx), id));
     },
   }),
 

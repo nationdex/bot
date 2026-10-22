@@ -56,6 +56,7 @@ export const errors = {
   access_last_owner: `You cannot remove the last owner.`,
   access_invalid: `That input is not valid.`,
   access_protected: `That role cannot be changed.`,
+  access_limit: `You already have the maximum number of API tokens. Revoke them with /access tokenrevoke first.`,
   access_claimed: `Ownership has already been claimed.`,
   access_not_app_owner: `Only the Discord application owner can claim ownership.`,
   not_bot_staff: `Only ${variables.config.bot.name} staff can use this command.`,
