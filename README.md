@@ -57,10 +57,6 @@ bun run typecheck
 
 Nationdex uses an embedded **PGlite** (WASM Postgres) instance via `@nationdex/db`. No external database container or `DATABASE_URL` is required. And most importantly, **no more Docker**!
 
-## 🤝 Contributions
-
-For those who are interested in contributing for Nationdex's development, you are always encouraged to open a Pull Request or Issue. For more information about how to contribute, please check out our full [contribution](https://github.com/nationdex/bot/blob/main/CONTRIBUTING.md) guidance.
-
 ## 👥 Devs and Mentions
 
 Made with great honor and dedication by those who worked for Nationdex.
