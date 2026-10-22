@@ -1,4 +1,4 @@
-import { command } from '../../../util/commands';
+import { command } from '../../../core/commands';
 
 export default command('interaction.collectibles.sell', `
   $arrayLoad[cid;-;$customID]
@@ -34,13 +34,13 @@ export default command('interaction.collectibles.sell', `
       $editBalance[$authorID;add;$get[price]]
   
       $interactionUpdate[
-        $appEmoji[check_mark] | Sold A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
+        Sold A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $jsonVar[keywords;currency.plural]**
       ]
     ]
 
     $elseIf[$get[act]==cancel;
       $interactionUpdate[
-        $appEmoji[check_mark] | Cancelled the sale of A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]]**
+        Cancelled the sale of A-1 $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** for **$get[price] $jsonVar[keywords;currency.plural]**
       ]
     ]
   ]

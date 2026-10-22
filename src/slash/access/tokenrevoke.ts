@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('access.tokenrevoke', `
   $let[s;$accessTokenRevoke[$option[user]]]

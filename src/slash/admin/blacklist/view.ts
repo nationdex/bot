@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../../util/slashes';
+import { SlashCommand } from '../../../core/slashes';
 
 export default SlashCommand('admin.blacklist.view', `
   $onlyIf[$hasCap[$authorID;blacklist.read];$err[not_bot_staff;true]]

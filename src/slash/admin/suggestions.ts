@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('admin.suggestions', `
   $onlyIf[$hasCap[$authorID;suggestions.review];

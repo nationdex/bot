@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('rarity.info', `
   $let[rawInput;$trim[$option[$jsonVar[keywords;collectible.singular]]]]
@@ -64,12 +64,11 @@ export default SlashCommand('rarity.info', `
   $let[chance;$cropText[$math[($get[rarity]/$get[totalRarity])*100];0;5]%]
 
   $let[colEmoji;$appEmoji[$collectibleInfo[$get[colID];emoji_id]]]
-  $let[clsEmoji;$appEmoji[$collectibleInfo[$get[colID];class]]]
 
   $interactionReply[
     $addContainer[
       $addTextDisplay[## $if[$get[colEmoji]!=;$get[colEmoji] ]$collectibleInfo[$get[colID];name]
--# Class: $if[$get[clsEmoji]!=;$get[clsEmoji] ]**$toTitleCase[$collectibleInfo[$get[colID];class]]**]
+-# Class: **$toTitleCase[$collectibleInfo[$get[colID];class]]**]
       $addSeparator
       $addTextDisplay[- Value: **$get[value]**
 - Spawn Chance: \`$get[chance]\`

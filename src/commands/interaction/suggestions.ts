@@ -1,4 +1,4 @@
-import { command } from '../../util/commands';
+import { command } from '../../core/commands';
 import { suggestionLimits } from '../../config/suggestions';
 
 export default command('interaction.suggestions', `

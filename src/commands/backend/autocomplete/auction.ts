@@ -1,4 +1,4 @@
-import { command } from '../../../util/commands';
+import { command } from '../../../core/commands';
 
 export default command('autocomplete.auction', `
   $onlyIf[$applicationCommandName==auction]

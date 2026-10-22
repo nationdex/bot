@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('access.grant', `
   $let[s;$accessGrant[$option[user];$option[access];$option[hours];$option[reason]]]

@@ -1,4 +1,4 @@
-import { command } from '../../../util/commands';
+import { command } from '../../../core/commands';
 
 export default command('interaction.collectibles.gift', `
   $arrayLoad[cid;-;$customID]
@@ -20,7 +20,7 @@ export default command('interaction.collectibles.gift', `
       $interactionUpdate[
         $addContainer[
           $addTextDisplay[Gifted **#$get[id] $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] $collectibleInfo[$get[colID];name]** to **$userDisplayName[$get[user]]**
--# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
+-# ATK: **$collectible[$get[id];attack]** ($collectible[$get[id];attack_type]) / HP: **$collectible[$get[id];health]** ($collectible[$get[id];health_type])]
         ;#00FF00]
       ]
     ]

@@ -1,4 +1,4 @@
-import { slashCommand } from '../../util/slashes';
+import { slashCommand } from '../../core/slashes';
 
 export default slashCommand('utils.howlate', `
   $let[rawMsg;$trim[$replace[$option[message];null;]]]

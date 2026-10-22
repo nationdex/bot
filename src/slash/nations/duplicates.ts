@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('collectibles.duplicates', `
   $let[rawClass;$toLowerCase[$default[$replace[$option[class];null;];]]]

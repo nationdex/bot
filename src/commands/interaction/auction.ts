@@ -1,4 +1,4 @@
-import { command } from '../../util/commands';
+import { command } from '../../core/commands';
 
 // customIDs: browse acts auction-<filter|pick|page|settle>-<owner>-<filter>-<page>
 //            detail acts auction-<bid|buyout|custom|modal|refresh|cancel|force>-<aid>-<arg>-<mode>-<owner>-<filter>-<page>
@@ -106,7 +106,7 @@ export default command('interaction.auction', `
         $auctionBrowse[$authorID;$get[filter];$get[page]]
       ]
       $ephemeral
-      $interactionFollowUp[$appEmoji[check_mark] Cancelled auction **#$get[aid]**. **$collectibleInfo[$env[a;colID];name]** (\`#$env[a;nation]\`) was returned to your inventory.]
+      $interactionFollowUp[Cancelled auction **#$get[aid]**. **$collectibleInfo[$env[a;colID];name]** (\`#$env[a;nation]\`) was returned to your inventory.]
     ]
     $elseIf[$get[act]==force;
       $onlyIf[$hasCap[$authorID;auction.moderate];
@@ -126,7 +126,7 @@ export default command('interaction.auction', `
         $auctionBrowse[$authorID;$get[filter];$get[page]]
       ]
       $ephemeral
-      $interactionFollowUp[$appEmoji[check_mark] Force-cancelled auction **#$get[aid]**. The listing was returned to \`$fetchUsername[$env[r;seller]]\`$if[$env[r;bidder]!=; and **$separateNumber[$env[r;bid]] $jsonVar[keywords;currency.plural]** were refunded to \`$fetchUsername[$env[r;bidder]]\`].]
+      $interactionFollowUp[Force-cancelled auction **#$get[aid]**. The listing was returned to \`$fetchUsername[$env[r;seller]]\`$if[$env[r;bidder]!=; and **$separateNumber[$env[r;bid]] $jsonVar[keywords;currency.plural]** were refunded to \`$fetchUsername[$env[r;bidder]]\`].]
       $!auctionNotify[$get[res]]
     ]
   ]

@@ -1,10 +1,10 @@
-import { slashCommand } from '../../util/slashes';
+import { slashCommand } from '../../core/slashes';
 
 export default slashCommand('about', `
   $interactionReply[
     $addContainer[
       $addSection[
-        $addTextDisplay[## $appEmoji[info] $jsonVar[config;bot.name]
+        $addTextDisplay[## $jsonVar[config;bot.name]
 $jsonVar[config;bot.description]]
         $addThumbnail[$userAvatar[$botID]]
       ]
@@ -14,9 +14,9 @@ $jsonVar[config;bot.description]]
 Version **$jsonVar[config;bot.version]**
 Uptime: **$parseMS[$uptime;2]**]
       $addTextDisplay[**Credits**
-$appEmoji[crown] **[$jsonVar[config;author.name]\\]($jsonVar[config;author.profile])** Founder
-$appEmoji[code] **[$jsonVar[config;dev.name]\\]($jsonVar[config;dev.profile])** Bot Developer
-$appEmoji[code] **[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profile])** Web Developer
+**[$jsonVar[config;author.name]\\]($jsonVar[config;author.profile])** Founder
+**[$jsonVar[config;dev.name]\\]($jsonVar[config;dev.profile])** Bot Developer
+**[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profile])** Web Developer
 -# Made with ❤️ using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
 ]
       

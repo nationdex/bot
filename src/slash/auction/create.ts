@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 import { auctionConfig } from '../../config/auction';
 
 const durations = auctionConfig.durations.map((d) => d.value).join(',');

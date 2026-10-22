@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('economy.give', `
   $let[user;$findUser[$option[user];true]]
@@ -26,7 +26,7 @@ export default SlashCommand('economy.give', `
 
   $interactionReply[
     $ephemeral
-    Given **$separateNumber[$get[amount]]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] to **$userDisplayName[$get[user]]**
+    Given **$separateNumber[$get[amount]]** $jsonVar[keywords;currency.plural] to **$userDisplayName[$get[user]]**
   ]
   `
 );

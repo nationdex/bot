@@ -1,4 +1,4 @@
-import { slashCommand } from '../../util/slashes';
+import { slashCommand } from '../../core/slashes';
 
 export default slashCommand('spawn.configs', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];
@@ -14,7 +14,7 @@ export default slashCommand('spawn.configs', `
     $ephemeral
     $addContainer[
       $addSection[
-        $addTextDisplay[$appEmoji[settings] Server Configuration
+        $addTextDisplay[Server Configuration
 -# $jsonVar[config;bot.name] is $if[$and[$get[status]==enabled;$get[ch]!=];configured;not configured] in this server.]
         $addThumbnail[$default[$guildIcon;$userAvatar]]
       ]

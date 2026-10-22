@@ -19,7 +19,7 @@
     "start:binary:darwin-x64": "test -f ./binaries/nationdex-bot-darwin-x64 || tar -xzf ./binaries/nationdex-bot-darwin-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-x64",
     "dev": "bun run build && bun --watch dist/index.js",
     "typecheck": "tsc --noEmit",
-    "validate:collectibles": "bun run build && bun dist/util/validateCollectibles.js"
+    "validate:collectibles": "bun run build && bun dist/core/collectibles.js"
   },
   "author": "NationDex Team (https://github.com/nationdex)",
   "license": "Apache-2.0",
