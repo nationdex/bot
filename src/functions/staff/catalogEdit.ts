@@ -24,6 +24,20 @@ export default new ForgeFunction({
     },
   ],
   code: `
+  $let[emojiIn;$js[(() => {
+    try {
+      const b = JSON.parse(String(ctx.getEnvironmentKey('body') ?? '').replace(/^null$/, '') || 'null') || {};
+      return new Array('nationAdd', 'nationEdit').includes(String(ctx.getEnvironmentKey('op'))) && b.emoji_id !== undefined ? String(b.emoji_id).trim() : '';
+    } catch (e) {
+      return '';
+    }
+  })()]]
+  $if[$get[emojiIn]!=;
+    $let[emojiState;$emojiExists[$get[emojiIn]]]
+    $if[$get[emojiState]==false;$return[{"status":400,"error":"No application emoji matches that emoji_id. Upload the nation emoji to the application first."}]]
+    $if[$get[emojiState]==unverified;$return[{"status":503,"error":"The application emojis could not be checked with Discord right now. Try again in a moment."}]]
+  ]
+  $let[lock;$mutex[acquire;catalog]]
   $let[catalog;$getGlobalVar[collectiblesData]]
   $let[specials;$getGlobalVar[specials]]
   $let[cardsDir;$jsonVar[config;paths.cards]]
@@ -254,19 +268,24 @@ export default new ForgeFunction({
   })()]]
   $let[catalogJson;$js[const c = JSON.parse(ctx.getKeyword('result')).catalog; c ? JSON.stringify(c) : '']]
   $if[$get[catalogJson]!=;$setGlobalVar[collectiblesData;$get[catalogJson]]]
+  $!mutex[release;catalog;$get[lock]]
   $let[addCls;$js[JSON.parse(ctx.getKeyword('result')).addClass ?? '']]
   $if[$get[addCls]!=;
     $jsonLoad[users;$searchDB[userCollectibles]]
     $arrayForEach[users;row;
+      $let[uid;$env[row;id]]
+      $let[rowLock;$mutex[acquire;inv:$get[uid]]]
+      $let[inv;$getUserVar[userCollectibles;$get[uid]]]
       $setUserVar[userCollectibles;$js[
-        const inv = JSON.parse(ctx.getEnvironmentKey('row').value || 'null') || {};
+        const inv = JSON.parse(ctx.getKeyword('inv') || 'null') || {};
         if (!(ctx.getKeyword('addCls') in inv)) Reflect.set(inv, ctx.getKeyword('addCls'), 0);
         JSON.stringify(inv)
-      ];$env[row;id]]
+      ];$get[uid]]
+      $!mutex[release;inv:$get[uid];$get[rowLock]]
     ]
   ]
   $let[recountId;$js[JSON.parse(ctx.getKeyword('result')).recount ?? '']]
-  $if[$get[recountId]!=;$!recountOwners[$get[recountId]]]
+  $if[$get[recountId]!=;$!recountInventories[owners;$get[recountId]]]
   $return[$js[
     const r = JSON.parse(ctx.getKeyword('result'));
     Reflect.deleteProperty(r, 'catalog');

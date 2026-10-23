@@ -12,17 +12,21 @@ export default new ForgeFunction({
   $jsonLoad[caps;$accessCaps[$get[actor]]]
   $if[$arrayLength[caps]==0;$return[denied]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
-  $let[acc;$getGlobalVar[access]]
-  $let[held;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('actor')).length]]
-  $if[$get[held]>=3;$return[limit]]
   $let[token;ndx_$randomBytes[32]]
   $let[hash;$sha256[$get[token]]]
-  $setGlobalVar[access;$js[
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    acc.tokens = acc.tokens || {};
-    Reflect.set(acc.tokens, ctx.getKeyword('hash'), { user: ctx.getKeyword('actor'), at: Date.now() });
-    JSON.stringify(acc)
-  ]]
+  $let[lock;$mutex[acquire;access]]
+  $let[acc;$getGlobalVar[access]]
+  $let[held;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('actor')).length]]
+  $if[$get[held]<3;
+    $setGlobalVar[access;$js[
+      const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
+      acc.tokens = acc.tokens || {};
+      Reflect.set(acc.tokens, ctx.getKeyword('hash'), { user: ctx.getKeyword('actor'), at: Date.now() });
+      JSON.stringify(acc)
+    ]]
+  ]
+  $!mutex[release;access;$get[lock]]
+  $if[$get[held]>=3;$return[limit]]
   $!accessLog[$get[actor];token-create;$get[actor];]
   $return[ok:$get[token]]
   `,

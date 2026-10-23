@@ -18,6 +18,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
+  $let[lock;$mutex[acquire;catalog]]
   $let[catalog;$getGlobalVar[collectiblesData]]
   $let[house;$getGlobalVar[auctionHouse]]
   $jsonLoad[rows;$searchDB[collectible]]
@@ -38,12 +39,16 @@ export default new ForgeFunction({
     return JSON.stringify({ status: 200, value: { catches: mine.length }, catalog: catalog, ids: mine.map((c) => c.catchId), owners: Array.from(new Set(mine.map((c) => String(c.data.author)))) });
   })()]]
   $jsonLoad[p;$get[plan]]
-  $if[$env[p;status]!=200;$return[$get[plan]]]
+  $if[$env[p;status]!=200;
+    $!mutex[release;catalog;$get[lock]]
+    $return[$get[plan]]
+  ]
   $jsonLoad[ids;$env[p;ids]]
-  $jsonLoad[owners;$env[p;owners]]
+  $let[ownersJson;$js[JSON.stringify(JSON.parse(ctx.getKeyword('plan')).owners)]]
   $arrayForEach[ids;cid;$!deleteVar[collectible;$env[cid]]]
   $setGlobalVar[collectiblesData;$js[JSON.stringify(JSON.parse(ctx.getKeyword('plan')).catalog)]]
-  $arrayForEach[owners;owner;$!recountUser[$env[owner]]]
+  $!mutex[release;catalog;$get[lock]]
+  $!recountInventories[users;$get[ownersJson]]
   $return[$js[JSON.stringify({ status: 200, value: JSON.parse(ctx.getKeyword('plan')).value })]]
   `,
 });

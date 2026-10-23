@@ -24,6 +24,10 @@ export default new ForgeFunction({
   $let[colID;$collectible[$get[id];id]]
   $let[class;$collectibleInfo[$get[colID];class]]
   
+  $let[first;$js[Array.of(ctx.getKeyword('author'), ctx.getKeyword('receiver')).sort().at(0)]]
+  $let[second;$js[Array.of(ctx.getKeyword('author'), ctx.getKeyword('receiver')).sort().at(1)]]
+  $let[lockOne;$mutex[acquire;inv:$get[first]]]
+  $let[lockTwo;$if[$get[second]!=$get[first];$mutex[acquire;inv:$get[second]];]]
   $jsonLoad[data;$getUserVar[userCollectibles;$get[author]]]
   $jsonLoad[userCollectibles;$env[data;collectibleIDs]]
   $jsonLoad[uniques;$env[data;unique]]
@@ -53,5 +57,7 @@ export default new ForgeFunction({
   $jsonLoad[data;$getVar[collectible;$get[id]]]
   $!jsonSet[data;author;"$get[receiver]"]
   $setVar[collectible;$get[id];$env[data]]
+  $!mutex[release;inv:$get[first];$get[lockOne]]
+  $if[$get[second]!=$get[first];$!mutex[release;inv:$get[second];$get[lockTwo]]]
   `,
 });

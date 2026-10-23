@@ -27,6 +27,7 @@ export default new ForgeFunction({
   $let[user;$findUser[$env[user]]]
   $let[method;$env[method]]
   $let[amount;$env[amount]]
+  $let[lock;$mutex[acquire;user:$get[user]]]
   $let[curBalance;$getUserVar[balance;$get[user]]]
 
   $ifx[
@@ -40,5 +41,6 @@ export default new ForgeFunction({
       $setUserVar[balance;$get[amount];$get[user]]
     ]
   ]
+  $!mutex[release;user:$get[user];$get[lock]]
   `
 });

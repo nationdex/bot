@@ -4,6 +4,7 @@ const route: RouteDefinition = {
   url: 'v1/stats',
   method: 'GET',
   code: `
+  $!apiCors
   $jsonLoad[registeredUsers;$default[$searchDB[userCollectibles];[\\]]]
   $jsonLoad[registeredGuilds;$default[$searchDB[spawnConfig];[\\]]]
 

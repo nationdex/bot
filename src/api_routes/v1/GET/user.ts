@@ -4,6 +4,7 @@ const route: RouteDefinition = {
   url: 'v1/user',
   method: 'GET',
   code: `
+  $!apiCors
   $let[user;$getQuery[id]]
 
   $ifx[

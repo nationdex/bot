@@ -39,6 +39,7 @@ export default new ForgeFunction({
     Reflect.set(text, 404, 'Not Found');
     Reflect.set(text, 413, 'Payload Too Large');
     Reflect.set(text, 500, 'Internal Server Error');
+    Reflect.set(text, 503, 'Service Unavailable');
     const body = JSON.parse(ctx.getEnvironmentKey('json') || 'null') || { status: 500, error: 'Empty reply.' };
     body.status = Number(body.status) || 500;
     body.ok = body.status === 200;
@@ -51,6 +52,7 @@ export default new ForgeFunction({
   $if[$and[$get[actor]!=;$get[action]!=;$env[r;status]==200];
     $!accessLog[$get[actor];api:$get[action];;$replace[$env[detail];null;]]
   ]
+  $!apiCors
   $writeStatus[$env[r;status];$env[r;statusText]]
   $sendJson[$env[r]]
   `,

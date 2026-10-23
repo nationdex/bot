@@ -21,6 +21,7 @@ export default new ForgeFunction({
   $let[body;$replace[$env[body];null;]]
   $let[root;$js[(() => { try { return String((JSON.parse(ctx.getKeyword('body') || 'null') || {}).root ?? ''); } catch (e) { return ''; } })()]]
   $if[$and[$get[root]!=config;$get[root]!=keywords];$return[{"status":400,"error":"root must be config or keywords."}]]
+  $let[lock;$mutex[acquire;config:$get[root]]]
   $let[current;$if[$get[root]==config;$getGlobalVar[config];$getGlobalVar[keywords]]]
   $let[result;$js[(() => {
     const base = ${JSON.stringify(baseSettings)};
@@ -49,13 +50,26 @@ export default new ForgeFunction({
         if (p.startsWith('paths.') && (!v || v.startsWith('/') || v.includes(String.fromCharCode(92)) || v.split('/').includes('..') || v.includes(':'))) return 'Paths must be relative and cannot contain "..".';
         if ((p.startsWith('urls.') || p.endsWith('.profile') || p.endsWith('.repo')) && !(v.startsWith('http://') || v.startsWith('https://'))) return 'That must be a full http(s) URL.';
         if (p === 'bot.name' && (!v || v.length > 32)) return 'The bot name must be 1-32 characters.';
+        if (p === 'api.allowedOrigins' && v && !v.split(',').map((o) => o.trim()).every((o) => (o.startsWith('http://') || o.startsWith('https://')) && !o.slice(o.indexOf('//') + 2).includes('/') && !o.includes(' '))) return 'Allowed origins are comma separated origins such as https://nationdex.com, without a path.';
       } else if (!(v.length >= 1 && v.length <= 32 && v.split('').every((c) => 'abcdefghijklmnopqrstuvwxyz0123456789_-'.includes(c)))) {
         return 'Keywords become command names: use 1-32 lowercase letters, numbers, - or _.';
       }
       return '';
     };
     if (op === 'set') {
-      const { node, leaf } = parentOf(path);
+      let located = parentOf(path);
+      const original = dig(builtin, path);
+      if ((!located.node || typeof located.node !== 'object' || !(located.leaf in located.node)) && original !== undefined && typeof original !== 'object') {
+        const keys = path.split('.');
+        let cursor = tree;
+        keys.slice(0, -1).forEach((k) => {
+          if (!Reflect.get(cursor, k) || typeof Reflect.get(cursor, k) !== 'object') Reflect.set(cursor, k, {});
+          cursor = Reflect.get(cursor, k);
+        });
+        Reflect.set(cursor, keys.at(-1), original);
+        located = parentOf(path);
+      }
+      const { node, leaf } = located;
       if (!node || typeof node !== 'object' || !(leaf in node) || typeof Reflect.get(node, leaf) === 'object') return err('That setting does not exist.');
       const problem = bad(path, value);
       if (problem) return err(problem);
@@ -95,6 +109,7 @@ export default new ForgeFunction({
       $setGlobalVar[keywords;$js[JSON.stringify(JSON.parse(ctx.getKeyword('result')).tree)]]
     ]
   ]
+  $!mutex[release;config:$get[root];$get[lock]]
   $return[$js[
     const r = JSON.parse(ctx.getKeyword('result'));
     Reflect.deleteProperty(r, 'tree');

@@ -12,6 +12,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
+  $let[lock;$mutex[acquire;ua:$env[actor]]]
   $let[ua;$getUserVar[userAccess;$env[actor]]]
   $let[next;$js[
     const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
@@ -23,6 +24,7 @@ export default new ForgeFunction({
     JSON.stringify(ua)
   ]]
   $setUserVar[userAccess;$get[next];$env[actor]]
+  $!mutex[release;ua:$env[actor];$get[lock]]
   $return[$js[JSON.parse(ctx.getKeyword('next')).window.count <= 20 ? 'ok' : 'rate']]
   `,
 });

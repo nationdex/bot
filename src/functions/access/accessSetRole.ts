@@ -38,6 +38,7 @@ export default new ForgeFunction({
   $if[$get[caps]==;$return[unknown]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[caps]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
+  $let[lock;$mutex[acquire;access]]
   $let[acc;$getGlobalVar[access]]
   $setGlobalVar[access;$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
@@ -45,6 +46,7 @@ export default new ForgeFunction({
     Reflect.set(acc.roles, ctx.getKeyword('name'), JSON.parse(ctx.getKeyword('caps')));
     JSON.stringify(acc)
   ]]
+  $!mutex[release;access;$get[lock]]
   $!accessLog[$get[actor];role-set;;$get[name]: $get[caps]]
   $if[$accessSensitive[$get[caps]];
     $!accessNotify[Role \`$get[name]\` was changed by \`$fetchUsername[$get[actor]]\`: $get[caps].]

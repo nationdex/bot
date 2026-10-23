@@ -34,11 +34,14 @@ export default new ForgeFunction({
   $let[owners;$accessOwners]
   $let[lastOwner;$js[JSON.parse(ctx.getKeyword('needed')).includes('*') && JSON.parse(ctx.getKeyword('owners')).filter((id) => id !== ctx.getKeyword('target')).length === 0]]
   $if[$get[lastOwner];$return[last_owner]]
+  $let[lock;$mutex[acquire;ua:$get[target]]]
+  $let[ua;$getUserVar[userAccess;$get[target]]]
   $setUserVar[userAccess;$js[
     const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
     ua.grants = (ua.grants || new Array()).filter((g) => g.subject !== ctx.getKeyword('subj'));
     JSON.stringify(ua)
   ];$get[target]]
+  $!mutex[release;ua:$get[target];$get[lock]]
   $!accessLog[$get[actor];revoke;$get[target];$get[subj]]
   $if[$accessSensitive[$get[needed]];
     $!accessNotify[Access revoked: \`$fetchUsername[$get[actor]]\` removed \`$get[subj]\` from \`$fetchUsername[$get[target]]\`.]

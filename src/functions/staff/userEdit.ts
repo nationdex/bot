@@ -27,6 +27,7 @@ export default new ForgeFunction({
   $let[user;$env[user]]
   $if[$userExists[$get[user]]==false;$return[{"status":404,"error":"No such Discord user."}]]
   $let[body;$replace[$env[body];null;]]
+  $let[locked;$if[$or[$env[op]==balance;$env[op]==setting;$env[op]==settingsReset;$env[op]==stat];$mutex[acquire;user:$get[user]];]]
   $let[balance;$getUserVar[balance;$get[user]]]
   $let[settings;$getUserVar[settings;$get[user]]]
   $let[stats;$getUserVar[userStats;$get[user]]]
@@ -85,9 +86,13 @@ export default new ForgeFunction({
     return err('Unknown operation.');
   })()]]
   $jsonLoad[p;$get[plan]]
-  $if[$env[p;status]!=200;$return[$get[plan]]]
+  $if[$env[p;status]!=200;
+    $!mutex[release;user:$get[user];$get[locked]]
+    $return[$get[plan]]
+  ]
   $if[$jsonHas[p;setVar];$setUserVar[$env[p;setVar];$env[p;data];$get[user]]]
   $if[$jsonHas[p;delVar];$deleteUserVar[$env[p;delVar];$get[user]]]
+  $!mutex[release;user:$get[user];$get[locked]]
   $if[$jsonHas[p;give];
     $loop[$env[p;count];$!addUserCollectible[$get[user];$env[p;give];$env[p;data]]]
   ]

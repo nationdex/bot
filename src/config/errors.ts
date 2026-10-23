@@ -60,7 +60,7 @@ export const errors = {
   access_claimed: `Ownership has already been claimed.`,
   access_not_app_owner: `Only the Discord application owner can claim ownership.`,
   not_bot_staff: `Only ${variables.config.bot.name} staff can use this command.`,
-  blacklist_protected: `You cannot blacklist yourself, the bot or a member of the ${variables.config.bot.name} staff.`,
+  blacklist_protected: `You cannot blacklist yourself, the bot, a member of the ${variables.config.bot.name} staff or the home server.`,
   blacklist_exists: `That target is already blacklisted.`,
   blacklist_missing: `That target is not blacklisted.`,
   blacklist_target: `Provide exactly one target: a user or a numeric server id (guild_id).`,

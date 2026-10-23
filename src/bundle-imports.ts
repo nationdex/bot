@@ -1491,6 +1491,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/suggestions/approveNationSuggestion.js"),
   require("../dist/functions/suggestions/publishSuggestion.js"),
   require("../dist/functions/general/shortParse.js"),
+  require("../dist/functions/general/mutex.js"),
   require("../dist/functions/general/jsonVar.js"),
   require("../dist/functions/general/sortData.js"),
   require("../dist/functions/general/fetchUsername.js"),
@@ -1519,6 +1520,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/access/accessGrant.js"),
   require("../dist/functions/access/accessNotify.js"),
   require("../dist/functions/api/apiBody.js"),
+  require("../dist/functions/api/apiCors.js"),
   require("../dist/functions/api/apiRespond.js"),
   require("../dist/functions/api/apiTrusted.js"),
   require("../dist/functions/api/apiAuth.js"),
@@ -1527,6 +1529,8 @@ export const get_botFunctions = () => [
   require("../dist/functions/staff/nationDelete.js"),
   require("../dist/functions/staff/recountOwners.js"),
   require("../dist/functions/staff/configEdit.js"),
+  require("../dist/functions/staff/recountInventories.js"),
+  require("../dist/functions/staff/emojiExists.js"),
   require("../dist/functions/staff/catalogEdit.js"),
 ];
 export const get_botCommands = () => [

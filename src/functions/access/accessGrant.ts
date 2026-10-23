@@ -44,6 +44,7 @@ export default new ForgeFunction({
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[needed]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
 
+  $let[lock;$mutex[acquire;ua:$get[target]]]
   $let[ua;$getUserVar[userAccess;$get[target]]]
   $let[expires;$js[Number(ctx.getEnvironmentKey('hours')) > 0 ? Date.now() + Number(ctx.getEnvironmentKey('hours')) * 3600000 : 0]]
   $setUserVar[userAccess;$js[
@@ -54,6 +55,7 @@ export default new ForgeFunction({
     ua.grants.push({ subject: subject, kind: sub.kind, expires: Number(ctx.getKeyword('expires')), by: ctx.getKeyword('actor'), at: Date.now(), reason: String(ctx.getEnvironmentKey('reason') || '').replace(/^null$/, '').slice(0, 200) });
     JSON.stringify(ua)
   ];$get[target]]
+  $!mutex[release;ua:$get[target];$get[lock]]
   $!accessLog[$get[actor];grant;$get[target];$get[subj]]
   $if[$accessSensitive[$get[needed]];
     $!accessNotify[Access granted: \`$fetchUsername[$get[actor]]\` gave \`$get[subj]\` to \`$fetchUsername[$get[target]]\`$if[$get[expires]!=0; until <t:$floor[$divide[$get[expires];1000]]:f>].]

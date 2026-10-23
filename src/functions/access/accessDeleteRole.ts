@@ -22,18 +22,25 @@ export default new ForgeFunction({
   $if[$get[caps]==;$return[missing]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[caps]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
+  $let[lock;$mutex[acquire;access]]
+  $let[acc;$getGlobalVar[access]]
   $setGlobalVar[access;$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
     Reflect.deleteProperty(acc.roles || {}, ctx.getKeyword('name'));
     JSON.stringify(acc)
   ]]
+  $!mutex[release;access;$get[lock]]
   $jsonLoad[rows;$searchDB[userAccess]]
   $arrayForEach[rows;row;
+    $let[uid;$env[row;id]]
+    $let[rowLock;$mutex[acquire;ua:$get[uid]]]
+    $let[ua;$getUserVar[userAccess;$get[uid]]]
     $setUserVar[userAccess;$js[
-      const ua = JSON.parse(ctx.getEnvironmentKey('row').value || 'null') || {};
+      const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
       ua.grants = (ua.grants || new Array()).filter((g) => !(g.kind === 'role' && g.subject === ctx.getKeyword('name')));
       JSON.stringify(ua)
-    ];$env[row;id]]
+    ];$get[uid]]
+    $!mutex[release;ua:$get[uid];$get[rowLock]]
   ]
   $!accessLog[$get[actor];role-delete;;$get[name]]
   $!accessNotify[Role \`$get[name]\` was deleted by \`$fetchUsername[$get[actor]]\`.]

@@ -29,6 +29,7 @@ export default new ForgeFunction({
   $let[data;$env[data]]
   $let[id;$js[Array.from(require('crypto').randomBytes(7),b=>'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[b%36\\]).join('')]]
   
+  $let[invLock;$mutex[acquire;inv:$get[user]]]
   $jsonLoad[userData;$getUserVar[userCollectibles;$get[user]]]
   $jsonLoad[unique;$env[userData;unique]]
   $jsonLoad[userCollectibles;$env[userData;collectibleIDs]]
@@ -41,10 +42,13 @@ export default new ForgeFunction({
   ]
   $setUserVar[userCollectibles;$env[userData];$get[user]]
   $setVar[collectible;$get[id];$env[data]]
+  $!mutex[release;inv:$get[user];$get[invLock]]
   
+  $let[catLock;$mutex[acquire;catalog]]
   $jsonLoad[data;$getGlobalVar[collectiblesData]]
   $!jsonSet[data;total_caught;$sum[$env[data;total_caught];1]]
   $!jsonSet[data;userCollectibles;$get[ctbl];global_caught;$sum[$env[data;collectibles;$get[ctbl];global_caught];1]]
   $setGlobalVar[collectiblesData;$env[data]]
+  $!mutex[release;catalog;$get[catLock]]
   `,
 });

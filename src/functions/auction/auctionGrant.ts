@@ -21,10 +21,14 @@ export default new ForgeFunction({
   $let[colID;$collectible[$get[id];id]]
   $let[class;$collectibleInfo[$get[colID];class]]
 
+  $let[invLock;$mutex[acquire;inv:$get[user]]]
   $jsonLoad[data;$getUserVar[userCollectibles;$get[user]]]
   $jsonLoad[userCollectibles;$env[data;collectibleIDs]]
   $jsonLoad[uniques;$env[data;unique]]
-  $if[$arrayIncludes[userCollectibles;$get[id]];$return[false]]
+  $if[$arrayIncludes[userCollectibles;$get[id]];
+    $!mutex[release;inv:$get[user];$get[invLock]]
+    $return[false]
+  ]
   $!jsonSet[data;collectibleIDs;$arrayLength[userCollectibles];$get[id]]
   $if[$arrayIncludes[uniques;$get[colID]]==false;
     $!jsonSet[data;unique;$arrayLength[uniques];$get[colID]]
@@ -37,6 +41,7 @@ export default new ForgeFunction({
   $jsonLoad[record;$getVar[collectible;$get[id]]]
   $!jsonSet[record;author;"$get[user]"]
   $setVar[collectible;$get[id];$env[record]]
+  $!mutex[release;inv:$get[user];$get[invLock]]
   $return[true]
   `,
 });

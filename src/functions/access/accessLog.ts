@@ -30,6 +30,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
+  $let[lock;$mutex[acquire;audit]]
   $let[log;$getGlobalVar[accessAudit]]
   $setGlobalVar[accessAudit;$js[
     const list = JSON.parse(ctx.getKeyword('log') || 'null') || new Array();
@@ -37,5 +38,6 @@ export default new ForgeFunction({
     list.unshift({ actor: clean(ctx.getEnvironmentKey('actor')), action: clean(ctx.getEnvironmentKey('action')), target: clean(ctx.getEnvironmentKey('target')), detail: clean(ctx.getEnvironmentKey('detail')), at: Date.now() });
     JSON.stringify(list.slice(0, 300))
   ]]
+  $!mutex[release;audit;$get[lock]]
   `,
 });
