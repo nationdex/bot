@@ -49,8 +49,8 @@ export default new ForgeFunction({
         if (p.startsWith('paths.') && (!v || v.startsWith('/') || v.includes(String.fromCharCode(92)) || v.split('/').includes('..') || v.includes(':'))) return 'Paths must be relative and cannot contain "..".';
         if ((p.startsWith('urls.') || p.endsWith('.profile') || p.endsWith('.repo')) && !(v.startsWith('http://') || v.startsWith('https://'))) return 'That must be a full http(s) URL.';
         if (p === 'bot.name' && (!v || v.length > 32)) return 'The bot name must be 1-32 characters.';
-      } else if (!v || v.length > 32) {
-        return 'Keywords must be 1-32 characters.';
+      } else if (!(v.length >= 1 && v.length <= 32 && v.split('').every((c) => 'abcdefghijklmnopqrstuvwxyz0123456789_-'.includes(c)))) {
+        return 'Keywords become command names: use 1-32 lowercase letters, numbers, - or _.';
       }
       return '';
     };
@@ -65,7 +65,8 @@ export default new ForgeFunction({
       const key = String(body.key ?? '');
       const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
       if (!(key.length >= 1 && key.length <= 32 && letters.includes(key.charAt(0)) && key.split('').every((c) => (letters + '0123456789_').includes(c)))) return err('Keys use letters, numbers and underscores (32 max).');
-      if (value.length > 300) return err('The value is too long (300 characters max).');
+      const problem = bad(parent ? parent + '.' + key : key, value);
+      if (problem) return err(problem);
       const node = parent ? dig(tree, parent) : tree;
       if (!node || typeof node !== 'object' || Array.isArray(node)) return err('That group does not exist.');
       if (key in node) return err('That key already exists.');

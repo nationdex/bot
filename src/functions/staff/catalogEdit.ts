@@ -6,7 +6,7 @@ export default new ForgeFunction({
   params: [
     {
       name: 'op',
-      // nationAdd, nationEdit, nationCategory, nationCard, categoryAdd, categoryDelete, backgroundAdd or backgroundDelete
+      // nationAdd, nationEdit, nationCategory, nationCard, nationArt, categoryAdd, categoryDelete, backgroundAdd or backgroundDelete
       type: 'String',
       required: true,
     },
@@ -28,6 +28,8 @@ export default new ForgeFunction({
   $let[specials;$getGlobalVar[specials]]
   $let[cardsDir;$jsonVar[config;paths.cards]]
   $let[iconsDir;$jsonVar[config;paths.icons]]
+  $let[spawnDir;$jsonVar[config;paths.spawn_art]]
+  $let[windowDir;$jsonVar[config;paths.window_art]]
   $let[result;$js[(() => {
     const fs = require('fs');
     const path = require('path');
@@ -90,6 +92,18 @@ export default new ForgeFunction({
     };
     const nameTaken = (name, own) => Object.keys(collectibles).some((k) => k !== own && String(Reflect.get(collectibles, k).name || '').toLowerCase() === name.toLowerCase());
     const nation = Reflect.get(collectibles, id);
+    const plainName = (n) => n.length > 0 && n.length <= 80 && !n.includes('/') && !n.includes(String.fromCharCode(92)) && !n.startsWith('.') && !n.includes('..');
+    const artExists = (dir, n) => plainName(n) && fs.existsSync(path.join(dir, n));
+    const artKeys = new Array('wild_card', 'collection_card');
+    const artDir = (key) => key === 'wild_card' ? kw('spawnDir') : kw('windowDir');
+    const artProblem = (src) => {
+      for (const key of artKeys) {
+        const v = Reflect.get(src, key);
+        if (v === undefined || v === '') continue;
+        if (!artExists(artDir(key), String(v))) return 'No such artwork file for ' + key + ': ' + v;
+      }
+      return '';
+    };
 
     if (op === 'nationAdd') {
       const values = {};
@@ -104,8 +118,10 @@ export default new ForgeFunction({
       const lower = values.name.toLowerCase();
       const taken = clash(new Array(lower), '');
       if (taken) return err(400, taken);
+      const artIssue = artProblem(body);
+      if (artIssue) return err(400, artIssue);
       const nextId = String(Object.keys(collectibles).map((k) => parseInt(k, 10)).filter(Number.isFinite).reduce((a, b) => Math.max(a, b), 0) + 1);
-      Reflect.set(collectibles, nextId, { class: cls, rarity: values.rarity, weight: values.rarity, name: values.name, short_name: null, regime: listPng(kw('cardsDir')).at(0) || '', economy: listIcons(kw('iconsDir')).at(0) || '', collection_card: '', wild_card: '', capacity_name: '', capacity_description: '', credits: '', attack: values.attack, health: values.health, emoji_id: values.emoji_id, translations: new Array(), catch_names: new Array(lower), global_caught: 0, price: 0, sell_price: 0 });
+      Reflect.set(collectibles, nextId, { class: cls, rarity: values.rarity, weight: values.rarity, name: values.name, short_name: null, regime: listPng(kw('cardsDir')).at(0) || '', economy: listIcons(kw('iconsDir')).at(0) || '', collection_card: String(body.collection_card ?? ''), wild_card: String(body.wild_card ?? ''), capacity_name: '', capacity_description: '', credits: '', attack: values.attack, health: values.health, emoji_id: values.emoji_id, translations: new Array(), catch_names: new Array(lower), global_caught: 0, price: 0, sell_price: 0 });
       catalog.total = Object.keys(collectibles).length;
       Reflect.set(catalog, cls, (Number(Reflect.get(catalog, cls)) || 0) + 1);
       return done({ id: nextId });
@@ -121,7 +137,10 @@ export default new ForgeFunction({
         if (r.error) return err(400, r.error);
         Reflect.set(patch, key, r.value);
       }
-      if (!Object.keys(patch).length) return err(400, 'Send at least one of: ' + Object.keys(fields).join(', ') + '.');
+      const artIssue = artProblem(body);
+      if (artIssue) return err(400, artIssue);
+      for (const key of artKeys) if (key in body) Reflect.set(patch, key, String(Reflect.get(body, key) ?? ''));
+      if (!Object.keys(patch).length) return err(400, 'Send at least one of: ' + Object.keys(fields).concat(artKeys).join(', ') + '.');
       if (typeof patch.name === 'string' && nameTaken(patch.name, id)) return err(400, 'A nation named ' + patch.name + ' already exists.');
       if (patch.catch_names !== undefined || patch.translations !== undefined) {
         const catches = patch.catch_names ?? nation.catch_names ?? new Array();
@@ -155,6 +174,36 @@ export default new ForgeFunction({
         nation.economy = String(body.economy);
       }
       return done({});
+    }
+    if (op === 'nationArt') {
+      if (!nation) return err(400, 'That nation no longer exists.');
+      const kind = String(body.kind ?? '');
+      if (kind !== 'spawn' && kind !== 'window') return err(400, 'kind must be spawn (the wild artwork) or window (the collection artwork).');
+      if (typeof body.data !== 'string' || !body.data) return err(400, 'Send data as a base64 encoded PNG, JPEG or WebP image.');
+      const buf = Buffer.from(body.data, 'base64');
+      if (buf.length > 10485760) return err(400, 'The file is larger than 10 MB.');
+      let ext = '';
+      if (buf.length > 12 && buf.readUInt32BE(0) === 0x89504e47) ext = '.png';
+      else if (buf.length > 12 && buf.readUInt16BE(0) === 0xffd8) ext = '.jpg';
+      else if (buf.length > 12 && buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP') ext = '.webp';
+      if (!ext) return err(400, 'The file must be a PNG, JPEG or WebP image.');
+      const dir = kind === 'spawn' ? kw('spawnDir') : kw('windowDir');
+      const allowed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const safeBase = Array.from(String(nation.short_name || nation.name)).filter((c) => allowed.includes(c)).join('') || 'Nation' + id;
+      let file = String(body.name ?? '').trim();
+      if (file) {
+        if (!file.split('').every((c) => (allowed + '_-').includes(c)) || file.length > 60) return err(400, 'Names use letters, numbers, - and _ (60 max).');
+        file = file + ext;
+      } else {
+        file = safeBase + (kind === 'window' ? 'Flag' : '') + ext;
+        if (fs.existsSync(path.join(dir, file))) file = safeBase + (kind === 'window' ? 'Flag' : '') + id + ext;
+      }
+      const key = kind === 'spawn' ? 'wild_card' : 'collection_card';
+      if (fs.existsSync(path.join(dir, file)) && Reflect.get(nation, key) !== file) return err(400, 'A file named ' + file + ' already exists.');
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, file), buf);
+      Reflect.set(nation, key, file);
+      return done({ file: file });
     }
     if (op === 'categoryAdd') {
       const name = String(body.name ?? '').trim().toLowerCase();

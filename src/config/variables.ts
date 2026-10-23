@@ -75,7 +75,7 @@ export const variables = {
   access: {
     roles: {
       owner: ['*'],
-      developer: ['eval.run'],
+      developer: ['eval.run', 'inspect.read'],
       moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate'],
       reviewer: ['suggestions.review', 'blacklist.read'],
       curator: ['nations.edit', 'cards.edit'],

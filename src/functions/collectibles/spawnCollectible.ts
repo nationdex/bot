@@ -43,7 +43,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[ch;$env[channel]]
-  $jsonLoad[collectibles;$collectiblesData[collectibles]]
+  $jsonLoad[collectibles;$spawnPool]
   $jsonLoad[ids;$collectibleIDs[;$env[class]]]
 
   $onlyIf[$channelExists[$get[ch]]]

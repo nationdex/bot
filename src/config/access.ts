@@ -5,6 +5,7 @@ import type { SlashCommandConfig, SlashOptionConfig } from './slash';
 // Every capability a role or grant can hold. Namespace wildcards such as suggestions.* and * are also accepted.
 export const accessCapabilities = [
   'eval.run',
+  'inspect.read',
   'suggestions.review',
   'suggestions.approve',
   'blacklist.read',

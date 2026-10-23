@@ -63,17 +63,17 @@ Nationdex serves an HTTP API through `@nationdex/api`. The routes are ForgeScrip
 
 ### Reading data (GET)
 
-GET routes need no token and return JSON. Query values go in the URL (`?id=...`).
+GET routes return JSON and need no token, except `/v1/search_db`, which needs one with the `inspect.read` capability (see below). Query values go in the URL (`?id=...`).
 
 | Route | Query | Returns |
 |---|---|---|
 | `GET /v1/stats` | none | `collectibles_caught_global`, `collectibles_count`, `registered_users`, `registered_guilds` |
 | `GET /v1/config` | none | The bot config (`bot`, `urls`, `paths`, `author`, `dev`, `webDev`, `prefix`, `logChannel`, `accent`) |
 | `GET /v1/collectibles/data` | optional `id` | The whole catalog, or just that nation. Unknown `id` gives `404` and `{"error": "Collectible Not Found"}` |
-| `GET /v1/user` | `id` (Discord user ID, required) | `collectiblesData` (inventory), `auctionData`, `settings`. Unknown user gives `404` and `{"error": "User Not Found"}` |
+| `GET /v1/user` | `id` (Discord user ID, required) | `collectiblesData` (inventory), `auctionData`, `settings`. A player's privacy settings are honoured: a private inventory or profile comes back as `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
 | `GET /v1/commands/data` | none | The prefix command definitions (`src/config/commands.ts`) |
 | `GET /v1/slash/data` | none | The slash command definitions (`src/config/slash.ts`) |
-| `GET /v1/search_db/:variable` | optional `id` | The raw database records of a variable, for example `/v1/search_db/spawnConfig` or `/v1/search_db/userCollectibles?id=123`. Each record has `identifier`, `name`, `id`, `type`, `value` (a JSON string) and `guild_id` |
+| `GET /v1/search_db/:variable` | optional `id`. **Needs a token with `inspect.read`** (`401` without a token, `403` without the capability) | The raw database records of a variable, for example `/v1/search_db/spawnConfig` or `/v1/search_db/userCollectibles?id=123`. Each record has `identifier`, `name`, `id`, `type`, `value` (a JSON string) and `guild_id` |
 
 ```bash
 curl http://localhost:2222/v1/stats
@@ -81,7 +81,7 @@ curl "http://localhost:2222/v1/collectibles/data?id=31"
 curl "http://localhost:2222/v1/user?id=525421785001361408"
 ```
 
-`search_db` and `user` expose raw player data, so keep the API port closed to the public internet and put a reverse proxy in front of it if the site needs these routes.
+`search_db` returns raw records (balances, staff grants, the audit log), which is why it needs a token. Send it the same way as for the POST routes below. Keep the API port behind a reverse proxy with HTTPS so tokens are not sent in clear text.
 
 ### Changing data (POST)
 
@@ -97,6 +97,7 @@ POST routes edit users, nations, cards and the bot settings. Every call needs a 
 | `cards.edit` | `/v1/nations/:id/card`, `/v1/categories*`, `/v1/cards/backgrounds*` | `curator` |
 | `users.edit` | `/v1/users/:id/*` | `support` |
 | `config.edit` | `/v1/config*` | `owner` only |
+| `inspect.read` | `GET /v1/search_db/*`, the full `GET /v1/user` view | `developer` |
 
 ```bash
 curl -X POST http://localhost:2222/v1/users/525421785001361408/balance \
@@ -128,10 +129,11 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 
 | Route | Body keys |
 |---|---|
-| `POST /v1/nations` | **`name`** text, 1-48 chars, must be unique. **`class`** an existing category. **`emoji_id`** application emoji ID or name, up to 64 chars. **`attack`** whole number, 0 or more. **`health`** whole number, 0 or more. `rarity` whole number, 1 or more (spawn weight, default `10`). Answers `{ "value": { "id": "112" } }` |
-| `POST /v1/nations/:id` | Send only the keys you want to change. `name` (1-48), `short_name` (up to 24, empty clears it), `emoji_id` (up to 64), `credits` (up to 64), `attack`, `health` (0 or more), `rarity` (1 or more, also updates the weight and recounts every owner's inventory), `price`, `sell_price` (0 or more), `capacity_name` (up to 48), `capacity_description` (up to 400), `catch_names` (array or comma separated text, lowercased, at least one, no name used by another nation), `translations` (same, empty clears it). Whole numbers go up to 999999999. At least one key is required |
+| `POST /v1/nations` | **`name`** text, 1-48 chars, must be unique. **`class`** an existing category. **`emoji_id`** application emoji ID or name, up to 64 chars. **`attack`** whole number, 0 or more. **`health`** whole number, 0 or more. `rarity` whole number, 1 or more (spawn weight, default `10`). `wild_card` and `collection_card` are artwork file names that must already exist (see `/art` below). Answers `{ "value": { "id": "112" } }`. A new nation cannot spawn or be given to players until it has artwork |
+| `POST /v1/nations/:id` | Send only the keys you want to change. `name` (1-48), `short_name` (up to 24, empty clears it), `emoji_id` (up to 64), `credits` (up to 64), `attack`, `health` (0 or more), `rarity` (1 or more, also updates the weight and recounts every owner's inventory), `price`, `sell_price` (0 or more), `capacity_name` (up to 48), `capacity_description` (up to 400), `catch_names` (array or comma separated text, lowercased, at least one, no name used by another nation), `translations` (same, empty clears it), `wild_card` (spawn artwork) and `collection_card` (collection artwork): the name of a file that already exists in `assets/spawn_art` or `assets/window_art`, empty clears it. Whole numbers go up to 999999999. At least one key is required |
 | `POST /v1/nations/:id/category` | **`class`** an existing category. Moves the nation and fixes every counter |
 | `POST /v1/nations/:id/delete` | `cascade` `true` also deletes every catch of the nation and recounts the owners. Without it, the call fails while catches exist. Always refused while an auction holds the nation |
+| `POST /v1/nations/:id/art` | Needs `cards.edit`. **`kind`** `spawn` (the wild artwork shown when it spawns) or `window` (the collection artwork). **`data`** the image, base64 encoded, PNG, JPEG or WebP, up to 10 MB. `name` the file name without extension (letters, numbers, `-`, `_`, up to 60); it is generated from the nation when left out. Answers `{ "value": { "file": "Atlantis.png" } }`. A nation needs `spawn` artwork to spawn and both kinds before it can be given to a player |
 | `POST /v1/nations/:id/card` | `regime` card background (file name in `assets/cards` without `.png`), `economy` icon (file name in `assets/icons` with its extension). Send either or both |
 
 #### Categories and card backgrounds
@@ -158,11 +160,11 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 
 #### Bot settings
 
-`root` is `config` (the bot config) or `keywords` (the words the bot uses, such as `currency.plural`). `path` is a dotted path like `urls.server`. Text values are up to 300 chars. Texts built at startup, like command descriptions, change after a restart.
+`root` is `config` (the bot config) or `keywords` (the words the bot uses, such as `currency.plural`). `path` is a dotted path like `urls.server`. Text values are up to 300 chars. Keywords become Discord command and option names, so they must be 1-32 lowercase letters, numbers, `-` or `_`. Texts built at startup, like command descriptions, change after a restart.
 
 | Route | Body keys |
 |---|---|
-| `POST /v1/config` | **`root`**, **`path`** of an existing value, **`value`**. Checked by path: `accent` is `#rrggbb`, `prefix` is 1-5 chars without spaces, `logChannel` is a channel ID or empty, `paths.*` are relative and cannot contain `..`, `urls.*` and `*.profile` / `*.repo` must be `http(s)` URLs, `bot.name` is 1-32 chars. Keywords are 1-32 chars |
+| `POST /v1/config` | **`root`**, **`path`** of an existing value, **`value`**. Checked by path: `accent` is `#rrggbb`, `prefix` is 1-5 chars without spaces, `logChannel` is a channel ID or empty, `paths.*` are relative and cannot contain `..`, `urls.*` and `*.profile` / `*.repo` must be `http(s)` URLs, `bot.name` is 1-32 chars. Keywords follow the rule above |
 | `POST /v1/config/add` | **`root`**, `parent` the group to add to (empty for the top level), **`key`** letters, numbers and `_` (up to 32, starting with a letter), **`value`** |
 | `POST /v1/config/delete` | **`root`**, **`path`** of a custom value. Built-in values cannot be deleted |
 | `POST /v1/config/reset` | **`root`**, **`path`** of a built-in value, back to its default |

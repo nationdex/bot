@@ -70,6 +70,7 @@ export default new ForgeFunction({
       const catalog = JSON.parse(ctx.getKeyword('catalog') || 'null') || {};
       const nation = Reflect.get(catalog.collectibles || {}, String(body.nation ?? ''));
       if (!nation) return err('That nation does not exist.');
+      if (!nation.wild_card || !nation.collection_card) return err('That nation has no artwork yet. Upload it with POST /v1/nations/:id/art first.');
       const count = body.count === undefined ? 1 : Number(body.count);
       if (!Number.isInteger(count) || count < 1 || count > 25) return err('Give between 1 and 25 at a time.');
       const data = JSON.stringify({ id: String(body.nation), author: ctx.getKeyword('user'), attack: String(nation.attack), health: String(nation.health), attack_type: 'buffed', health_type: 'buffed', special: '', card: nation.regime + '.png', timestamp: String(Date.now()), caught_in: '0' });
