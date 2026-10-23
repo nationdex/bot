@@ -4,9 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/cards/backgrounds',
   method: 'POST',
   code: `
-  $!apiAuth[$getHeader[authorization];cards.edit]
-  $let[body;$getBody]
-  $try[$apiRespond[$catalogEdit[backgroundAdd;;$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
+  $let[actor;$apiAuth[$getHeader[authorization];cards.edit]]
+  $let[body;$apiBody[20971520]]
+  $try[$apiRespond[$catalogEdit[backgroundAdd;;$get[body]];$get[actor];cards.backgrounds.add;];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

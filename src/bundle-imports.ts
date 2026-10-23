@@ -1517,6 +1517,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/access/hasCap.js"),
   require("../dist/functions/access/accessGrant.js"),
   require("../dist/functions/access/accessNotify.js"),
+  require("../dist/functions/api/apiBody.js"),
   require("../dist/functions/api/apiRespond.js"),
   require("../dist/functions/api/apiAuth.js"),
   require("../dist/functions/staff/userEdit.js"),

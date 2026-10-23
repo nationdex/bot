@@ -4,9 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/users/:id/balance',
   method: 'POST',
   code: `
-  $!apiAuth[$getHeader[authorization];users.edit]
-  $let[body;$getBody]
-  $try[$apiRespond[$userEdit[balance;$getParameter[0];$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
+  $let[actor;$apiAuth[$getHeader[authorization];users.edit]]
+  $let[body;$apiBody[65536]]
+  $try[$apiRespond[$userEdit[balance;$getParameter[0];$get[body]];$get[actor];users.balance;$getParameter[0]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

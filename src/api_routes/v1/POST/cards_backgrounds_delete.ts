@@ -4,8 +4,8 @@ const route: RouteDefinition = {
   url: 'v1/cards/backgrounds/:name/delete',
   method: 'POST',
   code: `
-  $!apiAuth[$getHeader[authorization];cards.edit]
-  $try[$apiRespond[$catalogEdit[backgroundDelete;$getParameter[0]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
+  $let[actor;$apiAuth[$getHeader[authorization];cards.edit]]
+  $try[$apiRespond[$catalogEdit[backgroundDelete;$getParameter[0]];$get[actor];cards.backgrounds.delete;$getParameter[0]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

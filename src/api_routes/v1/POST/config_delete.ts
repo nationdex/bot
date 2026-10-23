@@ -4,9 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/config/delete',
   method: 'POST',
   code: `
-  $!apiAuth[$getHeader[authorization];config.edit]
-  $let[body;$getBody]
-  $try[$apiRespond[$configEdit[delete;$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
+  $let[actor;$apiAuth[$getHeader[authorization];config.edit]]
+  $let[body;$apiBody[65536]]
+  $try[$apiRespond[$configEdit[delete;$get[body]];$get[actor];config.delete;];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

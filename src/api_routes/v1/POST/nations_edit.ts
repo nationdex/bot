@@ -4,9 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/nations/:id',
   method: 'POST',
   code: `
-  $!apiAuth[$getHeader[authorization];nations.edit]
-  $let[body;$getBody]
-  $try[$apiRespond[$catalogEdit[nationEdit;$getParameter[0];$get[body]]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
+  $let[actor;$apiAuth[$getHeader[authorization];nations.edit]]
+  $let[body;$apiBody[65536]]
+  $try[$apiRespond[$catalogEdit[nationEdit;$getParameter[0];$get[body]];$get[actor];nations.edit;$getParameter[0]];$apiRespond[{"status":500,"error":"Something went wrong."}]]
   `,
 };
 

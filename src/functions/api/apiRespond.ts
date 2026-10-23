@@ -10,6 +10,24 @@ export default new ForgeFunction({
       type: 'String',
       required: true,
     },
+    {
+      name: 'actor',
+      // The authenticated user id; with an action, a successful reply is written to the access audit
+      type: 'String',
+      required: false,
+    },
+    {
+      name: 'action',
+      // The audit action name, e.g. nations.add
+      type: 'String',
+      required: false,
+    },
+    {
+      name: 'detail',
+      // Short audit detail such as the id the route changed
+      type: 'String',
+      required: false,
+    },
   ],
   code: `
   $let[reply;$js[
@@ -28,6 +46,11 @@ export default new ForgeFunction({
     JSON.stringify(body)
   ]]
   $jsonLoad[r;$get[reply]]
+  $let[actor;$replace[$env[actor];null;]]
+  $let[action;$replace[$env[action];null;]]
+  $if[$and[$get[actor]!=;$get[action]!=;$env[r;status]==200];
+    $!accessLog[$get[actor];api:$get[action];;$replace[$env[detail];null;]]
+  ]
   $writeStatus[$env[r;status];$env[r;statusText]]
   $sendJson[$env[r]]
   `,
