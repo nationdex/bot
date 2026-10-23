@@ -224,7 +224,7 @@ export default new ForgeFunction({
       const first = 'abcdefghijklmnopqrstuvwxyz';
       if (!(name.length >= 2 && name.length <= 20 && first.includes(name.charAt(0)) && name.split('').every((c) => (first + '0123456789_-').includes(c)))) return err(400, 'Category names are 2-20 lowercase letters, numbers, - or _.');
       if (classes.includes(name)) return err(400, 'That category already exists.');
-      if (new Array('total', 'total_caught', 'classes', 'collectibles').includes(name)) return err(400, 'That name is reserved.');
+      if (new Array('total', 'total_caught', 'classes', 'collectibles', 'userCollectibles').includes(name)) return err(400, 'That name is reserved.');
       classes.push(name);
       Reflect.set(catalog, name, 0);
       return done({}, { addClass: name });

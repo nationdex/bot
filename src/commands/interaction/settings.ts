@@ -9,10 +9,12 @@ export default command('interaction.settings', `
   
   $let[key;$arrayAt[cid;1]]
   $let[value;$arrayAt[cid;3]]
+  $let[lock;$mutex[acquire;user:$authorID]]
   $jsonLoad[settings;$getUserVar[settings]]
   
   $!jsonSet[settings;$get[key];$get[value]]
   $setUserVar[settings;$env[settings]]
+  $!mutex[release;user:$authorID;$get[lock]]
   
   $interactionUpdate[$settingsMenu[$authorID]]
 `);

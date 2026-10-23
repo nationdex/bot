@@ -15,7 +15,7 @@ export default new ForgeFunction({
   $let[token;ndx_$randomBytes[32]]
   $let[hash;$sha256[$get[token]]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $let[held;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('actor')).length]]
   $if[$get[held]<3;
     $setGlobalVar[access;$js[

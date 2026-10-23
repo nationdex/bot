@@ -7,7 +7,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[rows;$searchDB[userAccess;;;]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $return[$js[
     const rows = JSON.parse(ctx.getKeyword('rows') || 'null') || new Array();
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};

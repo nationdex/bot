@@ -20,6 +20,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[raw;$getSuggestion[$env[id]]]
+  $let[lock;$mutex[acquire;catalog]]
   $let[catalog;$getGlobalVar[collectiblesData]]
   $let[spawnDir;$jsonVar[config;paths.spawn_art]]
   $let[windowDir;$jsonVar[config;paths.window_art]]
@@ -131,6 +132,7 @@ export default new ForgeFunction({
   $if[$env[res;ok];
     $setGlobalVar[collectiblesData;$get[newCatalog]]
   ]
+  $!mutex[release;catalog;$get[lock]]
   $return[$get[result]]
   `,
 });

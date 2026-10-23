@@ -17,16 +17,17 @@ export default new ForgeFunction({
   $if[$hasCap[$get[actor];access.manage]==false;$return[denied]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
   $if[$get[name]==owner;$return[protected]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $let[caps;$js[const r = Reflect.get((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).roles || {}, ctx.getKeyword('name')); r ? JSON.stringify(r) : '']]
   $if[$get[caps]==;$return[missing]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[caps]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $setGlobalVar[access;$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
     Reflect.deleteProperty(acc.roles || {}, ctx.getKeyword('name'));
+    acc.removedRoles = Array.from(new Set((acc.removedRoles || new Array()).concat(ctx.getKeyword('name'))));
     JSON.stringify(acc)
   ]]
   $!mutex[release;access;$get[lock]]

@@ -21,7 +21,7 @@ export default new ForgeFunction({
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
   $if[$userExists[$get[target]]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $let[removed;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('target')).length]]
   $if[$get[removed]>0;
     $setGlobalVar[access;$js[

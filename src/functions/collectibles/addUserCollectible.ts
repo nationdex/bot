@@ -47,7 +47,7 @@ export default new ForgeFunction({
   $let[catLock;$mutex[acquire;catalog]]
   $jsonLoad[data;$getGlobalVar[collectiblesData]]
   $!jsonSet[data;total_caught;$sum[$env[data;total_caught];1]]
-  $!jsonSet[data;userCollectibles;$get[ctbl];global_caught;$sum[$env[data;collectibles;$get[ctbl];global_caught];1]]
+  $!jsonSet[data;collectibles;$get[ctbl];global_caught;$sum[$env[data;collectibles;$get[ctbl];global_caught];1]]
   $setGlobalVar[collectiblesData;$env[data]]
   $!mutex[release;catalog;$get[catLock]]
   `,

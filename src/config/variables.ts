@@ -149,4 +149,7 @@ export const variables = {
 
 // Untouched copy of the shipped defaults, taken before database values are merged in. Built-in settings are told
 // apart from custom ones by comparing against it.
+// Untouched default roles. Stored access data only keeps the roles staff changed or created, new default roles still appear.
+export const baseAccessRoles: Record<string, string[]> = JSON.parse(JSON.stringify(variables.access.roles));
+
 export const baseSettings = JSON.parse(JSON.stringify({ config: variables.config, keywords: variables.keywords }));

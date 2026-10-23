@@ -43,6 +43,7 @@ export default new ForgeFunction({
   $let[needed;$js[JSON.stringify(JSON.parse(ctx.getKeyword('sub')).caps)]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[needed]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
+  $if[$and[$accessMatch[$get[needed];*];$replace[$env[hours];null;]!=;$replace[$env[hours];null;]!=0];$return[owner_expiry]]
 
   $let[lock;$mutex[acquire;ua:$get[target]]]
   $let[ua;$getUserVar[userAccess;$get[target]]]

@@ -12,10 +12,16 @@ export default command('catch', `
   $onlyIf[$and[$or[$arrayIncludes[names;$get[msg]];$arrayIncludes[trNames;$get[msg]]];$spawnConfig[caught_by]==]]
   
   $let[caughtin;$sub[$getMessage[$channelID;$messageID;timestamp];$spawnConfig[timestamp]]]
+  $let[spawnLock;$mutex[acquire;spawn:$guildID]]
+  $if[$spawnConfig[caught_by]!=;
+    $!mutex[release;spawn:$guildID;$get[spawnLock]]
+    $stop
+  ]
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $!jsonSet[config;caught_by;"$authorID"]
   $!jsonSet[config;caught_in;"$get[caughtin]"]
   $setGuildVar[spawnConfig;$env[config]]
+  $!mutex[release;spawn:$guildID;$get[spawnLock]]
   
   $addUserCollectible[$authorID;$get[ctbl];{
     "id": "$get[ctbl]",

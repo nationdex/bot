@@ -30,9 +30,14 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $if[$isBlacklisted[$env[type];$env[id]]==false;$return[missing]]
+  $let[lock;$mutex[acquire;blacklist:$env[type]:$env[id]]]
+  $if[$isBlacklisted[$env[type];$env[id]]==false;
+    $!mutex[release;blacklist:$env[type]:$env[id];$get[lock]]
+    $return[missing]
+  ]
   $if[$env[type]==guild;$deleteGuildVar[blacklist;$env[id]];$deleteUserVar[blacklist;$env[id]]]
   $!blacklistHistoryPush[$env[type];$env[id];unblacklist;$env[moderator];$env[reason]]
+  $!mutex[release;blacklist:$env[type]:$env[id];$get[lock]]
   $return[removed]
   `,
 });

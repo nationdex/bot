@@ -38,12 +38,19 @@ export default new ForgeFunction({
   $if[$get[caps]==;$return[unknown]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[caps]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
+  $let[current;$accessData]
+  $let[existing;$js[const r = Reflect.get((JSON.parse(ctx.getKeyword('current') || 'null') || {}).roles || {}, ctx.getKeyword('name')); r ? JSON.stringify(r) : '']]
+  $if[$get[existing]!=;
+    $let[oldVerdict;$accessCheck[$accessCaps[$get[actor]];$get[existing]]]
+    $if[$get[oldVerdict]!=ok;$return[$get[oldVerdict]]]
+  ]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $setGlobalVar[access;$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
     acc.roles = acc.roles || {};
     Reflect.set(acc.roles, ctx.getKeyword('name'), JSON.parse(ctx.getKeyword('caps')));
+    acc.removedRoles = (acc.removedRoles || new Array()).filter((n) => n !== ctx.getKeyword('name'));
     JSON.stringify(acc)
   ]]
   $!mutex[release;access;$get[lock]]

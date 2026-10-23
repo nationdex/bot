@@ -71,6 +71,7 @@ export default new ForgeFunction({
     $color[$jsonVar[config;accent]]
   ;true]]
   
+  $let[spawnLock;$mutex[acquire;spawn:$guildID]]
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $!jsonSet[config;caught_by;""]
   $!jsonSet[config;caught_in;""]
@@ -84,5 +85,6 @@ export default new ForgeFunction({
   $!jsonSet[config;timestamp;"$getTimestamp"]
   $!jsonSet[config;special;$get[special]]
   $setGuildVar[spawnConfig;$env[config]]
+  $!mutex[release;spawn:$guildID;$get[spawnLock]]
   `,
 });

@@ -3,8 +3,6 @@ import { SlashCommand } from '../../core/slashes';
 export default SlashCommand('economy.give', `
   $let[user;$findUser[$option[user];true]]
   $let[amount;$round[$option[amount]]]
-  $let[balance;$getUserVar[balance]]
-
   $onlyIf[$get[user]!=$authorID;
     $err[give_self;true]
   ]
@@ -17,12 +15,23 @@ export default SlashCommand('economy.give', `
   $onlyIf[$get[amount]>0;
     $err[min_amount;true]
   ]
-  $onlyIf[$get[balance]>=$get[amount];
+
+  $let[first;$js[Array.of(ctx.getKeyword('user'), ctx.getKeyword('authorID')).sort().at(0)]]
+  $let[second;$js[Array.of(ctx.getKeyword('user'), ctx.getKeyword('authorID')).sort().at(1)]]
+  $let[lockOne;$mutex[acquire;user:$get[first]]]
+  $let[lockTwo;$mutex[acquire;user:$get[second]]]
+  $let[balance;$getUserVar[balance;$authorID]]
+  $if[$get[balance]<$get[amount];
+    $!mutex[release;user:$get[first];$get[lockOne]]
+    $!mutex[release;user:$get[second];$get[lockTwo]]
     $err[low_bal;true]
+    $stop
   ]
 
   $setUserVar[balance;$sub[$get[balance];$get[amount]];$authorID]
   $setUserVar[balance;$sum[$getUserVar[balance;$get[user]];$get[amount]];$get[user]]
+  $!mutex[release;user:$get[first];$get[lockOne]]
+  $!mutex[release;user:$get[second];$get[lockTwo]]
 
   $interactionReply[
     $ephemeral

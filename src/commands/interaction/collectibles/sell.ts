@@ -17,9 +17,15 @@ export default command('interaction.collectibles.sell', `
 
   $ifx[
     $if[$get[act]==confirm;
+      $let[invLock;$mutex[acquire;inv:$authorID]]
       $jsonLoad[data;$getUserVar[userCollectibles;$authorID]]
       $jsonLoad[userCollectibles;$env[data;collectibleIDs]]
       $jsonLoad[uniques;$env[data;unique]]
+      $if[$arrayIncludes[userCollectibles;$get[id]]==false;
+        $!mutex[release;inv:$authorID;$get[invLock]]
+        $err[no_collectibles_found;true]
+        $stop
+      ]
       $!jsonDelete[userCollectibles;$arrayIndexOf[userCollectibles;$get[id]]]
       $!jsonSet[data;collectibleIDs;$env[userCollectibles]]
       $arrayMap[userCollectibles;nat;$return[$collectible[$env[nat];id]];nids]
@@ -30,6 +36,7 @@ export default command('interaction.collectibles.sell', `
       $!jsonSet[data;$get[class];$sub[$env[data;$get[class]];1]]
       $!jsonSet[data;total_value;$max[$sub[$env[data;total_value];$collectibleInfo[$get[colID];weight]];0]]
       $setUserVar[userCollectibles;$env[data];$authorID]
+      $!mutex[release;inv:$authorID;$get[invLock]]
   
       $editBalance[$authorID;add;$get[price]]
   

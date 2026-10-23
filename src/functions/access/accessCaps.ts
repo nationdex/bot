@@ -13,7 +13,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[ua;$getUserVar[userAccess;$env[user]]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $return[$js[
     const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};

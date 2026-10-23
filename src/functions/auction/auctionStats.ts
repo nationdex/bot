@@ -27,6 +27,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[user;$env[user]]
+  $let[lock;$mutex[acquire;user:$get[user]]]
   $jsonLoad[stats;$getUserVar[auction;$get[user]]]
   $setUserVar[auction;$js[
     (() => {
@@ -54,5 +55,6 @@ export default new ForgeFunction({
     $!jsonSet[us;trades_completed;$sum[$default[$env[us;trades_completed];0];1]]
     $setUserVar[userStats;$env[us];$get[user]]
   ]
+  $!mutex[release;user:$get[user];$get[lock]]
   `,
 });

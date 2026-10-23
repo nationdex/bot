@@ -14,7 +14,7 @@ export default new ForgeFunction({
   code: `
   $if[$hasCap[$authorID;access.manage]==false;$return[denied]]
   $let[target;$replace[$env[user];null;]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $let[ua;$if[$get[target]==;;$getUserVar[userAccess;$get[target]]]]
   $return[$js[(async () => {
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};

@@ -12,7 +12,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $return[$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
     const subject = String(ctx.getEnvironmentKey('subject') || '').trim();

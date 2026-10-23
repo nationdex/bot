@@ -19,7 +19,7 @@ export default new ForgeFunction({
   $let[valid;$js[ctx.getKeyword('channel').length === 0 || (ctx.getKeyword('channel').length > 14 && ctx.getKeyword('channel').length < 26 && ctx.getKeyword('channel').split('').every((c) => c >= '0' && c <= '9'))]]
   $if[$get[valid]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$getGlobalVar[access]]
+  $let[acc;$accessData]
   $setGlobalVar[access;$js[
     const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
     acc.evalChannel = ctx.getKeyword('channel');
