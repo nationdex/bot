@@ -1,7 +1,7 @@
 import { command } from '../../../core/commands';
 
 export default command('autocomplete.access', `
-  $onlyIf[$and[$applicationCommandName==access;$or[$applicationSubCommandName==role;$applicationSubCommandName==roledelete]]]
+  $onlyIf[$and[$applicationCommandName==access;$or[$applicationSubCommandName==role;$applicationSubCommandName==roledelete;$applicationSubCommandName==grant;$applicationSubCommandName==revoke]]]
   $onlyIf[$hasCap[$authorID;access.manage;home]]
   $let[typed;$replace[$toLowerCase[$focusedOptionValue]; ;]]
   $jsonLoad[acc;$accessData]
@@ -18,6 +18,32 @@ export default command('autocomplete.access', `
       $arrayForEach[names;n;
         $jsonLoad[roleCaps;$env[roleMap;$env[n]]]
         $addChoice[$cropText[$env[n]: $arrayJoin[roleCaps;, ];0;100;...];$env[n]]
+      ]
+    ]
+
+    $elseIf[$focusedOptionName==access;
+      $let[held;$accessCaps[$authorID]]
+      $let[target;$replace[$option[user];null;]]
+      $if[$and[$applicationSubCommandName==revoke;$get[target]!=];
+        $jsonLoad[ua;$default[$getUserVar[userAccess;$get[target]];{}]]
+        $jsonLoad[grants;$default[$env[ua;grants];[\\]]]
+        $arrayMap[grants;g;$return[$env[g;subject]];subjects]
+        $arrayUnique[subjects;subjects]
+        $arrayFilter[subjects;sub;$checkContains[$env[sub];$get[typed]];subjects]
+        $arraySlice[subjects;subjects;0;25]
+        $arrayForEach[subjects;sub;$addChoice[$env[sub];$env[sub]]]
+      ;
+        $jsonLoad[names;$jsonKeys[roleMap]]
+        $arrayFilter[names;n;$and[$checkContains[$env[n];$get[typed]];$accessCheck[$get[held];$env[roleMap;$env[n]]]==ok];names]
+        $arraySlice[names;names;0;12]
+        $arrayForEach[names;n;
+          $jsonLoad[roleCaps;$env[roleMap;$env[n]]]
+          $addChoice[$cropText[Role $env[n]: $arrayJoin[roleCaps;, ];0;100;...];$env[n]]
+        ]
+        $jsonLoad[caps;$accessCapabilityList]
+        $arrayFilter[caps;c;$and[$checkContains[$env[c];$get[typed]];$accessCheck[$get[held];["$env[c]"\\]]==ok];caps]
+        $arraySlice[caps;caps;0;$sub[25;$arrayLength[names]]]
+        $arrayForEach[caps;c;$addChoice[$env[c];$env[c]]]
       ]
     ]
 

@@ -35,6 +35,7 @@ const subjectOpt: SlashOptionConfig = {
   name: 'access',
   description: 'A role name or capability (see /access roles)',
   required: true,
+  autocomplete: true,
   max_length: 64,
 };
 
