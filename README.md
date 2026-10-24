@@ -71,6 +71,8 @@ GET routes return JSON and need no token, except `/v1/search_db`, which needs on
 | `GET /v1/config` | none | The bot config (`bot`, `urls`, `paths`, `author`, `dev`, `webDev`, `prefix`, `logChannel`, `accent`) |
 | `GET /v1/collectibles/data` | optional `id` | The whole catalog, or just that nation. Unknown `id` gives `404` and `{"error": "Collectible Not Found"}` |
 | `GET /v1/user` | `id` (Discord user ID, required) | `collectiblesData` (inventory), `auctionData`, `settings`. A player's privacy settings are honoured: a private inventory or profile comes back as `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
+| `GET /v1/cards` | none | The card backgrounds as an array of `id`, `name`, `file`, `url` and `nationsCount` (how many nations use it). `url` is the path of the image, for example `/v1/cards/democracy/image` |
+| `GET /v1/cards/:id/image` | `id` from `GET /v1/cards` | The card background PNG itself (`image/png`, cached for an hour), ready for an `<img>` tag. Unknown `id` gives `404` and `{"error": "Card Not Found"}` |
 | `GET /v1/commands/data` | none | The prefix command definitions (`src/config/commands.ts`) |
 | `GET /v1/slash/data` | none | The slash command definitions (`src/config/slash.ts`) |
 | `GET /v1/search_db/:variable` | optional `id`. **Needs a token with `inspect.read`** (`401` without a token, `403` without the capability) | The raw database records of a variable, for example `/v1/search_db/spawnConfig` or `/v1/search_db/userCollectibles?id=123`. Each record has `identifier`, `name`, `id`, `type`, `value` (a JSON string) and `guild_id` |

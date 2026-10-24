@@ -1469,6 +1469,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/collectibles/collectibleCard.js"),
   require("../dist/functions/collectibles/randomRarity.js"),
   require("../dist/functions/collectibles/addUserCollectible.js"),
+  require("../dist/functions/collectibles/cardList.js"),
   require("../dist/functions/collectibles/progressMenu.js"),
   require("../dist/functions/collectibles/collectibleExists.js"),
   require("../dist/functions/collectibles/isValidClass.js"),
