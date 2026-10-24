@@ -13,6 +13,13 @@ export default new ForgeFunction({
   ],
   code: `
   $jsonLoad[rows;$searchDB[blacklist]]
-  $return[$js[ctx.getEnvironmentKey('rows').filter((r) => r.type === ctx.getEnvironmentKey('type') && Number((JSON.parse(r.value || 'null') || {}).timestamp) > 0).length]]
+  $let[count;0]
+  $arrayForEach[rows;row;
+    $if[$env[row;type]==$env[type];
+      $jsonLoad[entry;$default[$env[row;value];{}]]
+      $if[$default[$env[entry;timestamp];0]>0;$let[count;$sum[$get[count];1]]]
+    ]
+  ]
+  $return[$get[count]]
   `,
 });

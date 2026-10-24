@@ -16,8 +16,8 @@ export default new ForgeFunction({
   $let[origin;$getHeader[origin]]
   $if[$get[origin]==;$return[]]
   $let[allowed;$replace[$replace[$jsonVar[config;api.allowedOrigins];undefined;];null;]]
-  $let[ok;$js[ctx.getKeyword('allowed').split(',').map((o) => o.trim()).filter((o) => o).includes(ctx.getKeyword('origin'))]]
-  $if[$get[ok]==false;$return[]]
+  $arrayLoad[origins;,;$replace[$get[allowed]; ;]]
+  $if[$arrayIncludes[origins;$get[origin]]==false;$return[]]
   $!writeHeader[Access-Control-Allow-Origin;$get[origin]]
   $!writeHeader[Vary;Origin]
   $if[$replace[$env[mode];null;]==preflight;

@@ -30,23 +30,13 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[reply;$js[
-    const text = new Object();
-    Reflect.set(text, 200, 'OK');
-    Reflect.set(text, 400, 'Bad Request');
-    Reflect.set(text, 401, 'Unauthorized');
-    Reflect.set(text, 403, 'Forbidden');
-    Reflect.set(text, 404, 'Not Found');
-    Reflect.set(text, 413, 'Payload Too Large');
-    Reflect.set(text, 500, 'Internal Server Error');
-    Reflect.set(text, 503, 'Service Unavailable');
-    const body = JSON.parse(ctx.getEnvironmentKey('json') || 'null') || { status: 500, error: 'Empty reply.' };
-    body.status = Number(body.status) || 500;
-    body.ok = body.status === 200;
-    body.statusText = Reflect.get(text, body.status) || 'Error';
-    JSON.stringify(body)
-  ]]
-  $jsonLoad[r;$get[reply]]
+  $jsonLoad[names;{"200":"OK","400":"Bad Request","401":"Unauthorized","403":"Forbidden","404":"Not Found","413":"Payload Too Large","500":"Internal Server Error","503":"Service Unavailable"}]
+  $jsonLoad[r;$default[$replace[$env[json];null;];{"status":500,"error":"Empty reply."}]]
+  $let[status;$default[$replace[$env[r;status];undefined;];500]]
+  $if[$isNumber[$get[status]]==false;$let[status;500]]
+  $!jsonSet[r;status;$get[status]]
+  $!jsonSet[r;ok;$checkCondition[$get[status]==200]]
+  $!jsonSet[r;statusText;$default[$replace[$env[names;$get[status]];undefined;];Error]]
   $let[actor;$replace[$env[actor];null;]]
   $let[action;$replace[$env[action];null;]]
   $if[$and[$get[actor]!=;$get[action]!=;$env[r;status]==200];

@@ -27,7 +27,7 @@ export default new ForgeFunction({
   $let[user;$env[user]]
   $let[scope;$replace[$env[scope];null;]]
   $let[home;$homeGuild]
-  $let[valid;$js[ctx.getKeyword('user').length > 14 && ctx.getKeyword('user').length < 26 && ctx.getKeyword('user').split('').every((c) => c >= '0' && c <= '9')]]
+  $let[valid;$and[$get[user]!=;$replaceRegex[$get[user];\\\\d{15,25};;]==]]
   $if[$or[$get[home]==;$get[valid]==false];$return[false]]
   $let[where;$if[$get[scope]==home;$get[home];$if[$get[scope]==dm;dm;$guildID]]]
   $if[$and[$get[where]!=$get[home];$get[where]!=dm];$return[false]]
