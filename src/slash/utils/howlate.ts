@@ -3,23 +3,13 @@ import { slashCommand } from '../../core/slashes';
 export default slashCommand('utils.howlate', `
   $let[rawMsg;$trim[$replace[$option[message];null;]]]
   $let[cleanMsg;$replace[$replace[$get[rawMsg];<;];>;]]
-  $js[
-    (() => {
-      const raw = String(ctx.getKeyword('cleanMsg') || '').trim()
-      let msgId = ''
-      let targetChannel = String(ctx.channel?.id || '')
-      if (raw.includes('/')) {
-        const parts = raw.split('/').filter(Boolean)
-        msgId = parts.at(-1) || ''
-        if (parts.length >= 2) {
-          targetChannel = parts.at(-2) || targetChannel
-        }
-      } else {
-        msgId = raw
-      }
-      ctx.setKeyword('msgId', msgId)
-      ctx.setKeyword('targetChannel', targetChannel)
-    })()
+  $let[msgId;$get[cleanMsg]]
+  $let[targetChannel;$channelID]
+  $if[$checkContains[$get[cleanMsg];/];
+    $textSplit[$get[cleanMsg];/]
+    $let[parts;$getSplitTextLength]
+    $let[msgId;$splitText[$sub[$get[parts];1]]]
+    $let[targetChannel;$splitText[$sub[$get[parts];2]]]
   ]
 
   $let[ctbl;$spawnConfig[collectible]]

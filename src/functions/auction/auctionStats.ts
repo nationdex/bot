@@ -28,27 +28,22 @@ export default new ForgeFunction({
   code: `
   $let[user;$env[user]]
   $let[lock;$mutex[acquire;user:$get[user]]]
-  $jsonLoad[stats;$getUserVar[auction;$get[user]]]
-  $setUserVar[auction;$js[
-    (() => {
-      const raw = ctx.getEnvironmentKey('stats')
-      const s = Object.assign({ total: 0, sold: 0, earnings: 0, onSale: new Array() }, raw && typeof raw === 'object' ? raw : {})
-      if (!Array.isArray(s.onSale)) s.onSale = new Array()
-      const ev = String(ctx.getEnvironmentKey('event'))
-      const aid = String(ctx.getEnvironmentKey('aid'))
-      const amt = Number(ctx.getEnvironmentKey('amount')) || 0
-      s.onSale = s.onSale.map(String).filter((x) => x !== aid)
-      if (ev === 'listed') {
-        s.total = (Number(s.total) || 0) + 1
-        s.onSale.push(aid)
-      }
-      if (ev === 'sold') {
-        s.sold = (Number(s.sold) || 0) + 1
-        s.earnings = (Number(s.earnings) || 0) + amt
-      }
-      return JSON.stringify(s)
-    })()
-  ];$get[user]]
+  $jsonLoad[stats;$default[$getUserVar[auction;$get[user]];{}]]
+  $jsonLoad[onSale;$default[$env[stats;onSale];[\\]]]
+  $arrayFilter[onSale;listed;$env[listed]!=$env[aid];onSale]
+  $!jsonSet[stats;total;$default[$env[stats;total];0]]
+  $!jsonSet[stats;sold;$default[$env[stats;sold];0]]
+  $!jsonSet[stats;earnings;$default[$env[stats;earnings];0]]
+  $if[$env[event]==listed;
+    $!arrayPush[onSale;$env[aid]]
+    $!jsonSet[stats;total;$sum[$env[stats;total];1]]
+  ]
+  $if[$env[event]==sold;
+    $!jsonSet[stats;sold;$sum[$env[stats;sold];1]]
+    $!jsonSet[stats;earnings;$sum[$env[stats;earnings];$default[$replace[$env[amount];null;];0]]]
+  ]
+  $!jsonSet[stats;onSale;$env[onSale]]
+  $setUserVar[auction;$env[stats];$get[user]]
 
   $if[$or[$env[event]==sold;$env[event]==won];
     $jsonLoad[us;$getUserVar[userStats;$get[user]]]

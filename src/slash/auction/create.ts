@@ -24,15 +24,10 @@ export default SlashCommand('auction.create', `
   ]
 
   $jsonLoad[house;$default[$getGlobalVar[auctionHouse];{}]]
-  $let[active;$js[
-    (() => {
-      const h = ctx.getEnvironmentKey('house')
-      const me = String(ctx.user.id)
-      const now = Date.now()
-      const list = h && typeof h === 'object' && h.auctions && typeof h.auctions === 'object' ? Object.values(h.auctions) : new Array()
-      return String(list.filter((a) => a && String(a.seller) === me && Number(a.ends) > now).length)
-    })()
-  ]]
+  $jsonLoad[listed;$default[$env[house;auctions];{}]]
+  $jsonLoad[keys;$jsonKeys[listed]]
+  $arrayFilter[keys;key;$and[$env[listed;$env[key];seller]==$authorID;$env[listed;$env[key];ends]>$getTimestamp];mine]
+  $let[active;$arrayLength[mine]]
   $onlyIf[$get[active]<${auctionConfig.maxActivePerUser};
     $err[auction_limit;true]
   ]

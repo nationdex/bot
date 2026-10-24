@@ -6,14 +6,8 @@ export default new ForgeFunction({
   params: [],
   code: `
   $jsonLoad[house;$default[$getGlobalVar[auctionHouse];{}]]
-  $jsonLoad[expired;$js[
-    (() => {
-      const h = ctx.getEnvironmentKey('house')
-      const list = h && typeof h === 'object' && h.auctions && typeof h.auctions === 'object' ? Object.values(h.auctions) : new Array()
-      const now = Date.now()
-      return JSON.stringify(list.filter((a) => a && Number(a.ends) <= now).map((a) => String(a.id)))
-    })()
-  ]]
+  $jsonLoad[listed;$default[$env[house;auctions];{}]]
+  $jsonLoad[expired;$jsonKeys[listed]]
   $let[settled;0]
   $arrayForEach[expired;aid;
     $let[token;$auctionLock[acquire]]
