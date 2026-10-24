@@ -16,7 +16,7 @@ export default new ForgeFunction({
   $let[channel;$replace[$env[channel];null;]]
   $if[$hasCap[$get[actor];*]==false;$return[owner_only]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
-  $let[valid;$js[ctx.getKeyword('channel').length === 0 || (ctx.getKeyword('channel').length > 14 && ctx.getKeyword('channel').length < 26 && ctx.getKeyword('channel').split('').every((c) => c >= '0' && c <= '9'))]]
+  $let[valid;$or[$get[channel]==;$replaceRegex[$get[channel];\\\\d{15,25};;]==]]
   $if[$get[valid]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
   $let[acc;$accessData]

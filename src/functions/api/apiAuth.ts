@@ -18,12 +18,8 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[header;$replace[$env[header];null;]]
-  $let[token;$js[
-    const h = ctx.getKeyword('header').trim();
-    const t = h.slice(7);
-    h.startsWith('Bearer ndx_') && t.length === 68 && t.slice(4).split('').every((c) => '0123456789abcdef'.includes(c)) ? t : ''
-  ]]
+  $let[header;$trim[$replace[$env[header];null;]]]
+  $let[token;$if[$sliceText[$get[header];0;1]==Bearer;$sliceText[$get[header];1;2];]]
   $if[$get[token]==;
     $apiRespond[{"status":401,"error":"Missing or invalid API token."}]
     $stop

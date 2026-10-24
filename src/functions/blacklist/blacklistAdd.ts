@@ -33,7 +33,7 @@ export default new ForgeFunction({
   $let[type;$env[type]]
   $let[id;$env[id]]
   $if[$and[$get[type]==user;$or[$get[id]==$env[moderator];$get[id]==$botID;$accessHasAny[$get[id]]]];$return[protected]]
-  $if[$and[$get[type]==guild;$get[id]==$js[process.env.HOME_GUILD_ID || '']];$return[protected]]
+  $if[$and[$get[type]==guild;$get[id]==$homeGuild];$return[protected]]
   $let[lock;$mutex[acquire;blacklist:$get[type]:$get[id]]]
   $if[$isBlacklisted[$get[type];$get[id]];
     $!mutex[release;blacklist:$get[type]:$get[id];$get[lock]]

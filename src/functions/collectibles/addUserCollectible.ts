@@ -27,7 +27,7 @@ export default new ForgeFunction({
   $let[user;$env[user]]
   $let[ctbl;$env[collectibleID]]
   $let[data;$env[data]]
-  $let[id;$js[Array.from(require('crypto').randomBytes(7),b=>'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'[b%36\\]).join('')]]
+  $let[id;$randomString[7;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ]]
   
   $let[invLock;$mutex[acquire;inv:$get[user]]]
   $jsonLoad[userData;$getUserVar[userCollectibles;$get[user]]]

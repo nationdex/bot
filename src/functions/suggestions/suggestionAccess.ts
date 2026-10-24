@@ -27,24 +27,18 @@ export default new ForgeFunction({
   $let[raw;$getSuggestion[$env[id]]]
   $let[user;$env[user]]
   $let[need;$env[need]]
-  $return[$js[
-    (() => {
-      const kw = (k) => String(ctx.getKeyword(k) ?? '')
-      const s = JSON.parse(kw('raw') || '{}')
-      if (!s.id) return 'suggestion_not_found'
-      const need = kw('need')
-      const open = s.status === 'pending' || s.status === 'changes_requested'
-      if (need === 'ownerOpen') {
-        if (s.submitterId !== kw('user')) return 'suggestion_not_owner'
-        if (!open) return 'suggestion_not_open'
-      }
-      if (need === 'staffOpen' && !open) return 'suggestion_not_pending'
-      if (need === 'vote') {
-        if (s.status !== 'pending') return 'suggestion_voting_closed'
-        if (s.submitterId === kw('user')) return 'suggestion_self_vote'
-      }
-      return ''
-    })()
-  ]]
+  $jsonLoad[s;$default[$get[raw];{}]]
+  $if[$env[s;id]==;$return[suggestion_not_found]]
+  $let[open;$or[$env[s;status]==pending;$env[s;status]==changes_requested]]
+  $if[$get[need]==ownerOpen;
+    $if[$env[s;submitterId]!=$get[user];$return[suggestion_not_owner]]
+    $if[$get[open]==false;$return[suggestion_not_open]]
+  ]
+  $if[$and[$get[need]==staffOpen;$get[open]==false];$return[suggestion_not_pending]]
+  $if[$get[need]==vote;
+    $if[$env[s;status]!=pending;$return[suggestion_voting_closed]]
+    $if[$env[s;submitterId]==$get[user];$return[suggestion_self_vote]]
+  ]
+  $return[]
   `,
 });

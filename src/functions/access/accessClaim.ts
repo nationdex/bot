@@ -7,7 +7,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[actor;$authorID]
-  $let[home;$js[process.env.HOME_GUILD_ID || '']]
+  $let[home;$homeGuild]
   $if[$or[$get[home]==;$guildID!=$get[home]];$return[denied]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
   $let[lock;$mutex[acquire;claim]]

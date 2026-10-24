@@ -15,7 +15,7 @@ export default new ForgeFunction({
   $let[actor;$authorID]
   $let[target;$replace[$env[user];null;]]
   $if[$get[target]==;$let[target;$get[actor]]]
-  $let[home;$js[process.env.HOME_GUILD_ID || '']]
+  $let[home;$homeGuild]
   $if[$or[$get[home]==;$guildID!=$get[home]];$return[denied]]
   $if[$and[$get[target]!=$get[actor];$hasCap[$get[actor];access.manage]==false];$return[denied]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]

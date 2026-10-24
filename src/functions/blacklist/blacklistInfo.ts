@@ -26,11 +26,9 @@ export default new ForgeFunction({
   code: `
   $if[$isBlacklisted[$env[type];$env[id]]==false;$return[]]
   $let[raw;$if[$env[type]==guild;$getGuildVar[blacklist;$env[id]];$getUserVar[blacklist;$env[id]]]]
-  $return[$js[
-    const e = JSON.parse(ctx.getKeyword('raw'));
-    e.unix = Math.floor(e.timestamp / 1000);
-    const p = String(ctx.getEnvironmentKey('property') || '').replace(/^null$/, '');
-    p ? String(Reflect.get(e, p) ?? '') : JSON.stringify(e)
-  ]]
+  $jsonLoad[e;$get[raw]]
+  $!jsonSet[e;unix;$floor[$divide[$env[e;timestamp];1000]]]
+  $let[p;$replace[$env[property];null;]]
+  $return[$if[$get[p]==;$env[e];$env[e;$get[p]]]]
   `,
 });

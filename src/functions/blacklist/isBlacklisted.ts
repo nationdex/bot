@@ -21,6 +21,7 @@ export default new ForgeFunction({
   $let[id;$env[id]]
   $if[$or[$get[id]==;$get[id]==null;$and[$env[type]!=user;$env[type]!=guild]];$return[false]]
   $let[raw;$if[$env[type]==guild;$getGuildVar[blacklist;$get[id]];$getUserVar[blacklist;$get[id]]]]
-  $return[$js[Number((JSON.parse(ctx.getKeyword('raw') || 'null') || {}).timestamp) > 0]]
+  $jsonLoad[entry;$default[$get[raw];{}]]
+  $return[$checkCondition[$default[$env[entry;timestamp];0]>0]]
   `,
 });

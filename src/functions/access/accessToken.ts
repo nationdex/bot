@@ -7,7 +7,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[actor;$authorID]
-  $let[home;$js[process.env.HOME_GUILD_ID || '']]
+  $let[home;$homeGuild]
   $if[$or[$get[home]==;$guildID!=$get[home]];$return[denied]]
   $jsonLoad[caps;$accessCaps[$get[actor]]]
   $if[$arrayLength[caps]==0;$return[denied]]

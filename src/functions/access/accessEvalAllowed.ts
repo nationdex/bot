@@ -7,7 +7,7 @@ export default new ForgeFunction({
   ],
   code: `
   $if[$guildID==;$return[true]]
-  $let[home;$js[process.env.HOME_GUILD_ID || '']]
+  $let[home;$homeGuild]
   $if[$or[$get[home]==;$guildID!=$get[home]];$return[false]]
   $jsonLoad[acc;$getGlobalVar[access]]
   $let[control;$env[acc;evalChannel]]
