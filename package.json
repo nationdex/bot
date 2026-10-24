@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/nationdex/bot#readme",
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=22.0.0",
     "bun": ">=1.0.0"
   },
   "dependencies": {
@@ -43,11 +43,8 @@
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.3",
+    "@types/bun": "^1.4.4",
     "typescript": "^7.0.2"
-  },
-  "overrides": {
-    "undici": "6.29.1"
   },
   "trustedDependencies": [
     "@nationdex/api"
