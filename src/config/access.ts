@@ -86,15 +86,15 @@ export const accessCommand: SlashCommandConfig = {
       description: 'Create or replace a role from a list of capabilities',
       tags: ['access'],
       options: [
-        { type: ApplicationCommandOptionType.String, name: 'name', description: 'Lowercase role name', required: true, min_length: 2, max_length: 32 },
-        { type: ApplicationCommandOptionType.String, name: 'capabilities', description: 'Comma separated capabilities', required: true, max_length: 300 },
+        { type: ApplicationCommandOptionType.String, name: 'name', description: 'Role name (pick an existing role to edit it, or type a new one)', required: true, autocomplete: true, min_length: 2, max_length: 32 },
+        { type: ApplicationCommandOptionType.String, name: 'capabilities', description: 'Capabilities, separated by commas (suggestions are offered as you type)', required: true, autocomplete: true, max_length: 300 },
       ],
     },
     roledelete: {
       name: 'roledelete',
       description: 'Delete a role and every grant of it',
       tags: ['access'],
-      options: [{ type: ApplicationCommandOptionType.String, name: 'name', description: 'The role name', required: true, max_length: 32 }],
+      options: [{ type: ApplicationCommandOptionType.String, name: 'name', description: 'The role to delete', required: true, autocomplete: true, max_length: 32 }],
     },
     evalchannel: {
       name: 'evalchannel',

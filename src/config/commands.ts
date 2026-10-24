@@ -76,6 +76,11 @@ export const commands = {
       allowedInteractionTypes: ['autocomplete'],
       description: 'Autocomplete for auction commands',
     },
+    access: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['autocomplete'],
+      description: 'Autocomplete for role names and capabilities in /access',
+    },
   },
 
   interaction: {
