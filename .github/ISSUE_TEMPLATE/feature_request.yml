@@ -36,7 +36,7 @@ body:
         - "Bot Commands & Features"
         - "Card Trading & Economy System"
         - "Canvas / Visual Customizations"
-        - "Website & Admin Dashboard"
+        - "Staff API / Access system"
         - "Developer / Infrastructure Tools"
     validations:
       required: true

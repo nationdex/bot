@@ -49,8 +49,8 @@ body:
         - "Bot Commands / Slash Commands"
         - "ForgeScript / Functions"
         - "Canvas / Image Generation"
-        - "Database / Storage (ForgeDB / SQLite)"
-        - "Website / Admin Panel"
+        - "Database / Storage (PGlite)"
+        - "Staff API / Access system"
         - "Other / Unknown"
     validations:
       required: true

@@ -6,7 +6,6 @@ database/
 dist/
 logs/
 node_modules/
-website/
 .cache/
 .env
 # Ignore uncompressed binaries exceeding GitHub's 100MB limit (tracked as .tar.gz)
