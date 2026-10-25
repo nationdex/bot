@@ -6,7 +6,7 @@ export default new ForgeFunction({
   params: [
     {
       name: 'op',
-      // nationAdd, nationEdit, nationCategory, nationCard, nationArt, categoryAdd, categoryDelete, backgroundAdd or backgroundDelete
+      // nationAdd, nationEdit, nationCategory, nationCard, nationArt, categoryAdd, categoryDelete, backgroundAdd, backgroundReplace or backgroundDelete
       type: 'String',
       required: true,
     },
@@ -239,8 +239,9 @@ export default new ForgeFunction({
       return done({});
     }
     const safe = (name) => name.length > 0 && name.length <= 40 && !name.includes('.') && !name.includes('/') && !name.includes(String.fromCharCode(92));
-    if (op === 'backgroundAdd') {
-      const name = String(body.name ?? '').trim();
+    if (op === 'backgroundAdd' || op === 'backgroundReplace') {
+      const replace = op === 'backgroundReplace';
+      const name = replace ? String(id) : String(body.name ?? '').trim();
       if (!safe(name)) return err(400, 'Names use letters, numbers, - and _ (40 max).');
       if (typeof body.data !== 'string' || !body.data) return err(400, 'Send data as a base64 encoded PNG.');
       const buf = Buffer.from(body.data, 'base64');
@@ -250,9 +251,12 @@ export default new ForgeFunction({
       const h = buf.readUInt32BE(20);
       if (w !== 1428 || h !== 2000) return err(400, 'Card backgrounds must be 1428x2000 pixels (this one is ' + w + 'x' + h + ').');
       const file = path.join(kw('cardsDir'), name + '.png');
-      if (fs.existsSync(file)) return err(400, 'A background with that name already exists.');
+      if (replace && !fs.existsSync(file)) return err(404, 'That background does not exist.');
+      if (!replace && fs.existsSync(file)) return err(400, 'A background with that name already exists.');
       fs.mkdirSync(kw('cardsDir'), { recursive: true });
-      fs.writeFileSync(file, buf);
+      const staged = file + '.upload';
+      fs.writeFileSync(staged, buf);
+      fs.renameSync(staged, file);
       return JSON.stringify({ status: 200, value: {} });
     }
     if (op === 'backgroundDelete') {

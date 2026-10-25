@@ -146,6 +146,7 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 | `POST /v1/categories` | **`name`** 2-20 chars: lowercase letters, numbers, `-` or `_`, starting with a letter. `total`, `total_caught`, `classes` and `collectibles` are reserved |
 | `POST /v1/categories/:name/delete` | none. Fails while a nation uses the category, and for the last category |
 | `POST /v1/cards/backgrounds` | **`name`** 1-40 chars, no `.`, `/` or `\`. **`data`** the PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Fails if the name already exists |
+| `POST /v1/cards/backgrounds/:name/replace` | Needs `cards.edit`. **`data`** the new PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Overwrites the file `assets/cards/<name>.png`, so every nation and special that uses the background shows the new image at once. `404` when the background does not exist |
 | `POST /v1/cards/backgrounds/:name/delete` | none. Fails while a nation or a special uses it |
 
 #### Users
