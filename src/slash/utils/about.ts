@@ -1,6 +1,9 @@
 import { slashCommand } from '../../core/slashes';
 
 export default slashCommand('about', `
+  $jsonLoad[maintainers;$default[$jsonVar[config;maintainers];{}]]
+  $jsonLoad[names;$jsonKeys[maintainers]]
+  $arrayMap[names;name;$return[**[$replace[$env[name];_; ]\\]($env[maintainers;$env[name]])**];lines]
   $interactionReply[
     $addContainer[
       $addSection[
@@ -13,10 +16,9 @@ $jsonVar[config;bot.description]]
 **$collectiblesData[total]** $jsonVar[keywords;collectible.plural] to collect • **$guildCount** servers • **$totalPlayers** players • **$collectiblesData[total_caught]** $jsonVar[keywords;collectible.plural] caught
 Version **$jsonVar[config;bot.version]**
 Uptime: **$parseMS[$uptime;2]**]
-      $addTextDisplay[**Credits**
-**[$jsonVar[config;author.name]\\]($jsonVar[config;author.profile])** Founder
-**[$jsonVar[config;dev.name]\\]($jsonVar[config;dev.profile])** Bot Developer
-**[$jsonVar[config;webDev.name]\\]($jsonVar[config;webDev.profile])** Web Developer
+      $addTextDisplay[**Maintainers**
+$arrayJoin[lines;
+]
 -# Made with ❤️ using [ForgeScript\\](https://docs.botforge.org/?p=ForgeScript) and its extensions!
 ]
       

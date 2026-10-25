@@ -68,7 +68,7 @@ GET routes return JSON and need no token, except `/v1/search_db`, which needs on
 | Route | Query | Returns |
 |---|---|---|
 | `GET /v1/stats` | none | `collectibles_caught_global`, `collectibles_count`, `registered_users`, `registered_guilds` |
-| `GET /v1/config` | none | The bot config (`bot`, `urls`, `paths`, `author`, `dev`, `webDev`, `prefix`, `logChannel`, `accent`) |
+| `GET /v1/config` | none | The bot config (`bot`, `urls`, `paths`, `maintainers`, `prefix`, `logChannel`, `accent`) |
 | `GET /v1/collectibles/data` | optional `id` | The whole catalog, or just that nation. Unknown `id` gives `404` and `{"error": "Collectible Not Found"}` |
 | `GET /v1/user` | `id` (Discord user ID, required) | `collectiblesData` (inventory), `auctionData`, `settings`. A player's privacy settings are honoured: a private inventory or profile comes back as `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
 | `GET /v1/cards` | none | The card backgrounds as an array of `id`, `name`, `file`, `url` and `nationsCount` (how many nations use it). `url` is the path of the image, for example `/v1/cards/democracy/image` |
@@ -168,7 +168,7 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 
 | Route | Body keys |
 |---|---|
-| `POST /v1/config` | **`root`**, **`path`** of an existing value, **`value`**. Checked by path: `accent` is `#rrggbb`, `prefix` is 1-5 chars without spaces, `logChannel` is a channel ID or empty, `paths.*` are relative and cannot contain `..`, `urls.*` and `*.profile` / `*.repo` must be `http(s)` URLs, `bot.name` is 1-32 chars, `api.allowedOrigins` is a list of origins (see below). Keywords follow the rule above |
+| `POST /v1/config` | **`root`**, **`path`** of an existing value, **`value`**. Checked by path: `accent` is `#rrggbb`, `prefix` is 1-5 chars without spaces, `maintainers.*` are full http(s) profile links (the key is the name shown in `/about`, underscores show as spaces; add one with `parent` `maintainers`), `logChannel` is a channel ID or empty, `paths.*` are relative and cannot contain `..`, `urls.*` and `*.profile` / `*.repo` must be `http(s)` URLs, `bot.name` is 1-32 chars, `api.allowedOrigins` is a list of origins (see below). Keywords follow the rule above |
 | `POST /v1/config/add` | **`root`**, `parent` the group to add to (empty for the top level), **`key`** letters, numbers and `_` (up to 32, starting with a letter), **`value`** |
 | `POST /v1/config/delete` | **`root`**, **`path`** of a custom value. Built-in values cannot be deleted |
 | `POST /v1/config/reset` | **`root`**, **`path`** of a built-in value, back to its default |

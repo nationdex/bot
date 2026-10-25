@@ -1529,6 +1529,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/api/apiAuth.js"),
   require("../dist/functions/staff/userEdit.js"),
   require("../dist/functions/staff/recountUser.js"),
+  require("../dist/functions/staff/configMigrate.js"),
   require("../dist/functions/staff/catalogRepair.js"),
   require("../dist/functions/staff/nationDelete.js"),
   require("../dist/functions/staff/recountOwners.js"),

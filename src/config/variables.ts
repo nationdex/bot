@@ -17,17 +17,11 @@ export const variables = {
       icons: 'assets/icons',
       cards: 'assets/cards',
     },
-    author: {
-      name: 'Ariel Aram',
-      profile: 'https://discord.com/users/525421785001361408',
-    },
-    dev: {
-      name: 'Ayansh',
-      profile: 'https://discord.com/users/1421877908456083578',
-    },
-    webDev: {
-      name: 'Aditya',
-      profile: 'https://discord.com/users/903681538842054686',
+    // The people credited in /about: display name (underscores show as spaces) and profile link.
+    maintainers: {
+      Ariel_Aram: 'https://discord.com/users/525421785001361408',
+      Ayansh: 'https://discord.com/users/1421877908456083578',
+      Aditya: 'https://discord.com/users/903681538842054686',
     },
     prefix: 'n.',
     // Origins (comma separated, e.g. https://nationdex.com) that browsers may call the API from. Empty means no cross-origin access.

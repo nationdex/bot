@@ -48,7 +48,7 @@ export default new ForgeFunction({
         if (p === 'prefix' && !(v.length >= 1 && v.length <= 5 && !v.includes(' '))) return 'The prefix must be 1-5 characters without spaces.';
         if (p === 'logChannel' && v && !(v.length > 14 && v.length < 26 && v.split('').every((c) => c >= '0' && c <= '9'))) return 'The log channel must be a channel ID or empty.';
         if (p.startsWith('paths.') && (!v || v.startsWith('/') || v.includes(String.fromCharCode(92)) || v.split('/').includes('..') || v.includes(':'))) return 'Paths must be relative and cannot contain "..".';
-        if ((p.startsWith('urls.') || p.endsWith('.profile') || p.endsWith('.repo')) && !(v.startsWith('http://') || v.startsWith('https://'))) return 'That must be a full http(s) URL.';
+        if ((p.startsWith('urls.') || p.startsWith('maintainers.') || p.endsWith('.repo')) && !(v.startsWith('http://') || v.startsWith('https://'))) return 'That must be a full http(s) URL.';
         if (p === 'bot.name' && (!v || v.length > 32)) return 'The bot name must be 1-32 characters.';
         if (p === 'api.allowedOrigins' && v && !v.split(',').map((o) => o.trim()).every((o) => (o.startsWith('http://') || o.startsWith('https://')) && !o.slice(o.indexOf('//') + 2).includes('/') && !o.includes(' '))) return 'Allowed origins are comma separated origins such as https://nationdex.com, without a path.';
       } else if (!(v.length >= 1 && v.length <= 32 && v.split('').every((c) => 'abcdefghijklmnopqrstuvwxyz0123456789_-'.includes(c)))) {

@@ -6,6 +6,7 @@ export default command('ready', `
   $!clearInterval[auctionSweep]
   $!auctionSettle
   $setInterval[$!auctionSettle;${auctionConfig.sweepInterval};auctionSweep]
+  $!configMigrate
   $if[$catalogRepair==repaired;$log[Moved the stray catch counters out of the catalog (older versions wrote them under the wrong key)]]
   $jsonLoad[blocked;$searchDB[blacklist]]
   $arrayForEach[blocked;row;
