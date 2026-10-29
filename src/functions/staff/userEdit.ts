@@ -6,7 +6,7 @@ export default new ForgeFunction({
   params: [
     {
       name: 'op',
-      // balance, setting, settingsReset, stat, give or removeCatch
+      // balance, setting, settingsReset, stat, auction, give or removeCatch
       type: 'String',
       required: true,
     },
@@ -27,10 +27,11 @@ export default new ForgeFunction({
   $let[user;$env[user]]
   $if[$userExists[$get[user]]==false;$return[{"status":404,"error":"No such Discord user."}]]
   $let[body;$replace[$env[body];null;]]
-  $let[locked;$if[$or[$env[op]==balance;$env[op]==setting;$env[op]==settingsReset;$env[op]==stat];$mutex[acquire;user:$get[user]];]]
+  $let[locked;$if[$or[$env[op]==balance;$env[op]==setting;$env[op]==settingsReset;$env[op]==stat;$env[op]==auction];$mutex[acquire;user:$get[user]];]]
   $let[balance;$getUserVar[balance;$get[user]]]
   $let[settings;$getUserVar[settings;$get[user]]]
   $let[stats;$getUserVar[userStats;$get[user]]]
+  $let[auction;$getUserVar[auction;$get[user]]]
   $let[catalog;$getGlobalVar[collectiblesData]]
   $let[plan;$js[(() => {
     const err = (error) => JSON.stringify({ status: 400, error: error });
@@ -66,6 +67,53 @@ export default new ForgeFunction({
       const cur = JSON.parse(ctx.getKeyword('stats') || 'null') || {};
       Reflect.set(cur, key, parseInt(String(body.value).trim(), 10));
       return JSON.stringify({ status: 200, value: cur, setVar: 'userStats', data: JSON.stringify(cur) });
+    }
+    if (op === 'auction') {
+      const cur = JSON.parse(ctx.getKeyword('auction') || 'null') || {};
+      cur.total = Number(cur.total) || 0;
+      cur.sold = Number(cur.sold) || 0;
+      cur.earnings = Number(cur.earnings) || 0;
+      cur.onSale = Array.isArray(cur.onSale) ? cur.onSale : new Array();
+
+      const numKeys = new Array('total', 'sold', 'earnings');
+      let edited = false;
+
+      if (body.key !== undefined) {
+        const k = String(body.key ?? '').trim();
+        if (numKeys.includes(k)) {
+          if (!whole(body.value, 12)) return err(k + ' must be a non-negative whole number.');
+          const n = parseInt(String(body.value).trim(), 10);
+          const mode = String(body.mode ?? 'set');
+          const prev = Number(Reflect.get(cur, k)) || 0;
+          const next = mode === 'add' ? prev + n : mode === 'remove' ? Math.max(prev - n, 0) : n;
+          Reflect.set(cur, k, next);
+          edited = true;
+        } else if (k === 'onSale') {
+          if (!Array.isArray(body.value)) return err('onSale must be an array of auction IDs.');
+          const list = body.value.map((x) => String(x ?? '').trim()).filter((x) => x);
+          Reflect.set(cur, 'onSale', list);
+          edited = true;
+        } else {
+          return err('Invalid auction key: ' + k + '. Valid keys are: total, sold, earnings, onSale.');
+        }
+      } else {
+        for (const k of numKeys) {
+          if (k in body && Reflect.get(body, k) !== undefined) {
+            if (!whole(Reflect.get(body, k), 12)) return err(k + ' must be a non-negative whole number.');
+            Reflect.set(cur, k, parseInt(String(Reflect.get(body, k)).trim(), 10));
+            edited = true;
+          }
+        }
+        if ('onSale' in body && Reflect.get(body, 'onSale') !== undefined) {
+          if (!Array.isArray(body.onSale)) return err('onSale must be an array of auction IDs.');
+          const list = body.onSale.map((x) => String(x ?? '').trim()).filter((x) => x);
+          Reflect.set(cur, 'onSale', list);
+          edited = true;
+        }
+      }
+
+      if (!edited) return err('Send at least one of: total, sold, earnings, onSale (or key and value).');
+      return JSON.stringify({ status: 200, value: cur, setVar: 'auction', data: JSON.stringify(cur) });
     }
     if (op === 'give') {
       const catalog = JSON.parse(ctx.getKeyword('catalog') || 'null') || {};

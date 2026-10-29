@@ -212,3 +212,62 @@ try {
   // If @nationdex/db is not present or cannot be patched, fail silently
 }
 
+// 4. ForgeCanvas / @napi-rs/canvas roundRect radius normalization
+// When ForgeScript parses optional rest args without values, radius is passed as [].
+// @napi-rs/canvas 1.0.13+ strictly validates 1 to 4 radii and throws RangeError if [] is passed.
+try {
+  const canvasMod = require('@napi-rs/canvas');
+  const dummyCtx = canvasMod.createCanvas?.(1, 1)?.getContext('2d');
+  const ctxProto = dummyCtx ? Object.getPrototypeOf(dummyCtx) : null;
+  if (ctxProto && typeof ctxProto.roundRect === 'function') {
+    const origRoundRect = ctxProto.roundRect;
+    ctxProto.roundRect = function (x: number, y: number, w: number, h: number, radii?: any) {
+      if (!radii || (Array.isArray(radii) && radii.length === 0)) {
+        return origRoundRect.call(this, x, y, w, h, 0);
+      }
+      return origRoundRect.call(this, x, y, w, h, radii);
+    };
+  }
+} catch (e) {
+  console.warn('[canvas] Warning: Failed to patch CanvasRenderingContext2D.prototype.roundRect:', e);
+}
+
+try {
+  const { CanvasBuilder } = require('@tryforge/forge.canvas');
+  if (CanvasBuilder?.prototype) {
+    const origDrawImage = CanvasBuilder.prototype.drawImage;
+    CanvasBuilder.prototype.drawImage = function (
+      manager: any,
+      image: any,
+      x: number,
+      y: number,
+      width?: number,
+      height?: number,
+      radius?: any,
+      ...rest: any[]
+    ) {
+      if (Array.isArray(radius) && radius.length === 0) {
+        radius = 0;
+      }
+      return origDrawImage.call(this, manager, image, x, y, width, height, radius, ...rest);
+    };
+
+    const origRect = CanvasBuilder.prototype.rect;
+    CanvasBuilder.prototype.rect = function (
+      type: any,
+      x: number,
+      y: number,
+      width?: number,
+      height?: number,
+      radius?: any
+    ) {
+      if (Array.isArray(radius) && radius.length === 0) {
+        radius = 0;
+      }
+      return origRect.call(this, type, x, y, width, height, radius);
+    };
+  }
+} catch (e) {
+  console.warn('[canvas] Warning: Failed to patch CanvasBuilder prototype:', e);
+}
+
