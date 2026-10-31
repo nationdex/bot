@@ -16,6 +16,7 @@ export const accessCapabilities = [
   'cards.edit',
   'config.edit',
   'access.manage',
+  'guilds.edit',
 ] as const;
 
 // Only an owner may grant or hold-delegate these.

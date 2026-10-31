@@ -72,6 +72,7 @@ GET routes return JSON and need no token, except `/v1/search_db`, which needs on
 | `GET /v1/collectibles/data` | optional `id` | The whole catalog, or just that nation. Unknown `id` gives `404` and `{"error": "Collectible Not Found"}` |
 | `GET /v1/user` | `id` (Discord user ID, required) | `collectiblesData` (inventory), `auctionData`, `settings`. A player's privacy settings are honoured: a private inventory or profile comes back as `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
 | `GET /v1/users/:id/auction` | none | The user's auction stats (`total`, `sold`, `earnings`, `onSale`). A private profile returns `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
+| `GET /v1/guilds/:id` | none | A server's spawn configuration (`guild`, `status`, `config_channel`, `weight`, `timestamp`). Unknown or unjoined guild gives `404` and `{"error": "Guild Not Found"}` |
 | `GET /v1/cards` | none | The card backgrounds as an array of `id`, `name`, `file`, `url` and `nationsCount` (how many nations use it). `url` is the path of the image, for example `/v1/cards/democracy/image` |
 | `GET /v1/cards/:id/image` | `id` from `GET /v1/cards` | The card background PNG itself (`image/png`, cached for an hour), ready for an `<img>` tag. Unknown `id` gives `404` and `{"error": "Card Not Found"}` |
 | `GET /v1/commands/data` | none | The prefix command definitions (`src/config/commands.ts`) |
@@ -97,8 +98,9 @@ POST routes edit users, nations, cards and the bot settings. Every call needs a 
 | Capability | Routes | Default roles |
 |---|---|---|
 | `nations.edit` | `/v1/nations*` (except `/card`) | `curator` |
-| `cards.edit` | `/v1/nations/:id/card`, `/v1/categories*`, `/v1/cards/backgrounds*` | `curator` |
+| `cards.edit` | `/v1/nations/:id/card`, `/v1/categories*`, `/v1/cards*` | `curator` |
 | `users.edit` | `/v1/users/:id/*` | `support` |
+| `guilds.edit` | `/v1/guilds/:id/*` | `support`, `moderator` |
 | `config.edit` | `/v1/config*` | `owner` only |
 | `inspect.read` | `GET /v1/search_db/*`, the full `GET /v1/user` view | `developer` |
 
@@ -146,9 +148,12 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 |---|---|
 | `POST /v1/categories` | **`name`** 2-20 chars: lowercase letters, numbers, `-` or `_`, starting with a letter. `total`, `total_caught`, `classes` and `collectibles` are reserved |
 | `POST /v1/categories/:name/delete` | none. Fails while a nation uses the category, and for the last category |
-| `POST /v1/cards/backgrounds` | **`name`** 1-40 chars, no `.`, `/` or `\`. **`data`** the PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Fails if the name already exists |
-| `POST /v1/cards/backgrounds/:name/replace` | Needs `cards.edit`. **`data`** the new PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Overwrites the file `assets/cards/<name>.png`, so every nation and special that uses the background shows the new image at once. `404` when the background does not exist |
+| `POST /v1/cards/backgrounds` | **`name`** 1-40 chars, no `.`, `/` or `\`. **`data`** (or `image`) the PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Fails if the name already exists |
+| `POST /v1/cards/backgrounds/:name/replace` | Needs `cards.edit`. **`data`** (or `image`) the new PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Overwrites the file `assets/cards/<name>.png`, so every nation and special that uses the background shows the new image at once. `404` when the background does not exist |
 | `POST /v1/cards/backgrounds/:name/delete` | none. Fails while a nation or a special uses it |
+| `POST /v1/cards/:name/edit` | Edits an existing card background or special variant. `:name` is the card ID or special name. Fields: `name` (new identifier, 1-40 chars; renames card background file on disk, updates catalog nations using this regime, and updates special entries), `image` or `data` (base64 encoded PNG, 1428x2000 pixels, up to 10 MB; replaces card image on disk), optional special properties: `emoji`, `rarity` / `chance`, `catch_phrase`, `credits`, `display_name`, `card` (background name). At least one valid field is required |
+| `POST /v1/cards/add/regime` | Creates a new regime card background. **`name`** 1-40 chars, no `.`, `/` or `\`. **`image`** or **`data`** base64 encoded PNG, exactly 1428x2000 pixels, up to 10 MB. Fails if the card already exists. Answers `{ "value": { "id": "name", "file": "name.png" } }` |
+| `POST /v1/cards/add/special` | Creates a new special card variant. **`name`** 1-40 chars, no `.`, `/` or `\`. Optional `image` or `data` (base64 encoded PNG, 1428x2000 pixels, up to 10 MB to upload a new card background image), `card` (card background name in `assets/cards`, defaults to `name`; if no image is uploaded, the background file must already exist), `emoji` (string/emoji), `rarity` / `chance` (number, spawn chance), `catch_phrase` (text), `credits` (text), `display_name` (custom name). Fails if the special already exists. Answers `{ "value": { "id": "name", "card": "cardName", "file": "cardName.png" } }` |
 
 #### Users
 
@@ -163,6 +168,15 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 | `POST /v1/users/:id/auction` | Updates auction stats. Can send direct fields (`total`, `sold`, `earnings` whole numbers up to 12 digits, and/or `onSale` array of auction IDs), or send **`key`** (`total`, `sold`, `earnings`, `onSale`) and **`value`** with optional `mode` (`set`, `add` or `remove`) |
 | `POST /v1/users/:id/nations/give` | **`nation`** a catalog ID. `count` 1-25 (default `1`) |
 | `POST /v1/users/:id/nations/remove` | **`catch`** the 7-character catch ID. Fails if the user does not hold it (catches in an active auction are not in their inventory) |
+| `POST /v1/users/:id/nations/edit` | Edits nation instance(s) held by the user. Specify target via **`catch`** (7-character ID), **`catches`** (array of IDs), or **`nation`** (catalog ID to edit all instances of that nation). Editable fields: `attack`, `health` (0-999999999), `attack_type`, `health_type` (`buffed` or `nerfed`), `special` (variant name, or empty/`none` to clear), `card` or `regime` (background file in `assets/cards`), `nation` (new catalog ID to reassign the catch, updates inventory class counts and catalog statistics), `timestamp`, `caught_in` (ms). At least one field to change is required |
+
+#### Guilds
+
+`:id` is a Discord guild (server) ID where the bot is a member.
+
+| Route | Body keys |
+|---|---|
+| `POST /v1/guilds/:id/edit` | Configures server spawn settings. **`channel`** (or `config_channel`, `spawn_channel`) Discord channel ID where collectibles spawn (send empty string or `null` to clear and spawn in the most active channel). **`status`** (or `enabled`) `enabled` or `disabled` (boolean `true` or `false` also accepted). Optional `weight` whole number accumulator. At least one field is required |
 
 #### Bot settings
 

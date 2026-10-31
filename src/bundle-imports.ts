@@ -1535,6 +1535,7 @@ export const get_botFunctions = () => [
   require("../dist/functions/staff/recountOwners.js"),
   require("../dist/functions/staff/configEdit.js"),
   require("../dist/functions/staff/recountInventories.js"),
+  require("../dist/functions/staff/guildEdit.js"),
   require("../dist/functions/staff/emojiExists.js"),
   require("../dist/functions/staff/catalogEdit.js"),
 ];

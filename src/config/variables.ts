@@ -74,10 +74,10 @@ export const variables = {
     roles: {
       owner: ['*'],
       developer: ['eval.run', 'inspect.read'],
-      moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate'],
+      moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate', 'guilds.edit'],
       reviewer: ['suggestions.review', 'blacklist.read'],
       curator: ['nations.edit', 'cards.edit'],
-      support: ['users.edit'],
+      support: ['users.edit', 'guilds.edit'],
     },
     tokens: {},
     evalChannel: '',

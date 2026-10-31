@@ -6,7 +6,7 @@ export default new ForgeFunction({
   params: [
     {
       name: 'op',
-      // nationAdd, nationEdit, nationCategory, nationCard, nationArt, categoryAdd, categoryDelete, backgroundAdd, backgroundReplace or backgroundDelete
+      // nationAdd, nationEdit, nationCategory, nationCard, nationArt, categoryAdd, categoryDelete, backgroundAdd, backgroundReplace, backgroundDelete, cardEdit, cardAddRegime or cardAddSpecial
       type: 'String',
       required: true,
     },
@@ -367,32 +367,172 @@ export default new ForgeFunction({
       return done({});
     }
     const safe = (name) => name.length > 0 && name.length <= 40 && !name.includes('.') && !name.includes('/') && !name.includes(String.fromCharCode(92));
-    if (op === 'backgroundAdd' || op === 'backgroundReplace') {
+    const validatePng = (raw) => {
+      if (typeof raw !== 'string' || !raw) return { error: 'Send data or image as a base64 encoded PNG.' };
+      const buf = Buffer.from(raw, 'base64');
+      if (buf.length > 10485760) return { error: 'The file is larger than 10 MB.' };
+      if (buf.length < 24 || buf.readUInt32BE(0) !== 0x89504e47 || buf.toString('ascii', 12, 16) !== 'IHDR') return { error: 'The file must be a PNG image.' };
+      const w = buf.readUInt32BE(16);
+      const h = buf.readUInt32BE(20);
+      if (w !== 1428 || h !== 2000) return { error: 'Card backgrounds must be 1428x2000 pixels (this one is ' + w + 'x' + h + ').' };
+      return { buf: buf };
+    };
+    const writePng = (targetFile, buf) => {
+      fs.mkdirSync(kw('cardsDir'), { recursive: true });
+      const staged = targetFile + '.upload';
+      fs.writeFileSync(staged, buf);
+      fs.renameSync(staged, targetFile);
+    };
+
+    if (op === 'backgroundAdd' || op === 'cardAddRegime' || op === 'backgroundReplace') {
       const replace = op === 'backgroundReplace';
       const name = replace ? String(id) : String(body.name ?? '').trim();
       if (!safe(name)) return err(400, 'Names use letters, numbers, - and _ (40 max).');
-      if (typeof body.data !== 'string' || !body.data) return err(400, 'Send data as a base64 encoded PNG.');
-      const buf = Buffer.from(body.data, 'base64');
-      if (buf.length > 10485760) return err(400, 'The file is larger than 10 MB.');
-      if (buf.length < 24 || buf.readUInt32BE(0) !== 0x89504e47 || buf.toString('ascii', 12, 16) !== 'IHDR') return err(400, 'The file must be a PNG image.');
-      const w = buf.readUInt32BE(16);
-      const h = buf.readUInt32BE(20);
-      if (w !== 1428 || h !== 2000) return err(400, 'Card backgrounds must be 1428x2000 pixels (this one is ' + w + 'x' + h + ').');
+      const rawImage = body.data || body.image;
+      const v = validatePng(rawImage);
+      if (v.error) return err(400, v.error);
       const file = path.join(kw('cardsDir'), name + '.png');
       if (replace && !fs.existsSync(file)) return err(404, 'That background does not exist.');
       if (!replace && fs.existsSync(file)) return err(400, 'A background with that name already exists.');
-      fs.mkdirSync(kw('cardsDir'), { recursive: true });
-      const staged = file + '.upload';
-      fs.writeFileSync(staged, buf);
-      fs.renameSync(staged, file);
-      return JSON.stringify({ status: 200, value: {} });
+      writePng(file, v.buf);
+      return done({ id: name, name: name.charAt(0).toUpperCase() + name.slice(1).split('_').join(' '), file: name + '.png' });
+    }
+    if (op === 'cardAddSpecial') {
+      const name = String(body.name ?? '').trim();
+      if (!safe(name)) return err(400, 'Special names use letters, numbers, - and _ (40 max).');
+      const specialsObj = JSON.parse(kw('specials') || 'null') || {};
+      const key = name.toLowerCase();
+      if (specialsObj && Reflect.get(specialsObj, key)) return err(400, 'A special with that name already exists.');
+      let cardName = String(body.card ?? name).trim();
+      if (cardName.toLowerCase().endsWith('.png')) cardName = cardName.slice(0, -4);
+      if (!safe(cardName)) return err(400, 'Card background names use letters, numbers, - and _ (40 max).');
+      const rawImage = body.data || body.image;
+      if (rawImage) {
+        const v = validatePng(rawImage);
+        if (v.error) return err(400, v.error);
+        writePng(path.join(kw('cardsDir'), cardName + '.png'), v.buf);
+      } else {
+        if (!fs.existsSync(path.join(kw('cardsDir'), cardName + '.png'))) {
+          return err(400, 'Send an image (data or image) for the special card background, or specify an existing card.');
+        }
+      }
+      const dispName = body.display_name ? String(body.display_name).trim() : (name.charAt(0).toUpperCase() + name.slice(1).split('_').join(' '));
+      const entry = {
+        name: dispName,
+        card: cardName,
+        emoji: body.emoji ? String(body.emoji).trim() : '',
+        rarity: typeof body.rarity === 'number' ? body.rarity : (typeof body.chance === 'number' ? body.chance : 0),
+        catch_phrase: body.catch_phrase ? String(body.catch_phrase).trim() : '',
+        credits: body.credits ? String(body.credits).trim() : ''
+      };
+      Reflect.set(specialsObj, key, entry);
+      return done({ id: key, name: dispName, card: cardName, file: cardName + '.png' }, { specials: specialsObj });
+    }
+    if (op === 'cardEdit') {
+      if (!safe(id)) return err(400, 'Invalid card name.');
+      const specialsObj = JSON.parse(kw('specials') || 'null') || {};
+      const fileExists = fs.existsSync(path.join(kw('cardsDir'), id + '.png'));
+      const specialKey = Object.keys(specialsObj).find((k) => k.toLowerCase() === id.toLowerCase());
+      const specialExists = Boolean(specialKey);
+      if (!fileExists && !specialExists) return err(404, 'That card does not exist.');
+
+      const newNameRaw = body.name !== undefined ? String(body.name).trim() : '';
+      const rawImage = body.data || body.image;
+      const hasSpecialFields = body.emoji !== undefined || body.rarity !== undefined || body.chance !== undefined || body.catch_phrase !== undefined || body.credits !== undefined || body.card !== undefined || body.display_name !== undefined;
+
+      if (!newNameRaw && !rawImage && !hasSpecialFields) {
+        return err(400, 'Send at least one valid field to update (name, image/data, or special properties).');
+      }
+
+      let targetId = id;
+      let targetSpecialKey = specialKey;
+      let specialsChanged = false;
+
+      if (newNameRaw && newNameRaw !== id) {
+        if (!safe(newNameRaw)) return err(400, 'Names use letters, numbers, - and _ (40 max).');
+        if (fs.existsSync(path.join(kw('cardsDir'), newNameRaw + '.png'))) return err(400, 'A card named ' + newNameRaw + ' already exists.');
+        const newKey = newNameRaw.toLowerCase();
+        if (Reflect.get(specialsObj, newKey) && newKey !== (specialKey ? specialKey.toLowerCase() : '')) {
+          return err(400, 'A special named ' + newNameRaw + ' already exists.');
+        }
+
+        if (fileExists) {
+          fs.renameSync(path.join(kw('cardsDir'), id + '.png'), path.join(kw('cardsDir'), newNameRaw + '.png'));
+        }
+
+        Object.keys(collectibles).forEach((k) => {
+          const c = Reflect.get(collectibles, k);
+          if (c && c.regime === id) {
+            c.regime = newNameRaw;
+          }
+        });
+
+        if (specialExists && specialKey) {
+          const oldEntry = Reflect.get(specialsObj, specialKey);
+          Reflect.deleteProperty(specialsObj, specialKey);
+          oldEntry.name = body.display_name ? String(body.display_name).trim() : (newNameRaw.charAt(0).toUpperCase() + newNameRaw.slice(1).split('_').join(' '));
+          if (oldEntry.card === id) oldEntry.card = newNameRaw;
+          Reflect.set(specialsObj, newKey, oldEntry);
+          targetSpecialKey = newKey;
+          specialsChanged = true;
+        }
+
+        Object.keys(specialsObj).forEach((k) => {
+          const s = Reflect.get(specialsObj, k);
+          if (s) {
+            if (s.card === id) { s.card = newNameRaw; specialsChanged = true; }
+            else if (s.card === id + '.png') { s.card = newNameRaw + '.png'; specialsChanged = true; }
+          }
+        });
+
+        targetId = newNameRaw;
+      }
+
+      if (rawImage) {
+        const v = validatePng(rawImage);
+        if (v.error) return err(400, v.error);
+        writePng(path.join(kw('cardsDir'), targetId + '.png'), v.buf);
+      }
+
+      if (hasSpecialFields) {
+        if (!targetSpecialKey) {
+          targetSpecialKey = targetId.toLowerCase();
+          Reflect.set(specialsObj, targetSpecialKey, {
+            name: targetId.charAt(0).toUpperCase() + targetId.slice(1).split('_').join(' '),
+            card: targetId,
+            emoji: '',
+            rarity: 0,
+            catch_phrase: '',
+            credits: ''
+          });
+        }
+        const sEntry = Reflect.get(specialsObj, targetSpecialKey);
+        if (sEntry) {
+          if (body.display_name !== undefined) sEntry.name = String(body.display_name).trim();
+          if (body.emoji !== undefined) sEntry.emoji = String(body.emoji).trim();
+          if (body.rarity !== undefined || body.chance !== undefined) sEntry.rarity = Number(body.rarity ?? body.chance);
+          if (body.catch_phrase !== undefined) sEntry.catch_phrase = String(body.catch_phrase).trim();
+          if (body.credits !== undefined) sEntry.credits = String(body.credits).trim();
+          if (body.card !== undefined) {
+            let sc = String(body.card).trim();
+            if (sc.toLowerCase().endsWith('.png')) sc = sc.slice(0, -4);
+            sEntry.card = sc;
+          }
+          specialsChanged = true;
+        }
+      }
+
+      const dispName = targetSpecialKey && Reflect.get(specialsObj, targetSpecialKey) ? Reflect.get(specialsObj, targetSpecialKey).name : (targetId.charAt(0).toUpperCase() + targetId.slice(1).split('_').join(' '));
+      return done({ id: targetId, name: dispName, file: targetId + '.png' }, {
+        specials: specialsChanged ? specialsObj : undefined
+      });
     }
     if (op === 'backgroundDelete') {
       if (!safe(id) || !listPng(kw('cardsDir')).includes(id)) return err(400, 'That background does not exist.');
       const used = Object.keys(collectibles).filter((k) => Reflect.get(collectibles, k).regime === id).map((k) => '#' + k);
       if (used.length) return err(400, 'Still used by ' + used.slice(0, 8).join(', ') + (used.length > 8 ? '...' : '') + '. Change those nations first.');
-      const specials = JSON.parse(kw('specials') || 'null') || {};
-      if (Object.values(specials).some((s) => s && String(s.card ?? '').endsWith(id + '.png'))) return err(400, 'A special uses this background.');
+      const specialsObj = JSON.parse(kw('specials') || 'null') || {};
+      if (Object.values(specialsObj).some((s) => s && (String(s.card ?? '').endsWith(id + '.png') || String(s.card ?? '') === id))) return err(400, 'A special uses this background.');
       fs.rmSync(path.join(kw('cardsDir'), id + '.png'));
       return JSON.stringify({ status: 200, value: {} });
     }
@@ -400,6 +540,8 @@ export default new ForgeFunction({
   })()]]
   $let[catalogJson;$js[const c = JSON.parse(ctx.getKeyword('result')).catalog; c ? JSON.stringify(c) : '']]
   $if[$get[catalogJson]!=;$setGlobalVar[collectiblesData;$get[catalogJson]]]
+  $let[specialsJson;$js[const s = JSON.parse(ctx.getKeyword('result')).specials; s ? JSON.stringify(s) : '']]
+  $if[$get[specialsJson]!=;$setGlobalVar[specials;$get[specialsJson]]]
   $!mutex[release;catalog;$get[lock]]
   $let[addCls;$js[JSON.parse(ctx.getKeyword('result')).addClass ?? '']]
   $if[$get[addCls]!=;
@@ -421,6 +563,7 @@ export default new ForgeFunction({
   $return[$js[
     const r = JSON.parse(ctx.getKeyword('result'));
     Reflect.deleteProperty(r, 'catalog');
+    Reflect.deleteProperty(r, 'specials');
     Reflect.deleteProperty(r, 'recount');
     Reflect.deleteProperty(r, 'addClass');
     JSON.stringify(r)
