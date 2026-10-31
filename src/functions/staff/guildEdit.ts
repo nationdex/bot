@@ -112,9 +112,6 @@ export default new ForgeFunction({
   ]
   $setGuildVar[spawnConfig;$env[p;data];$get[guild]]
   $!mutex[release;spawn:$get[guild];$get[lock]]
-  $return[$js[
-    const r = JSON.parse(ctx.getKeyword('plan'));
-    JSON.stringify({ status: 200, value: r.value })
-  ]]
+  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
   `,
 });

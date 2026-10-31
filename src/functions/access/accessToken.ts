@@ -15,15 +15,15 @@ export default new ForgeFunction({
   $let[token;ndx_$randomBytes[32]]
   $let[hash;$sha256[$get[token]]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$accessData]
-  $let[held;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('actor')).length]]
+  $jsonLoad[acc;$accessData]
+  $jsonLoad[toks;$if[$jsonHas[acc;tokens];$env[acc;tokens];{}]]
+  $jsonLoad[tokValues;$jsonValues[toks]]
+  $arrayFilter[tokValues;t;$env[t;user]==$get[actor];userToks]
+  $let[held;$arrayLength[userToks]]
   $if[$get[held]<3;
-    $setGlobalVar[access;$js[
-      const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-      acc.tokens = acc.tokens || {};
-      Reflect.set(acc.tokens, ctx.getKeyword('hash'), { user: ctx.getKeyword('actor'), at: Date.now() });
-      JSON.stringify(acc)
-    ]]
+    $!jsonSet[acc;tokens;$get[hash];user;$get[actor]]
+    $!jsonSet[acc;tokens;$get[hash];at;$getTimestamp]
+    $setGlobalVar[access;$env[acc]]
   ]
   $!mutex[release;access;$get[lock]]
   $if[$get[held]>=3;$return[limit]]

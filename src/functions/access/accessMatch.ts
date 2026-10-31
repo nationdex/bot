@@ -18,10 +18,8 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $return[$js[
-    const held = JSON.parse(ctx.getEnvironmentKey('caps') || 'null') || new Array();
-    const cap = String(ctx.getEnvironmentKey('cap') || '');
-    held.some((h) => h === '*' || h === cap || (h.endsWith('.*') && cap.startsWith(h.slice(0, -1))))
-  ]]
+  $jsonLoad[caps;$env[caps]]
+  $let[cap;$env[cap]]
+  $return[$arraySome[caps;h;$or[$env[h]==*;$env[h]==$get[cap];$and[$endsWith[$env[h];.*];$startsWith[$get[cap];$cropText[$env[h];0;$sub[$charCount[$env[h]];1]]]]]]]
   `,
 });

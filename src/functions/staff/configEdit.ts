@@ -104,16 +104,13 @@ export default new ForgeFunction({
   $jsonLoad[r;$get[result]]
   $if[$env[r;status]==200;
     $if[$get[root]==config;
-      $setGlobalVar[config;$js[JSON.stringify(JSON.parse(ctx.getKeyword('result')).tree)]]
+      $setGlobalVar[config;$jsonStringify[$env[r;tree]]]
     ;
-      $setGlobalVar[keywords;$js[JSON.stringify(JSON.parse(ctx.getKeyword('result')).tree)]]
+      $setGlobalVar[keywords;$jsonStringify[$env[r;tree]]]
     ]
   ]
   $!mutex[release;config:$get[root];$get[lock]]
-  $return[$js[
-    const r = JSON.parse(ctx.getKeyword('result'));
-    Reflect.deleteProperty(r, 'tree');
-    JSON.stringify(r)
-  ]]
+  $!jsonDelete[r;tree]
+  $return[$jsonStringify[$env[r]]]
   `,
 });

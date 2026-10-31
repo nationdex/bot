@@ -19,12 +19,9 @@ export default new ForgeFunction({
   $let[valid;$or[$get[channel]==;$replaceRegex[$get[channel];\\\\d{15,25};;]==]]
   $if[$get[valid]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$accessData]
-  $setGlobalVar[access;$js[
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    acc.evalChannel = ctx.getKeyword('channel');
-    JSON.stringify(acc)
-  ]]
+  $jsonLoad[acc;$accessData]
+  $!jsonSet[acc;evalChannel;$get[channel]]
+  $setGlobalVar[access;$env[acc]]
   $!mutex[release;access;$get[lock]]
   $!accessLog[$get[actor];eval-channel;$get[channel];$if[$get[channel]==;cleared;set]]
   $return[ok]

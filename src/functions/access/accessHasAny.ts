@@ -13,6 +13,6 @@ export default new ForgeFunction({
   ],
   code: `
   $jsonLoad[caps;$accessCaps[$env[user]]]
-  $return[$js[ctx.getEnvironmentKey('caps').length > 0]]
+  $return[$checkCondition[$arrayLength[caps]>0]]
   `,
 });

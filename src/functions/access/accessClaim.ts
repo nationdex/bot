@@ -15,13 +15,23 @@ export default new ForgeFunction({
   $let[state;$if[$arrayLength[owners]>0;claimed;$if[$botOwnerID==$get[actor];ok;not_app_owner]]]
   $if[$get[state]==ok;
     $let[uaLock;$mutex[acquire;ua:$get[actor]]]
-    $let[ua;$getUserVar[userAccess;$get[actor]]]
-    $setUserVar[userAccess;$js[
-      const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
-      ua.grants = (ua.grants || new Array()).filter((g) => g.subject !== 'owner');
-      ua.grants.push({ subject: 'owner', kind: 'role', expires: 0, by: ctx.getKeyword('actor'), at: Date.now(), reason: 'claimed as application owner' });
-      JSON.stringify(ua)
-    ];$get[actor]]
+    $jsonLoad[ua;$getUserVar[userAccess;$get[actor]]]
+    $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
+    $if[$isArray[grants];
+      $arrayFilter[grants;g;$env[g;subject]!=owner;filteredGrants]
+    ;
+      $arrayCreate[filteredGrants]
+    ]
+    $jsonLoad[claimGrant;{}]
+    $!jsonSet[claimGrant;subject;owner]
+    $!jsonSet[claimGrant;kind;role]
+    $!jsonSet[claimGrant;expires;0]
+    $!jsonSet[claimGrant;by;$get[actor]]
+    $!jsonSet[claimGrant;at;$getTimestamp]
+    $!jsonSet[claimGrant;reason;claimed as application owner]
+    $!arrayPushJSON[filteredGrants;$env[claimGrant]]
+    $!jsonSet[ua;grants;$env[filteredGrants]]
+    $setUserVar[userAccess;$env[ua];$get[actor]]
     $!mutex[release;ua:$get[actor];$get[uaLock]]
   ]
   $!mutex[release;claim;$get[lock]]

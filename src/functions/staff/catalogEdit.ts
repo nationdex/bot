@@ -538,35 +538,30 @@ export default new ForgeFunction({
     }
     return err(400, 'Unknown operation.');
   })()]]
-  $let[catalogJson;$js[const c = JSON.parse(ctx.getKeyword('result')).catalog; c ? JSON.stringify(c) : '']]
-  $if[$get[catalogJson]!=;$setGlobalVar[collectiblesData;$get[catalogJson]]]
-  $let[specialsJson;$js[const s = JSON.parse(ctx.getKeyword('result')).specials; s ? JSON.stringify(s) : '']]
-  $if[$get[specialsJson]!=;$setGlobalVar[specials;$get[specialsJson]]]
+  $jsonLoad[r;$get[result]]
+  $if[$jsonHas[r;catalog];$setGlobalVar[collectiblesData;$jsonStringify[$env[r;catalog]]]]
+  $if[$jsonHas[r;specials];$setGlobalVar[specials;$jsonStringify[$env[r;specials]]]]
   $!mutex[release;catalog;$get[lock]]
-  $let[addCls;$js[JSON.parse(ctx.getKeyword('result')).addClass ?? '']]
+  $let[addCls;$if[$jsonHas[r;addClass];$env[r;addClass];]]
   $if[$get[addCls]!=;
     $jsonLoad[users;$searchDB[userCollectibles]]
     $arrayForEach[users;row;
       $let[uid;$env[row;id]]
       $let[rowLock;$mutex[acquire;inv:$get[uid]]]
-      $let[inv;$getUserVar[userCollectibles;$get[uid]]]
-      $setUserVar[userCollectibles;$js[
-        const inv = JSON.parse(ctx.getKeyword('inv') || 'null') || {};
-        if (!(ctx.getKeyword('addCls') in inv)) Reflect.set(inv, ctx.getKeyword('addCls'), 0);
-        JSON.stringify(inv)
-      ];$get[uid]]
+      $jsonLoad[inv;$getUserVar[userCollectibles;$get[uid]]]
+      $if[$jsonHas[inv;$get[addCls]]==false;
+        $!jsonSet[inv;$get[addCls];0]
+        $setUserVar[userCollectibles;$env[inv];$get[uid]]
+      ]
       $!mutex[release;inv:$get[uid];$get[rowLock]]
     ]
   ]
-  $let[recountId;$js[JSON.parse(ctx.getKeyword('result')).recount ?? '']]
+  $let[recountId;$if[$jsonHas[r;recount];$env[r;recount];]]
   $if[$get[recountId]!=;$!recountInventories[owners;$get[recountId]]]
-  $return[$js[
-    const r = JSON.parse(ctx.getKeyword('result'));
-    Reflect.deleteProperty(r, 'catalog');
-    Reflect.deleteProperty(r, 'specials');
-    Reflect.deleteProperty(r, 'recount');
-    Reflect.deleteProperty(r, 'addClass');
-    JSON.stringify(r)
-  ]]
+  $!jsonDelete[r;catalog]
+  $!jsonDelete[r;specials]
+  $!jsonDelete[r;recount]
+  $!jsonDelete[r;addClass]
+  $return[$jsonStringify[$env[r]]]
   `,
 });

@@ -12,20 +12,30 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[ua;$getUserVar[userAccess;$env[user]]]
-  $let[acc;$accessData]
-  $return[$js[
-    const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    const roles = acc.roles || {};
-    const now = Date.now();
-    const out = new Set();
-    (ua.grants || new Array()).forEach((g) => {
-      if (g.expires && g.expires <= now) return;
-      if (g.kind === 'role') (Reflect.get(roles, g.subject) || new Array()).forEach((c) => out.add(c));
-      else out.add(g.subject);
-    });
-    JSON.stringify(Array.from(out))
-  ]]
+  $jsonLoad[ua;$getUserVar[userAccess;$env[user]]]
+  $jsonLoad[acc;$accessData]
+  $jsonLoad[roles;$if[$jsonHas[acc;roles];$env[acc;roles];{}]]
+  $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
+  $arrayCreate[outCaps]
+  $let[now;$getTimestamp]
+  $if[$isArray[grants];
+    $arrayForEach[grants;g;
+      $let[exp;$if[$env[g;expires]!=null;$env[g;expires];0]]
+      $if[$or[$get[exp]==0;$get[exp]>$get[now]];
+        $if[$env[g;kind]==role;
+          $let[subj;$env[g;subject]]
+          $jsonLoad[roleCaps;$if[$jsonHas[roles;$get[subj]];$env[roles;$get[subj]];{}]]
+          $if[$isArray[roleCaps];
+            $arrayForEach[roleCaps;c;
+              $if[$arrayIncludes[outCaps;$env[c]]==false;$!arrayPush[outCaps;$env[c]]]
+            ]
+          ]
+        ;
+          $if[$arrayIncludes[outCaps;$env[g;subject]]==false;$!arrayPush[outCaps;$env[g;subject]]]
+        ]
+      ]
+    ]
+  ]
+  $return[$jsonStringify[$env[outCaps]]]
   `,
 });

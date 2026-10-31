@@ -13,7 +13,7 @@ export default new ForgeFunction({
   ],
   code: `
   $let[body;$getBody]
-  $if[$js[ctx.getKeyword('body').length > Number(ctx.getEnvironmentKey('limit'))];
+  $if[$charCount[$get[body]]>$env[limit];
     $apiRespond[{"status":413,"error":"The request body is too large."}]
     $stop
   ]

@@ -12,10 +12,8 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $return[$js[
-    const caps = JSON.parse(ctx.getEnvironmentKey('caps') || 'null') || new Array();
-    const sensitive = '${sensitiveCapabilities.join(',')}'.split(',');
-    caps.some((c) => sensitive.includes(c))
-  ]]
+  $jsonLoad[caps;$env[caps]]
+  $arrayLoad[sens;,;${sensitiveCapabilities.join(',,')}]
+  $return[$arraySome[caps;cap;$arrayIncludes[sens;$env[cap]]]]
   `,
 });

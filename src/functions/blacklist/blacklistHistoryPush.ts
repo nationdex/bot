@@ -37,11 +37,18 @@ export default new ForgeFunction({
   ],
   code: `
   $let[raw;$if[$env[type]==guild;$getGuildVar[blacklistHistory;$env[id]];$getUserVar[blacklistHistory;$env[id]]]]
-  $let[next;$js[
-    const list = JSON.parse(ctx.getKeyword('raw') || 'null') || new Array();
-    list.unshift({ action: ctx.getEnvironmentKey('action'), moderator: ctx.getEnvironmentKey('moderator'), reason: String(ctx.getEnvironmentKey('reason') || '').replace(/^null$/, ''), timestamp: Date.now() });
-    JSON.stringify(list.slice(0, 100))
-  ]]
-  $if[$env[type]==guild;$setGuildVar[blacklistHistory;$get[next];$env[id]];$setUserVar[blacklistHistory;$get[next];$env[id]]]
+  $jsonLoad[list;$if[$get[raw]!=;$get[raw];{}]]
+  $if[$isArray[list]==false;$arrayCreate[list]]
+  $let[cleanReason;$if[$env[reason]!=null;$env[reason];]]
+  $jsonLoad[entry;{}]
+  $!jsonSet[entry;action;$env[action]]
+  $!jsonSet[entry;moderator;$env[moderator]]
+  $!jsonSet[entry;reason;$get[cleanReason]]
+  $!jsonSet[entry;timestamp;$getTimestamp]
+  $!arrayUnshiftJSON[list;$env[entry]]
+  $if[$arrayLength[list]>100;
+    $!arraySlice[list;list;0;100]
+  ]
+  $if[$env[type]==guild;$setGuildVar[blacklistHistory;$env[list];$env[id]];$setUserVar[blacklistHistory;$env[list];$env[id]]]
   `,
 });

@@ -11,15 +11,8 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $return[$js[
-    (async () => {
-      const id = String(ctx.getEnvironmentKey('id') || '').trim()
-      if (!id) return 'unknown'
-      const cached = ctx.client.users.cache.get(id)
-      if (cached && cached.username) return cached.username
-      const user = await ctx.client.users.fetch(id).catch(() => null)
-      return user && user.username ? user.username : 'unknown'
-    })()
-  ]]
+  $let[id;$if[$env[id]!=null;$trim[$env[id]];]]
+  $if[$get[id]==;$return[unknown]]
+  $return[$default[$username[$get[id]];unknown]]
   `,
 });

@@ -24,16 +24,20 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $return[$js[
-    const blank = (v) => v === undefined || v === null || v === '' || v === 'null';
-    const user = ctx.getEnvironmentKey('user');
-    const guild = ctx.getEnvironmentKey('guild');
-    const id = String(blank(user) ? guild : user).trim();
-    const numeric = id.length > 14 && id.length < 26 && id.split('').every((c) => c >= '0' && c <= '9');
-    let type = 'none';
-    if (!blank(user) && !blank(guild)) type = 'invalid';
-    else if (!blank(user) || !blank(guild)) type = numeric ? (blank(user) ? 'guild' : 'user') : 'invalid';
-    ctx.getEnvironmentKey('part') === 'id' ? (type === 'user' || type === 'guild' ? id : '') : type
+  $let[u;$trim[$if[$and[$env[user]!=;$env[user]!=null];$env[user];]]]
+  $let[g;$trim[$if[$and[$env[guild]!=;$env[guild]!=null];$env[guild];]]]
+  $let[id;$if[$get[u]!=;$get[u];$get[g]]]
+  $let[numeric;$and[$charCount[$get[id]]>14;$charCount[$get[id]]<26;$isInteger[$get[id]]]]
+  $let[type;none]
+  $if[$and[$get[u]!=;$get[g]!=];
+    $let[type;invalid]
+  ;$elseif[$or[$get[u]!=;$get[g]!=];
+    $let[type;$if[$get[numeric];$if[$get[u]!=;user;guild];invalid]]
   ]]
+  $if[$env[part]==id;
+    $return[$if[$or[$get[type]==user;$get[type]==guild];$get[id];]]
+  ;
+    $return[$get[type]]
+  ]
   `,
 });

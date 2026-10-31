@@ -24,14 +24,7 @@ export default new ForgeFunction({
   $if[$userExists[$get[user]];
     $jsonLoad[data;$getUserVar[userCollectibles;$get[user]]]
     $jsonLoad[ids;$env[data;unique]]
-    $jsonLoad[ids;$js[
-      (() => {
-        const raw = ctx.getEnvironmentKey('ids')
-        const list = Array.isArray(raw) ? raw : new Array()
-        const norm = list.map((x) => (Number.isInteger(Number(x)) && String(Number(x)) === String(x) ? Number(x) : String(x)))
-        return JSON.stringify(Array.from(new Set(norm)))
-      })()
-    ]]
+    $if[$isArray[ids];$!arrayUnique[ids;ids];$arrayCreate[ids]]
   ;
     $jsonLoad[allCollectibles;$collectiblesData[collectibles]]
     $jsonLoad[ids;$jsonKeys[allCollectibles]]

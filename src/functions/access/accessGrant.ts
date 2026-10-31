@@ -40,22 +40,32 @@ export default new ForgeFunction({
   $if[$isBot[$get[target]];$return[bot]]
   $let[sub;$accessSubject[$get[subj]]]
   $if[$get[sub]==;$return[unknown]]
-  $let[needed;$js[JSON.stringify(JSON.parse(ctx.getKeyword('sub')).caps)]]
+  $jsonLoad[subObj;$get[sub]]
+  $let[needed;$jsonStringify[$env[subObj;caps]]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[needed]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
   $if[$and[$accessMatch[$get[needed];*];$replace[$env[hours];null;]!=;$replace[$env[hours];null;]!=0];$return[owner_expiry]]
 
+  $let[h;$if[$isNumber[$env[hours]];$env[hours];0]]
+  $let[expires;$if[$get[h]>0;$sum[$getTimestamp;$multi[$get[h];3600000]];0]]
   $let[lock;$mutex[acquire;ua:$get[target]]]
-  $let[ua;$getUserVar[userAccess;$get[target]]]
-  $let[expires;$js[Number(ctx.getEnvironmentKey('hours')) > 0 ? Date.now() + Number(ctx.getEnvironmentKey('hours')) * 3600000 : 0]]
-  $setUserVar[userAccess;$js[
-    const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
-    const sub = JSON.parse(ctx.getKeyword('sub'));
-    const subject = ctx.getKeyword('subj');
-    ua.grants = (ua.grants || new Array()).filter((g) => g.subject !== subject);
-    ua.grants.push({ subject: subject, kind: sub.kind, expires: Number(ctx.getKeyword('expires')), by: ctx.getKeyword('actor'), at: Date.now(), reason: String(ctx.getEnvironmentKey('reason') || '').replace(/^null$/, '').slice(0, 200) });
-    JSON.stringify(ua)
-  ];$get[target]]
+  $jsonLoad[ua;$getUserVar[userAccess;$get[target]]]
+  $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
+  $if[$isArray[grants];
+    $arrayFilter[grants;g;$env[g;subject]!=$get[subj];filteredGrants]
+  ;
+    $arrayCreate[filteredGrants]
+  ]
+  $jsonLoad[newGrant;{}]
+  $!jsonSet[newGrant;subject;$get[subj]]
+  $!jsonSet[newGrant;kind;$env[subObj;kind]]
+  $!jsonSet[newGrant;expires;$get[expires]]
+  $!jsonSet[newGrant;by;$get[actor]]
+  $!jsonSet[newGrant;at;$getTimestamp]
+  $!jsonSet[newGrant;reason;$cropText[$if[$env[reason]!=null;$env[reason];];0;200]]
+  $!arrayPushJSON[filteredGrants;$env[newGrant]]
+  $!jsonSet[ua;grants;$env[filteredGrants]]
+  $setUserVar[userAccess;$env[ua];$get[target]]
   $!mutex[release;ua:$get[target];$get[lock]]
   $!accessLog[$get[actor];grant;$get[target];$get[subj]]
   $if[$accessSensitive[$get[needed]];

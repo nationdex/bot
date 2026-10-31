@@ -38,21 +38,23 @@ export default new ForgeFunction({
   $if[$get[caps]==;$return[unknown]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[caps]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
-  $let[current;$accessData]
-  $let[existing;$js[const r = Reflect.get((JSON.parse(ctx.getKeyword('current') || 'null') || {}).roles || {}, ctx.getKeyword('name')); r ? JSON.stringify(r) : '']]
+  $jsonLoad[current;$accessData]
+  $jsonLoad[curRoles;$if[$jsonHas[current;roles];$env[current;roles];{}]]
+  $let[existing;$if[$jsonHas[curRoles;$get[name]];$jsonStringify[$env[curRoles;$get[name]]];]]
   $if[$get[existing]!=;
     $let[oldVerdict;$accessCheck[$accessCaps[$get[actor]];$get[existing]]]
     $if[$get[oldVerdict]!=ok;$return[$get[oldVerdict]]]
   ]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$accessData]
-  $setGlobalVar[access;$js[
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    acc.roles = acc.roles || {};
-    Reflect.set(acc.roles, ctx.getKeyword('name'), JSON.parse(ctx.getKeyword('caps')));
-    acc.removedRoles = (acc.removedRoles || new Array()).filter((n) => n !== ctx.getKeyword('name'));
-    JSON.stringify(acc)
-  ]]
+  $jsonLoad[acc;$accessData]
+  $jsonLoad[capList;$get[caps]]
+  $!jsonSet[acc;roles;$get[name];$env[capList]]
+  $jsonLoad[remRoles;$if[$jsonHas[acc;removedRoles];$env[acc;removedRoles];{}]]
+  $if[$isArray[remRoles];
+    $arrayFilter[remRoles;n;$env[n]!=$get[name];filteredRem]
+    $!jsonSet[acc;removedRoles;$env[filteredRem]]
+  ]
+  $setGlobalVar[access;$env[acc]]
   $!mutex[release;access;$get[lock]]
   $!accessLog[$get[actor];role-set;;$get[name]: $get[caps]]
   $if[$accessSensitive[$get[caps]];

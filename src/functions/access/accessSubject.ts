@@ -12,15 +12,28 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[acc;$accessData]
-  $return[$js[
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    const subject = String(ctx.getEnvironmentKey('subject') || '').trim();
-    const known = '${accessCapabilities.join(',')}'.split(',');
-    const role = Reflect.get(acc.roles || {}, subject);
-    if (role) JSON.stringify({ kind: 'role', caps: role });
-    else if (subject === '*' || known.includes(subject) || (subject.endsWith('.*') && known.some((c) => c.startsWith(subject.slice(0, -1))))) JSON.stringify({ kind: 'capability', caps: new Array(subject) });
-    else '';
+  $jsonLoad[acc;$accessData]
+  $let[subj;$trim[$env[subject]]]
+  $jsonLoad[roles;$if[$jsonHas[acc;roles];$env[acc;roles];{}]]
+  $if[$jsonHas[roles;$get[subj]];
+    $jsonLoad[res;{}]
+    $!jsonSet[res;kind;role]
+    $!jsonSet[res;caps;$env[roles;$get[subj]]]
+    $return[$env[res]]
+  ]
+  $arrayLoad[known;,;${accessCapabilities.join(',,')}]
+  $let[isCap;$or[
+    $get[subj]==*;
+    $arrayIncludes[known;$get[subj]];
+    $and[$endsWith[$get[subj];.*];$arraySome[known;c;$startsWith[$env[c];$cropText[$get[subj];0;$sub[$charCount[$get[subj]];1]]]]]
   ]]
+  $if[$get[isCap];
+    $jsonLoad[res;{}]
+    $!jsonSet[res;kind;capability]
+    $arrayCreate[capArr]
+    $!arrayPush[capArr;$get[subj]]
+    $!jsonSet[res;caps;$env[capArr]]
+    $return[$env[res]]
+  ]
   `,
 });

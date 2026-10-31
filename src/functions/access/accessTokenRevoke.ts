@@ -21,15 +21,19 @@ export default new ForgeFunction({
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
   $if[$userExists[$get[target]]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
-  $let[acc;$accessData]
-  $let[removed;$js[Object.values((JSON.parse(ctx.getKeyword('acc') || 'null') || {}).tokens || {}).filter((t) => t.user === ctx.getKeyword('target')).length]]
+  $jsonLoad[acc;$accessData]
+  $jsonLoad[toks;$if[$jsonHas[acc;tokens];$env[acc;tokens];{}]]
+  $jsonLoad[tokKeys;$jsonKeys[toks]]
+  $let[removed;0]
+  $arrayForEach[tokKeys;h;
+    $if[$env[toks;$env[h];user]==$get[target];
+      $!jsonDelete[toks;$env[h]]
+      $let[removed;$sum[$get[removed];1]]
+    ]
+  ]
   $if[$get[removed]>0;
-    $setGlobalVar[access;$js[
-      const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-      const tokens = acc.tokens || {};
-      Object.keys(tokens).forEach((h) => { if (Reflect.get(tokens, h).user === ctx.getKeyword('target')) Reflect.deleteProperty(tokens, h); });
-      JSON.stringify(acc)
-    ]]
+    $!jsonSet[acc;tokens;$env[toks]]
+    $setGlobalVar[access;$env[acc]]
   ]
   $!mutex[release;access;$get[lock]]
   $if[$get[removed]==0;$return[missing]]

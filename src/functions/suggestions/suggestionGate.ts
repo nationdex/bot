@@ -13,18 +13,21 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $let[all;$listSuggestions[]]
-  $return[$js[
-    (() => {
-      const user = String(ctx.getEnvironmentKey('user'))
-      const all = JSON.parse(String(ctx.getKeyword('all') || 'null')) || new Array()
-      const mine = all.filter((s) => s.submitterId === user)
-      const open = mine.filter((s) => s.status === 'pending' || s.status === 'changes_requested')
-      if (open.length >= ${suggestionLimits.maxOpenPerUser}) return 'suggestion_limit'
-      const last = mine.reduce((max, s) => Math.max(max, new Date(s.createdAt).getTime() || 0), 0)
-      if (Date.now() - last < ${suggestionLimits.cooldownMs}) return 'suggestion_cooldown'
-      return ''
-    })()
-  ]]
+  $jsonLoad[all;$listSuggestions[]]
+  $let[user;$env[user]]
+  $arrayFilter[all;s;$env[s;submitterId]==$get[user];mine]
+  $arrayFilter[mine;s;$or[$env[s;status]==pending;$env[s;status]==changes_requested];open]
+  $if[$arrayLength[open]>=${suggestionLimits.maxOpenPerUser};
+    $return[suggestion_limit]
+  ]
+  $let[last;0]
+  $let[now;$getTimestamp]
+  $arrayForEach[mine;s;
+    $let[t;$unparseDate[$env[s;createdAt]]]
+    $if[$get[t]>$get[last];$let[last;$get[t]]]
+  ]
+  $if[$and[$get[last]>0;$sub[$get[now];$get[last]]<${suggestionLimits.cooldownMs}];
+    $return[suggestion_cooldown]
+  ]
   `,
 });

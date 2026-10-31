@@ -415,9 +415,6 @@ export default new ForgeFunction({
       $!mutex[release;catalog;$get[catLock]]
     ]
   ]
-  $return[$js[
-    const r = JSON.parse(ctx.getKeyword('plan'));
-    JSON.stringify({ status: 200, value: r.value })
-  ]]
+  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
   `,
 });

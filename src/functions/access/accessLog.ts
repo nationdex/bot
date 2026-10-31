@@ -31,13 +31,20 @@ export default new ForgeFunction({
   ],
   code: `
   $let[lock;$mutex[acquire;audit]]
-  $let[log;$getGlobalVar[accessAudit]]
-  $setGlobalVar[accessAudit;$js[
-    const list = JSON.parse(ctx.getKeyword('log') || 'null') || new Array();
-    const clean = (v) => String(v === undefined || v === null || v === 'null' ? '' : v).slice(0, 300);
-    list.unshift({ actor: clean(ctx.getEnvironmentKey('actor')), action: clean(ctx.getEnvironmentKey('action')), target: clean(ctx.getEnvironmentKey('target')), detail: clean(ctx.getEnvironmentKey('detail')), at: Date.now() });
-    JSON.stringify(list.slice(0, 300))
-  ]]
+  $let[rawLog;$getGlobalVar[accessAudit]]
+  $jsonLoad[list;$if[$get[rawLog]!=;$get[rawLog];{}]]
+  $if[$isArray[list]==false;$arrayCreate[list]]
+  $jsonLoad[entry;{}]
+  $!jsonSet[entry;actor;$cropText[$if[$env[actor]!=null;$env[actor];];0;300]]
+  $!jsonSet[entry;action;$cropText[$if[$env[action]!=null;$env[action];];0;300]]
+  $!jsonSet[entry;target;$cropText[$if[$env[target]!=null;$env[target];];0;300]]
+  $!jsonSet[entry;detail;$cropText[$if[$env[detail]!=null;$env[detail];];0;300]]
+  $!jsonSet[entry;at;$getTimestamp]
+  $!arrayUnshiftJSON[list;$env[entry]]
+  $if[$arrayLength[list]>300;
+    $!arraySlice[list;list;0;300]
+  ]
+  $setGlobalVar[accessAudit;$env[list]]
   $!mutex[release;audit;$get[lock]]
   `,
 });

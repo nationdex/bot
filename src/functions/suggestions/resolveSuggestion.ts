@@ -26,19 +26,13 @@ export default new ForgeFunction({
   code: `
   $let[id;$env[id]]
   $let[status;$env[status]]
-  $let[note;$if[$env[note]==null;;$env[note]]]
+  $let[note;$if[$env[note]!=null;$env[note];]]
   $let[raw;$getSuggestion[$get[id]]]
   $jsonLoad[s;$get[raw]]
 
-  $let[newFields;$js[
-    (() => {
-      const s = JSON.parse(String(ctx.getKeyword('raw')))
-      const f = s.fields || {}
-      Reflect.set(f, 'staff_note', String(ctx.getKeyword('note') || ''))
-      return JSON.stringify(f)
-    })()
-  ]]
-  $!updateSuggestion[$get[id];$get[status];$get[newFields]]
+  $jsonLoad[f;$if[$jsonHas[s;fields];$env[s;fields];{}]]
+  $!jsonSet[f;staff_note;$get[note]]
+  $!updateSuggestion[$get[id];$get[status];$env[f]]
 
   $let[label;$if[$env[s;type]==nation;$env[s;fields;name];$env[s;fields;title]]]
   $ifx[

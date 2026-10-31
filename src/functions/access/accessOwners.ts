@@ -6,18 +6,30 @@ export default new ForgeFunction({
   params: [
   ],
   code: `
-  $let[rows;$searchDB[userAccess;;;]]
-  $let[acc;$accessData]
-  $return[$js[
-    const rows = JSON.parse(ctx.getKeyword('rows') || 'null') || new Array();
-    const acc = JSON.parse(ctx.getKeyword('acc') || 'null') || {};
-    const roles = acc.roles || {};
-    const now = Date.now();
-    const owners = rows.filter((r) => {
-      const ua = JSON.parse(r.value || 'null') || {};
-      return (ua.grants || new Array()).some((g) => (!g.expires || g.expires > now) && (g.kind === 'role' ? (Reflect.get(roles, g.subject) || new Array()).includes('*') : g.subject === '*'));
-    }).map((r) => r.id);
-    JSON.stringify(owners)
-  ]]
+  $jsonLoad[rows;$searchDB[userAccess]]
+  $jsonLoad[acc;$accessData]
+  $jsonLoad[roles;$if[$jsonHas[acc;roles];$env[acc;roles];{}]]
+  $arrayCreate[owners]
+  $let[now;$getTimestamp]
+  $if[$isArray[rows];
+    $arrayForEach[rows;r;
+      $jsonLoad[ua;$env[r;value]]
+      $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
+      $if[$isArray[grants];
+        $let[isOwner;$arraySome[grants;g;
+          $let[exp;$if[$env[g;expires]!=null;$env[g;expires];0]]
+          $and[
+            $or[$get[exp]==0;$get[exp]>$get[now]];
+            $or[
+              $and[$env[g;kind]==role;$jsonHas[roles;$env[g;subject]];$arrayIncludes[$env[roles;$env[g;subject]];*]];
+              $and[$env[g;kind]!=role;$env[g;subject]==*]
+            ]
+          ]
+        ]]
+        $if[$get[isOwner];$!arrayPush[owners;$env[r;id]]]
+      ]
+    ]
+  ]
+  $return[$jsonStringify[$env[owners]]]
   `,
 });

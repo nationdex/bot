@@ -6,24 +6,27 @@ export default new ForgeFunction({
   params: [],
   code: `
   $let[lock;$mutex[acquire;catalog]]
-  $let[catalog;$getGlobalVar[collectiblesData]]
-  $let[repaired;$js[
-    const catalog = JSON.parse(ctx.getKeyword('catalog') || 'null') || {};
-    const stray = Reflect.get(catalog, 'userCollectibles');
-    if (!stray) {
-      '';
-    } else {
-      Object.keys(stray).forEach((id) => {
-        const nation = Reflect.get(catalog.collectibles || {}, id);
-        const caught = Number((Reflect.get(stray, id) || {}).global_caught) || 0;
-        if (nation && caught > Number(nation.global_caught || 0)) nation.global_caught = caught;
-      });
-      Reflect.deleteProperty(catalog, 'userCollectibles');
-      JSON.stringify(catalog);
-    }
-  ]]
-  $if[$get[repaired]!=;$setGlobalVar[collectiblesData;$get[repaired]]]
+  $jsonLoad[catalog;$getGlobalVar[collectiblesData]]
+  $let[repaired;no]
+  $if[$jsonHas[catalog;userCollectibles];
+    $jsonLoad[stray;$env[catalog;userCollectibles]]
+    $jsonLoad[strayKeys;$jsonKeys[stray]]
+    $jsonLoad[collectibles;$env[catalog;collectibles]]
+    $arrayForEach[strayKeys;id;
+      $let[caught;$if[$env[stray;$env[id];global_caught]!=null;$env[stray;$env[id];global_caught];0]]
+      $if[$jsonHas[collectibles;$env[id]];
+        $let[curCaught;$if[$env[collectibles;$env[id];global_caught]!=null;$env[collectibles;$env[id];global_caught];0]]
+        $if[$get[caught]>$get[curCaught];
+          $!jsonSet[collectibles;$env[id];global_caught;$get[caught]]
+        ]
+      ]
+    ]
+    $!jsonSet[catalog;collectibles;$env[collectibles]]
+    $!jsonDelete[catalog;userCollectibles]
+    $setGlobalVar[collectiblesData;$env[catalog]]
+    $let[repaired;repaired]
+  ]
   $!mutex[release;catalog;$get[lock]]
-  $return[$if[$get[repaired]!=;repaired;]]
+  $return[$if[$get[repaired]==repaired;repaired;]]
   `,
 });

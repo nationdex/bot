@@ -19,15 +19,21 @@ export default new ForgeFunction({
   ],
   code: `
   $let[catalog;$getGlobalVar[collectiblesData]]
-  $if[$env[scope]==owners;$jsonLoad[all;$searchDB[userCollectibles]]]
-  $jsonLoad[list;$js[
-    if (String(ctx.getEnvironmentKey('scope')) === 'owners') {
-      const nation = String(ctx.getEnvironmentKey('value'));
-      JSON.stringify(ctx.getEnvironmentKey('all').filter((row) => (JSON.parse(row.value || 'null') || {}).unique?.map(String).includes(nation)).map((row) => String(row.id)))
-    } else {
-      JSON.stringify(JSON.parse(String(ctx.getEnvironmentKey('value')) || 'null') || new Array())
-    }
-  ]]
+  $if[$env[scope]==owners;
+    $jsonLoad[all;$searchDB[userCollectibles]]
+    $arrayCreate[list]
+    $let[val;$env[value]]
+    $arrayForEach[all;row;
+      $jsonLoad[valObj;$env[row;value]]
+      $jsonLoad[uniq;$if[$jsonHas[valObj;unique];$env[valObj;unique];{}]]
+      $if[$and[$isArray[uniq];$arrayIncludes[uniq;$get[val]]];
+        $!arrayPush[list;$env[row;id]]
+      ]
+    ]
+  ;
+    $jsonLoad[list;$env[value]]
+    $if[$isArray[list]==false;$arrayCreate[list]]
+  ]
   $let[done;0]
   $arrayForEach[list;uid;
     $let[lock;$mutex[acquire;inv:$env[uid]]]

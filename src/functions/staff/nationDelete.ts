@@ -44,11 +44,11 @@ export default new ForgeFunction({
     $return[$get[plan]]
   ]
   $jsonLoad[ids;$env[p;ids]]
-  $let[ownersJson;$js[JSON.stringify(JSON.parse(ctx.getKeyword('plan')).owners)]]
+  $let[ownersJson;$jsonStringify[$env[p;owners]]]
   $arrayForEach[ids;cid;$!deleteVar[collectible;$env[cid]]]
-  $setGlobalVar[collectiblesData;$js[JSON.stringify(JSON.parse(ctx.getKeyword('plan')).catalog)]]
+  $setGlobalVar[collectiblesData;$jsonStringify[$env[p;catalog]]]
   $!mutex[release;catalog;$get[lock]]
   $!recountInventories[users;$get[ownersJson]]
-  $return[$js[JSON.stringify({ status: 200, value: JSON.parse(ctx.getKeyword('plan')).value })]]
+  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
   `,
 });
