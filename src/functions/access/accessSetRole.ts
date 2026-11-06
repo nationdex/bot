@@ -40,7 +40,7 @@ export default new ForgeFunction({
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
   $jsonLoad[current;$accessData]
   $jsonLoad[curRoles;$if[$jsonHas[current;roles];$env[current;roles];{}]]
-  $let[existing;$if[$jsonHas[curRoles;$get[name]];$jsonStringify[$env[curRoles;$get[name]]];]]
+  $let[existing;$if[$jsonHas[curRoles;$get[name]];$env[curRoles;$get[name]];]]
   $if[$get[existing]!=;
     $let[oldVerdict;$accessCheck[$accessCaps[$get[actor]];$get[existing]]]
     $if[$get[oldVerdict]!=ok;$return[$get[oldVerdict]]]
@@ -50,7 +50,7 @@ export default new ForgeFunction({
   $jsonLoad[capList;$get[caps]]
   $!jsonSet[acc;roles;$get[name];$env[capList]]
   $jsonLoad[remRoles;$if[$jsonHas[acc;removedRoles];$env[acc;removedRoles];{}]]
-  $if[$isArray[remRoles];
+  $if[$isArray[$env[remRoles]];
     $arrayFilter[remRoles;n;$env[n]!=$get[name];filteredRem]
     $!jsonSet[acc;removedRoles;$env[filteredRem]]
   ]

@@ -112,6 +112,8 @@ export default new ForgeFunction({
   ]
   $setGuildVar[spawnConfig;$env[p;data];$get[guild]]
   $!mutex[release;spawn:$get[guild];$get[lock]]
-  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
+  $jsonLoad[done;{"status":200}]
+  $!jsonSet[done;value;$env[p;value]]
+  $return[$env[done]]
   `,
 });

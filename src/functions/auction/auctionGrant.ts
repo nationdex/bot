@@ -29,7 +29,7 @@ export default new ForgeFunction({
     $!mutex[release;inv:$get[user];$get[invLock]]
     $return[false]
   ]
-  $!jsonSet[data;collectibleIDs;$arrayLength[userCollectibles];$get[id]]
+  $!jsonSet[data;collectibleIDs;$arrayLength[userCollectibles];"$get[id]"]
   $if[$arrayIncludes[uniques;$get[colID]]==false;
     $!jsonSet[data;unique;$arrayLength[uniques];$get[colID]]
   ]

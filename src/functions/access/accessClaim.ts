@@ -17,7 +17,7 @@ export default new ForgeFunction({
     $let[uaLock;$mutex[acquire;ua:$get[actor]]]
     $jsonLoad[ua;$getUserVar[userAccess;$get[actor]]]
     $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
-    $if[$isArray[grants];
+    $if[$isArray[$env[grants]];
       $arrayFilter[grants;g;$env[g;subject]!=owner;filteredGrants]
     ;
       $arrayCreate[filteredGrants]
@@ -26,7 +26,7 @@ export default new ForgeFunction({
     $!jsonSet[claimGrant;subject;owner]
     $!jsonSet[claimGrant;kind;role]
     $!jsonSet[claimGrant;expires;0]
-    $!jsonSet[claimGrant;by;$get[actor]]
+    $!jsonSet[claimGrant;by;"$get[actor]"]
     $!jsonSet[claimGrant;at;$getTimestamp]
     $!jsonSet[claimGrant;reason;claimed as application owner]
     $!arrayPushJSON[filteredGrants;$env[claimGrant]]

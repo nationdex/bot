@@ -18,14 +18,14 @@ export default new ForgeFunction({
   $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
   $arrayCreate[outCaps]
   $let[now;$getTimestamp]
-  $if[$isArray[grants];
+  $if[$isArray[$env[grants]];
     $arrayForEach[grants;g;
       $let[exp;$if[$env[g;expires]!=null;$env[g;expires];0]]
       $if[$or[$get[exp]==0;$get[exp]>$get[now]];
         $if[$env[g;kind]==role;
           $let[subj;$env[g;subject]]
           $jsonLoad[roleCaps;$if[$jsonHas[roles;$get[subj]];$env[roles;$get[subj]];{}]]
-          $if[$isArray[roleCaps];
+          $if[$isArray[$env[roleCaps]];
             $arrayForEach[roleCaps;c;
               $if[$arrayIncludes[outCaps;$env[c]]==false;$!arrayPush[outCaps;$env[c]]]
             ]
@@ -36,6 +36,6 @@ export default new ForgeFunction({
       ]
     ]
   ]
-  $return[$jsonStringify[$env[outCaps]]]
+  $return[$jsonStringify[outCaps]]
   `,
 });

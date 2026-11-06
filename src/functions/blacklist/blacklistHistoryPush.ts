@@ -38,11 +38,11 @@ export default new ForgeFunction({
   code: `
   $let[raw;$if[$env[type]==guild;$getGuildVar[blacklistHistory;$env[id]];$getUserVar[blacklistHistory;$env[id]]]]
   $jsonLoad[list;$if[$get[raw]!=;$get[raw];{}]]
-  $if[$isArray[list]==false;$arrayCreate[list]]
+  $if[$isArray[$env[list]]==false;$arrayCreate[list]]
   $let[cleanReason;$if[$env[reason]!=null;$env[reason];]]
   $jsonLoad[entry;{}]
   $!jsonSet[entry;action;$env[action]]
-  $!jsonSet[entry;moderator;$env[moderator]]
+  $!jsonSet[entry;moderator;"$env[moderator]"]
   $!jsonSet[entry;reason;$get[cleanReason]]
   $!jsonSet[entry;timestamp;$getTimestamp]
   $!arrayUnshiftJSON[list;$env[entry]]

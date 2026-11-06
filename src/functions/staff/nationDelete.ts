@@ -44,11 +44,13 @@ export default new ForgeFunction({
     $return[$get[plan]]
   ]
   $jsonLoad[ids;$env[p;ids]]
-  $let[ownersJson;$jsonStringify[$env[p;owners]]]
+  $let[ownersJson;$env[p;owners]]
   $arrayForEach[ids;cid;$!deleteVar[collectible;$env[cid]]]
-  $setGlobalVar[collectiblesData;$jsonStringify[$env[p;catalog]]]
+  $setGlobalVar[collectiblesData;$env[p;catalog]]
   $!mutex[release;catalog;$get[lock]]
   $!recountInventories[users;$get[ownersJson]]
-  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
+  $jsonLoad[done;{"status":200}]
+  $!jsonSet[done;value;$env[p;value]]
+  $return[$env[done]]
   `,
 });

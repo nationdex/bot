@@ -20,8 +20,8 @@ export default new ForgeFunction({
   code: `
   $jsonLoad[held;$env[held]]
   $jsonLoad[needed;$env[needed]]
-  $arrayLoad[ownerOnly;,;${ownerOnlyCapabilities.join(',,')}]
-  $if[$and[$arraySome[needed;c;$arrayIncludes[ownerOnly;$env[c]]];$not[$arrayIncludes[held;*]]];
+  $arrayLoad[ownerOnly;,;${ownerOnlyCapabilities.join(',')}]
+  $if[$and[$arraySome[needed;c;$arrayIncludes[ownerOnly;$env[c]]];$arrayIncludes[held;*]==false];
     $return[owner_only]
   ]
   $if[$arrayEvery[needed;c;$accessMatch[$env[held];$env[c]]];

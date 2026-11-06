@@ -38,10 +38,10 @@ export default new ForgeFunction({
   $if[$userExists[$get[target]]==false;$return[invalid]]
   $if[$get[target]==$get[actor];$return[self]]
   $if[$isBot[$get[target]];$return[bot]]
-  $let[sub;$accessSubject[$get[subj]]]
+  $let[sub;$trim[$accessSubject[$get[subj]]]]
   $if[$get[sub]==;$return[unknown]]
   $jsonLoad[subObj;$get[sub]]
-  $let[needed;$jsonStringify[$env[subObj;caps]]]
+  $let[needed;$env[subObj;caps]]
   $let[verdict;$accessCheck[$accessCaps[$get[actor]];$get[needed]]]
   $if[$get[verdict]!=ok;$return[$get[verdict]]]
   $if[$and[$accessMatch[$get[needed];*];$replace[$env[hours];null;]!=;$replace[$env[hours];null;]!=0];$return[owner_expiry]]
@@ -51,7 +51,7 @@ export default new ForgeFunction({
   $let[lock;$mutex[acquire;ua:$get[target]]]
   $jsonLoad[ua;$getUserVar[userAccess;$get[target]]]
   $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
-  $if[$isArray[grants];
+  $if[$isArray[$env[grants]];
     $arrayFilter[grants;g;$env[g;subject]!=$get[subj];filteredGrants]
   ;
     $arrayCreate[filteredGrants]
@@ -60,7 +60,7 @@ export default new ForgeFunction({
   $!jsonSet[newGrant;subject;$get[subj]]
   $!jsonSet[newGrant;kind;$env[subObj;kind]]
   $!jsonSet[newGrant;expires;$get[expires]]
-  $!jsonSet[newGrant;by;$get[actor]]
+  $!jsonSet[newGrant;by;"$get[actor]"]
   $!jsonSet[newGrant;at;$getTimestamp]
   $!jsonSet[newGrant;reason;$cropText[$if[$env[reason]!=null;$env[reason];];0;200]]
   $!arrayPushJSON[filteredGrants;$env[newGrant]]

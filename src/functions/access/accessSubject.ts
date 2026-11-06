@@ -21,12 +21,8 @@ export default new ForgeFunction({
     $!jsonSet[res;caps;$env[roles;$get[subj]]]
     $return[$env[res]]
   ]
-  $arrayLoad[known;,;${accessCapabilities.join(',,')}]
-  $let[isCap;$or[
-    $get[subj]==*;
-    $arrayIncludes[known;$get[subj]];
-    $and[$endsWith[$get[subj];.*];$arraySome[known;c;$startsWith[$env[c];$cropText[$get[subj];0;$sub[$charCount[$get[subj]];1]]]]]
-  ]]
+  $arrayLoad[known;,;${accessCapabilities.join(',')}]
+  $let[isCap;$or[$get[subj]==*;$arrayIncludes[known;$get[subj]];$and[$endsWith[$get[subj];.*];$arraySome[known;c;$startsWith[$env[c];$cropText[$get[subj];0;$sub[$charCount[$get[subj]];1]]]]]]]
   $if[$get[isCap];
     $jsonLoad[res;{}]
     $!jsonSet[res;kind;capability]
@@ -35,5 +31,6 @@ export default new ForgeFunction({
     $!jsonSet[res;caps;$env[capArr]]
     $return[$env[res]]
   ]
+  $return[]
   `,
 });

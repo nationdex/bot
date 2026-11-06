@@ -26,13 +26,13 @@ export default new ForgeFunction({
     $arrayForEach[all;row;
       $jsonLoad[valObj;$env[row;value]]
       $jsonLoad[uniq;$if[$jsonHas[valObj;unique];$env[valObj;unique];{}]]
-      $if[$and[$isArray[uniq];$arrayIncludes[uniq;$get[val]]];
+      $if[$and[$isArray[$env[uniq]];$arrayIncludes[uniq;$get[val]]];
         $!arrayPush[list;$env[row;id]]
       ]
     ]
   ;
     $jsonLoad[list;$env[value]]
-    $if[$isArray[list]==false;$arrayCreate[list]]
+    $if[$isArray[$env[list]]==false;$arrayCreate[list]]
   ]
   $let[done;0]
   $arrayForEach[list;uid;

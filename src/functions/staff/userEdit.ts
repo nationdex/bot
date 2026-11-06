@@ -342,8 +342,8 @@ export default new ForgeFunction({
           const oldWeight = Number(oldNat.weight ?? oldNat.rarity) || 0;
           const newWeight = Number(newNat.weight ?? newNat.rarity) || 0;
 
-          inv[oldClass] = Math.max((Number(inv[oldClass]) || 0) - 1, 0);
-          inv[newClass] = (Number(inv[newClass]) || 0) + 1;
+          Reflect.set(inv, oldClass, Math.max((Number(Reflect.get(inv, oldClass)) || 0) - 1, 0));
+          Reflect.set(inv, newClass, (Number(Reflect.get(inv, newClass)) || 0) + 1);
           inv.total_value = Math.max((Number(inv.total_value) || 0) - oldWeight + newWeight, 0);
 
           inv.unique = Array.isArray(inv.unique) ? inv.unique : new Array();
@@ -415,6 +415,8 @@ export default new ForgeFunction({
       $!mutex[release;catalog;$get[catLock]]
     ]
   ]
-  $return[{"status":200,"value":$jsonStringify[$env[p;value]]}]
+  $jsonLoad[done;{"status":200}]
+  $!jsonSet[done;value;$env[p;value]]
+  $return[$env[done]]
   `,
 });

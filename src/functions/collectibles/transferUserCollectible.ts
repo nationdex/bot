@@ -49,7 +49,7 @@ export default new ForgeFunction({
   $jsonLoad[data;$getUserVar[userCollectibles;$get[receiver]]]
   $jsonLoad[userCollectibles;$env[data;collectibleIDs]]
   $jsonLoad[uniques;$env[data;unique]]
-  $!jsonSet[data;collectibleIDs;$arrayLength[userCollectibles];$get[id]]
+  $!jsonSet[data;collectibleIDs;$arrayLength[userCollectibles];"$get[id]"]
   $if[$arrayIncludes[uniques;$get[colID]]==false;
     $!jsonSet[data;unique;$arrayLength[uniques];$get[colID]]
   ]

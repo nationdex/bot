@@ -29,5 +29,6 @@ export default new ForgeFunction({
   $if[$and[$get[last]>0;$sub[$get[now];$get[last]]<${suggestionLimits.cooldownMs}];
     $return[suggestion_cooldown]
   ]
+  $return[]
   `,
 });

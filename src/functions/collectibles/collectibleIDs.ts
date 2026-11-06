@@ -24,7 +24,12 @@ export default new ForgeFunction({
   $if[$userExists[$get[user]];
     $jsonLoad[data;$getUserVar[userCollectibles;$get[user]]]
     $jsonLoad[ids;$env[data;unique]]
-    $if[$isArray[ids];$!arrayUnique[ids;ids];$arrayCreate[ids]]
+    $if[$isArray[$env[ids]];
+      $arrayMap[ids;x;$return[$env[x]];ids]
+      $!arrayUnique[ids;ids]
+    ;
+      $arrayCreate[ids]
+    ]
   ;
     $jsonLoad[allCollectibles;$collectiblesData[collectibles]]
     $jsonLoad[ids;$jsonKeys[allCollectibles]]

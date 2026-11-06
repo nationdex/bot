@@ -254,8 +254,8 @@ export default new ForgeFunction({
       const artIssue = artProblem(body);
       if (artIssue) return err(400, artIssue);
       for (const key of artKeys) {
-        if (key in body && body[key] !== undefined) {
-          Reflect.set(patch, key, String(body[key] ?? ''));
+        if (key in body && Reflect.get(body, key) !== undefined) {
+          Reflect.set(patch, key, String(Reflect.get(body, key) ?? ''));
         }
       }
       if ('id' in patch) Reflect.deleteProperty(patch, 'id');
@@ -539,8 +539,8 @@ export default new ForgeFunction({
     return err(400, 'Unknown operation.');
   })()]]
   $jsonLoad[r;$get[result]]
-  $if[$jsonHas[r;catalog];$setGlobalVar[collectiblesData;$jsonStringify[$env[r;catalog]]]]
-  $if[$jsonHas[r;specials];$setGlobalVar[specials;$jsonStringify[$env[r;specials]]]]
+  $if[$jsonHas[r;catalog];$setGlobalVar[collectiblesData;$env[r;catalog]]]
+  $if[$jsonHas[r;specials];$setGlobalVar[specials;$env[r;specials]]]
   $!mutex[release;catalog;$get[lock]]
   $let[addCls;$if[$jsonHas[r;addClass];$env[r;addClass];]]
   $if[$get[addCls]!=;
@@ -562,6 +562,6 @@ export default new ForgeFunction({
   $!jsonDelete[r;specials]
   $!jsonDelete[r;recount]
   $!jsonDelete[r;addClass]
-  $return[$jsonStringify[$env[r]]]
+  $return[$jsonStringify[r]]
   `,
 });

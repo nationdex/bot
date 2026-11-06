@@ -42,7 +42,7 @@ export default new ForgeFunction({
   $let[cleanReason;$if[$env[reason]!=null;$env[reason];]]
   $jsonLoad[entry;{}]
   $!jsonSet[entry;reason;$get[cleanReason]]
-  $!jsonSet[entry;moderator;$env[moderator]]
+  $!jsonSet[entry;moderator;"$env[moderator]"]
   $!jsonSet[entry;timestamp;$getTimestamp]
   $if[$get[type]==guild;$setGuildVar[blacklist;$env[entry];$get[id]];$setUserVar[blacklist;$env[entry];$get[id]]]
   $!blacklistHistoryPush[$get[type];$get[id];blacklist;$env[moderator];$env[reason]]

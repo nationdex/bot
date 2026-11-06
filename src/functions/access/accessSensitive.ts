@@ -13,7 +13,7 @@ export default new ForgeFunction({
   ],
   code: `
   $jsonLoad[caps;$env[caps]]
-  $arrayLoad[sens;,;${sensitiveCapabilities.join(',,')}]
+  $arrayLoad[sens;,;${sensitiveCapabilities.join(',')}]
   $return[$arraySome[caps;cap;$arrayIncludes[sens;$env[cap]]]]
   `,
 });

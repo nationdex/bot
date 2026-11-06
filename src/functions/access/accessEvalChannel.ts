@@ -20,7 +20,7 @@ export default new ForgeFunction({
   $if[$get[valid]==false;$return[invalid]]
   $let[lock;$mutex[acquire;access]]
   $jsonLoad[acc;$accessData]
-  $!jsonSet[acc;evalChannel;$get[channel]]
+  $!jsonSet[acc;evalChannel;"$get[channel]"]
   $setGlobalVar[access;$env[acc]]
   $!mutex[release;access;$get[lock]]
   $!accessLog[$get[actor];eval-channel;$get[channel];$if[$get[channel]==;cleared;set]]
