@@ -6,6 +6,5 @@ dist/
 logs/
 node_modules/
 src/commands/dev/
-website/
 .cache/
 .env
