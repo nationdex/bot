@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@source "../components/**/*.{tsx,ts}";
+@source "../hooks/**/*.{tsx,ts}";
+@source "../lib/**/*.{tsx,ts}";
+
+@layer base {
+  :root {
+    --admin-shell: #0a0a0a;
+    --admin-sidebar: #121212;
+    --admin-panel: #0f0f0f;
+    --admin-card: #1a1a1a;
+    --admin-elevated: #252525;
+    --admin-border: #252525;
+    --admin-fg: #fafafa;
+    --admin-muted: rgba(255, 255, 255, 0.5);
+    --admin-accent: #ffffff;
+    --admin-accent-fg: #0f0f0f;
+    --admin-shell-bg: var(--admin-shell);
+
+    --background: 0 0% 6%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 217 91% 60%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background: var(--admin-shell-bg, var(--admin-shell));
+    color: var(--admin-fg);
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--admin-fg) 15%, transparent) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--admin-fg) 15%, transparent);
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--admin-fg) 25%, transparent);
+  }
+
+  html,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.glass-effect {
+  background: color-mix(in srgb, var(--admin-card) 80%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--admin-fg) 8%, transparent);
+}
+
+@layer utilities {
+
+  [data-sidebar-desktop],
+  aside,
+  aside * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  [data-sidebar-desktop]::-webkit-scrollbar,
+  aside::-webkit-scrollbar,
+  aside *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  [data-sidebar-desktop] {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    [data-sidebar-desktop] {
+      display: flex;
+    }
+  }
+
+  html[data-smooth-scroll='on'] [data-admin-scroll] {
+    scroll-behavior: smooth;
+  }
+
+  .perspective-scene {
+    perspective: 1200px;
+    perspective-origin: 50% 40%;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .gpu-layer {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perspective-scene {
+    perspective: none;
+  }
+}
+
+[data-animations3d="off"] .perspective-scene {
+  perspective: none;
+}
