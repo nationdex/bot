@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "panel:build": "cd website && bun run build",
+    "panel:build": "bun website/build.ts",
     "bundle:prep": "bun src/scripts/bundle-prep.ts",
     "build:binary": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile binaries/nationdex-bot-linux-x64 && tar -czf binaries/nationdex-bot-linux-x64.tar.gz -C binaries nationdex-bot-linux-x64 && rm -f binaries/nationdex-bot-linux-x64",
     "build:binary:arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile binaries/nationdex-bot-linux-arm64 && tar -czf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries nationdex-bot-linux-arm64 && rm -f binaries/nationdex-bot-linux-arm64",
@@ -19,7 +19,7 @@
     "start:binary:darwin-arm64": "test -f ./binaries/nationdex-bot-darwin-arm64 || tar -xzf ./binaries/nationdex-bot-darwin-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-arm64",
     "start:binary:darwin-x64": "test -f ./binaries/nationdex-bot-darwin-x64 || tar -xzf ./binaries/nationdex-bot-darwin-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-x64",
     "dev": "bun run build && bun --watch dist/index.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p website",
     "validate:collectibles": "bun run build && bun dist/core/collectibles.js"
   },
   "author": "NationDex Team (https://github.com/nationdex)",
@@ -40,11 +40,24 @@
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#dev",
+    "@radix-ui/react-select": "^2.4.1",
+    "@radix-ui/react-slot": "^1.5.0",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forgescript": "github:tryforge/ForgeScript#main"
+    "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.13.0",
+    "lucide-react": "^1.72.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@types/bun": "^1.4.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "bun-plugin-tailwind": "^0.1.2",
+    "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2"
   },
   "trustedDependencies": [

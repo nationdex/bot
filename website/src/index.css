@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@source "../components/**/*.{tsx,ts}";
-@source "../hooks/**/*.{tsx,ts}";
-@source "../lib/**/*.{tsx,ts}";
+@source "./components/**/*.{tsx,ts}";
+@source "./hooks/**/*.{tsx,ts}";
+@source "./lib/**/*.{tsx,ts}";
 
 @layer base {
   :root {

@@ -41,7 +41,7 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
     <div className={cn('flex h-dvh items-center justify-center overflow-y-auto p-4', admin.shell)}>
       <div className={cn('w-full max-w-sm rounded-2xl p-6 bg-[var(--admin-card)]', admin.panel)}>
         <div className="mb-6 flex items-center gap-3">
-          <img src="/assets/logo.png" alt="" width={36} height={36} className="h-9 w-9 shrink-0 object-contain" />
+          <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 shrink-0 object-contain" />
           <div className="min-w-0">
             <h1 className={cn('truncate text-lg font-semibold', admin.fg)}>{bot.name}</h1>
             <p className={cn('text-xs', admin.muted)}>

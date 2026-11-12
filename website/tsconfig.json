@@ -1,39 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "target": "ESNext",
     "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "strict": true,
-    "types": [
-      "vite/client",
-      "node"
-    ],
+    "skipLibCheck": true,
+    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    "isolatedModules": true,
+    "types": ["bun"],
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": [
-    "src",
-    "components",
-    "lib",
-    "hooks"
-  ]
+  "include": ["src", "server", "build.ts"]
 }
