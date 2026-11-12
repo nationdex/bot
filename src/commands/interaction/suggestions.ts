@@ -34,7 +34,7 @@ export default command('interaction.suggestions', `
       ]
     ]
 
-    $elseif[$get[action]==info;
+    $elseIf[$get[action]==info;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;exists]]
       $onlyIf[$get[deny]==;
@@ -46,7 +46,7 @@ export default command('interaction.suggestions', `
         $if[$env[s;submitterId]==$authorID;
           $let[hint;This is your suggestion. Open \`/suggestions browse\`, pick it and use **Edit** or **Withdraw** while it is open.]
         ]
-        $elseif[$hasCap[$authorID;suggestions.review];
+        $elseIf[$hasCap[$authorID;suggestions.review];
           $let[hint;Staff: review it from \`/admin suggestions\`.]
         ]
         $else[
@@ -63,19 +63,19 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==b;
+    $elseIf[$get[action]==b;
       $interactionUpdate[
         $suggestionList[browse;$arrayAt[cid;2];$arrayAt[cid;3]]
       ]
     ]
 
-    $elseif[$get[action]==bf;
+    $elseIf[$get[action]==bf;
       $interactionUpdate[
         $suggestionList[browse;$selectMenuValues[0];1]
       ]
     ]
 
-    $elseif[$get[action]==bs;
+    $elseIf[$get[action]==bs;
       $let[id;$selectMenuValues[0]]
       $let[deny;$suggestionAccess[$get[id];$authorID;exists]]
       $onlyIf[$get[deny]==;
@@ -86,7 +86,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==bd;
+    $elseIf[$get[action]==bd;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;exists]]
       $onlyIf[$get[deny]==;
@@ -97,7 +97,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==dv;
+    $elseIf[$get[action]==dv;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;vote]]
       $onlyIf[$get[deny]==;
@@ -114,7 +114,7 @@ $get[hint]
       $!refreshSuggestion[$get[id]]
     ]
 
-    $elseif[$get[action]==edit;
+    $elseIf[$get[action]==edit;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;ownerOpen]]
       $onlyIf[$get[deny]==;
@@ -125,7 +125,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==ef;
+    $elseIf[$get[action]==ef;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;ownerOpen]]
       $onlyIf[$get[deny]==;
@@ -134,7 +134,7 @@ $get[hint]
       $suggestionEditModal[$get[id];$selectMenuValues[0];$arrayAt[cid;3];$arrayAt[cid;4]]
     ]
 
-    $elseif[$get[action]==em;
+    $elseIf[$get[action]==em;
       $let[id;$arrayAt[cid;2]]
       $let[field;$arrayAt[cid;3]]
       $let[deny;$suggestionAccess[$get[id];$authorID;ownerOpen]]
@@ -179,7 +179,7 @@ $get[hint]
       $!refreshSuggestion[$get[id]]
     ]
 
-    $elseif[$get[action]==wd;
+    $elseIf[$get[action]==wd;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;ownerOpen]]
       $onlyIf[$get[deny]==;
@@ -202,7 +202,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==wdy;
+    $elseIf[$get[action]==wdy;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;ownerOpen]]
       $onlyIf[$get[deny]==;
@@ -230,7 +230,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==fm;
+    $elseIf[$get[action]==fm;
       $let[gate;$suggestionGate[$authorID]]
       $onlyIf[$get[gate]==;
         $err[$get[gate];true]
@@ -250,19 +250,19 @@ $get[hint]
       $!publishSuggestion[$get[id]]
     ]
 
-    $elseif[$get[action]==q;
+    $elseIf[$get[action]==q;
       $interactionUpdate[
         $suggestionList[queue;$arrayAt[cid;2];$arrayAt[cid;3]]
       ]
     ]
 
-    $elseif[$get[action]==qf;
+    $elseIf[$get[action]==qf;
       $interactionUpdate[
         $suggestionList[queue;$selectMenuValues[0];1]
       ]
     ]
 
-    $elseif[$get[action]==qs;
+    $elseIf[$get[action]==qs;
       $let[id;$selectMenuValues[0]]
       $let[deny;$suggestionAccess[$get[id];$authorID;exists]]
       $onlyIf[$get[deny]==;
@@ -273,7 +273,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==qch;
+    $elseIf[$get[action]==qch;
       $setGlobalVar[suggestionsChannel;$selectMenuValues[0]]
       $interactionUpdate[
         $addContainer[
@@ -283,7 +283,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==qoff;
+    $elseIf[$get[action]==qoff;
       $setGlobalVar[suggestionsChannel;none]
       $interactionUpdate[
         $addContainer[
@@ -293,7 +293,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==qa;
+    $elseIf[$get[action]==qa;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;
@@ -324,7 +324,7 @@ $get[hint]
       ]
     ]
 
-    $elseif[$get[action]==qc;
+    $elseIf[$get[action]==qc;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;
@@ -337,7 +337,7 @@ $get[hint]
       $showModal
     ]
 
-    $elseif[$get[action]==qd;
+    $elseIf[$get[action]==qd;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;
@@ -350,7 +350,7 @@ $get[hint]
       $showModal
     ]
 
-    $elseif[$get[action]==qam;
+    $elseIf[$get[action]==qam;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;
@@ -380,7 +380,7 @@ Warnings: $arrayJoin[warnings;, ]]]
       ]
     ]
 
-    $elseif[$get[action]==qcm;
+    $elseIf[$get[action]==qcm;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;
@@ -400,7 +400,7 @@ Warnings: $arrayJoin[warnings;, ]]]
       ]
     ]
 
-    $elseif[$get[action]==qdm;
+    $elseIf[$get[action]==qdm;
       $let[id;$arrayAt[cid;2]]
       $let[deny;$suggestionAccess[$get[id];$authorID;staffOpen]]
       $onlyIf[$get[deny]==;

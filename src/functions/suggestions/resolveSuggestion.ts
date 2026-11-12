@@ -39,7 +39,7 @@ export default new ForgeFunction({
     $if[$get[status]==approved;
       $let[verdict;was **approved**! Thank you for contributing.]
     ]
-    $elseif[$get[status]==denied;
+    $elseIf[$get[status]==denied;
       $let[verdict;was **denied**.]
     ]
     $else[

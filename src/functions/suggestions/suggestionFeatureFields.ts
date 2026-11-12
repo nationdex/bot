@@ -26,10 +26,10 @@ export default new ForgeFunction({
     $if[$or[$get[title]==;$get[description]==];
       $let[error;Both the title and the description are required.]
     ]
-    $elseif[$charCount[$get[title]]>${suggestionEditFields.title.max};
+    $elseIf[$charCount[$get[title]]>${suggestionEditFields.title.max};
       $let[error;The title can be at most ${suggestionEditFields.title.max} characters.]
     ]
-    $elseif[$charCount[$get[description]]>${suggestionEditFields.description.max};
+    $elseIf[$charCount[$get[description]]>${suggestionEditFields.description.max};
       $let[error;The description can be at most ${suggestionEditFields.description.max} characters.]
     ]
   ]

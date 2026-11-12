@@ -31,7 +31,7 @@ export default new ForgeFunction({
   $let[type;none]
   $if[$and[$get[u]!=;$get[g]!=];
     $let[type;invalid]
-  ;$elseif[$or[$get[u]!=;$get[g]!=];
+  ;$elseIf[$or[$get[u]!=;$get[g]!=];
     $let[type;$if[$get[numeric];$if[$get[u]!=;user;guild];invalid]]
   ]]
   $if[$env[part]==id;

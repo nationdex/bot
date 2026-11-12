@@ -50,10 +50,10 @@ export default new ForgeFunction({
     $if[$get[status]==approved;
       $let[color;#2ECC71]
     ]
-    $elseif[$get[status]==denied;
+    $elseIf[$get[status]==denied;
       $let[color;#E74C3C]
     ]
-    $elseif[$get[status]==changes_requested;
+    $elseIf[$get[status]==changes_requested;
       $let[color;#F1C40F]
     ]
     $else[
@@ -131,7 +131,7 @@ export default new ForgeFunction({
             $addButton[suggestion-wd-$get[tail];Withdraw;Danger;🗑️]
           ]
         ]
-        $elseif[$get[mode]==queue;
+        $elseIf[$get[mode]==queue;
           $addTextDisplay[-# Staff review. The submitter is notified by DM when you resolve it.]
           $addActionRow
           $addButton[suggestion-qa-$get[tail];Approve;Success;✅;$if[$get[open];false;true]]

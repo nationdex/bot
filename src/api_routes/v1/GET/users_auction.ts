@@ -18,7 +18,7 @@ const route: RouteDefinition = {
     $sendJson[{"private":true}]
     $stop
   ]
-  $sendJson[$default[$getUserVar[auction;$get[user]];{"total":0,"sold":0,"earnings":0,"onSale":[]}]]
+  $sendJson[$default[$getUserVar[auction;$get[user]];{"total":0,"sold":0,"earnings":0,"onSale":[\\]}]]
   `,
 };
 

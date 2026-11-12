@@ -20,6 +20,7 @@
         "@types/react-dom": "^19.3.0",
         "@unocss/core": "^66.12.0",
         "@unocss/preset-wind4": "^66.12.0",
+        "forge.lint": "^1.1.0",
         "typescript": "^7.0.2",
       },
     },
@@ -181,6 +182,8 @@
     "discord.js": ["discord.js@14.28.1", "", { "dependencies": { "@discordjs/builders": "^1.15.0", "@discordjs/collection": "1.5.3", "@discordjs/formatters": "^0.6.2", "@discordjs/rest": "^2.6.3", "@discordjs/util": "^1.2.0", "@discordjs/ws": "^1.2.3", "@sapphire/snowflake": "3.5.5", "discord-api-types": "^0.38.50", "fast-deep-equal": "3.1.3", "lodash.snakecase": "4.1.1", "magic-bytes.js": "^1.13.0", "tslib": "^2.6.3", "undici": "^6.27.0" } }, "sha512-Je5OcqgurnIUQK4vR+gQnmzOf/lNQsD6d/UkV8ZOj+bFa5zJXPyiGXlbywp2EagwshVT18y7YNQNSRd3FjYkDw=="],
 
     "fast-deep-equal": ["fast-deep-equal@3.1.3", "", {}, "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="],
+
+    "forge.lint": ["forge.lint@1.1.0", "", { "peerDependencies": { "@tryforge/forgescript": ">=1.4.0" }, "optionalPeers": ["@tryforge/forgescript"], "bin": { "forgelint": "dist/cli.js" } }, "sha512-UvTb3wDzIgnbR3fR2sT3r7w035VUyppm671LCXJ9pNDHvgUsx/bICge8WsrWI5Y4UYO4/B4drI5ZwRY89yWoIQ=="],
 
     "framer-motion": ["framer-motion@14.13.0", "", { "dependencies": { "motion-dom": "14.13.0", "motion-utils": "14.7.0", "tslib": "^2.4.0" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0", "remix": "^3.1.0" }, "optionalPeers": ["react", "react-dom", "remix"] }, "sha512-62FgGVeqEI3pgI5jG/d6yagg/hX9z7Vw3ytE0gGAsDXWBBruUCr74b5LQJXMSF1E62Zp7HKO88nDu/hhUdRSCQ=="],
 

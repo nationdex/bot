@@ -54,7 +54,7 @@ export default new ForgeFunction({
         $addTextInput[value;$get[label];$get[style];$get[required];;$get[current];;$get[max]]
       ]
     ]
-    $elseif[$get[field]==class;
+    $elseIf[$get[field]==class;
       $addLabel[$get[label];Pick the new rarity class;
         $addStringSelectMenu[value;Choose a class;false;1;1;true]
         $arrayForEach[classes;c;
@@ -62,7 +62,7 @@ export default new ForgeFunction({
         ]
       ]
     ]
-    $elseif[$get[field]==regime;
+    $elseIf[$get[field]==regime;
       $addLabel[$get[label];Sets the card background;
         $addStringSelectMenu[value;Choose a regime;false;1;1;true]
         $arrayForEach[regimes;r;
@@ -70,7 +70,7 @@ export default new ForgeFunction({
         ]
       ]
     ]
-    $elseif[$get[field]==economy;
+    $elseIf[$get[field]==economy;
       $addLabel[$get[label];Sets the card badge;
         $addStringSelectMenu[value;Choose an economy;false;1;1;true]
         $arrayForEach[economies;e;
