@@ -15,5 +15,5 @@
     "types": ["bun"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "server", "build.ts"]
+  "include": ["src", "server", "build.ts", "uno.config.ts"]
 }

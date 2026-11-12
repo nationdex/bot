@@ -1,8 +1,3 @@
-@import "tailwindcss";
-@source "./components/**/*.{tsx,ts}";
-@source "./hooks/**/*.{tsx,ts}";
-@source "./lib/**/*.{tsx,ts}";
-
 @layer base {
   :root {
     --admin-shell: #0a0a0a;

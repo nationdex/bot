@@ -5,6 +5,7 @@ import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
 import { applyAnimationPrefsToDocument, loadAnimationPrefs } from '@/lib/animation-prefs';
 import { applyThemeToDocument, loadThemePrefs } from '@/lib/theme-prefs';
 import App from './App';
+import '../.generated/uno.css';
 import './index.css';
 
 applyAnimationPrefsToDocument(loadAnimationPrefs());

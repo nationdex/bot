@@ -56,3 +56,4 @@ docs/
 *.tsbuildinfo
 .DS_Store
 tests/
+.playwright-mcp/
