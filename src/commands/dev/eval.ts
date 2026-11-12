@@ -1,6 +1,8 @@
-import { command } from '../../util/commands';
+import { command } from '../../core/commands';
 
 export default command('dev.eval', `
-  $onlyForUsers[;$botOwnerID;910837428862984213;903681538842054686]
-  $eval[$message]
+  $onlyIf[$hasCap[$authorID;eval.run;$if[$guildID==;dm;]]]
+  $onlyIf[$accessEvalAllowed]
+  $let[detail;$evalPrefixCode]
+  $if[$get[detail]!=;$!accessLog[$authorID;eval;;$get[detail]]]
 `);

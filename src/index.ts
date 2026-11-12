@@ -1,6 +1,4 @@
-if (typeof (globalThis as any).Bun === 'undefined') {
-  require('dotenv/config');
-}
+import './core/native';
 
 import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
 import * as recursiveReaddirSyncModule from '@tryforge/forgescript/dist/functions/recursiveReaddirSync';
@@ -15,15 +13,16 @@ import {
   collectibles,
   initCommands,
   initSlashCommands,
-} from './util';
+} from './core';
+import { evalFunctions } from './core/evalRunner';
 
 const api = new API({
   path: 'dist/api_routes',
-  port: 2223,
+  port: parseInt(process.env.API_PORT || '2222', 10),
 });
 
 const db = new DB({
-  folder: './database',
+  folder: process.env.DATABASE_FOLDER || './database',
 });
 
 const canvas = new ForgeCanvas();
@@ -35,6 +34,7 @@ FunctionManager.addMany(getReq(get_forgescriptNative()));
 FunctionManager.addMany(getReq(get_canvasFunctions()));
 FunctionManager.addMany(getReq(get_dbFunctions()));
 FunctionManager.addMany(getReq(get_apiFunctions()));
+FunctionManager.addMany(evalFunctions);
 
 const dex = new ForgeClient({
   intents: [
@@ -49,6 +49,7 @@ const dex = new ForgeClient({
   ],
 });
 
+
 // Register client events
 EventManager.Loaded['native'] = {};
 for (const req of getReq(get_forgescriptEvents())) {
@@ -59,6 +60,7 @@ dex.options.events = [
   'messageCreate',
   'interactionCreate',
   'clientReady',
+  'guildCreate',
 ];
 dex.events.load('native', dex.options.events);
 
@@ -116,8 +118,7 @@ async function main() {
   initCommands({ path: '' }, dex);
 
   // Load slash commands (bundled)
-  dex.applicationCommands.add(...getReq(get_botSlash()));
-  initSlashCommands({ path: '' }, dex);
+  initSlashCommands({ path: '', commands: getReq(get_botSlash()) }, dex);
 
   api.init(dex);
 

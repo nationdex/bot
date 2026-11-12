@@ -4,8 +4,9 @@ const route: RouteDefinition = {
   url: 'v1/stats',
   method: 'GET',
   code: `
+  $!apiCors
   $jsonLoad[registeredUsers;$default[$searchDB[userCollectibles];[\\]]]
-  $jsonLoad[registeredGuilds;$default[$searchDB[spawnconfig];[\\]]]
+  $jsonLoad[registeredGuilds;$default[$searchDB[spawnConfig];[\\]]]
 
   $jsonLoad[result;{}]
   $!jsonSet[result;collectibles_caught_global;$collectiblesData[total_caught]]

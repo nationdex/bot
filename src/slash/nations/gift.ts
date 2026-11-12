@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('collectibles.gift', `
   $let[user;$option[user]]
@@ -23,11 +23,11 @@ export default SlashCommand('collectibles.gift', `
     $addContainer[
       $addTextDisplay[Please confirm that you want to gift **$userDisplayName[$get[user]]** the following $jsonVar[keywords;collectible.singular]:
 \`#$get[id]\` $getSpecial[$collectible[$get[id];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]**
--# ATK: $appEmoji[$collectible[$get[id];attack_type]] **$collectible[$get[id];attack]** / HP: $appEmoji[$collectible[$get[id];health_type]] **$collectible[$get[id];health]**]
+-# ATK: **$collectible[$get[id];attack]** ($collectible[$get[id];attack_type]) / HP: **$collectible[$get[id];health]** ($collectible[$get[id];health_type])]
     ;$jsonVar[config;accent]]
     $addActionRow
-    $addButton[gift-confirm-$authorID-$get[user]-$get[id];Confirm;Success;$appEmoji[check_mark]]
-    $addButton[gift-cancel-$authorID;Cancel;Danger;$appEmoji[cross_mark]]
+    $addButton[gift-confirm-$authorID-$get[user]-$get[id];Confirm;Success]
+    $addButton[gift-cancel-$authorID;Cancel;Danger]
   ;true]]
   
   $setTimeout[

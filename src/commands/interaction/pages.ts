@@ -1,4 +1,4 @@
-import { command } from '../../util/commands';
+import { command } from '../../core/commands';
 
 export default command('interaction.pages', `
   $arrayLoad[cid;-;$customID]
@@ -21,10 +21,16 @@ export default command('interaction.pages', `
     ]
     $elseIf[$get[type]==progress;
       $let[user;$arrayAt[cid;4]]
-      $let[listPage;$arrayAt[cid;5]]
+      $let[arg5;$arrayAt[cid;5]]
       $deferUpdate
-      $!editMessage[$channelID;$messageID;
-        $progressMenu[$get[user];;$get[page];$get[listPage]]
+      $if[$isValidClass[$get[arg5]];
+        $!editMessage[$channelID;$messageID;
+          $progressMenu[$get[user];$get[arg5];$get[page]]
+        ]
+      ;
+        $!editMessage[$channelID;$messageID;
+          $progressMenu[$get[user];;$get[page];$get[arg5]]
+        ]
       ]
     ]
     $elseIf[$get[type]==collectibleInfo;
@@ -34,17 +40,15 @@ export default command('interaction.pages', `
       $let[prev;$env[userCollectibles;$sub[$get[ind];1]]]
       $let[next;$env[userCollectibles;$sum[$get[ind];1]]]
 
-      $let[prevEmoji;$appEmoji[arrow_left]]
-      $let[nextEmoji;$appEmoji[arrow_right]]
 
       $interactionUpdate[Loading $jsonVar[keywords;collectible.singular] info...]
 
       $!editMessage[$channelID;$messageID;
         $collectibleCard[$get[id]]
         $addActionRow
-        $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;$if[$get[prevEmoji]==;Previous];Secondary;$get[prevEmoji];$if[$get[prev]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-$get[prev]-prev;Previous;Secondary;;$if[$get[prev]==;true]]
         $addButton[pages-collectibleInfo-$authorID-index;$sum[$get[ind];1] / $arrayLength[userCollectibles];Primary;;true]
-        $addButton[pages-collectibleInfo-$authorID-$get[next]-next;$if[$get[nextEmoji]==;Next];Secondary;$get[nextEmoji];$if[$get[next]==;true]]
+        $addButton[pages-collectibleInfo-$authorID-$get[next]-next;Next;Secondary;;$if[$get[next]==;true]]
       ]
     ]
     
@@ -56,10 +60,11 @@ export default command('interaction.pages', `
     ]
 
     $elseIf[$get[type]==lb;
-      $let[type;$arrayAt[cid;4]]
+      $let[lbType;$arrayAt[cid;4]]
       $let[class;$arrayAt[cid;5]]
-      $interactionUpdate[
-        $leaderboards[$get[type];$get[page];$get[class]]
+      $deferUpdate
+      $!editMessage[$channelID;$messageID;
+        $leaderboards[$get[lbType];$get[page];$get[class]]
       ]
     ]
   ]

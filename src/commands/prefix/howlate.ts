@@ -1,4 +1,4 @@
-import { command } from '../../util/commands';
+import { command } from '../../core/commands';
 
 export default command('prefix.howlate', `
   $let[msg;$messageReferenceID]

@@ -5,6 +5,11 @@ import {
   InteractionContextType,
 } from 'discord.js';
 import { variables } from './variables';
+import { auctionConfig } from './auction';
+import { RegistrationType } from '@tryforge/forgescript';
+import { accessCommand } from './access';
+import { blacklistGroups } from './blacklist';
+import { suggestionAdminCommand, suggestionsCommand } from './suggestions';
 
 export interface SlashOptionConfig {
   type: ApplicationCommandOptionType;
@@ -374,14 +379,105 @@ export const slashes = {
       ApplicationIntegrationType.UserInstall,
     ],
   },
-  ping: {
-    name: 'ping',
-    description: `Check bot's latency`,
-    independent: true,
-    tags: ['ping', 'utility', 'latency'],
+  utils: {
+    name: 'utils',
+    description: `Utility commands for ${variables.config.bot.name}`,
+    tags: ['utils', 'utility'],
     integration_types: [
       ApplicationIntegrationType.GuildInstall,
       ApplicationIntegrationType.UserInstall,
     ],
+    subcommands: {
+      ping: {
+        name: 'ping',
+        description: `Check bot's latency`,
+        tags: ['ping', 'utility', 'latency'],
+      },
+      howlate: {
+        name: 'howlate',
+        description: `Check how late someone was compared to the user who caught the last ${variables.keywords.collectible.singular}`,
+        tags: ['utility', 'spawn', 'timing'],
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'message',
+            description: 'The message ID or link of the late guess to compare',
+            required: false,
+          },
+        ],
+      },
+    },
   },
+  auction: {
+    name: 'auction',
+    description: `Auction your ${variables.keywords.collectible.plural} for ${variables.keywords.currency.plural}`,
+    tags: ['auction', 'economy', 'trade'],
+    integration_types: [
+      ApplicationIntegrationType.UserInstall,
+      ApplicationIntegrationType.GuildInstall,
+    ],
+    subcommands: {
+      create: {
+        name: 'create',
+        description: `List one of your ${variables.keywords.collectible.plural} in the auction house`,
+        tags: ['auction', 'sell', 'list'],
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: `${variables.keywords.collectible.singular}`,
+            description: `The ${variables.keywords.collectible.singular} to auction`,
+            required: true,
+            autocomplete: true,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'starting_bid',
+            description: `The minimum first bid in ${variables.keywords.currency.plural}`,
+            required: true,
+            min_value: 1,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'duration',
+            description: 'How long the auction runs',
+            required: true,
+            choices: auctionConfig.durations,
+          },
+          {
+            type: ApplicationCommandOptionType.Integer,
+            name: 'buyout',
+            description: `Optional instant-win price in ${variables.keywords.currency.plural} (must exceed the starting bid)`,
+            required: false,
+            min_value: 2,
+          },
+        ],
+      },
+      browse: {
+        name: 'browse',
+        description: 'Browse, bid on and manage auctions in a private panel',
+        tags: ['auction', 'browse', 'bid', 'list', 'cancel'],
+      },
+    },
+  },
+
+  admin: {
+    name: 'admin',
+    description: `Administrative and developer tools for ${variables.config.bot.name}`,
+    tags: ['admin', 'developer'],
+    // staff only: registered in the home server and gated by bot capabilities, never by Discord permissions
+    type: RegistrationType.Guild,
+    default_member_permissions: null,
+    integration_types: [ApplicationIntegrationType.GuildInstall],
+    contexts: [InteractionContextType.Guild],
+    subcommands: {
+      suggestions: suggestionAdminCommand,
+    },
+    subcommandGroups: {
+      ...blacklistGroups,
+    },
+  },
+
+  suggestions: suggestionsCommand,
+
+  access: accessCommand,
 };

@@ -1,7 +1,9 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('leaderboard.balance', `
-  $interactionReply[
+  $interactionReply[Loading $jsonVar[keywords;currency.plural] leaderboard...]
+
+  $interactionUpdate[
     $leaderboards[balance;1]
   ]
 `);

@@ -4,13 +4,14 @@ const route: RouteDefinition = {
   url: 'v1/collectibles/data',
   method: 'GET',
   code: `
+  $!apiCors
   $let[id;$getQuery[id]]
   $jsonLoad[collectibles;$collectiblesData[collectibles]]
   $jsonLoad[ids;$jsonKeys[collectibles]]
 
   $ifx[
     $if[$get[id]!=;
-      $if[$arrayIncludes[ids;$get[id]];
+      $if[$arrayIndexOf[ids;$get[id]]!=-1;
         $sendJson[$env[collectibles;$get[id]]]
       ;
         $writeStatus[404;Not Found]

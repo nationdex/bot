@@ -1,11 +1,34 @@
 .vscode/
 assets/window_art
 assets/spawn_art
+assets/suggestions
 database/
 dist/
 logs/
 node_modules/
-src/commands/dev/
 .cache/
 .env
 nationdex-bot*
+
+# Ignore uncompressed binaries exceeding GitHub's 100MB limit (tracked as .tar.gz)
+binaries/nationdex-bot-linux-x64
+binaries/nationdex-bot-linux-x64-musl
+binaries/nationdex-bot-linux-arm64
+binaries/nationdex-bot-darwin-arm64
+binaries/nationdex-bot-darwin-x64
+
+# AI agent files
+AGENTS.md
+GEMINI.md
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.cursor/
+.gemini/
+.windsurf/
+.opencode/
+.antigravity/
+.aider*
+.lsp.json
+forgeconfig.json
+tests/temp/

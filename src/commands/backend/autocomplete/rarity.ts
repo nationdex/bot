@@ -1,4 +1,4 @@
-import { command } from '../../../util/commands';
+import { command } from '../../../core/commands';
 
 export default command('autocomplete.rarity', `
   $onlyIf[$and[$applicationCommandName==rarity;$applicationSubCommandName==info;$focusedOptionName==$jsonVar[keywords;collectible.singular]];]
@@ -8,9 +8,9 @@ export default command('autocomplete.rarity', `
   $let[val;$replace[$toLowerCase[$focusedOptionValue];#;]]
   $if[$get[val]!=;
     $arrayMap[ctbls;nat;
-      $jsonLoad[trs;$collectibleInfo[$env[nat];translations]]
-      $jsonLoad[cns;$collectibleInfo[$env[nat];catching_names]]
-      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$env[nat];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$env[nat];short_name]];$get[val]];$arrayIncludes[trs;$get[val]];$arrayIncludes[cns;$get[val]]];
+      $let[cns;$toLowerCase[$collectibleInfo[$env[nat];catch_names;,]]]
+      $let[trs;$toLowerCase[$collectibleInfo[$env[nat];translations;,]]]
+      $if[$or[$checkContains[$toLowerCase[$env[nat]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$env[nat];name]];$get[val]];$checkContains[$toLowerCase[$collectibleInfo[$env[nat];short_name]];$get[val]];$checkContains[$get[trs];$get[val]];$checkContains[$get[cns];$get[val]]];
         $return[$env[nat]]
       ]
     ;ctbls]

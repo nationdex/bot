@@ -1,30 +1,25 @@
 {
   "name": "nationdex",
   "version": "1.0.0",
-  "description": "The Project Nationdex 2026, also known as Nationdex 2.0, is a modern revival from one of the oldest Ballsdex-like dex bots in existence, which is named Nationdex.bot!",
+  "description": "The Project Nationdex 2026, also known as Nationdex 2.0, is a modern revival from one of the oldest dex bots in existence, which is named Nationdex.bot!",
   "type": "commonjs",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "bundle:prep": "bun src/scripts/bundle-prep.ts",
-    "build:binary": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile nationdex-bot",
-    "build:binary:arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile nationdex-bot-arm64",
-    "build:binary:all": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile nationdex-bot && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile nationdex-bot-arm64",
+    "build:binary": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile binaries/nationdex-bot-linux-x64 && tar -czf binaries/nationdex-bot-linux-x64.tar.gz -C binaries nationdex-bot-linux-x64 && rm -f binaries/nationdex-bot-linux-x64",
+    "build:binary:arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile binaries/nationdex-bot-linux-arm64 && tar -czf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries nationdex-bot-linux-arm64 && rm -f binaries/nationdex-bot-linux-arm64",
+    "build:binary:windows-x64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-windows-x64 --outfile binaries/nationdex-bot-windows-x64.exe && zip -9 -j binaries/nationdex-bot-windows-x64.zip binaries/nationdex-bot-windows-x64.exe && rm -f binaries/nationdex-bot-windows-x64.exe",
+    "build:binary:darwin-arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-darwin-arm64 --outfile binaries/nationdex-bot-darwin-arm64 && tar -czf binaries/nationdex-bot-darwin-arm64.tar.gz -C binaries nationdex-bot-darwin-arm64 && rm -f binaries/nationdex-bot-darwin-arm64",
+    "build:binary:darwin-x64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-darwin-x64 --outfile binaries/nationdex-bot-darwin-x64 && tar -czf binaries/nationdex-bot-darwin-x64.tar.gz -C binaries nationdex-bot-darwin-x64 && rm -f binaries/nationdex-bot-darwin-x64",
     "start": "bun dist/index.js",
-    "start:binary": "./nationdex-bot",
+    "start:binary": "test -f ./binaries/nationdex-bot-linux-x64 || tar -xzf ./binaries/nationdex-bot-linux-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-linux-x64",
+    "start:binary:arm64": "test -f ./binaries/nationdex-bot-linux-arm64 || tar -xzf ./binaries/nationdex-bot-linux-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-linux-arm64",
+    "start:binary:darwin-arm64": "test -f ./binaries/nationdex-bot-darwin-arm64 || tar -xzf ./binaries/nationdex-bot-darwin-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-arm64",
+    "start:binary:darwin-x64": "test -f ./binaries/nationdex-bot-darwin-x64 || tar -xzf ./binaries/nationdex-bot-darwin-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-x64",
     "dev": "bun run build && bun --watch dist/index.js",
-    "fix": "rm -rf dist/ && bun run build",
     "typecheck": "tsc --noEmit",
-    "validate:collectibles": "bun run build && bun dist/util/validateCollectibles.js",
-    "website:install": "cd website && bun install",
-    "website:build": "cd website && bun run build",
-    "prod:build": "bun run build && bun run website:install && bun run website:build",
-    "pm2:start": "bun run prod:build && bunx pm2 start ecosystem.config.cjs",
-    "pm2:stop": "bunx pm2 stop ecosystem.config.cjs",
-    "pm2:restart": "bunx pm2 restart ecosystem.config.cjs",
-    "pm2:delete": "bunx pm2 delete ecosystem.config.cjs",
-    "pm2:logs": "bunx pm2 logs",
-    "pm2:status": "bunx pm2 status"
+    "validate:collectibles": "bun run build && bun dist/core/collectibles.js"
   },
   "author": "NationDex Team (https://github.com/nationdex)",
   "license": "Apache-2.0",
@@ -38,29 +33,18 @@
   },
   "homepage": "https://github.com/nationdex/bot#readme",
   "engines": {
-    "node": ">=22.18.0",
+    "node": ">=22.0.0",
     "bun": ">=1.0.0"
   },
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#dev",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "dotenv": "^17.4.2",
-    "pm2": "^7.0.4"
-  },
-  "optionalDependencies": {
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.69.0"
+    "@tryforge/forgescript": "github:tryforge/ForgeScript#main"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/bun": "^1.4.4",
     "typescript": "^7.0.2"
-  },
-  "overrides": {
-    "undici": "6.28.0",
-    "ip-address": "10.5.0",
-    "brace-expansion": "2.1.4",
-    "js-yaml": "5.2.3"
   },
   "trustedDependencies": [
     "@nationdex/api"

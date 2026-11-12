@@ -28,11 +28,16 @@ export const commands = {
     eval: {
       name: 'eval',
       aliases: ['ev'],
-      description: 'Evaluate ForgeScript code (Developer only)',
+      description: 'Run code in the isolated eval worker (requires the eval.run capability)',
       usage: '<code>',
       type: 'messageCreate',
       tags: ['dev', 'utility', 'admin'],
     },
+  },
+
+  guildCreate: {
+    type: 'guildCreate',
+    description: 'Leaves a server the moment it is added when it is blacklisted',
   },
 
   ready: {
@@ -66,6 +71,16 @@ export const commands = {
       allowedInteractionTypes: ['autocomplete'],
       description: 'Autocomplete for collectible rarities info',
     },
+    auction: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['autocomplete'],
+      description: 'Autocomplete for auction commands',
+    },
+    access: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['autocomplete'],
+      description: 'Autocomplete for role names and capabilities in /access',
+    },
   },
 
   interaction: {
@@ -73,9 +88,22 @@ export const commands = {
       type: 'interactionCreate',
       description: 'Pagination interactions',
     },
+    auction: {
+      type: 'interactionCreate',
+      allowedInteractionTypes: ['button', 'selectMenu', 'modal'],
+      description: 'Auction browse menus, buttons and the custom bid modal',
+    },
     settings: {
       type: 'interactionCreate',
       description: 'Settings page interactions',
+    },
+    blacklist: {
+      type: 'interactionCreate',
+      description: 'Blacklist panel menus and buttons',
+    },
+    suggestions: {
+      type: 'interactionCreate',
+      description: 'Community suggestions browse panel, edit and staff queue buttons, menus and modals',
     },
     collectibles: {
       gift: {

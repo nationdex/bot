@@ -17,19 +17,17 @@ export const variables = {
       icons: 'assets/icons',
       cards: 'assets/cards',
     },
-    author: {
-      name: 'Ariel Aram',
-      profile: 'https://discord.com/users/525421785001361408',
-    },
-    dev: {
-      name: 'Ayansh',
-      profile: 'https://discord.com/users/1421877908456083578',
-    },
-    webDev: {
-      name: 'Aditya',
-      profile: 'https://discord.com/users/903681538842054686',
+    // The people credited in /about: display name (underscores show as spaces) and profile link.
+    maintainers: {
+      Ariel_Aram: 'https://discord.com/users/525421785001361408',
+      Ayansh: 'https://discord.com/users/1421877908456083578',
+      Aditya: 'https://discord.com/users/903681538842054686',
     },
     prefix: 'n.',
+    // Origins (comma separated, e.g. https://nationdex.com) that browsers may call the API from. Empty means no cross-origin access.
+    api: {
+      allowedOrigins: '',
+    },
     logChannel: '',
     accent: '#4000ff'
   },
@@ -71,6 +69,27 @@ export const variables = {
     unique: [],
     collectibleIDs: []
   },
+  // Bot staff access: roles are capability bundles; tokens map a sha256 hash to the user who owns the API token.
+  access: {
+    roles: {
+      owner: ['*'],
+      developer: ['eval.run', 'inspect.read'],
+      moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate', 'guilds.edit'],
+      reviewer: ['suggestions.review', 'blacklist.read'],
+      curator: ['nations.edit', 'cards.edit'],
+      support: ['users.edit', 'guilds.edit'],
+    },
+    tokens: {},
+    evalChannel: '',
+  },
+  // Per user: the roles and capabilities granted to them, plus their mutation window for rate limiting.
+  userAccess: {
+    grants: [],
+    window: { start: 0, count: 0 },
+  },
+  accessAudit: [],
+  blacklist: { reason: '', moderator: '', timestamp: 0 },
+  blacklistHistory: [],
   auctionHouse: {},
   auction: {
     total: 0,
@@ -121,3 +140,10 @@ export const variables = {
     gifts_sent: 0,
   },
 };
+
+// Untouched copy of the shipped defaults, taken before database values are merged in. Built-in settings are told
+// apart from custom ones by comparing against it.
+// Untouched default roles. Stored access data only keeps the roles staff changed or created, new default roles still appear.
+export const baseAccessRoles: Record<string, string[]> = JSON.parse(JSON.stringify(variables.access.roles));
+
+export const baseSettings = JSON.parse(JSON.stringify({ config: variables.config, keywords: variables.keywords }));

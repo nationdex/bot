@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../util/slashes';
+import { SlashCommand } from '../../core/slashes';
 
 export default SlashCommand('economy.balance', `
   $let[user;$findUser[$option[user];true]]
@@ -15,7 +15,7 @@ export default SlashCommand('economy.balance', `
   
   $interactionReply[
     $ephemeral
-    $if[$get[user]==$authorID;You have **$get[balance]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] in your wallet;**$userDisplayName[$get[user]]** has **$get[balance]** $default[$appEmoji[$jsonVar[keywords;currency.plural]];$jsonVar[keywords;currency.plural]] in their wallet]
+    $if[$get[user]==$authorID;You have **$get[balance]** $jsonVar[keywords;currency.plural] in your wallet;**$userDisplayName[$get[user]]** has **$get[balance]** $jsonVar[keywords;currency.plural] in their wallet]
   ]
   `,
 );
