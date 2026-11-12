@@ -32,3 +32,27 @@ CLAUDE.local.md
 .lsp.json
 forgeconfig.json
 tests/temp/
+
+# Secrets and credentials (never commit)
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+auth.json
+db.key
+client_secret*.json
+*.token
+
+# Local data and runtime state
+data/
+website/.env
+website/data/
+website/dist/
+website/production.ts
+docs/
+*.log
+*.tsbuildinfo
+.DS_Store
+tests/
