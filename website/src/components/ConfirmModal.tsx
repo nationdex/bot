@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/icons';
 import { createPortal } from 'react-dom';
 
 interface ConfirmModalProps {

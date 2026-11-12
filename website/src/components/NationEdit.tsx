@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Check, Copy, Flame, Globe, Heart, ImageIcon, Loader2, Shield, Swords, Trash2, Upload, X } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Flame, Globe, Heart, ImageIcon, Loader2, Shield, Swords, Trash2, Upload, X } from '@/components/icons';
 import { useEffect, useState, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';

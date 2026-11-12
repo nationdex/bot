@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

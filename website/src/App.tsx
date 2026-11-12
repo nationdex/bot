@@ -1,5 +1,5 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
-import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from 'lucide-react';
+import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import HeaderSearch from '@/components/HeaderSearch';
 import Login from '@/components/Login';

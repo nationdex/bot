@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Code2, Copy, Plus, RotateCcw, Search, Sliders, Trash2, X } from 'lucide-react';
+import { Check, Code2, Copy, Plus, RotateCcw, Search, Sliders, Trash2, X } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BotSettingsSkeleton } from '@/components/SectionSkeleton';

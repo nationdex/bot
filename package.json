@@ -40,14 +40,9 @@
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#dev",
-    "@radix-ui/react-select": "^2.4.1",
-    "@radix-ui/react-slot": "^1.5.0",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
     "framer-motion": "^14.13.0",
-    "lucide-react": "^1.72.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^3.7.0"

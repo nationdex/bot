@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

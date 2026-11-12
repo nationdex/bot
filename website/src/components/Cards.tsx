@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from 'lucide-react';
+import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from '@/components/icons';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ConfirmModal } from '@/components/ConfirmModal';

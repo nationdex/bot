@@ -1,4 +1,4 @@
-import { Check, ChevronDown, RotateCcw } from 'lucide-react';
+import { Check, ChevronDown, RotateCcw } from '@/components/icons';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { useThemePrefs } from '@/hooks/useThemePrefs';

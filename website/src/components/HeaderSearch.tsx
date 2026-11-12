@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Search, X } from 'lucide-react';
+import { ArrowRight, Search, X } from '@/components/icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Input } from '@/components/ui/input';

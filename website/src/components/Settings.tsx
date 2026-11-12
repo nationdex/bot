@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from 'lucide-react';
+import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/components/icons';
 import { useState } from 'react';
 import ThemeSettings from '@/components/ThemeSettings';
 import { Card, CardContent } from '@/components/ui/card';

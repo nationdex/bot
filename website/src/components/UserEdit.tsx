@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from '@/components/icons';
 import { useEffect, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ConfirmModal } from '@/components/ConfirmModal';

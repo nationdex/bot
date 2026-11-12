@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import NationEdit from '@/components/NationEdit';

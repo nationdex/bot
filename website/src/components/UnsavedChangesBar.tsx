@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, RefreshCw } from 'lucide-react';
+import { Check, RefreshCw } from '@/components/icons';
 import { createPortal } from 'react-dom';
 
 interface UnsavedChangesBarProps {

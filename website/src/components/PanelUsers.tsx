@@ -3,7 +3,7 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 import { PanelUsersSkeleton } from '@/components/SectionSkeleton';
 import { TablePagination } from '@/components/TablePagination';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
-import { ArrowLeft, ArrowRight, Check, FolderGit2, Plus, Search, StarPlus, Trash2, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, FolderGit2, Plus, Search, StarPlus, Trash2, UserPlus, Users } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
