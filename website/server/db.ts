@@ -1,83 +1,51 @@
-import { mkdirSync } from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import Database from 'better-sqlite3';
+// Panel storage lives in the bot's own PGlite (single writer, same Bun process). No second database.
+type Pg = {
+  query: (sql: string, params?: unknown[]) => Promise<{ rows: any[]; affectedRows?: number }>;
+  transaction: <T>(fn: (tx: Pg) => Promise<T>) => Promise<T>;
+};
 
-const dataDir = path.join(process.cwd(), 'data');
-mkdirSync(dataDir, { recursive: true });
+let db: Pg;
 
-const dbPath = path.join(dataDir, 'admin.db');
-const db = new Database(dbPath);
+export async function initPanelDb(pg: Pg): Promise<void> {
+  db = pg;
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS panel_groups (
+      id SERIAL PRIMARY KEY,
+      name TEXT UNIQUE NOT NULL,
+      description TEXT DEFAULT '',
+      color TEXT DEFAULT '#8b5cf6',
+      permissions TEXT NOT NULL,
+      created_at BIGINT NOT NULL
+    )
+  `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS panel_users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      display_name TEXT DEFAULT '',
+      role TEXT NOT NULL DEFAULT 'member',
+      group_id INTEGER REFERENCES panel_groups(id) ON DELETE SET NULL,
+      permissions TEXT NOT NULL,
+      created_at BIGINT NOT NULL
+    )
+  `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS panel_sessions (
+      token TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES panel_users(id) ON DELETE CASCADE,
+      expires_at BIGINT NOT NULL
+    )
+  `);
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS groups (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
-    description TEXT DEFAULT '',
-    color TEXT DEFAULT '#8b5cf6',
-    permissions TEXT NOT NULL,
-    created_at INTEGER NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS panel_users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    display_name TEXT DEFAULT '',
-    role TEXT NOT NULL DEFAULT 'member',
-    group_id INTEGER,
-    permissions TEXT NOT NULL,
-    created_at INTEGER NOT NULL,
-    FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL
-  );
-`);
-
-try {
-  const sessionCols = db.prepare("PRAGMA table_info(sessions)").all() as Array<{ name: string }>;
-  const hasUserId = sessionCols.some((c) => c.name === 'user_id');
-  if (sessionCols.length === 0 || !hasUserId) {
-    if (sessionCols.length > 0) {
-      db.exec("DROP TABLE sessions");
-    }
-    db.exec(`
-      CREATE TABLE sessions (
-        token TEXT PRIMARY KEY,
-        user_id INTEGER NOT NULL,
-        expires_at INTEGER NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES panel_users(id) ON DELETE CASCADE
-      );
-    `);
-  }
-} catch {
-}
-
-function seedDefaultGroups(): void {
-  const count = db.prepare('SELECT COUNT(*) as count FROM groups').get() as { count: number };
-  if (count.count === 0) {
+  const count = await db.query('SELECT COUNT(*) AS count FROM panel_groups');
+  if (Number(count.rows[0].count) === 0) {
     const now = Date.now();
-    const insert = db.prepare('INSERT INTO groups (name, description, color, permissions, created_at) VALUES (?, ?, ?, ?, ?)');
-    insert.run('Administrators', 'Full administrative control over all panel features and users', '#a855f7', JSON.stringify(['*']), now);
-    insert.run('Moderators', 'Moderation access to nation collectibles, bot users, and servers', '#3b82f6', JSON.stringify(['view_dashboard', 'manage_nations', 'manage_users', 'manage_servers']), now);
-    insert.run('Viewers', 'Read-only access to statistics and overview analytics', '#10b981', JSON.stringify(['view_dashboard']), now);
+    const insert = 'INSERT INTO panel_groups (name, description, color, permissions, created_at) VALUES ($1, $2, $3, $4, $5)';
+    await db.query(insert, ['Administrators', 'Full administrative control over all panel features and users', '#a855f7', JSON.stringify(['*']), now]);
+    await db.query(insert, ['Moderators', 'Moderation access to nation collectibles, bot users, and servers', '#3b82f6', JSON.stringify(['view_dashboard', 'manage_nations', 'manage_users', 'manage_servers']), now]);
+    await db.query(insert, ['Viewers', 'Read-only access to statistics and overview analytics', '#10b981', JSON.stringify(['view_dashboard']), now]);
   }
-}
-
-seedDefaultGroups();
-
-try {
-  const oldAuth = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='auth'").get();
-  if (oldAuth) {
-    const oldRow = db.prepare('SELECT password_hash FROM auth WHERE id = 1').get() as { password_hash: string } | undefined;
-    const userCount = db.prepare('SELECT COUNT(*) as count FROM panel_users').get() as { count: number };
-    if (oldRow?.password_hash && userCount.count === 0) {
-      const adminGroup = db.prepare("SELECT id FROM groups WHERE name = 'Administrators'").get() as { id: number } | undefined;
-      db.prepare(`
-        INSERT INTO panel_users (username, password_hash, display_name, role, group_id, permissions, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).run('admin', oldRow.password_hash, 'Panel Owner', 'owner', adminGroup?.id ?? 1, JSON.stringify(['*']), Date.now());
-    }
-  }
-} catch {
 }
 
 export { db };
@@ -124,9 +92,9 @@ export type GroupWithCount = {
   memberCount: number;
 };
 
-export function hasPassword(): boolean {
-  const row = db.prepare('SELECT 1 FROM panel_users LIMIT 1').get();
-  return !!row;
+export async function hasPassword(): Promise<boolean> {
+  const res = await db.query('SELECT 1 FROM panel_users LIMIT 1');
+  return res.rows.length > 0;
 }
 
 export function parsePermissions(permStr: string): string[] {
@@ -138,105 +106,89 @@ export function parsePermissions(permStr: string): string[] {
   }
 }
 
-export function getPanelUsers(): PanelUserWithGroup[] {
-  const rows = db.prepare(`
-    SELECT u.id, u.username, u.display_name, u.role, u.group_id, u.permissions, u.created_at,
-           g.name as group_name, g.color as group_color
+type UserRow = {
+  id: number;
+  username: string;
+  display_name: string;
+  role: 'owner' | 'admin' | 'member';
+  group_id: number | null;
+  permissions: string;
+  created_at: number | string;
+  group_name: string | null;
+  group_color: string | null;
+};
+
+const toUser = (r: UserRow): PanelUserWithGroup => ({
+  id: r.id,
+  username: r.username,
+  displayName: r.display_name,
+  role: r.role,
+  groupId: r.group_id,
+  groupName: r.group_name,
+  groupColor: r.group_color,
+  permissions: parsePermissions(r.permissions),
+  createdAt: Number(r.created_at),
+});
+
+const USER_COLS = `u.id, u.username, u.display_name, u.role, u.group_id, u.permissions, u.created_at,
+           g.name AS group_name, g.color AS group_color`;
+
+export async function getPanelUsers(): Promise<PanelUserWithGroup[]> {
+  const res = await db.query(`
+    SELECT ${USER_COLS}
     FROM panel_users u
-    LEFT JOIN groups g ON u.group_id = g.id
+    LEFT JOIN panel_groups g ON u.group_id = g.id
     ORDER BY CASE WHEN u.role = 'owner' THEN 0 WHEN u.role = 'admin' THEN 1 ELSE 2 END, u.id ASC
-  `).all() as Array<{
-    id: number;
-    username: string;
-    display_name: string;
-    role: 'owner' | 'admin' | 'member';
-    group_id: number | null;
-    permissions: string;
-    created_at: number;
-    group_name: string | null;
-    group_color: string | null;
-  }>;
-
-  return rows.map((r) => ({
-    id: r.id,
-    username: r.username,
-    displayName: r.display_name,
-    role: r.role,
-    groupId: r.group_id,
-    groupName: r.group_name,
-    groupColor: r.group_color,
-    permissions: parsePermissions(r.permissions),
-    createdAt: r.created_at,
-  }));
+  `);
+  return res.rows.map(toUser);
 }
 
-export function getPanelUserById(id: number): PanelUserWithGroup | null {
-  const r = db.prepare(`
-    SELECT u.id, u.username, u.display_name, u.role, u.group_id, u.permissions, u.created_at,
-           g.name as group_name, g.color as group_color
+export async function getPanelUserById(id: number): Promise<PanelUserWithGroup | null> {
+  const res = await db.query(`
+    SELECT ${USER_COLS}
     FROM panel_users u
-    LEFT JOIN groups g ON u.group_id = g.id
-    WHERE u.id = ?
-  `).get(id) as {
-    id: number;
-    username: string;
-    display_name: string;
-    role: 'owner' | 'admin' | 'member';
-    group_id: number | null;
-    permissions: string;
-    created_at: number;
-    group_name: string | null;
-    group_color: string | null;
-  } | undefined;
-
-  if (!r) return null;
-  return {
-    id: r.id,
-    username: r.username,
-    displayName: r.display_name,
-    role: r.role,
-    groupId: r.group_id,
-    groupName: r.group_name,
-    groupColor: r.group_color,
-    permissions: parsePermissions(r.permissions),
-    createdAt: r.created_at,
-  };
+    LEFT JOIN panel_groups g ON u.group_id = g.id
+    WHERE u.id = $1
+  `, [id]);
+  return res.rows[0] ? toUser(res.rows[0]) : null;
 }
 
-export function getPanelUserByUsername(username: string): (DbPanelUser & { group_name?: string; group_color?: string }) | null {
-  const row = db.prepare(`
-    SELECT u.*, g.name as group_name, g.color as group_color
+export async function getPanelUserByUsername(username: string): Promise<(DbPanelUser & { group_name?: string; group_color?: string }) | null> {
+  const res = await db.query(`
+    SELECT u.*, g.name AS group_name, g.color AS group_color
     FROM panel_users u
-    LEFT JOIN groups g ON u.group_id = g.id
-    WHERE LOWER(u.username) = LOWER(?)
-  `).get(username) as (DbPanelUser & { group_name?: string; group_color?: string }) | undefined;
-
-  return row ?? null;
+    LEFT JOIN panel_groups g ON u.group_id = g.id
+    WHERE LOWER(u.username) = LOWER($1)
+  `, [username]);
+  const row = res.rows[0];
+  return row ? { ...row, created_at: Number(row.created_at) } : null;
 }
 
-export function createPanelUser(data: {
+export async function createPanelUser(data: {
   username: string;
   passwordHash: string;
   displayName?: string;
   role?: 'owner' | 'admin' | 'member';
   groupId?: number | null;
   permissions?: string[];
-}): number {
-  const role = data.role ?? 'member';
-  const displayName = data.displayName ?? data.username;
-  const groupId = data.groupId ?? null;
-  const permissions = JSON.stringify(data.permissions ?? ['view_dashboard']);
-  const now = Date.now();
-
-  const res = db.prepare(`
+}): Promise<number> {
+  const res = await db.query(`
     INSERT INTO panel_users (username, password_hash, display_name, role, group_id, permissions, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(data.username, data.passwordHash, displayName, role, groupId, permissions, now);
-
-  return Number(res.lastInsertRowid);
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING id
+  `, [
+    data.username,
+    data.passwordHash,
+    data.displayName ?? data.username,
+    data.role ?? 'member',
+    data.groupId ?? null,
+    JSON.stringify(data.permissions ?? ['view_dashboard']),
+    Date.now(),
+  ]);
+  return Number(res.rows[0].id);
 }
 
-export function updatePanelUser(
+export async function updatePanelUser(
   id: number,
   data: {
     username?: string;
@@ -246,83 +198,76 @@ export function updatePanelUser(
     groupId?: number | null;
     permissions?: string[];
   }
-): void {
-  const current = db.prepare('SELECT * FROM panel_users WHERE id = ?').get(id) as DbPanelUser | undefined;
-  if (!current) return;
+): Promise<void> {
+  const cur = (await db.query('SELECT * FROM panel_users WHERE id = $1', [id])).rows[0] as DbPanelUser | undefined;
+  if (!cur) return;
 
-  const username = data.username ?? current.username;
-  const passwordHash = data.passwordHash ?? current.password_hash;
-  const displayName = data.displayName ?? current.display_name;
-  const role = data.role ?? current.role;
-  const groupId = data.groupId !== undefined ? data.groupId : current.group_id;
-  const permissions = data.permissions !== undefined ? JSON.stringify(data.permissions) : current.permissions;
-
-  db.prepare(`
+  await db.query(`
     UPDATE panel_users
-    SET username = ?, password_hash = ?, display_name = ?, role = ?, group_id = ?, permissions = ?
-    WHERE id = ?
-  `).run(username, passwordHash, displayName, role, groupId, permissions, id);
+    SET username = $1, password_hash = $2, display_name = $3, role = $4, group_id = $5, permissions = $6
+    WHERE id = $7
+  `, [
+    data.username ?? cur.username,
+    data.passwordHash ?? cur.password_hash,
+    data.displayName ?? cur.display_name,
+    data.role ?? cur.role,
+    data.groupId !== undefined ? data.groupId : cur.group_id,
+    data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
+    id,
+  ]);
 }
 
-export function deletePanelUser(id: number): void {
-  db.prepare('DELETE FROM panel_users WHERE id = ?').run(id);
+export async function deletePanelUser(id: number): Promise<void> {
+  await db.query('DELETE FROM panel_users WHERE id = $1', [id]);
 }
 
-export function setOwner(newOwnerId: number): void {
-  db.transaction(() => {
-    db.prepare("UPDATE panel_users SET role = 'admin' WHERE role = 'owner'").run();
-    db.prepare("UPDATE panel_users SET role = 'owner', permissions = ? WHERE id = ?").run(JSON.stringify(['*']), newOwnerId);
-  })();
+export async function setOwner(newOwnerId: number): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.query("UPDATE panel_users SET role = 'admin' WHERE role = 'owner'");
+    await tx.query("UPDATE panel_users SET role = 'owner', permissions = $1 WHERE id = $2", [JSON.stringify(['*']), newOwnerId]);
+  });
 }
 
-export function getGroups(): GroupWithCount[] {
-  const rows = db.prepare(`
-    SELECT g.*, COUNT(u.id) as member_count
-    FROM groups g
+export async function getGroups(): Promise<GroupWithCount[]> {
+  const res = await db.query(`
+    SELECT g.*, COUNT(u.id) AS member_count
+    FROM panel_groups g
     LEFT JOIN panel_users u ON u.group_id = g.id
     GROUP BY g.id
     ORDER BY g.id ASC
-  `).all() as Array<{
-    id: number;
-    name: string;
-    description: string;
-    color: string;
-    permissions: string;
-    created_at: number;
-    member_count: number;
-  }>;
-
-  return rows.map((r) => ({
+  `);
+  return res.rows.map((r) => ({
     id: r.id,
     name: r.name,
     description: r.description,
     color: r.color,
     permissions: parsePermissions(r.permissions),
-    createdAt: r.created_at,
-    memberCount: r.member_count,
+    createdAt: Number(r.created_at),
+    memberCount: Number(r.member_count),
   }));
 }
 
-export function createGroup(data: {
+export async function createGroup(data: {
   name: string;
   description?: string;
   color?: string;
   permissions?: string[];
-}): number {
-  const description = data.description ?? '';
-  const color = data.color ?? '#8b5cf6';
-  const permissions = JSON.stringify(data.permissions ?? ['view_dashboard']);
-  const now = Date.now();
-
-  const res = db.prepare(`
-    INSERT INTO groups (name, description, color, permissions, created_at)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(data.name, description, color, permissions, now);
-
-  return Number(res.lastInsertRowid);
+}): Promise<number> {
+  const res = await db.query(`
+    INSERT INTO panel_groups (name, description, color, permissions, created_at)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
+  `, [
+    data.name,
+    data.description ?? '',
+    data.color ?? '#8b5cf6',
+    JSON.stringify(data.permissions ?? ['view_dashboard']),
+    Date.now(),
+  ]);
+  return Number(res.rows[0].id);
 }
 
-export function updateGroup(
+export async function updateGroup(
   id: number,
   data: {
     name?: string;
@@ -330,99 +275,77 @@ export function updateGroup(
     color?: string;
     permissions?: string[];
   }
-): void {
-  const current = db.prepare('SELECT * FROM groups WHERE id = ?').get(id) as DbGroup | undefined;
-  if (!current) return;
+): Promise<void> {
+  const cur = (await db.query('SELECT * FROM panel_groups WHERE id = $1', [id])).rows[0] as DbGroup | undefined;
+  if (!cur) return;
 
-  const name = data.name ?? current.name;
-  const description = data.description ?? current.description;
-  const color = data.color ?? current.color;
-  const permissions = data.permissions !== undefined ? JSON.stringify(data.permissions) : current.permissions;
-
-  db.prepare(`
-    UPDATE groups
-    SET name = ?, description = ?, color = ?, permissions = ?
-    WHERE id = ?
-  `).run(name, description, color, permissions, id);
+  await db.query(`
+    UPDATE panel_groups
+    SET name = $1, description = $2, color = $3, permissions = $4
+    WHERE id = $5
+  `, [
+    data.name ?? cur.name,
+    data.description ?? cur.description,
+    data.color ?? cur.color,
+    data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
+    id,
+  ]);
 }
 
-export function deleteGroup(id: number): void {
-  db.prepare('DELETE FROM groups WHERE id = ?').run(id);
+export async function deleteGroup(id: number): Promise<void> {
+  await db.query('DELETE FROM panel_groups WHERE id = $1', [id]);
 }
 
-export function createSession(token: string, userId: number, expiresAt: number): void {
-  db.prepare('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').run(token, userId, expiresAt);
+export async function createSession(token: string, userId: number, expiresAt: number): Promise<void> {
+  await db.query('INSERT INTO panel_sessions (token, user_id, expires_at) VALUES ($1, $2, $3)', [token, userId, expiresAt]);
 }
 
-export function deleteSession(token: string): void {
-  db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+export async function deleteSession(token: string): Promise<void> {
+  await db.query('DELETE FROM panel_sessions WHERE token = $1', [token]);
 }
 
-export function getSessionUser(token: string): PanelUserWithGroup | null {
-  const row = db.prepare(`
-    SELECT s.expires_at, u.id, u.username, u.display_name, u.role, u.group_id, u.permissions, u.created_at,
-           g.name as group_name, g.color as group_color, g.permissions as group_permissions
-    FROM sessions s
+export async function getSessionUser(token: string): Promise<PanelUserWithGroup | null> {
+  const res = await db.query(`
+    SELECT s.expires_at, ${USER_COLS}, g.permissions AS group_permissions
+    FROM panel_sessions s
     JOIN panel_users u ON s.user_id = u.id
-    LEFT JOIN groups g ON u.group_id = g.id
-    WHERE s.token = ?
-  `).get(token) as {
-    expires_at: number;
-    id: number;
-    username: string;
-    display_name: string;
-    role: 'owner' | 'admin' | 'member';
-    group_id: number | null;
-    permissions: string;
-    created_at: number;
-    group_name: string | null;
-    group_color: string | null;
-    group_permissions: string | null;
-  } | undefined;
-
+    LEFT JOIN panel_groups g ON u.group_id = g.id
+    WHERE s.token = $1
+  `, [token]);
+  const row = res.rows[0];
   if (!row) return null;
-  if (row.expires_at < Date.now()) {
-    deleteSession(token);
+  if (Number(row.expires_at) < Date.now()) {
+    await deleteSession(token);
     return null;
   }
 
   const userPerms = parsePermissions(row.permissions);
   const groupPerms = row.group_permissions ? parsePermissions(row.group_permissions) : [];
   const mergedPerms = Array.from(new Set([...userPerms, ...groupPerms]));
-
-  return {
-    id: row.id,
-    username: row.username,
-    displayName: row.display_name,
-    role: row.role,
-    groupId: row.group_id,
-    groupName: row.group_name,
-    groupColor: row.group_color,
-    permissions: row.role === 'owner' || mergedPerms.includes('*') ? ['*'] : mergedPerms,
-    createdAt: row.created_at,
-  };
+  const user = toUser(row);
+  return { ...user, permissions: row.role === 'owner' || mergedPerms.includes('*') ? ['*'] : mergedPerms };
 }
 
-export function purgeExpiredSessions(): void {
-  db.prepare('DELETE FROM sessions WHERE expires_at < ?').run(Date.now());
+export async function purgeExpiredSessions(): Promise<void> {
+  await db.query('DELETE FROM panel_sessions WHERE expires_at < $1', [Date.now()]);
 }
 
-export function setPasswordHashForAdmin(hash: string): void {
-  const adminUser = getPanelUserByUsername('admin');
+export async function setPasswordHashForAdmin(hash: string): Promise<void> {
+  const adminUser = await getPanelUserByUsername('admin');
   if (adminUser) {
-    updatePanelUser(adminUser.id, { passwordHash: hash });
+    await updatePanelUser(adminUser.id, { passwordHash: hash });
+    return;
+  }
+  const first = (await db.query('SELECT id FROM panel_users ORDER BY id ASC LIMIT 1')).rows[0];
+  if (first) {
+    await updatePanelUser(first.id, { passwordHash: hash });
   } else {
-    const firstUser = db.prepare('SELECT id FROM panel_users ORDER BY id ASC LIMIT 1').get() as { id: number } | undefined;
-    if (firstUser) {
-      updatePanelUser(firstUser.id, { passwordHash: hash });
-    } else {
-      createPanelUser({
-        username: 'admin',
-        passwordHash: hash,
-        displayName: 'Panel Owner',
-        role: 'owner',
-        permissions: ['*'],
-      });
-    }
+    await createPanelUser({
+      username: 'admin',
+      passwordHash: hash,
+      displayName: 'Panel Owner',
+      role: 'owner',
+      permissions: ['*'],
+    });
   }
 }

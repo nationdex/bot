@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "panel:build": "cd website && bun run build",
     "bundle:prep": "bun src/scripts/bundle-prep.ts",
     "build:binary": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile binaries/nationdex-bot-linux-x64 && tar -czf binaries/nationdex-bot-linux-x64.tar.gz -C binaries nationdex-bot-linux-x64 && rm -f binaries/nationdex-bot-linux-x64",
     "build:binary:arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile binaries/nationdex-bot-linux-arm64 && tar -czf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries nationdex-bot-linux-arm64 && rm -f binaries/nationdex-bot-linux-arm64",

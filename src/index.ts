@@ -15,6 +15,7 @@ import {
   initSlashCommands,
 } from './core';
 import { evalFunctions } from './core/evalRunner';
+import { startPanel } from './core/panel';
 
 const api = new API({
   path: 'dist/api_routes',
@@ -123,6 +124,7 @@ async function main() {
   api.init(dex);
 
   await dex.login(token);
+  await startPanel(dex);
 }
 
 main().catch((err) => {

@@ -1,9 +1,11 @@
-process.loadEnvFile?.(new URL('.env', import.meta.url));
-
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { adminApiPlugin } from './server/vite-plugin';
+
+const envPath = path.resolve(__dirname, '.env');
+if (existsSync(envPath)) process.loadEnvFile(envPath);
 
 type LocalProductionConfig = {
   allowedHosts?: string[];

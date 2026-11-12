@@ -51,11 +51,11 @@ function sendJson(res: ServerResponse, status: number, body: unknown): void {
   res.end(JSON.stringify(body));
 }
 
-function getAuthenticatedUser(req: IncomingMessage): PanelUserWithGroup | null {
+async function getAuthenticatedUser(req: IncomingMessage): Promise<PanelUserWithGroup | null> {
   const token = getSessionToken(req);
   if (!token) return null;
-  purgeExpiredSessions();
-  return getSessionUser(token);
+  await purgeExpiredSessions();
+  return await getSessionUser(token);
 }
 
 function hasPermission(user: PanelUserWithGroup | null, perm: string): boolean {
@@ -73,12 +73,12 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
 
   if (url.startsWith('/api/auth')) {
     if (req.method === 'GET' && path === '/api/auth/status') {
-      sendJson(res, 200, { needsSetup: !hasPassword() });
+      sendJson(res, 200, { needsSetup: !await hasPassword() });
       return true;
     }
 
     if (req.method === 'GET' && path === '/api/auth/session') {
-      const currentUser = getAuthenticatedUser(req);
+      const currentUser = await getAuthenticatedUser(req);
       sendJson(res, 200, {
         authenticated: !!currentUser,
         user: currentUser,
@@ -87,7 +87,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
     }
 
     if (req.method === 'POST' && path === '/api/auth/setup') {
-      if (hasPassword()) {
+      if (await hasPassword()) {
         sendJson(res, 403, { ok: false, error: 'Admin panel is already configured.' });
         return true;
       }
@@ -101,8 +101,8 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         return true;
       }
 
-      const adminGroup = getGroups().find((g) => g.name === 'Administrators');
-      const userId = createPanelUser({
+      const adminGroup = (await getGroups()).find((g) => g.name === 'Administrators');
+      const userId = await createPanelUser({
         username,
         passwordHash: hashPassword(password),
         displayName,
@@ -112,10 +112,10 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
       });
 
       const token = randomBytes(32).toString('hex');
-      createSession(token, userId, Date.now() + SESSION_MS);
+      await createSession(token, userId, Date.now() + SESSION_MS);
       setSessionCookie(res, token);
 
-      sendJson(res, 200, { ok: true, user: getPanelUserById(userId) });
+      sendJson(res, 200, { ok: true, user: await getPanelUserById(userId) });
       return true;
     }
 
@@ -129,11 +129,11 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         return true;
       }
 
-      let targetUser = username ? getPanelUserByUsername(username) : getPanelUserByUsername('admin');
+      let targetUser = username ? await getPanelUserByUsername(username) : await getPanelUserByUsername('admin');
       if (!targetUser && !username) {
-        const allUsers = getPanelUsers();
+        const allUsers = await getPanelUsers();
         if (allUsers.length > 0) {
-          targetUser = getPanelUserByUsername(allUsers[0].username);
+          targetUser = await getPanelUserByUsername(allUsers[0].username);
         }
       }
 
@@ -143,16 +143,16 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
       }
 
       const token = randomBytes(32).toString('hex');
-      createSession(token, targetUser.id, Date.now() + SESSION_MS);
+      await createSession(token, targetUser.id, Date.now() + SESSION_MS);
       setSessionCookie(res, token);
 
-      sendJson(res, 200, { ok: true, user: getPanelUserById(targetUser.id) });
+      sendJson(res, 200, { ok: true, user: await getPanelUserById(targetUser.id) });
       return true;
     }
 
     if (req.method === 'POST' && path === '/api/auth/logout') {
       const token = getSessionToken(req);
-      if (token) deleteSession(token);
+      if (token) await deleteSession(token);
       clearSessionCookie(res);
       sendJson(res, 200, { ok: true });
       return true;
@@ -163,7 +163,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
   }
 
   if (url.startsWith('/api/panel')) {
-    const currentUser = getAuthenticatedUser(req);
+    const currentUser = await getAuthenticatedUser(req);
     if (!currentUser) {
       sendJson(res, 401, { error: 'Unauthorized' });
       return true;
@@ -176,7 +176,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
       }
 
       if (req.method === 'GET') {
-        sendJson(res, 200, { users: getPanelUsers() });
+        sendJson(res, 200, { users: await getPanelUsers() });
         return true;
       }
 
@@ -198,7 +198,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           return true;
         }
 
-        const existing = getPanelUserByUsername(username);
+        const existing = await getPanelUserByUsername(username);
         if (existing) {
           sendJson(res, 400, { ok: false, error: 'Username is already taken.' });
           return true;
@@ -209,7 +209,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           return true;
         }
 
-        const newId = createPanelUser({
+        const newId = await createPanelUser({
           username,
           passwordHash: hashPassword(password),
           displayName,
@@ -219,10 +219,10 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         });
 
         if (role === 'owner' && currentUser.role === 'owner') {
-          setOwner(newId);
+          await setOwner(newId);
         }
 
-        sendJson(res, 200, { ok: true, user: getPanelUserById(newId), users: getPanelUsers() });
+        sendJson(res, 200, { ok: true, user: await getPanelUserById(newId), users: await getPanelUsers() });
         return true;
       }
     }
@@ -242,7 +242,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         return true;
       }
 
-      const targetUser = getPanelUserById(targetId);
+      const targetUser = await getPanelUserById(targetId);
       if (!targetUser) {
         sendJson(res, 404, { error: 'User not found' });
         return true;
@@ -253,8 +253,8 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           sendJson(res, 403, { ok: false, error: 'Only the panel Owner can transfer ownership.' });
           return true;
         }
-        setOwner(targetId);
-        sendJson(res, 200, { ok: true, users: getPanelUsers() });
+        await setOwner(targetId);
+        sendJson(res, 200, { ok: true, users: await getPanelUsers() });
         return true;
       }
 
@@ -273,7 +273,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         }
 
         if (username && username !== targetUser.username) {
-          const dup = getPanelUserByUsername(username);
+          const dup = await getPanelUserByUsername(username);
           if (dup && dup.id !== targetId) {
             sendJson(res, 400, { ok: false, error: 'Username is already taken.' });
             return true;
@@ -285,7 +285,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           return true;
         }
 
-        updatePanelUser(targetId, {
+        await updatePanelUser(targetId, {
           username,
           passwordHash: password ? hashPassword(password) : undefined,
           displayName,
@@ -295,10 +295,10 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         });
 
         if (role === 'owner' && currentUser.role === 'owner') {
-          setOwner(targetId);
+          await setOwner(targetId);
         }
 
-        sendJson(res, 200, { ok: true, user: getPanelUserById(targetId), users: getPanelUsers() });
+        sendJson(res, 200, { ok: true, user: await getPanelUserById(targetId), users: await getPanelUsers() });
         return true;
       }
 
@@ -311,8 +311,8 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           sendJson(res, 400, { ok: false, error: 'Cannot delete the panel Owner account. Transfer ownership first.' });
           return true;
         }
-        deletePanelUser(targetId);
-        sendJson(res, 200, { ok: true, users: getPanelUsers() });
+        await deletePanelUser(targetId);
+        sendJson(res, 200, { ok: true, users: await getPanelUsers() });
         return true;
       }
     }
@@ -324,7 +324,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
       }
 
       if (req.method === 'GET') {
-        sendJson(res, 200, { groups: getGroups() });
+        sendJson(res, 200, { groups: await getGroups() });
         return true;
       }
 
@@ -340,8 +340,8 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
           return true;
         }
 
-        createGroup({ name, description, color, permissions });
-        sendJson(res, 200, { ok: true, groups: getGroups() });
+        await createGroup({ name, description, color, permissions });
+        sendJson(res, 200, { ok: true, groups: await getGroups() });
         return true;
       }
     }
@@ -365,14 +365,14 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
         const color = body.color !== undefined ? String(body.color).trim() : undefined;
         const permissions = Array.isArray(body.permissions) ? body.permissions.map(String) : undefined;
 
-        updateGroup(groupId, { name, description, color, permissions });
-        sendJson(res, 200, { ok: true, groups: getGroups() });
+        await updateGroup(groupId, { name, description, color, permissions });
+        sendJson(res, 200, { ok: true, groups: await getGroups() });
         return true;
       }
 
       if (req.method === 'DELETE') {
-        deleteGroup(groupId);
-        sendJson(res, 200, { ok: true, groups: getGroups() });
+        await deleteGroup(groupId);
+        sendJson(res, 200, { ok: true, groups: await getGroups() });
         return true;
       }
     }
@@ -449,7 +449,7 @@ export async function handleAdminApi(req: IncomingMessage, res: ServerResponse):
     }
   }
 
-  const currentUser = getAuthenticatedUser(req);
+  const currentUser = await getAuthenticatedUser(req);
   if (!currentUser) {
     sendJson(res, 401, { error: 'Unauthorized' });
     return true;
