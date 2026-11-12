@@ -22,7 +22,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p website",
     "validate:collectibles": "bun run build && bun dist/core/collectibles.js"
   },
-  "author": "NationDex Team (https://github.com/nationdex)",
+  "author": "Nationdex Solutions (https://github.com/nationdex)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
