@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/guilds/:id',
   method: 'GET',
   code: `
-  $!apiCors
   $let[guild;$getParameter[0]]
   $if[$and[$get[guild]!=;$replaceRegex[$get[guild];\\\\d{15,25};;]==]==false;
     $writeStatus[400;Bad Request]

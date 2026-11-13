@@ -45,7 +45,7 @@ export function SidebarBody(props: SidebarBodyProps) {
   );
 }
 
-export function DesktopSidebar({ className, children, ...props }: SidebarBodyProps) {
+function DesktopSidebar({ className, children, ...props }: SidebarBodyProps) {
   return (
     <aside
       data-sidebar-desktop
@@ -62,7 +62,7 @@ export function DesktopSidebar({ className, children, ...props }: SidebarBodyPro
   );
 }
 
-export function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
+function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
   const { open, setOpen } = useSidebar();
   const pageTransitions = useMotionPref('pageTransitions');
 

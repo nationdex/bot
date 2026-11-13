@@ -23,7 +23,7 @@ export const bot = {
 
 export type RarityClass = (typeof bot.rarityClasses)[number];
 
-export const rarityLabels: Record<RarityClass, string> = {
+const rarityLabels: Record<RarityClass, string> = {
   common: 'Common',
   uncommon: 'Uncommon',
   rare: 'Rare',

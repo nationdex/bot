@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/users/:id/auction',
   method: 'GET',
   code: `
-  $!apiCors
   $let[user;$getParameter[0]]
   $if[$userExists[$get[user]]==false;
     $writeStatus[404;Not Found]

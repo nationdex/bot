@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/cards/:id/image',
   method: 'GET',
   code: `
-  $!apiCors
   $let[id;$getParameter[0]]
   $jsonLoad[cards;$cardList]
   $arrayMap[cards;card;$return[$env[card;id]];ids]

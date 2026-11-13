@@ -24,10 +24,6 @@ export const variables = {
       Aditya: 'https://discord.com/users/903681538842054686',
     },
     prefix: 'n.',
-    // Origins (comma separated, e.g. https://nationdex.com) that browsers may call the API from. Empty means no cross-origin access.
-    api: {
-      allowedOrigins: '',
-    },
     logChannel: '',
     accent: '#4000ff'
   },

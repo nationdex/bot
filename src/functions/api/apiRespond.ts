@@ -42,7 +42,6 @@ export default new ForgeFunction({
   $if[$and[$get[actor]!=;$get[action]!=;$env[r;status]==200];
     $!accessLog[$get[actor];api:$get[action];;$replace[$env[detail];null;]]
   ]
-  $!apiCors
   $writeStatus[$env[r;status];$env[r;statusText]]
   $sendJson[$env[r]]
   `,

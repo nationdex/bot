@@ -3,7 +3,7 @@ import { getCache } from '@/lib/api';
 import type { PanelUser } from '@/lib/auth';
 import { bot, formatRarity } from '@/lib/bot';
 
-export type AdminSection =
+type AdminSection =
   | 'dashboard'
   | 'users'
   | 'nations'
@@ -14,7 +14,7 @@ export type AdminSection =
   | 'panel_users'
   | 'settings';
 
-export type SearchResultType =
+type SearchResultType =
   | 'page'
   | 'setting'
   | 'user'

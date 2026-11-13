@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { admin } from '@/lib/admin-classes';
 import { cn } from '@/lib/utils';
 
-export function UsersSkeleton() {
+function UsersSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -41,7 +41,7 @@ export function UsersSkeleton() {
   );
 }
 
-export function NationsSkeleton() {
+function NationsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -76,7 +76,7 @@ export function NationsSkeleton() {
   );
 }
 
-export function GuildsSkeleton() {
+function GuildsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -110,7 +110,7 @@ export function GuildsSkeleton() {
   );
 }
 
-export function CardsSkeleton() {
+function CardsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -213,7 +213,7 @@ export function PanelUsersSkeleton() {
   );
 }
 
-export function SettingsSkeleton() {
+function SettingsSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 border-b border-[var(--admin-border)] pb-3">
@@ -248,7 +248,7 @@ export function SettingsSkeleton() {
   );
 }
 
-export function InstancesSkeleton() {
+function InstancesSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -282,7 +282,7 @@ export function InstancesSkeleton() {
   );
 }
 
-export function DashboardSkeleton() {
+function DashboardSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

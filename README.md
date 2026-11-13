@@ -191,17 +191,9 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 
 Keys in **bold** are required.
 
-#### Calling from a browser (CORS)
+#### Calling from a browser
 
-By default only requests from the same origin, servers and tools like `curl` work. To let a website call the API from the browser, list its origins (comma separated, scheme and host, no path) in the `api.allowedOrigins` setting:
-
-```bash
-curl -X POST http://localhost:2222/v1/config \
-  -H "Authorization: Bearer ndx_<owner token>" -H "Content-Type: application/json" \
-  -d '{"root": "config", "path": "api.allowedOrigins", "value": "https://nationdex.com, http://localhost:5173"}'
-```
-
-Every route answers the browser's `OPTIONS` preflight (`204`), and every answer, errors included, carries `Access-Control-Allow-Origin` for a listed origin. Other origins get no CORS headers, so the browser blocks them. Browsers need `Authorization` and `Content-Type` allowed, which the preflight does.
+The API sends no CORS headers: browsers on another origin cannot call it. Call it from a server, from `curl`, or through the admin panel, which is served by the bot itself and talks to the API on the same machine.
 
 ## 👥 Devs and Mentions
 

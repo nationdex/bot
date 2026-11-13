@@ -4,7 +4,17 @@ const TIMEOUT_MS = 5000;
 const IMAGE_TIMEOUT_MS = 6000;
 
 const baseUrl = (): string => (process.env.API_BASE_URL ?? '').replace(/\/$/, '');
-const authHeaders = (): Record<string, string> => (process.env.API_BEARER_TOKEN ? { Authorization: `Bearer ${process.env.API_BEARER_TOKEN}` } : {});
+// The bot hands the panel an API token for its own process (see src/core/panel.ts); no manual token is needed.
+export type TokenProvider = { get: () => Promise<string | null>; invalidate: () => void };
+let tokens: TokenProvider = { get: async () => process.env.API_BEARER_TOKEN ?? null, invalidate: () => {} };
+export const useTokenProvider = (provider: TokenProvider): void => {
+  tokens = provider;
+};
+
+const authHeaders = async (): Promise<Record<string, string>> => {
+  const token = await tokens.get();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // The panel UI calls /api/bot/*; only these few paths differ from the bot's own /v1 routes.
 function upstreamPath(path: string): string {
@@ -23,7 +33,7 @@ export async function proxyCardImage(path: string): Promise<Response> {
   const raw = path.startsWith('/api/bot/cards/image/') ? path.slice('/api/bot/cards/image/'.length) : path.slice('/api/bot/cards/'.length, -'/image'.length);
   const id = decodeURIComponent(raw.trim()).replace(/\.(png|jpg|webp|svg)$/i, '');
   try {
-    const res = await fetch(`${baseUrl()}/cards/${encodeURIComponent(id)}/image`, { headers: authHeaders(), signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS) });
+    const res = await fetch(`${baseUrl()}/cards/${encodeURIComponent(id)}/image`, { headers: await authHeaders(), signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS) });
     if (!res.ok) return json({ error: 'Card Not Found' }, res.status);
     return new Response(res.body, { headers: { 'Content-Type': res.headers.get('content-type') || 'image/png', 'Cache-Control': 'public, max-age=3600' } });
   } catch {
@@ -37,11 +47,12 @@ export async function proxyBot(req: Request, path: string, search: string): Prom
     const hasBody = req.method !== 'GET' && req.method !== 'HEAD';
     const res = await fetch(`${baseUrl()}${upstreamPath(path)}${search}`, {
       method: req.method,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...authHeaders() },
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(await authHeaders()) },
       body: hasBody ? JSON.stringify(await readJson(req)) : undefined,
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
+    if (res.status === 401) tokens.invalidate();
     const type = res.headers.get('content-type') || '';
     if (res.ok && (type.includes('image/') || type.includes('application/octet-stream'))) {
       return new Response(res.body, { status: res.status, headers: { 'Content-Type': type } });

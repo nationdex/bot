@@ -38,6 +38,8 @@ export async function initPanelDb(pg: Pg): Promise<void> {
     )
   `);
 
+  await db.query('CREATE TABLE IF NOT EXISTS panel_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
+
   const count = await db.query('SELECT COUNT(*) AS count FROM panel_groups');
   if (Number(count.rows[0].count) === 0) {
     const now = Date.now();
@@ -49,6 +51,15 @@ export async function initPanelDb(pg: Pg): Promise<void> {
 }
 
 export { db };
+
+export async function getMeta(key: string): Promise<string | null> {
+  const res = await db.query('SELECT value FROM panel_meta WHERE key = $1', [key]);
+  return res.rows[0]?.value ?? null;
+}
+
+export async function setMeta(key: string, value: string): Promise<void> {
+  await db.query('INSERT INTO panel_meta (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value', [key, value]);
+}
 
 export type DbPanelUser = {
   id: number;

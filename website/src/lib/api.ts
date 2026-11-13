@@ -26,7 +26,7 @@ export type UserEntry = {
   caughtAt?: string;
 };
 
-export type BotConfigData = {
+type BotConfigData = {
   name?: string;
   version?: string;
   description?: string;
@@ -505,7 +505,7 @@ export async function fetchUserData(id?: string): Promise<UserEntry[] | null> {
   return validCached;
 }
 
-export async function searchDb(variable: string, id?: string): Promise<unknown> {
+async function searchDb(variable: string, id?: string): Promise<unknown> {
   const query = id ? `?id=${encodeURIComponent(id)}` : '';
   return apiFetch<unknown>(`/api/bot/search_db/${encodeURIComponent(variable)}${query}`);
 }
@@ -518,7 +518,7 @@ const prefixToRarityMap: Record<string, RarityClass> = {
   LL: 'legendary',
 };
 
-export function getRarityFromId(id: string): RarityClass {
+function getRarityFromId(id: string): RarityClass {
   const prefix = id.trim().slice(0, 2).toUpperCase();
   return prefixToRarityMap[prefix] ?? 'common';
 }
@@ -711,7 +711,7 @@ export async function fetchGuildConfigs(): Promise<GuildConfigEntry[] | null> {
   return cached;
 }
 
-export type ApiResponse<T = unknown> = {
+type ApiResponse<T = unknown> = {
   ok: boolean;
   status?: number;
   statusText?: string;
@@ -719,7 +719,7 @@ export type ApiResponse<T = unknown> = {
   error?: string;
 };
 
-export type CreateNationPayload = {
+type CreateNationPayload = {
   name: string;
   class: string;
   emoji_id: string;
@@ -743,7 +743,7 @@ export type CreateNationPayload = {
   collection_card?: string;
 };
 
-export type UpdateNationPayload = {
+type UpdateNationPayload = {
   name?: string;
   short_name?: string | null;
   class?: string;
@@ -948,14 +948,14 @@ export async function resetUserSettings(userId: string): Promise<ApiResponse> {
   return res || { ok: false, error: 'Network error' };
 }
 
-export type UserAuctionStats = {
+type UserAuctionStats = {
   total: number;
   sold: number;
   earnings: number;
   onSale: string[];
 };
 
-export async function fetchUserAuction(userId: string): Promise<UserAuctionStats | null> {
+async function fetchUserAuction(userId: string): Promise<UserAuctionStats | null> {
   let res = await apiFetch<unknown>(
     `/api/bot/users/${encodeURIComponent(userId)}/auction`
   );
@@ -989,7 +989,7 @@ export async function fetchUserAuction(userId: string): Promise<UserAuctionStats
   };
 }
 
-export type UpdateUserAuctionPayload =
+type UpdateUserAuctionPayload =
   | {
       total?: number;
       sold?: number;
@@ -1095,7 +1095,7 @@ export type UserCatchItem = {
   [key: string]: unknown;
 };
 
-export type UserAuctionItem = {
+type UserAuctionItem = {
   id: string;
   nationCatchId: string;
   catalogId: string;
@@ -1113,7 +1113,7 @@ export type UserAuctionItem = {
   status: 'active' | 'ended';
 };
 
-export type UserAuctionData = {
+type UserAuctionData = {
   total: number;
   sold: number;
   earnings: number;
@@ -1143,7 +1143,7 @@ export type UserDetailData = {
   private?: boolean;
 };
 
-export async function fetchUserBalance(userId: string): Promise<number> {
+async function fetchUserBalance(userId: string): Promise<number> {
   const raw = await apiFetch<unknown>(`/api/bot/search_db/balance?id=${encodeURIComponent(userId)}`, undefined, 1, 4000);
   if (!raw) return 0;
   let record: Record<string, unknown> | null = null;
@@ -1158,7 +1158,7 @@ export async function fetchUserBalance(userId: string): Promise<number> {
   return isNaN(num) ? 0 : num;
 }
 
-export async function fetchNationCatch(catchId: string): Promise<Record<string, unknown> | null> {
+async function fetchNationCatch(catchId: string): Promise<Record<string, unknown> | null> {
   const cacheKey = `catch_${catchId}`;
   const cached = getCache<Record<string, unknown>>(cacheKey);
   if (cached && (cached.attack !== undefined || cached.health !== undefined)) {
@@ -1197,7 +1197,7 @@ export async function fetchNationCatch(catchId: string): Promise<Record<string, 
   return parsed;
 }
 
-export async function fetchAuctionHouse(): Promise<Record<string, Record<string, unknown>>> {
+async function fetchAuctionHouse(): Promise<Record<string, Record<string, unknown>>> {
   const cacheKey = 'auction_house';
   const cached = getCache<Record<string, Record<string, unknown>>>(cacheKey);
   const raw = await apiFetch<unknown>('/api/bot/search_db/auctionHouse', undefined, 1, 6000);

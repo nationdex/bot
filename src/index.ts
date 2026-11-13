@@ -124,7 +124,8 @@ async function main() {
   api.init(dex);
 
   await dex.login(token);
-  await startPanel(dex);
+  // The bot must keep running if the panel cannot start (for example in a compiled binary without website/).
+  await startPanel(dex).catch((err) => console.error('Admin panel failed to start:', err));
 }
 
 main().catch((err) => {

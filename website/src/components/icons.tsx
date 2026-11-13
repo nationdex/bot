@@ -11,7 +11,6 @@ const shapes = {
   ChevronRight: "<path d=\"m9 18 6-6-6-6\"></path>",
   ChevronsLeft: "<path d=\"m11 17-5-5 5-5\"></path><path d=\"m18 17-5-5 5-5\"></path>",
   ChevronsRight: "<path d=\"m6 17 5-5-5-5\"></path><path d=\"m13 17 5-5-5-5\"></path>",
-  ChevronUp: "<path d=\"m18 15-6-6-6 6\"></path>",
   Code2: "<path d=\"m18 16 4-4-4-4\"></path><path d=\"m6 8-4 4 4 4\"></path><path d=\"m14.5 4-5 16\"></path>",
   Coins: "<path d=\"M13.744 17.736a6 6 0 1 1-7.48-7.48\"></path><path d=\"M15 6h1v4\"></path><path d=\"m6.134 14.768.866-.5 2 3.464\"></path><circle cx=\"16\" cy=\"8\" r=\"6\"></circle>",
   Copy: "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"></rect><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"></path>",
@@ -85,7 +84,6 @@ export const ChevronLeft = icon('ChevronLeft');
 export const ChevronRight = icon('ChevronRight');
 export const ChevronsLeft = icon('ChevronsLeft');
 export const ChevronsRight = icon('ChevronsRight');
-export const ChevronUp = icon('ChevronUp');
 export const Code2 = icon('Code2');
 export const Coins = icon('Coins');
 export const Copy = icon('Copy');

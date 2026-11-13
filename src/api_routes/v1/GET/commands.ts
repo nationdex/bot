@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/commands/data',
   method: 'GET',
   code: `
-  $!apiCors
   $jsonLoad[data;$djsEval[
     const path = require('path');
     const { commands } = require(path.resolve(process.cwd(), 'dist/config/commands.js'));

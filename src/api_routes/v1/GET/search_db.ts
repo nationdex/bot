@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/search_db/:variable',
   method: 'GET',
   code: `
-  $!apiCors
   $!apiAuth[$getHeader[authorization];inspect.read]
   $let[var;$getParameter[0]]
   $let[id;$getQuery[id]]

@@ -1,12 +1,9 @@
 import path from 'node:path';
 import { distDir } from '../build';
 import { authUser, handleAuth } from './auth';
-import { initPanelDb } from './db';
 import { handlePanel } from './users';
-import { proxyBot, proxyCardImage } from './proxy';
+import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
 import { json } from './util';
-
-type Pg = Parameters<typeof initPanelDb>[0];
 
 async function serveStatic(pathname: string): Promise<Response> {
   const file = path.join(distDir, pathname);
@@ -45,9 +42,9 @@ async function route(req: Request): Promise<Response> {
   return json({ status: 404, error: 'Not found' }, 404);
 }
 
-// Runs inside the bot's Bun process; panel tables live in the bot's own PGlite connection.
-export async function startPanelServer(opts: { pg: Pg; port: number; hostname: string }): Promise<void> {
-  await initPanelDb(opts.pg);
+// Runs inside the bot's Bun process; the caller has already initialised the panel tables in the bot's PGlite.
+export function startPanelServer(opts: { port: number; hostname: string; tokens: TokenProvider }): void {
+  useTokenProvider(opts.tokens);
   Bun.serve({
     port: opts.port,
     hostname: opts.hostname,

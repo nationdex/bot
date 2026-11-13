@@ -36,7 +36,7 @@ function Select({ value, onValueChange, disabled, children }: {
   });
 
   return (
-    <div className={cn('relative flex h-10 w-full items-center rounded-md border border-input bg-background text-sm', triggerClass)}>
+    <div className={cn('relative flex h-10 w-full items-center rounded-md border text-sm', triggerClass)}>
       <select
         value={value}
         disabled={disabled}

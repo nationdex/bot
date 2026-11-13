@@ -1,5 +1,5 @@
 export const springSnappy = { type: 'spring' as const, stiffness: 420, damping: 30 };
-export const springSoft = { type: 'spring' as const, stiffness: 280, damping: 26 };
+const springSoft = { type: 'spring' as const, stiffness: 280, damping: 26 };
 
 export const perspectiveDefault = 1200;
 

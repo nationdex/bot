@@ -32,14 +32,14 @@ export const defaultAnimationPrefs: AnimationPrefs = {
   smoothScroll: true,
 };
 
-export type MotionSettingDef = {
+type MotionSettingDef = {
   key: MotionPrefKey;
   label: string;
   description: string;
   heavy?: boolean;
 };
 
-export type MotionSettingGroup = {
+type MotionSettingGroup = {
   title: string;
   settings: MotionSettingDef[];
 };
@@ -193,17 +193,3 @@ export function applyLowSpecAnimationPrefs(prefs: AnimationPrefs): AnimationPref
     chartMotion: false,
   };
 }
-
-export function countActiveMotionPrefs(prefs: AnimationPrefs): number {
-  if (!prefs.masterEnabled) return 0;
-  return motionSettingGroups.reduce(
-    (count, group) =>
-      count + group.settings.filter((setting) => prefs[setting.key]).length,
-    0
-  );
-}
-
-export const motionPrefTotal = motionSettingGroups.reduce(
-  (count, group) => count + group.settings.length,
-  0
-);

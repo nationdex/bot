@@ -4,7 +4,6 @@ const route: RouteDefinition = {
   url: 'v1/collectibles/data',
   method: 'GET',
   code: `
-  $!apiCors
   $let[id;$getQuery[id]]
   $jsonLoad[collectibles;$collectiblesData[collectibles]]
   $jsonLoad[ids;$jsonKeys[collectibles]]
