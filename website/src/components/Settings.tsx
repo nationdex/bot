@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/components/icons';
 import { useState } from 'react';
+import InstallApp from '@/components/InstallApp';
 import ThemeSettings from '@/components/ThemeSettings';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAnimationPrefs } from '@/hooks/useAnimationPrefs';
@@ -67,6 +68,7 @@ export default function Settings() {
 
   return (
     <div className="w-full space-y-4 sm:space-y-6">
+      <InstallApp />
       <Card className={cn(admin.card, 'overflow-hidden')}>
         <button
           type="button"

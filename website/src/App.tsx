@@ -43,20 +43,27 @@ export default function App() {
     return cached && Array.isArray(cached) ? cached.length : null;
   });
 
+  const [unreachable, setUnreachable] = useState(false);
+
   const fetchSession = () => {
-    checkSession().then((res) => {
-      setAuthed(res.authenticated);
-      if (res.user) setCurrentUser(res.user);
-    });
+    checkSession()
+      .then((res) => {
+        setUnreachable(false);
+        setAuthed(res.authenticated);
+        if (res.user) setCurrentUser(res.user);
+      })
+      .catch(() => setUnreachable(true));
   };
 
   useEffect(() => {
     fetchSession();
+    window.addEventListener('online', fetchSession);
     void fetchCollectibles().then((data) => {
       if (Array.isArray(data)) {
         setNationsCount(data.length);
       }
     });
+    return () => window.removeEventListener('online', fetchSession);
   }, []);
 
   const [currentSection, setCurrentSection] = useState('dashboard');
@@ -207,8 +214,20 @@ export default function App() {
     }
   };
 
+  if (unreachable && authed === null) {
+    return (
+      <div className={cn('flex h-full flex-col items-center justify-center gap-3 p-6 text-center', admin.shell)}>
+        <h1 className={cn('text-lg font-semibold', admin.fg)}>Can&apos;t reach the panel</h1>
+        <p className={cn('max-w-sm text-sm', admin.muted)}>You are offline or the bot is not running. The panel reconnects by itself, or try again now.</p>
+        <button type="button" onClick={fetchSession} className="cursor-pointer rounded-lg bg-[var(--admin-accent)] px-4 py-2 text-sm font-medium text-[var(--admin-accent-fg)]">
+          Try again
+        </button>
+      </div>
+    );
+  }
+
   if (authed === null) {
-    return <div className={cn('h-dvh', admin.shell)} />;
+    return <div className={cn('h-full', admin.shell)} />;
   }
 
   if (!authed) {
@@ -309,7 +328,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
-      <div className={cn('h-dvh overflow-hidden transition-colors duration-300', admin.shell)}>
+      <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
           <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
         </Sidebar>

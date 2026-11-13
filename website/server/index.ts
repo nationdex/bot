@@ -13,8 +13,13 @@ async function serveStatic(pathname: string): Promise<Response> {
   // SPA fallback: unknown paths get the app shell so client routes survive a reload.
   if (!(await asset.exists()) || pathname.endsWith('/')) asset = Bun.file(path.join(distDir, 'index.html'));
 
-  const hashed = /(chunk|logo)-[a-z0-9]+\./.test(asset.name ?? '');
-  return new Response(asset, { headers: hashed ? { 'Cache-Control': 'public, max-age=31536000, immutable' } : {} });
+  const headers: Record<string, string> = {};
+  if (/(chunk|logo)-[a-z0-9]+\./.test(asset.name ?? '')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+  else if (pathname.startsWith('/icons/')) headers['Cache-Control'] = 'public, max-age=86400';
+  else headers['Cache-Control'] = 'no-cache'; // the shell, manifest and service worker must always be revalidated
+  if (pathname === '/manifest.webmanifest') headers['Content-Type'] = 'application/manifest+json';
+  if (pathname === '/sw.js') headers['Service-Worker-Allowed'] = '/';
+  return new Response(asset, { headers });
 }
 
 async function route(req: Request): Promise<Response> {

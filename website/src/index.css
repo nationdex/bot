@@ -79,6 +79,18 @@
     height: 100%;
     overflow: hidden;
   }
+
+  body {
+    background: var(--admin-shell-bg, var(--admin-shell));
+    overscroll-behavior: none;
+  }
+
+  /* Installed app on notched phones and tablets: keep content out of the cutouts and system bars. */
+  #root {
+    box-sizing: border-box;
+    height: 100dvh;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  }
 }
 
 .glass-effect {

@@ -23,3 +23,10 @@ if (root) {
     </StrictMode>
   );
 }
+
+// Installable and fast to reopen. Needs a secure context (HTTPS or localhost); elsewhere the panel just runs as a page.
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}

@@ -1,0 +1,5 @@
+60d2e7b3e1edb09e135fc0dff20afb41ee93734a2f0e2303b0452971f09650e8  nationdex-bot-darwin-arm64.tar.gz
+720445106dde1c4dd62de410a9d420a3cc72cfd08d1f6321e75cb2c648cfa609  nationdex-bot-darwin-x64.tar.gz
+4ae89b4639b6beadb838d998643d0fbb7f9d6d09309799bc82f58dd6ea90a039  nationdex-bot-linux-arm64.tar.gz
+a6be11422403318d25bd5b36cffe4aa0506371043f6a858653daab61789a21d0  nationdex-bot-linux-x64.tar.gz
+550ab74cd77ef733cdd6aea550e441e9aee1b81dc1703c51cbfaee5a1606c904  nationdex-bot-windows-x64.zip
