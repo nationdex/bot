@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('access.audit', `
   $let[text;$accessAudit[15]]

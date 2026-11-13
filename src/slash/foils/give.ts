@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('economy.give', `
   $let[user;$findUser[$option[user];true]]

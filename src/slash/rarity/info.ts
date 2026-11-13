@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('rarity.info', `
   $let[rawInput;$trim[$option[$jsonVar[keywords;collectible.singular]]]]

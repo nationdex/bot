@@ -81,11 +81,11 @@ let pgliteDataPath: string | undefined;
 try {
   // Relative require ensures Bun compiler bundles these assets into /$bunfs/root/
   // @ts-ignore
-  pgliteWasmPath = require('../../node_modules/@electric-sql/pglite/dist/pglite.wasm');
+  pgliteWasmPath = require('../../../node_modules/@electric-sql/pglite/dist/pglite.wasm');
   // @ts-ignore
-  initdbWasmPath = require('../../node_modules/@electric-sql/pglite/dist/initdb.wasm');
+  initdbWasmPath = require('../../../node_modules/@electric-sql/pglite/dist/initdb.wasm');
   // @ts-ignore
-  pgliteDataPath = require('../../node_modules/@electric-sql/pglite/dist/pglite.data');
+  pgliteDataPath = require('../../../node_modules/@electric-sql/pglite/dist/pglite.data');
 } catch {
   try {
     const pglitePkg = path.dirname(require.resolve('@electric-sql/pglite/package.json'));

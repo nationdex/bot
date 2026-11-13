@@ -1,4 +1,4 @@
-import { command } from '../../core/commands';
+import { command } from '../../core/define/commands';
 
 export default command('guildCreate', `
   $onlyIf[$isBlacklisted[guild;$guildID]]

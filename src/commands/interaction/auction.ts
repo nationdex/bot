@@ -1,4 +1,4 @@
-import { command } from '../../core/commands';
+import { command } from '../../core/define/commands';
 
 // customIDs: browse acts auction-<filter|pick|page|settle>-<owner>-<filter>-<page>
 //            detail acts auction-<bid|buyout|custom|modal|refresh|cancel|force>-<aid>-<arg>-<mode>-<owner>-<filter>-<page>

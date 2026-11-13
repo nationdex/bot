@@ -1,4 +1,4 @@
-import { slashCommand } from '../../core/slashes';
+import { slashCommand } from '../../core/define/slashes';
 
 export default slashCommand('spawn.configs', `
   $onlyIf[$hasPerms[$guildID;$authorID;ManageGuild];

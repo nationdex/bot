@@ -1551,11 +1551,11 @@ export const get_botCommands = () => [
   require("../dist/commands/backend/catch.js"),
   require("../dist/commands/backend/spawn.js"),
   require("../dist/commands/backend/guildCreate.js"),
-  require("../dist/commands/backend/autocomplete/class.js"),
-  require("../dist/commands/backend/autocomplete/rarity.js"),
-  require("../dist/commands/backend/autocomplete/access.js"),
-  require("../dist/commands/backend/autocomplete/collectibles.js"),
-  require("../dist/commands/backend/autocomplete/auction.js"),
+  require("../dist/commands/autocomplete/class.js"),
+  require("../dist/commands/autocomplete/rarity.js"),
+  require("../dist/commands/autocomplete/access.js"),
+  require("../dist/commands/autocomplete/collectibles.js"),
+  require("../dist/commands/autocomplete/auction.js"),
 ];
 export const get_botSlash = () => [
   require("../dist/slash/rarity/info.js"),

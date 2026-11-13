@@ -1,4 +1,4 @@
-import { command } from '../../core/commands';
+import { command } from '../../core/define/commands';
 import { auctionConfig } from '../../config/auction';
 
 export default command('ready', `

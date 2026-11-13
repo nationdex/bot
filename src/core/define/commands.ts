@@ -1,5 +1,5 @@
 import { BaseCommand, ForgeClient, ForgeExtension } from '@tryforge/forgescript';
-import { commands as commandsConfig } from '../config/commands';
+import { commands as commandsConfig } from '../../config/commands';
 import { GUARDED_EVENTS, withBlacklistGuard } from './blacklistGuard';
 
 export interface CommandsOptions {

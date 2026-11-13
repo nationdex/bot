@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('access.role', `
   $let[s;$accessSetRole[$option[name];$option[capabilities]]]

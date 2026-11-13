@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('collectibles.sell', `
   $let[id;$replace[$option[$jsonVar[keywords;collectible.singular]];#;]]

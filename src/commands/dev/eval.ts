@@ -1,4 +1,4 @@
-import { command } from '../../core/commands';
+import { command } from '../../core/define/commands';
 
 export default command('dev.eval', `
   $onlyIf[$hasCap[$authorID;eval.run;$if[$guildID==;dm;]]]

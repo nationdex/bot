@@ -1,5 +1,5 @@
 import { ForgeClient, ForgeExtension } from '@tryforge/forgescript';
-import { variables as defaults } from '../config/variables';
+import { variables as defaults } from '../../config/variables';
 
 export interface VariablesOptions {
   db?: any;

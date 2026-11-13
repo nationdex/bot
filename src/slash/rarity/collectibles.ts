@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../core/slashes';
+import { SlashCommand } from '../../core/define/slashes';
 
 export default SlashCommand('rarity.collectibles', `
   $interactionReply[Loading $jsonVar[keywords;collectible.plural] data...]

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { REST, Routes } from 'discord.js';
 import { ForgeClient, ForgeExtension } from '@tryforge/forgescript';
-import { variables } from '../config/variables';
+import { variables } from '../../config/variables';
 import { syncVariables } from './variables';
 
 export interface ValidateCollectiblesOptions {

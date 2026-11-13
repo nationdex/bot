@@ -1,4 +1,4 @@
-import './core/native';
+import './core/runtime/native';
 
 import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
 import * as recursiveReaddirSyncModule from '@tryforge/forgescript/dist/functions/recursiveReaddirSync';
@@ -14,7 +14,7 @@ import {
   initCommands,
   initSlashCommands,
 } from './core';
-import { evalFunctions } from './core/evalRunner';
+import { evalFunctions } from './core/runtime/evalRunner';
 import { startPanel } from './core/panel';
 
 const api = new API({

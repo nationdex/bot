@@ -21,7 +21,7 @@
     "dev": "bun run build && bun --watch dist/index.js",
     "lint": "forgelint",
     "typecheck": "tsc --noEmit && tsc --noEmit -p website",
-    "validate:collectibles": "bun run build && bun dist/core/collectibles.js"
+    "validate:collectibles": "bun run build && bun dist/core/data/collectibles.js"
   },
   "author": "Nationdex Solutions (https://github.com/nationdex)",
   "license": "Apache-2.0",

@@ -1,4 +1,4 @@
-import { command } from '../../core/commands';
+import { command } from '../../core/define/commands';
 
 export default command('catch', `
   $let[ctbl;$spawnConfig[collectible]]

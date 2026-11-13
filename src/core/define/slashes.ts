@@ -4,7 +4,7 @@ import {
   Collection,
 } from 'discord.js';
 import { ApplicationCommand, ForgeClient, ForgeExtension } from '@tryforge/forgescript';
-import { slashes as slashesConfig, SlashCommandConfig } from '../config/slash';
+import { slashes as slashesConfig, SlashCommandConfig } from '../../config/slash';
 import { withBlacklistGuard } from './blacklistGuard';
 
 export interface SlashesOptions {

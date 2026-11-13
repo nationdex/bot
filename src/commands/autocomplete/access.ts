@@ -1,4 +1,4 @@
-import { command } from '../../../core/commands';
+import { command } from '../../core/define/commands';
 
 export default command('autocomplete.access', `
   $onlyIf[$and[$applicationCommandName==access;$or[$applicationSubCommandName==role;$applicationSubCommandName==roledelete;$applicationSubCommandName==grant;$applicationSubCommandName==revoke]]]
