@@ -13,13 +13,40 @@ const MAX_CACHED_BYTES = 2_000_000;
 const cache = new Map<string, Entry>();
 const pending = new Map<string, Promise<Entry>>();
 
-// PGlite runs one query at a time and shares its thread with the bot, so panel queries never overlap each other:
-// a burst of cache misses queues up instead of starving the bot.
+// PGlite runs inside this process, so a panel query is time the bot does not get. Panel queries run one at a time and
+// then rest for three times as long as they took (at least 10 ms), which caps the panel at about a quarter of the
+// database's time no matter how hard it is hit.
 let gate: Promise<unknown> = Promise.resolve();
+const rest = (took: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, Math.min(1000, Math.max(10, took * 3))));
 function exclusive<T>(job: () => Promise<T>): Promise<T> {
-  const run = gate.then(job, job);
-  gate = run.catch(() => {});
+  let took = 0;
+  const run = gate.then(async () => {
+    const started = performance.now();
+    try {
+      return await job();
+    } finally {
+      took = performance.now() - started;
+    }
+  });
+  gate = run.then(() => rest(took), () => rest(took));
   return run;
+}
+
+// Per-session token bucket: a browser tab never needs more than a handful of data requests a second.
+const buckets = new Map<string, { tokens: number; at: number }>();
+const BURST = 20;
+const REFILL_PER_SEC = 8;
+function allow(req: Request): boolean {
+  const key = (req.headers.get('cookie') ?? '').slice(0, 200);
+  const now = Date.now();
+  const b = buckets.get(key) ?? { tokens: BURST, at: now };
+  b.tokens = Math.min(BURST, b.tokens + ((now - b.at) / 1000) * REFILL_PER_SEC);
+  b.at = now;
+  const ok = b.tokens >= 1;
+  if (ok) b.tokens -= 1;
+  buckets.set(key, b);
+  if (buckets.size > 500) for (const [k, v] of buckets) if (now - v.at > 60_000) buckets.delete(k);
+  return ok;
 }
 
 // Panel writes (and the bot's own edits through it) change what these answers say.
@@ -191,6 +218,7 @@ const int = (v: string | null, fallback: number, min: number, max: number): numb
 
 export async function handleData(req: Request, path: string, search: URLSearchParams): Promise<Response | null> {
   if (req.method !== 'GET') return null;
+  if ((path.startsWith('/api/panel/data/') || path === '/api/bot/stats') && !allow(req)) return json({ error: 'Too many requests, slow down.' }, 429, { 'Retry-After': '1' });
   if (path === '/api/bot/stats') return cachedAnswer(req, 'stats', TTL_MS, stats);
   if (path === '/api/panel/data/users') return cachedAnswer(req, 'users', TTL_MS, users);
   if (path === '/api/panel/data/growth') {

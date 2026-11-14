@@ -32,7 +32,8 @@ const budgets = [
 async function hit(path: string): Promise<{ ms: number; bytes: number; status: number; timing: string }> {
   const started = performance.now();
   const res = await fetch(`${base}${path}`, { headers: { cookie, 'accept-encoding': 'br' } });
-  const bytes = (await res.arrayBuffer()).byteLength;
+  const decoded = (await res.arrayBuffer()).byteLength;
+  const bytes = Number(res.headers.get('content-length')) || decoded; // what crossed the wire; fetch decodes the body for us
   return { ms: performance.now() - started, bytes, status: res.status, timing: res.headers.get('server-timing') ?? '' };
 }
 
