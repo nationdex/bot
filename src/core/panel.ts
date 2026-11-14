@@ -28,13 +28,13 @@ function runAs(client: ForgeClient, userId: string, code: string): Promise<strin
 
 // The panel calls the bot's API on this machine. Instead of a hand-made token in a .env file, it mints its own
 // for the application owner once and keeps it in the database. API_BEARER_TOKEN still overrides it.
-function botTokens(client: ForgeClient, meta: { get(k: string): Promise<string | null>; set(k: string, v: string): Promise<void> }) {
+export function botTokens(client: ForgeClient, meta: { get(k: string): Promise<string | null>; set(k: string, v: string): Promise<void> }) {
   let cached: string | null = process.env.API_BEARER_TOKEN || null;
   let retryAt = 0;
 
   const isValid = async (token: string): Promise<boolean> => {
     const hash = createHash('sha256').update(token).digest('hex');
-    const user = (await runAs(client, client.user?.id ?? '0', `$jsonLoad[acc;$accessData]$return[$env[acc;tokens;${hash};user]]`)).trim();
+    const user = (await runAs(client, client.user?.id ?? '0', `$jsonLoad[acc;$accessData]$env[acc;tokens;${hash};user]`)).trim();
     return user !== '' && user !== 'undefined';
   };
 
