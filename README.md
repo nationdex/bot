@@ -1,10 +1,12 @@
-# Project NationDex 2.0 🇪🇺
+# Project Nationdex 2026 🔵✊
 
-**The legacy nostalgic OG environment of Nationdex reinvented in 2026!**
+**The OG alternative to Ballsdex!**
 
 That is right, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative, has returned.
 
 Join our cause at the NDS [headquarters](https://dsc.nationdex.com/)!
+
+![Banner](assets/banner.jpg)
 
 ## ⚙️ Setup
 
@@ -227,4 +229,4 @@ And Nationdex as a whole was only possible at some point thanks to the help from
 | UG                  | Former Server Shareholder     |
 
 Project Nationdex 2026, our gratitude to everyone who made it possible, our response to everyone who fought for a better community.
-**Wishes, are eternal.**
+**Wishes, are eternal, and hope, is not lost.**
