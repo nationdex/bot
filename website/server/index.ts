@@ -1,22 +1,13 @@
 import path from 'node:path';
 import { distDir } from '../build';
 import { authUser, handleAuth } from './auth';
+import { handleData } from './data';
 import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
-import { json } from './util';
+import { accepted, json } from './util';
 
 // Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
 const ENCODINGS = [['br', 'br'], ['gzip', 'gz']] as const;
-
-function accepted(header: string | null): Set<string> {
-  const ok = new Set<string>();
-  for (const part of (header ?? '').split(',')) {
-    const [name, ...params] = part.trim().toLowerCase().split(';');
-    const q = params.map((p) => p.trim()).find((p) => p.startsWith('q='));
-    if (name && !(q && Number(q.slice(2)) === 0)) ok.add(name);
-  }
-  return ok;
-}
 
 async function serveStatic(req: Request, pathname: string): Promise<Response> {
   const file = path.join(distDir, pathname);
@@ -62,6 +53,8 @@ async function route(req: Request): Promise<Response> {
   if (pathname.startsWith('/api/panel') || pathname.startsWith('/api/bot')) {
     const me = await authUser(req);
     if (!me) return json({ error: 'Unauthorized' }, 401);
+    const data = await handleData(req, pathname, url.searchParams);
+    if (data) return data;
     return pathname.startsWith('/api/panel') ? handlePanel(req, pathname, me) : proxyBot(req, pathname, url.search);
   }
   return json({ status: 404, error: 'Not found' }, 404);

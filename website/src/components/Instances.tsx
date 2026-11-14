@@ -1,11 +1,11 @@
 import { Search } from '@/components/icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { admin } from '@/lib/admin-classes';
-import { fetchNationInstances, getCache, removeUserNation, setCache, type NationInstanceEntry } from '@/lib/api';
+import { fetchInstancesPage, removeUserNation, type NationInstanceEntry } from '@/lib/api';
 import { bot, formatRarity } from '@/lib/bot';
 import { TablePagination } from '@/components/TablePagination';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -37,9 +37,14 @@ function formatTimeToCatch(val: number | string): string {
 export default function InstancesPage({ searchQuery = '' }: { searchQuery?: string }) {
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const [classFilter, setClassFilter] = useState<string>('all');
-  const [instances, setInstances] = useState<NationInstanceEntry[]>(() => getCache<NationInstanceEntry[]>('instances_all_v2') || []);
-  const [isLoading, setIsLoading] = useState<boolean>(() => !getCache<NationInstanceEntry[]>('instances_all_v2')?.length);
+  // The server filters and pages the catches; this holds only the page on screen.
+  const [instances, setInstances] = useState<NationInstanceEntry[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [reload, setReload] = useState<number>(0);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const owners = useRef(new Map<string, string>()); // catch id -> owner, so selections survive page changes
   const [pageSize, setPageSize] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [deleteInstance, setDeleteInstance] = useState<NationInstanceEntry | null>(null);
@@ -52,11 +57,7 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
     try {
       const res = await removeUserNation(deleteInstance.player, deleteInstance.id);
       if (res && res.ok !== false) {
-        setInstances((prev) => {
-          const next = prev.filter((item) => item.id !== deleteInstance.id);
-          setCache('instances_all_v2', next);
-          return next;
-        });
+        setReload((n) => n + 1);
         setSelectedIds((prev) => {
           const next = new Set(prev);
           next.delete(deleteInstance.id);
@@ -73,15 +74,11 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
     if (selectedIds.size === 0) return;
     setIsDeleting(true);
     try {
-      const targets = instances.filter((item) => selectedIds.has(item.id));
+      const targets = [...selectedIds].map((id) => ({ id, player: owners.current.get(id) ?? '' })).filter((t) => t.player);
       await Promise.allSettled(
         targets.map((item) => removeUserNation(item.player, item.id))
       );
-      setInstances((prev) => {
-        const next = prev.filter((item) => !selectedIds.has(item.id));
-        setCache('instances_all_v2', next);
-        return next;
-      });
+      setReload((n) => n + 1);
       setSelectedIds(new Set());
       setDeleteSelectedModalOpen(false);
     } finally {
@@ -99,41 +96,27 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
   }, [classFilter]);
 
   useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(localQuery), 250);
+    return () => clearTimeout(timer);
+  }, [localQuery]);
+
+  useEffect(() => {
     let active = true;
-    void fetchNationInstances().then((data) => {
-      if (active) {
-        if (Array.isArray(data)) {
-          setInstances(data);
-        }
-        setIsLoading(false);
+    setIsLoading(true);
+    void fetchInstancesPage({ query: debouncedQuery.trim(), rarity: classFilter, page: currentPage, pageSize }).then((data) => {
+      if (!active) return;
+      if (data) {
+        setInstances(data.items);
+        setTotal(data.total);
       }
+      setIsLoading(false);
     });
     return () => {
       active = false;
     };
-  }, []);
+  }, [debouncedQuery, classFilter, currentPage, pageSize, reload]);
 
-  const filteredInstances = useMemo(() => {
-    const q = localQuery.trim().toLowerCase();
-    if (!q && classFilter === 'all') return instances;
-
-    return instances.filter((inst) => {
-      const matchesSearch =
-        !q ||
-        inst.id.toLowerCase().includes(q) ||
-        inst.description.toLowerCase().includes(q) ||
-        inst.player.toLowerCase().includes(q) ||
-        inst.identifier.toLowerCase().includes(q);
-
-      const matchesClass = classFilter === 'all' || inst.class === classFilter.toLowerCase();
-      return matchesSearch && matchesClass;
-    });
-  }, [instances, localQuery, classFilter]);
-
-  const paginatedInstances = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredInstances.slice(start, start + pageSize);
-  }, [filteredInstances, currentPage, pageSize]);
+  const paginatedInstances = instances;
 
   const allPageSelected =
     paginatedInstances.length > 0 && paginatedInstances.every((inst) => selectedIds.has(inst.id));
@@ -148,7 +131,10 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
     } else {
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        paginatedInstances.forEach((inst) => next.add(inst.id));
+        paginatedInstances.forEach((inst) => {
+          owners.current.set(inst.id, inst.player);
+          next.add(inst.id);
+        });
         return next;
       });
     }
@@ -159,6 +145,8 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
     if (next.has(id)) {
       next.delete(id);
     } else {
+      const inst = instances.find((item) => item.id === id);
+      if (inst) owners.current.set(id, inst.player);
       next.add(id);
     }
     setSelectedIds(next);
@@ -327,7 +315,7 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
             </table>
           </div>
 
-          {!isLoading && filteredInstances.length === 0 && (
+          {!isLoading && total === 0 && (
             <div className="py-12 text-center space-y-1.5">
               <p className={cn('text-sm font-medium', admin.fg)}>
                 {localQuery
@@ -344,9 +332,9 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
             </div>
           )}
 
-          {!isLoading && filteredInstances.length > 0 && (
+          {!isLoading && total > 0 && (
             <TablePagination
-              totalItems={filteredInstances.length}
+              totalItems={total}
               pageSize={pageSize}
               setPageSize={setPageSize}
               currentPage={currentPage}

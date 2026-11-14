@@ -55,7 +55,6 @@ export function getCache<T>(key: string): T | null {
 export function setCache<T>(key: string, data: T): void {
   if (data === null || data === undefined) return;
   memoryCache.set(key, { data, timestamp: Date.now() });
-  if (key === 'instances_all' || key === 'instances_all_v2') return;
   if (typeof localStorage !== 'undefined') {
     try {
       localStorage.setItem(`panel_cache_${key}`, JSON.stringify(data));
@@ -411,94 +410,13 @@ export async function fetchUserData(id?: string): Promise<UserEntry[] | null> {
     return parsed;
   }
 
-  const [rawSearch, rawSettings] = await Promise.all([
-    apiFetch<unknown>('/api/bot/search_db/userCollectibles'),
-    apiFetch<unknown>('/api/bot/search_db/settings').catch(() => null),
-  ]);
-
-  const searchData = unwrapData(rawSearch);
-  const settingsData = unwrapData(rawSettings);
-
-  const settingsMap = new Map<string, { privacy: string; acceptGifts: boolean }>();
-  let settingsItems: Array<Record<string, unknown>> = [];
-  if (Array.isArray(settingsData)) {
-    settingsItems = settingsData as Array<Record<string, unknown>>;
-  } else if (typeof settingsData === 'object' && settingsData !== null) {
-    const obj = settingsData as Record<string, unknown>;
-    if (Array.isArray(obj.results)) settingsItems = obj.results as Array<Record<string, unknown>>;
-  }
-
-  for (const s of settingsItems) {
-    if (s && typeof s === 'object') {
-      const sid = String(s.id || s.discordId || '').trim();
-      if (!sid) continue;
-      let sVal: Record<string, unknown> = {};
-      if (typeof s.value === 'string') {
-        try { sVal = JSON.parse(s.value); } catch {}
-      } else if (typeof s.value === 'object' && s.value !== null) {
-        sVal = s.value as Record<string, unknown>;
-      }
-      const privacy = String(sVal.inventory_privacy || sVal.privacy || 'public');
-      const gifts = sVal.accept_gifts !== false && sVal.accept_gifts !== 'false' && sVal.accept_gifts !== 0;
-      settingsMap.set(sid, { privacy, acceptGifts: gifts });
-    }
-  }
-
-  let userRecords: Array<Record<string, unknown>> = [];
-  if (Array.isArray(searchData)) {
-    userRecords = searchData as Array<Record<string, unknown>>;
-  } else if (typeof searchData === 'object' && searchData !== null) {
-    const obj = searchData as Record<string, unknown>;
-    if (Array.isArray(obj.results)) userRecords = obj.results as Array<Record<string, unknown>>;
-  }
-
-  if (userRecords.length > 0) {
-    const parsedList: UserEntry[] = [];
-    for (const record of userRecords) {
-      if (!record || typeof record !== 'object') continue;
-      const discordId = String(record.id || record.discordId || record.user_id || '').trim();
-      if (!discordId || !/^\d{15,22}$/.test(discordId)) continue;
-
-      let val: Record<string, unknown> = {};
-      if (typeof record.value === 'string') {
-        try {
-          val = JSON.parse(record.value) as Record<string, unknown>;
-        } catch {
-          val = {};
-        }
-      } else if (typeof record.value === 'object' && record.value !== null) {
-        val = record.value as Record<string, unknown>;
-      }
-
-      const total = Number(val.total ?? record.total ?? 0);
-      let unique = 0;
-      if (Array.isArray(val.unique)) {
-        unique = val.unique.length;
-      } else if (typeof val.unique === 'number') {
-        unique = val.unique;
-      } else {
-        unique = Number(val.unique_count ?? val.unique ?? 0) || 0;
-      }
-      const totalValue = Number(val.total_value ?? val.totalValue ?? record.totalValue ?? 0);
-
-      const userSetting = settingsMap.get(discordId);
-      const inventoryPrivacy = userSetting?.privacy || String(val.inventory_privacy || 'public');
-      const acceptGifts = userSetting?.acceptGifts ?? (val.accept_gifts !== false && val.accept_gifts !== 'false');
-
-      parsedList.push({
-        discordId,
-        username: String(val.username || val.global_name || val.name || ''),
-        total,
-        unique,
-        totalValue,
-        inventoryPrivacy,
-        acceptGifts,
-      });
-    }
-
-    if (parsedList.length > 0) {
-      setCache(cacheKey, parsedList);
-      return parsedList;
+  // The panel server answers with one slim row per player (totals, privacy, gifts), already joined with settings.
+  const list = await apiFetch<UserEntry[]>('/api/panel/data/users');
+  if (Array.isArray(list) && list.length > 0) {
+    const valid = list.filter((u) => u && typeof u.discordId === 'string' && /^\d{15,22}$/.test(u.discordId));
+    if (valid.length > 0) {
+      setCache(cacheKey, valid);
+      return valid;
     }
   }
 
@@ -546,17 +464,7 @@ export type GuildConfigEntry = {
   rawParsed: Record<string, unknown>;
 };
 
-export async function fetchNationInstances(): Promise<NationInstanceEntry[] | null> {
-  const cacheKey = 'instances_all_v2';
-  const cached = getCache<NationInstanceEntry[]>(cacheKey);
-  const [raw, collectibles] = await Promise.all([
-    searchDb('collectible'),
-    fetchCollectibles(),
-  ]);
-  if (!raw) return cached;
-  const data = unwrapData(raw);
-  if (!data) return cached;
-
+function mapInstances(itemsArray: Array<Record<string, unknown>>, collectibles: CollectibleEntry[] | null): NationInstanceEntry[] {
   const collectibleMap = new Map<string, { name: string; class: RarityClass }>();
   if (Array.isArray(collectibles)) {
     for (const c of collectibles) {
@@ -569,19 +477,7 @@ export async function fetchNationInstances(): Promise<NationInstanceEntry[] | nu
     }
   }
 
-  let itemsArray: Array<Record<string, unknown>> = [];
-  if (Array.isArray(data)) {
-    itemsArray = data.map((item) => (typeof item === 'object' && item !== null ? (item as Record<string, unknown>) : {}));
-  } else if (typeof data === 'object' && data !== null) {
-    const obj = data as Record<string, unknown>;
-    if (Array.isArray(obj.results)) {
-      itemsArray = obj.results as Array<Record<string, unknown>>;
-    } else {
-      itemsArray = [obj];
-    }
-  }
-
-  const result = itemsArray.map((item, idx) => {
+  return itemsArray.map((item, idx) => {
     const id = String(item.id ?? `instance_${idx}`);
     let parsed: Record<string, unknown> = {};
     if (typeof item.value === 'string') {
@@ -637,21 +533,30 @@ export async function fetchNationInstances(): Promise<NationInstanceEntry[] | nu
       rawParsed: parsed,
     };
   });
+}
 
-  if (result.length > 0) {
-    result.reverse();
-    result.sort((a, b) => {
-      const tsA = Number(a.rawParsed?.timestamp) || 0;
-      const tsB = Number(b.rawParsed?.timestamp) || 0;
-      if (tsA && tsB) return tsB - tsA;
-      if (tsA) return -1;
-      if (tsB) return 1;
-      return 0;
-    });
-    setCache(cacheKey, result);
-    return result;
-  }
-  return cached;
+export type InstancesPage = { total: number; items: NationInstanceEntry[] };
+
+// One page of catches, filtered and sorted by the panel server (newest first), instead of every catch in the database.
+export async function fetchInstancesPage(opts: { query: string; rarity: string; page: number; pageSize: number }): Promise<InstancesPage | null> {
+  const params = new URLSearchParams({
+    q: opts.query,
+    class: opts.rarity,
+    limit: String(opts.pageSize),
+    offset: String((opts.page - 1) * opts.pageSize),
+  });
+  const [raw, collectibles] = await Promise.all([
+    apiFetch<{ total: number; results: Array<Record<string, unknown>> }>(`/api/panel/data/instances?${params}`),
+    fetchCollectibles(),
+  ]);
+  if (!raw || !Array.isArray(raw.results)) return null;
+  return { total: Number(raw.total) || 0, items: mapInstances(raw.results, collectibles) };
+}
+
+// Catch counts for three consecutive buckets [t0,t1) [t1,t2) [t2,t3), counted by the server.
+export async function fetchGrowth(bounds: [number, number, number, number]): Promise<[number, number, number] | null> {
+  const raw = await apiFetch<{ counts: number[] }>(`/api/panel/data/growth?${new URLSearchParams({ t0: String(bounds[0]), t1: String(bounds[1]), t2: String(bounds[2]), t3: String(bounds[3]) })}`);
+  return raw && Array.isArray(raw.counts) && raw.counts.length === 3 ? [raw.counts[0], raw.counts[1], raw.counts[2]] : null;
 }
 
 export async function fetchGuildConfigs(): Promise<GuildConfigEntry[] | null> {

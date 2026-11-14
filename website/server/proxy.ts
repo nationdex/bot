@@ -1,3 +1,4 @@
+import { invalidateData } from './data';
 import { json, readJson } from './util';
 
 const TIMEOUT_MS = 5000;
@@ -53,6 +54,7 @@ export async function proxyBot(req: Request, path: string, search: string): Prom
     });
 
     if (res.status === 401) tokens.invalidate();
+    if (hasBody && res.ok) invalidateData();
     const type = res.headers.get('content-type') || '';
     if (res.ok && (type.includes('image/') || type.includes('application/octet-stream'))) {
       return new Response(res.body, { status: res.status, headers: { 'Content-Type': type } });

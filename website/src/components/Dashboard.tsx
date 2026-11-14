@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
-import { fetchCollectibles, fetchNationInstances, fetchStats, fetchUserData, getCache, type BotStats, type CollectibleEntry, type NationInstanceEntry, type UserEntry } from '@/lib/api';
+import { fetchCollectibles, fetchGrowth, fetchStats, fetchUserData, getCache, type BotStats, type CollectibleEntry, type UserEntry } from '@/lib/api';
 import { bot, formatRarity, type RarityClass } from '@/lib/bot';
 import { listItem, springSnappy, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -33,57 +33,11 @@ const getUnitLabel = (count: number, filter: DashboardFilter) => {
   return count === 1 ? bot.collectible.singular : bot.collectible.plural;
 };
 
-function getNationInstanceCatchTime(inst: NationInstanceEntry): number | null {
-  const raw = inst.rawParsed || {};
-  const candidates = [
-    raw.timestamp,
-    raw.caught_at,
-    raw.caughtAt,
-    raw.created_at,
-    raw.createdAt,
-    raw.date,
-    raw.time,
-    inst.timeToCatch,
-  ];
-
-  for (const val of candidates) {
-    if (val === null || val === undefined || val === '' || val === 'N/A') continue;
-    if (typeof val === 'number') {
-      if (val > 1e11) return val;
-      if (val > 1e8) return val * 1000;
-    }
-    if (typeof val === 'string') {
-      const num = Number(val);
-      if (!Number.isNaN(num) && num > 1e8) {
-        return num > 1e11 ? num : num * 1000;
-      }
-      const parsed = Date.parse(val);
-      if (!Number.isNaN(parsed) && !Number.isNaN(new Date(parsed).getTime())) {
-        return parsed;
-      }
-    }
-  }
-
-  const snowflakeCandidates = [
-    inst.id,
-    raw.message_id,
-    raw.messageId,
-    raw.caught_in,
-    raw.channel,
-  ];
-
-  for (const sf of snowflakeCandidates) {
-    if (typeof sf === 'string' && /^\d{17,20}$/.test(sf)) {
-      try {
-        const ms = Number((BigInt(sf) >> 22n) + 1420070400000n);
-        if (ms > 1420070400000 && ms <= Date.now() + 86400000) {
-          return ms;
-        }
-      } catch {}
-    }
-  }
-
-  return null;
+// Start of the three chart buckets and the end of the last one, in the browser's time zone.
+function rangeBounds(range: 'Month' | 'Annually'): [number, number, number, number] {
+  const now = new Date();
+  const at = (i: number) => (range === 'Month' ? new Date(now.getFullYear(), now.getMonth() + i, 1) : new Date(now.getFullYear() + i, 0, 1)).getTime();
+  return [at(-2), at(-1), at(0), at(1)];
 }
 
 export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: string }) {
@@ -108,12 +62,9 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
   const [topUsers, setTopUsers] = useState<UserEntry[]>(() => {
     return getCache<UserEntry[]>('users_all') || [];
   });
-  const [instances, setInstances] = useState<NationInstanceEntry[]>(() => {
-    return getCache<NationInstanceEntry[]>('instances_all_v2') || [];
-  });
-  const [isLoadingInstances, setIsLoadingInstances] = useState<boolean>(() => {
-    return !getCache<NationInstanceEntry[]>('instances_all_v2');
-  });
+  // Catch counts per chart bucket, counted by the panel server for the selected range.
+  const [growth, setGrowth] = useState<[number, number, number] | null>(null);
+  const [isLoadingInstances, setIsLoadingInstances] = useState<boolean>(true);
   const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(() => {
     return !getCache<UserEntry[]>('users_all');
   });
@@ -198,14 +149,6 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
         setIsLoadingUsers(false);
       }
     });
-    void fetchNationInstances().then((data) => {
-      if (active) {
-        if (Array.isArray(data) && data.length > 0) {
-          setInstances(data);
-        }
-        setIsLoadingInstances(false);
-      }
-    });
     return () => {
       active = false;
     };
@@ -237,49 +180,12 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       label2 = String(currentYear);
     }
 
-    let t0 = 0;
-    let t1 = 0;
-    let t2 = 0;
-    let t3 = 0;
-
-    if (timeRange === 'Month') {
-      t0 = new Date(now.getFullYear(), now.getMonth() - 2, 1).getTime();
-      t1 = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
-      t2 = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-      t3 = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
-    } else {
-      t0 = new Date(now.getFullYear() - 2, 0, 1).getTime();
-      t1 = new Date(now.getFullYear() - 1, 0, 1).getTime();
-      t2 = new Date(now.getFullYear(), 0, 1).getTime();
-      t3 = new Date(now.getFullYear() + 1, 0, 1).getTime();
-    }
-
     let c0 = 0;
     let c1 = 0;
     let c2 = 0;
 
-    if (selectedFilter === 'All' || selectedFilter === 'Nations') {
-      for (const inst of instances) {
-        const ts = getNationInstanceCatchTime(inst);
-        if (ts !== null) {
-          if (ts >= t0 && ts < t1) c0++;
-          else if (ts >= t1 && ts < t2) c1++;
-          else if (ts >= t2 && ts < t3) c2++;
-        } else {
-          c2++;
-        }
-      }
-    } else if (selectedFilter === 'Users') {
-      for (const u of topUsers) {
-        if (u.caughtAt) {
-          const ts = Date.parse(u.caughtAt);
-          if (!Number.isNaN(ts)) {
-            if (ts >= t0 && ts < t1) c0++;
-            else if (ts >= t1 && ts < t2) c1++;
-            else if (ts >= t2 && ts < t3) c2++;
-          }
-        }
-      }
+    if ((selectedFilter === 'All' || selectedFilter === 'Nations') && growth) {
+      [c0, c1, c2] = growth;
     } else if (selectedFilter === 'Servers') {
       c2 = liveStats.guildCount || 0;
     }
@@ -294,7 +200,20 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       { label: label1, count: c1, pct: formatPct(pct1), numGrowth: pct1, isLatest: false },
       { label: label2, count: c2, pct: formatPct(pct2), numGrowth: pct2, isLatest: true },
     ];
-  }, [liveStats, selectedFilter, timeRange, instances, topUsers]);
+  }, [liveStats, selectedFilter, timeRange, growth]);
+
+  useEffect(() => {
+    let active = true;
+    setIsLoadingInstances(true);
+    void fetchGrowth(rangeBounds(timeRange)).then((counts) => {
+      if (!active) return;
+      if (counts) setGrowth(counts);
+      setIsLoadingInstances(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [timeRange]);
 
   useEffect(() => {
     if (logSearchQuery) {
