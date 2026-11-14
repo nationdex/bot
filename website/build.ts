@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { brotliCompressSync, constants } from 'node:zlib';
 import { createGenerator } from '@unocss/core';
 import unoConfig from './uno.config';
 
@@ -13,6 +14,40 @@ async function generateUno(): Promise<void> {
   const { css } = await (await createGenerator(unoConfig)).generate(code);
   await mkdir(path.join(root, '.generated'), { recursive: true });
   await Bun.write(path.join(root, '.generated', 'uno.css'), css);
+}
+
+// Text assets are compressed once at build time and served as .br / .zst / .gz siblings (see server/index.ts).
+// Bun and node:zlib do the work by default; set NSTD_BIN to the nstd CLI (github.com/nationdex/nstd) to use that.
+const COMPRESSIBLE = /\.(js|css|html|json|svg|webmanifest|txt)$/;
+const MIN_BYTES = 1024;
+
+function encoders(): Record<'br' | 'zst' | 'gz', (file: string, data: Uint8Array<ArrayBuffer>) => Uint8Array> {
+  const nstd = process.env.NSTD_BIN;
+  const viaNstd = (flag: string, level: string) => (file: string): Uint8Array => {
+    const run = Bun.spawnSync([nstd as string, flag, level, '-c', file]);
+    if (!run.success) throw new Error(`nstd ${flag} failed on ${file}: ${run.stderr.toString()}`);
+    return run.stdout;
+  };
+  if (nstd) return { br: viaNstd('-b', '-9'), zst: viaNstd('-z', '-9'), gz: viaNstd('-g', '-9') };
+  return {
+    br: (_f, data) => brotliCompressSync(data, { params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: data.length } }),
+    zst: (_f, data) => Bun.zstdCompressSync(data, { level: 19 }),
+    gz: (_f, data) => Bun.gzipSync(data, { level: 9 }),
+  };
+}
+
+async function precompress(): Promise<void> {
+  const encode = encoders();
+  for (const rel of new Bun.Glob('**/*').scanSync({ cwd: distDir })) {
+    if (!COMPRESSIBLE.test(rel)) continue;
+    const file = path.join(distDir, rel);
+    const data = new Uint8Array(await readFile(file)) as Uint8Array<ArrayBuffer>;
+    if (data.length < MIN_BYTES) continue;
+    for (const [ext, fn] of Object.entries(encode)) {
+      const out = fn(file, data);
+      if (out.length < data.length) await writeFile(`${file}.${ext}`, out);
+    }
+  }
 }
 
 // PWA tags are added after bundling: Bun's HTML bundler would try to resolve and rename these root-level files.
@@ -55,6 +90,8 @@ export async function buildPanel(): Promise<void> {
     .replace('<meta name="viewport" content="width=device-width, initial-scale=1.0" />', '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />')
     .replace('</head>', `${PWA_HEAD}</head>`);
   await writeFile(indexPath, html);
+
+  await precompress();
 }
 
 if (import.meta.main) {

@@ -5,21 +5,41 @@ import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
 import { json } from './util';
 
-async function serveStatic(pathname: string): Promise<Response> {
+// Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
+const ENCODINGS = [['br', 'br'], ['zstd', 'zst'], ['gzip', 'gz']] as const;
+
+function accepted(header: string | null): Set<string> {
+  const ok = new Set<string>();
+  for (const part of (header ?? '').split(',')) {
+    const [name, ...params] = part.trim().toLowerCase().split(';');
+    const q = params.map((p) => p.trim()).find((p) => p.startsWith('q='));
+    if (name && !(q && Number(q.slice(2)) === 0)) ok.add(name);
+  }
+  return ok;
+}
+
+async function serveStatic(req: Request, pathname: string): Promise<Response> {
   const file = path.join(distDir, pathname);
   if (file !== distDir && !file.startsWith(distDir + path.sep)) return new Response(null, { status: 403 });
 
-  let asset = Bun.file(file);
+  let source = Bun.file(file);
   // SPA fallback: unknown paths get the app shell so client routes survive a reload.
-  if (!(await asset.exists()) || pathname.endsWith('/')) asset = Bun.file(path.join(distDir, 'index.html'));
+  if (!(await source.exists()) || pathname.endsWith('/')) source = Bun.file(path.join(distDir, 'index.html'));
 
-  const headers: Record<string, string> = {};
-  if (/(chunk|logo)-[a-z0-9]+\./.test(asset.name ?? '')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+  const headers: Record<string, string> = { Vary: 'Accept-Encoding' };
+  if (/(chunk|logo)-[a-z0-9]+\./.test(source.name ?? '')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
   else if (pathname.startsWith('/icons/')) headers['Cache-Control'] = 'public, max-age=86400';
   else headers['Cache-Control'] = 'no-cache'; // the shell, manifest and service worker must always be revalidated
   if (pathname === '/manifest.webmanifest') headers['Content-Type'] = 'application/manifest+json';
   if (pathname === '/sw.js') headers['Service-Worker-Allowed'] = '/';
-  return new Response(asset, { headers });
+  headers['Content-Type'] ??= source.type;
+
+  const wanted = accepted(req.headers.get('accept-encoding'));
+  for (const [encoding, ext] of ENCODINGS) {
+    const packed = Bun.file(`${source.name}.${ext}`);
+    if (wanted.has(encoding) && (await packed.exists())) return new Response(packed, { headers: { ...headers, 'Content-Encoding': encoding } });
+  }
+  return new Response(source, { headers });
 }
 
 async function route(req: Request): Promise<Response> {
@@ -32,7 +52,7 @@ async function route(req: Request): Promise<Response> {
   }
 
   if (!pathname.startsWith('/api/')) {
-    return req.method === 'GET' || req.method === 'HEAD' ? serveStatic(pathname) : new Response(null, { status: 405 });
+    return req.method === 'GET' || req.method === 'HEAD' ? serveStatic(req, pathname) : new Response(null, { status: 405 });
   }
   if (pathname.startsWith('/api/auth')) return handleAuth(req, pathname);
   if (pathname.startsWith('/api/bot/cards/') && (pathname.endsWith('/image') || pathname.startsWith('/api/bot/cards/image/'))) {
