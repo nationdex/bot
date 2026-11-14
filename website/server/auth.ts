@@ -9,8 +9,12 @@ import { json, readJson } from './util';
 const COOKIE = 'admin_session';
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 
-const sessionCookie = (token: string, maxAge: number): string =>
-  `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
+// Behind Nginx or Ngrok the browser talks HTTPS while this server sees HTTP, so trust X-Forwarded-Proto for the flag.
+// (A client that fakes it only loses its own login: the browser will not send a Secure cookie back over HTTP.)
+const isSecure = (req: Request): boolean => new URL(req.url).protocol === 'https:' || req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https';
+
+const sessionCookie = (token: string, maxAge: number, secure: boolean): string =>
+  `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
 
 const sessionToken = (req: Request): string | undefined => new Bun.CookieMap(req.headers.get('cookie') ?? '').get(COOKIE) ?? undefined;
 
@@ -26,10 +30,10 @@ export function hasPermission(user: PanelUserWithGroup | null, perm: string): bo
   return user.role === 'owner' || user.permissions.includes('*') || user.permissions.includes(perm);
 }
 
-async function startSession(userId: number): Promise<Response> {
+async function startSession(req: Request, userId: number): Promise<Response> {
   const token = randomBytes(32).toString('hex');
   await createSession(token, userId, Date.now() + SESSION_MS);
-  return json({ ok: true, user: await getPanelUserById(userId) }, 200, { 'Set-Cookie': sessionCookie(token, SESSION_MS / 1000) });
+  return json({ ok: true, user: await getPanelUserById(userId) }, 200, { 'Set-Cookie': sessionCookie(token, SESSION_MS / 1000, isSecure(req)) });
 }
 
 export async function handleAuth(req: Request, path: string): Promise<Response> {
@@ -56,7 +60,7 @@ export async function handleAuth(req: Request, path: string): Promise<Response> 
       groupId: adminGroup?.id ?? 1,
       permissions: ['*'],
     });
-    return startSession(userId);
+    return startSession(req, userId);
   }
 
   if (post && path === '/api/auth/login') {
@@ -73,13 +77,13 @@ export async function handleAuth(req: Request, path: string): Promise<Response> 
     if (!target || !verifyPassword(password, target.password_hash)) {
       return json({ ok: false, error: 'Invalid username or password.' }, 401);
     }
-    return startSession(target.id);
+    return startSession(req, target.id);
   }
 
   if (post && path === '/api/auth/logout') {
     const token = sessionToken(req);
     if (token) await deleteSession(token);
-    return json({ ok: true }, 200, { 'Set-Cookie': sessionCookie('', 0) });
+    return json({ ok: true }, 200, { 'Set-Cookie': sessionCookie('', 0, isSecure(req)) });
   }
 
   return json({ error: 'Not found' }, 404);

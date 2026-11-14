@@ -50,6 +50,7 @@ data/
 website/.env
 website/data/
 website/dist/
+website/deploy/ngrok/ngrok.yml
 website/production.ts
 docs/
 *.log

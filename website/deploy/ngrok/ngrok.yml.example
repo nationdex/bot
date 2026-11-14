@@ -1,0 +1,20 @@
+# Nationdex admin panel on the internet through Ngrok. Optional: great for a quick demo or a home connection
+# without port forwarding. Ngrok gives the panel HTTPS, which also unlocks Brotli and installing it as an app.
+#
+#   1. Install Ngrok and sign up (free): https://ngrok.com/download
+#   2. cp website/deploy/ngrok/ngrok.yml.example website/deploy/ngrok/ngrok.yml   (the copy is git-ignored)
+#   3. NGROK_AUTHTOKEN=<your token> ngrok start panel --config website/deploy/ngrok/ngrok.yml
+#
+# Never put the auth token in this file. Pass it as NGROK_AUTHTOKEN, or run `ngrok config add-authtoken <token>` once
+# and use the one-liner instead:  bun run panel:ngrok
+#
+# The panel has its own sign-in, but it is a public address while the tunnel runs: pick a strong owner password.
+
+version: "3"
+
+tunnels:
+  panel:
+    proto: http
+    addr: 3000                 # PANEL_PORT
+    # domain: your-name.ngrok-free.app   # your free static domain, so the address survives restarts
+    inspect: false             # no local request inspector (it would keep sign-in requests)
