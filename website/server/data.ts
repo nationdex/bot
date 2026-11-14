@@ -196,7 +196,9 @@ async function instances(q: string, rarity: string, limit: number, offset: numbe
   };
   if (needle) {
     const p = add(like(needle));
-    where.push(`(p.id ILIKE ${p} OR p.identifier ILIKE ${p} OR p.author ILIKE ${p} OR concat('ATK:', p.atk, ' HP:', p.hp) ILIKE ${p} OR p.nation = ANY(${add(nationIds)}::text[]))`);
+    // identifier is "old_collectible_<id>", so matching the id covers it; stat text is only searched when asked for.
+    const stats = /atk|hp/.test(needle) ? ` OR concat('ATK:', p.atk, ' HP:', p.hp) ILIKE ${p}` : '';
+    where.push(`(p.id ILIKE ${p} OR p.author ILIKE ${p}${stats} OR p.nation = ANY(${add(nationIds)}::text[]))`);
   }
   if (classIds) where.push(`p.nation = ANY(${add(classIds)}::text[])`);
   const filter = where.length ? `WHERE ${where.join(' AND ')}` : '';
