@@ -16,35 +16,24 @@ async function generateUno(): Promise<void> {
   await Bun.write(path.join(root, '.generated', 'uno.css'), css);
 }
 
-// Text assets are compressed once at build time and served as .br / .zst / .gz siblings (see server/index.ts).
-// Bun and node:zlib do the work by default; set NSTD_BIN to the nstd CLI (github.com/nationdex/nstd) to use that.
+// Text assets are compressed once at build time and served as .br / .gz siblings (see server/index.ts).
+// Brotli is the smallest, but browsers only ask for it over HTTPS (or localhost), so plain-HTTP visitors get gzip.
 const COMPRESSIBLE = /\.(js|css|html|json|svg|webmanifest|txt)$/;
 const MIN_BYTES = 1024;
 
-function encoders(): Record<'br' | 'zst' | 'gz', (file: string, data: Uint8Array<ArrayBuffer>) => Uint8Array> {
-  const nstd = process.env.NSTD_BIN;
-  const viaNstd = (flag: string, level: string) => (file: string): Uint8Array => {
-    const run = Bun.spawnSync([nstd as string, flag, level, '-c', file]);
-    if (!run.success) throw new Error(`nstd ${flag} failed on ${file}: ${run.stderr.toString()}`);
-    return run.stdout;
-  };
-  if (nstd) return { br: viaNstd('-b', '-9'), zst: viaNstd('-z', '-9'), gz: viaNstd('-g', '-9') };
-  return {
-    br: (_f, data) => brotliCompressSync(data, { params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: data.length } }),
-    zst: (_f, data) => Bun.zstdCompressSync(data, { level: 19 }),
-    gz: (_f, data) => Bun.gzipSync(data, { level: 9 }),
-  };
-}
+const encoders: Record<'br' | 'gz', (data: Uint8Array<ArrayBuffer>) => Uint8Array> = {
+  br: (data) => brotliCompressSync(data, { params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: data.length } }),
+  gz: (data) => Bun.gzipSync(data, { level: 9 }),
+};
 
 async function precompress(): Promise<void> {
-  const encode = encoders();
   for (const rel of new Bun.Glob('**/*').scanSync({ cwd: distDir })) {
     if (!COMPRESSIBLE.test(rel)) continue;
     const file = path.join(distDir, rel);
     const data = new Uint8Array(await readFile(file)) as Uint8Array<ArrayBuffer>;
     if (data.length < MIN_BYTES) continue;
-    for (const [ext, fn] of Object.entries(encode)) {
-      const out = fn(file, data);
+    for (const [ext, encode] of Object.entries(encoders)) {
+      const out = encode(data);
       if (out.length < data.length) await writeFile(`${file}.${ext}`, out);
     }
   }

@@ -6,7 +6,7 @@ import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from '
 import { json } from './util';
 
 // Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
-const ENCODINGS = [['br', 'br'], ['zstd', 'zst'], ['gzip', 'gz']] as const;
+const ENCODINGS = [['br', 'br'], ['gzip', 'gz']] as const;
 
 function accepted(header: string | null): Set<string> {
   const ok = new Set<string>();
