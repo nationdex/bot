@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { admin } from '@/lib/admin-classes';
-import { fetchAuthStatus, login, setupPassword, type PanelUser } from '@/lib/auth';
+import { cookiesBlocked, fetchAuthStatus, login, setupPassword, type PanelUser } from '@/lib/auth';
 import { bot } from '@/lib/bot';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +53,11 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
           <p className={cn('text-sm', admin.muted)}>Loading...</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {cookiesBlocked() && (
+              <p className={cn('rounded-lg px-3 py-2 text-xs', admin.elevated, admin.muted)}>
+                Cookies are blocked in this browser. You can still sign in, but the session lasts only until you reload or close this tab.
+              </p>
+            )}
             <div>
               <label
                 htmlFor="admin-username"

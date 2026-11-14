@@ -8,7 +8,7 @@ import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/u
 import { useIs3DEnabled, useMotionPref, useReducedMotion } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import { fetchCollectibles, getCache, type CollectibleEntry } from '@/lib/api';
-import { checkSession, logout, type PanelUser } from '@/lib/auth';
+import { checkSession, isCookieless, logout, type PanelUser } from '@/lib/auth';
 import { bot } from '@/lib/bot';
 import { pageTransition, pageTransitionNone, perspectiveDefault } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -341,6 +341,11 @@ export default function App() {
           style={{ ['--sidebar-width' as string]: `${SIDEBAR_WIDTH}px` }}
         >
           <div className="h-full p-3 md:p-4 perspective-scene">
+            {isCookieless() && (
+              <p role="status" className={cn('mb-2 rounded-lg px-3 py-1.5 text-center text-xs', admin.elevated, admin.muted)}>
+                Signed in without cookies: this session ends when you reload or close the tab.
+              </p>
+            )}
             <m.main
               initial={!pageTransitions ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}

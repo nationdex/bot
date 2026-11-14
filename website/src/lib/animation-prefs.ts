@@ -1,3 +1,4 @@
+import { storage } from '@/lib/storage';
 export type MotionPrefKey =
   | 'pageTransitions'
   | 'listReveal'
@@ -161,7 +162,7 @@ export function loadAnimationPrefs(): AnimationPrefs {
   if (typeof window === 'undefined') return defaultAnimationPrefs;
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = storage.get(STORAGE_KEY);
     if (!raw) return defaultAnimationPrefs;
     const parsed = JSON.parse(raw) as LegacyAnimationPrefs & Partial<AnimationPrefs>;
     return migrateLegacy(parsed);
@@ -172,7 +173,7 @@ export function loadAnimationPrefs(): AnimationPrefs {
 
 export function saveAnimationPrefs(prefs: AnimationPrefs) {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  storage.set(STORAGE_KEY, JSON.stringify(prefs));
 }
 
 export function applyAnimationPrefsToDocument(prefs: AnimationPrefs) {

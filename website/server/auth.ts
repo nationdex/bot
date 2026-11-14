@@ -16,7 +16,13 @@ const isSecure = (req: Request): boolean => new URL(req.url).protocol === 'https
 const sessionCookie = (token: string, maxAge: number, secure: boolean): string =>
   `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
 
-const sessionToken = (req: Request): string | undefined => new Bun.CookieMap(req.headers.get('cookie') ?? '').get(COOKIE) ?? undefined;
+// The session normally lives in an HttpOnly cookie. Browsers that refuse cookies can sign in with X-Panel-Token: 1 and
+// keep the token in memory, sending it back as a Bearer header (it is gone on reload, which is what such users expect).
+const bearer = (req: Request): string | undefined => {
+  const h = req.headers.get('authorization') ?? '';
+  return h.toLowerCase().startsWith('bearer ') ? h.slice(7).trim() || undefined : undefined;
+};
+const sessionToken = (req: Request): string | undefined => new Bun.CookieMap(req.headers.get('cookie') ?? '').get(COOKIE) ?? bearer(req);
 
 export async function authUser(req: Request): Promise<PanelUserWithGroup | null> {
   const token = sessionToken(req);
@@ -33,7 +39,9 @@ export function hasPermission(user: PanelUserWithGroup | null, perm: string): bo
 async function startSession(req: Request, userId: number): Promise<Response> {
   const token = randomBytes(32).toString('hex');
   await createSession(token, userId, Date.now() + SESSION_MS);
-  return json({ ok: true, user: await getPanelUserById(userId) }, 200, { 'Set-Cookie': sessionCookie(token, SESSION_MS / 1000, isSecure(req)) });
+  const user = await getPanelUserById(userId);
+  if (req.headers.get('x-panel-token') === '1') return json({ ok: true, user, token }); // no cookie: the client holds it in memory
+  return json({ ok: true, user }, 200, { 'Set-Cookie': sessionCookie(token, SESSION_MS / 1000, isSecure(req)) });
 }
 
 export async function handleAuth(req: Request, path: string): Promise<Response> {

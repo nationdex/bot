@@ -32,28 +32,63 @@ export async function checkSession(): Promise<{ authenticated: boolean; user?: P
   return res.json() as Promise<{ authenticated: boolean; user?: PanelUser }>;
 }
 
-export async function login(password: string, username?: string): Promise<{ ok: boolean; error?: string; user?: PanelUser }> {
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ password, username }),
-  });
-  return res.json() as Promise<{ ok: boolean; error?: string; user?: PanelUser }>;
+type AuthResult = { ok: boolean; error?: string; user?: PanelUser; token?: string };
+
+// Browsers that refuse cookies (blocked, Tor, strict privacy modes) still get in: the session token is then held in
+// memory only and sent as a Bearer header. It is gone on reload or when the tab closes, and never written to storage.
+let memoryToken: string | null = null;
+export const isCookieless = (): boolean => memoryToken !== null;
+export const cookiesBlocked = (): boolean => typeof navigator !== 'undefined' && navigator.cookieEnabled === false;
+
+export function installSessionHeader(): void {
+  const original = window.fetch.bind(window);
+  window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+    if (memoryToken) {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      if (new URL(url, location.href).origin === location.origin) {
+        const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
+        if (!headers.has('Authorization')) headers.set('Authorization', `Bearer ${memoryToken}`);
+        return original(input, { ...init, headers });
+      }
+    }
+    return original(input, init);
+  }) as typeof fetch;
 }
 
-export async function setupPassword(password: string, username?: string, displayName?: string): Promise<{ ok: boolean; error?: string; user?: PanelUser }> {
-  const res = await fetch('/api/auth/setup', {
+async function post(path: string, body: unknown, extra: Record<string, string> = {}): Promise<AuthResult> {
+  const res = await fetch(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...extra },
     credentials: 'include',
-    body: JSON.stringify({ password, username, displayName }),
+    body: JSON.stringify(body),
   });
-  return res.json() as Promise<{ ok: boolean; error?: string; user?: PanelUser }>;
+  return res.json() as Promise<AuthResult>;
+}
+
+// A sign-in only counts if the browser kept the cookie; otherwise sign in again without one.
+async function keepSession(first: AuthResult, password: string, username?: string): Promise<AuthResult> {
+  if (!first.ok) return first;
+  const session = await checkSession().catch(() => ({ authenticated: false }));
+  if (session.authenticated) return first;
+  const retry = await post('/api/auth/login', { password, username }, { 'X-Panel-Token': '1' });
+  if (retry.ok && retry.token) {
+    memoryToken = retry.token;
+    return { ok: true, user: retry.user };
+  }
+  return { ok: false, error: retry.error ?? 'Your browser did not keep the sign-in cookie.' };
+}
+
+export async function login(password: string, username?: string): Promise<AuthResult> {
+  return keepSession(await post('/api/auth/login', { password, username }), password, username);
+}
+
+export async function setupPassword(password: string, username?: string, displayName?: string): Promise<AuthResult> {
+  return keepSession(await post('/api/auth/setup', { password, username, displayName }), password, username || 'admin');
 }
 
 export async function logout(): Promise<void> {
   await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+  memoryToken = null;
 }
 
 export async function fetchPanelUsers(): Promise<{ users: PanelUser[] } | null> {

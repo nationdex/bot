@@ -348,15 +348,6 @@ function calculateScore(
 function getCachedPanelUsers(): PanelUser[] {
   const fromCache = getCache<{ users: PanelUser[] }>('panel_users');
   if (fromCache?.users && Array.isArray(fromCache.users)) return fromCache.users;
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('panel_cache_panel_users');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.users && Array.isArray(parsed.users)) return parsed.users;
-      }
-    } catch { }
-  }
   return [];
 }
 

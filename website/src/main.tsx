@@ -2,12 +2,16 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AnimationPrefsProvider } from '@/hooks/useAnimationPrefs';
 import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
+import { storage } from '@/lib/storage';
 import { applyAnimationPrefsToDocument, loadAnimationPrefs } from '@/lib/animation-prefs';
+import { installSessionHeader } from '@/lib/auth';
 import { applyThemeToDocument, loadThemePrefs } from '@/lib/theme-prefs';
 import App from './App';
 import '../.generated/uno.css';
 import './index.css';
 
+installSessionHeader();
+storage.purge('panel_cache_');
 applyAnimationPrefsToDocument(loadAnimationPrefs());
 applyThemeToDocument(loadThemePrefs());
 

@@ -1,3 +1,4 @@
+import { storage } from '@/lib/storage';
 export type ThemeMode = 'dark' | 'light';
 
 export type ThemePalette = {
@@ -89,7 +90,7 @@ export function loadThemePrefs(): ThemePrefs {
   if (typeof window === 'undefined') return defaultThemePrefs;
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = storage.get(STORAGE_KEY);
     if (!raw) return defaultThemePrefs;
     const parsed = JSON.parse(raw) as Partial<ThemePrefs>;
     return {
@@ -104,7 +105,7 @@ export function loadThemePrefs(): ThemePrefs {
 
 export function saveThemePrefs(prefs: ThemePrefs) {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  storage.set(STORAGE_KEY, JSON.stringify(prefs));
 }
 
 export function getActivePalette(prefs: ThemePrefs): ThemePalette {

@@ -9,6 +9,17 @@ import { accepted, json } from './util';
 // Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
 const ENCODINGS = [['br', 'br'], ['gzip', 'gz']] as const;
 
+// Nothing here needs third parties, so say so: scripts, styles, fonts, images and requests only from this origin.
+const SECURITY_HEADERS: Record<string, string> = {
+  'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'same-origin',
+  'X-Frame-Options': 'DENY',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()',
+};
+
 async function serveStatic(req: Request, pathname: string): Promise<Response> {
   const file = path.join(distDir, pathname);
   if (file !== distDir && !file.startsWith(distDir + path.sep)) return new Response(null, { status: 403 });
@@ -75,6 +86,7 @@ export function startPanelServer(opts: { port: number; hostname: string; tokens:
         console.error('Admin panel request failed:', err);
         return json({ error: 'Internal Server Error' }, 500);
       });
+      for (const [name, value] of Object.entries(SECURITY_HEADERS)) res.headers.set(name, value);
       if (new URL(req.url).pathname.startsWith('/api/')) res.headers.append('Server-Timing', `app;dur=${(performance.now() - started).toFixed(1)}`);
       return res;
     },

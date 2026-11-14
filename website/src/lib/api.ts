@@ -35,31 +35,14 @@ type BotConfigData = {
 
 const memoryCache = new Map<string, { data: unknown; timestamp: number }>();
 
+// API answers are kept in memory only: nothing about players or staff is written to the browser.
 export function getCache<T>(key: string): T | null {
-  if (memoryCache.has(key)) {
-    return memoryCache.get(key)!.data as T;
-  }
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const stored = localStorage.getItem(`panel_cache_${key}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        memoryCache.set(key, { data: parsed, timestamp: Date.now() });
-        return parsed as T;
-      }
-    } catch {}
-  }
-  return null;
+  return memoryCache.has(key) ? (memoryCache.get(key)!.data as T) : null;
 }
 
 export function setCache<T>(key: string, data: T): void {
   if (data === null || data === undefined) return;
   memoryCache.set(key, { data, timestamp: Date.now() });
-  if (typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(`panel_cache_${key}`, JSON.stringify(data));
-    } catch {}
-  }
 }
 
 async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 3, timeoutMs = 8000): Promise<T | null> {
