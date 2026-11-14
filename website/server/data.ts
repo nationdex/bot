@@ -1,5 +1,5 @@
 import { brotliCompressSync, constants } from 'node:zlib';
-import { db } from './db';
+import { backfillCatchIndex, db } from './db';
 import { accepted, json } from './util';
 
 // Reads for the panel straight from the bot's PGlite (same process): no HTTP hop, no ForgeScript, no full-table
@@ -111,21 +111,26 @@ async function users(): Promise<unknown[]> {
   return list;
 }
 
+// Builds panel_catch (see db.ts) once; the catch queries wait for it.
+let catchIndex: Promise<void> | null = null;
+export function ensureCatchIndex(): Promise<void> {
+  catchIndex ??= backfillCatchIndex().catch((err) => {
+    catchIndex = null;
+    throw err;
+  });
+  return catchIndex;
+}
+
 // Catches per bucket for the dashboard chart. Catches without a readable time count in the newest bucket, as before.
 async function growth(t: number[]): Promise<unknown> {
-  const res = await db.query(`
-    WITH raw AS (
-      SELECT CASE WHEN pg_input_is_valid(value, 'jsonb') THEN value::jsonb->>'timestamp' END AS v
-      FROM record WHERE name = 'collectible' AND type = 'old'
-    ), num AS (
-      SELECT CASE WHEN v ~ '^[0-9]+(\\.[0-9]+)?$' THEN v::numeric END AS n FROM raw
-    ), ts AS (
-      SELECT CASE WHEN n > 100000000000 THEN n WHEN n > 100000000 THEN n * 1000 END AS ms FROM num
-    )
-    SELECT COUNT(*) FILTER (WHERE ms >= $1 AND ms < $2) AS c0,
-           COUNT(*) FILTER (WHERE ms >= $2 AND ms < $3) AS c1,
-           COUNT(*) FILTER (WHERE (ms >= $3 AND ms < $4) OR ms IS NULL) AS c2
-    FROM ts`, t);
+  await ensureCatchIndex();
+  const res = await db.query(
+    `SELECT COUNT(*) FILTER (WHERE ts >= $1 AND ts < $2) AS c0,
+            COUNT(*) FILTER (WHERE ts >= $2 AND ts < $3) AS c1,
+            COUNT(*) FILTER (WHERE (ts >= $3 AND ts < $4) OR ts IS NULL) AS c2
+     FROM panel_catch`,
+    t
+  );
   const r = res.rows[0];
   return { counts: [Number(r.c0), Number(r.c1), Number(r.c2)] };
 }
@@ -134,6 +139,7 @@ const like = (q: string): string => `%${q.replace(/[\\%_]/g, '\\$&')}%`;
 
 // One page of catches (newest first) with the same search and class filters the page had client-side.
 async function instances(q: string, rarity: string, limit: number, offset: number): Promise<unknown> {
+  await ensureCatchIndex();
   const cat = await catalog();
   const needle = q.toLowerCase();
   const nationIds = needle ? Object.entries(cat).filter(([id, c]) => id.toLowerCase() === needle || String(c.name ?? '').toLowerCase().includes(needle)).map(([id]) => id) : [];
@@ -147,27 +153,20 @@ async function instances(q: string, rarity: string, limit: number, offset: numbe
   };
   if (needle) {
     const p = add(like(needle));
-    where.push(`(c.id ILIKE ${p} OR c.identifier ILIKE ${p} OR c.v->>'author' ILIKE ${p} OR concat('ATK:', c.v->>'attack', ' HP:', c.v->>'health') ILIKE ${p} OR c.v->>'id' = ANY(${add(nationIds)}::text[]))`);
+    where.push(`(p.id ILIKE ${p} OR p.identifier ILIKE ${p} OR p.author ILIKE ${p} OR concat('ATK:', p.atk, ' HP:', p.hp) ILIKE ${p} OR p.nation = ANY(${add(nationIds)}::text[]))`);
   }
-  if (classIds) where.push(`c.v->>'id' = ANY(${add(classIds)}::text[])`);
+  if (classIds) where.push(`p.nation = ANY(${add(classIds)}::text[])`);
+  const filter = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
-  const base = `
-    WITH c AS (
-      SELECT identifier, name, id, type, value, value::jsonb AS v
-      FROM record WHERE name = 'collectible' AND type = 'old' AND pg_input_is_valid(value, 'jsonb')
-    )
-    SELECT identifier, name, id, type, value, COUNT(*) OVER () AS total
-    FROM c ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-    ORDER BY CASE WHEN c.v->>'timestamp' ~ '^[0-9]+$' THEN (c.v->>'timestamp')::numeric END DESC NULLS LAST, c.id
-    LIMIT ${add(limit)} OFFSET ${add(offset)}`;
-  const res = await db.query(base, params);
-  let total = res.rows.length ? Number(res.rows[0].total) : 0;
-  if (!res.rows.length && offset > 0) {
-    // Past the last page: report the real total so the table can step back.
-    const count = await db.query(`SELECT COUNT(*) AS n FROM record WHERE name = 'collectible' AND type = 'old'`);
-    total = Number(count.rows[0].n);
-  }
-  return { total, results: res.rows.map(({ total: _t, ...row }: Record<string, unknown>) => row) };
+  const count = await db.query(`SELECT COUNT(*) AS n FROM panel_catch p ${filter}`, params);
+  const page = await db.query(
+    `SELECT r.identifier, r.name, r.id, r.type, r.value
+     FROM (SELECT p.identifier, p.ts, p.id FROM panel_catch p ${filter} ORDER BY p.ts DESC NULLS LAST, p.id LIMIT ${add(limit)} OFFSET ${add(offset)}) k
+     JOIN record r ON r.identifier = k.identifier
+     ORDER BY k.ts DESC NULLS LAST, k.id`,
+    params
+  );
+  return { total: Number(count.rows[0].n), results: page.rows };
 }
 
 const int = (v: string | null, fallback: number, min: number, max: number): number => {

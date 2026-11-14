@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { distDir } from '../build';
 import { authUser, handleAuth } from './auth';
-import { handleData } from './data';
+import { ensureCatchIndex, handleData } from './data';
 import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
 import { accepted, json } from './util';
@@ -63,6 +63,7 @@ async function route(req: Request): Promise<Response> {
 // Runs inside the bot's Bun process; the caller has already initialised the panel tables in the bot's PGlite.
 export function startPanelServer(opts: { port: number; hostname: string; tokens: TokenProvider }): void {
   useTokenProvider(opts.tokens);
+  ensureCatchIndex().catch((err) => console.error('Admin panel: could not build the catch index:', err));
   Bun.serve({
     port: opts.port,
     hostname: opts.hostname,

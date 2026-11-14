@@ -39,6 +39,7 @@ export async function initPanelDb(pg: Pg): Promise<void> {
   `);
 
   await db.query('CREATE TABLE IF NOT EXISTS panel_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
+  await initCatchIndex();
 
   const count = await db.query('SELECT COUNT(*) AS count FROM panel_groups');
   if (Number(count.rows[0].count) === 0) {
@@ -51,6 +52,80 @@ export async function initPanelDb(pg: Pg): Promise<void> {
 }
 
 export { db };
+
+// Parsing 38k catch rows as JSON takes seconds in PGlite and blocks the bot while it runs. This narrow table holds
+// just the fields the panel filters and sorts on, kept current by triggers on the bot's own record table, so the
+// panel's catch queries read small indexed rows instead. The trigger can never fail a bot write (errors are swallowed).
+async function initCatchIndex(): Promise<void> {
+  const present = await db.query("SELECT to_regclass('record') AS t");
+  if (!present.rows[0]?.t) return;
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS panel_catch (
+      identifier TEXT PRIMARY KEY,
+      id TEXT NOT NULL,
+      nation TEXT,
+      author TEXT,
+      atk TEXT,
+      hp TEXT,
+      ts BIGINT
+    )`);
+  await db.query('CREATE INDEX IF NOT EXISTS panel_catch_ts_idx ON panel_catch (ts DESC NULLS LAST, id)');
+  await db.query('CREATE INDEX IF NOT EXISTS panel_catch_nation_idx ON panel_catch (nation)');
+  await db.query(`
+    CREATE OR REPLACE FUNCTION panel_catch_sync() RETURNS trigger AS $fn$
+    DECLARE j jsonb; raw text; n numeric;
+    BEGIN
+      IF TG_OP = 'DELETE' THEN
+        DELETE FROM panel_catch WHERE identifier = OLD.identifier;
+        RETURN OLD;
+      END IF;
+      BEGIN
+        IF pg_input_is_valid(NEW.value, 'jsonb') THEN j := NEW.value::jsonb; END IF;
+        raw := j->>'timestamp';
+        IF raw ~ '^[0-9]+(\\.[0-9]+)?$' THEN n := raw::numeric; END IF;
+        INSERT INTO panel_catch (identifier, id, nation, author, atk, hp, ts)
+        VALUES (NEW.identifier, NEW.id, j->>'id', j->>'author', j->>'attack', j->>'health',
+                CASE WHEN n > 100000000000 THEN n::bigint WHEN n > 100000000 THEN (n * 1000)::bigint END)
+        ON CONFLICT (identifier) DO UPDATE SET id = EXCLUDED.id, nation = EXCLUDED.nation, author = EXCLUDED.author,
+          atk = EXCLUDED.atk, hp = EXCLUDED.hp, ts = EXCLUDED.ts;
+      EXCEPTION WHEN OTHERS THEN
+        NULL;
+      END;
+      RETURN NEW;
+    END
+    $fn$ LANGUAGE plpgsql`);
+  await db.query('DROP TRIGGER IF EXISTS panel_catch_write ON record');
+  await db.query("CREATE TRIGGER panel_catch_write AFTER INSERT OR UPDATE ON record FOR EACH ROW WHEN (NEW.name = 'collectible' AND NEW.type = 'old') EXECUTE FUNCTION panel_catch_sync()");
+  await db.query('DROP TRIGGER IF EXISTS panel_catch_delete ON record');
+  await db.query("CREATE TRIGGER panel_catch_delete AFTER DELETE ON record FOR EACH ROW WHEN (OLD.name = 'collectible' AND OLD.type = 'old') EXECUTE FUNCTION panel_catch_sync()");
+}
+
+// Fills panel_catch from the existing catches in small batches so the bot keeps running while it builds.
+export async function backfillCatchIndex(): Promise<void> {
+  const present = await db.query("SELECT to_regclass('panel_catch') AS t");
+  if (!present.rows[0]?.t) return;
+  const [have, want] = await Promise.all([
+    db.query('SELECT COUNT(*) AS n FROM panel_catch'),
+    db.query("SELECT COUNT(*) AS n FROM record WHERE name = 'collectible' AND type = 'old'"),
+  ]);
+  if (Number(have.rows[0].n) === Number(want.rows[0].n)) return;
+  const ids = (await db.query("SELECT identifier FROM record r WHERE name = 'collectible' AND type = 'old' AND NOT EXISTS (SELECT 1 FROM panel_catch p WHERE p.identifier = r.identifier)")).rows.map((r) => r.identifier as string);
+  for (let i = 0; i < ids.length; i += 1000) {
+    await db.query(
+      `INSERT INTO panel_catch (identifier, id, nation, author, atk, hp, ts)
+       SELECT identifier, id, j->>'id', j->>'author', j->>'attack', j->>'health',
+              CASE WHEN n > 100000000000 THEN n::bigint WHEN n > 100000000 THEN (n * 1000)::bigint END
+       FROM (SELECT identifier, id, j, CASE WHEN j->>'timestamp' ~ '^[0-9]+(\\.[0-9]+)?$' THEN (j->>'timestamp')::numeric END AS n
+             FROM (SELECT identifier, id, CASE WHEN pg_input_is_valid(value, 'jsonb') THEN value::jsonb END AS j
+                   FROM record WHERE identifier = ANY($1)) a) b
+       ON CONFLICT (identifier) DO NOTHING`,
+      [ids.slice(i, i + 1000)]
+    );
+    await new Promise((resolve) => setTimeout(resolve, 5)); // let the bot's own work run between batches
+  }
+  // Rows removed while the table was not being kept (before the triggers existed).
+  await db.query("DELETE FROM panel_catch p WHERE NOT EXISTS (SELECT 1 FROM record r WHERE r.identifier = p.identifier)");
+}
 
 export async function getMeta(key: string): Promise<string | null> {
   const res = await db.query('SELECT value FROM panel_meta WHERE key = $1', [key]);
