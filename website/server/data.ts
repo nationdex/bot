@@ -7,7 +7,9 @@ import { accepted, json } from './util';
 const TTL_MS = 30_000;
 
 type Bytes = Uint8Array<ArrayBuffer>;
-type Entry = { at: number; ttl: number; body: string; etag: string; gz: Bytes; br: Bytes };
+type Entry = { at: number; ttl: number; body: string; etag: string; gz: Bytes | null; br: Bytes | null };
+// Answers above this size (the raw table dumps nothing in the panel asks for anymore) are sent as they are and never kept.
+const MAX_CACHED_BYTES = 2_000_000;
 const cache = new Map<string, Entry>();
 const pending = new Map<string, Promise<Entry>>();
 
@@ -25,15 +27,16 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>):
       .then((data) => {
         const body = JSON.stringify(data);
         const bytes = new TextEncoder().encode(body);
+        const small = bytes.length <= MAX_CACHED_BYTES;
         const made: Entry = {
           at: Date.now(),
           ttl,
           body,
           etag: `"${Bun.hash(body).toString(36)}"`,
-          gz: Bun.gzipSync(bytes, { level: 6 }) as Bytes,
-          br: new Uint8Array(brotliCompressSync(bytes, { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })) as Bytes,
+          gz: small ? (Bun.gzipSync(bytes, { level: 6 }) as Bytes) : null,
+          br: small ? (new Uint8Array(brotliCompressSync(bytes, { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })) as Bytes) : null,
         };
-        cache.set(key, made);
+        if (small) cache.set(key, made);
         return made;
       })
       .finally(() => pending.delete(key));
@@ -47,8 +50,8 @@ export async function cachedAnswer(req: Request, key: string, ttl: number, compu
   const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json' };
   if (req.headers.get('if-none-match') === made.etag) return new Response(null, { status: 304, headers });
   const wanted = accepted(req.headers.get('accept-encoding'));
-  if (wanted.has('br')) return new Response(made.br, { headers: { ...headers, 'Content-Encoding': 'br' } });
-  if (wanted.has('gzip')) return new Response(made.gz, { headers: { ...headers, 'Content-Encoding': 'gzip' } });
+  if (wanted.has('br') && made.br) return new Response(made.br, { headers: { ...headers, 'Content-Encoding': 'br' } });
+  if (wanted.has('gzip') && made.gz) return new Response(made.gz, { headers: { ...headers, 'Content-Encoding': 'gzip' } });
   return new Response(made.body, { headers });
 }
 
