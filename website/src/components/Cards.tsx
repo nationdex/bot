@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from '@/components/icons';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -321,7 +321,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                 )}
               >
                 {category === item.id && (
-                  <motion.span
+                  <m.span
                     layoutId="cards-category-pill"
                     className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                     transition={springSnappy}
@@ -353,7 +353,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
           <>
             {listReveal ? (
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={category}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -365,7 +365,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                   {category === 'regimes'
                     ? filteredRegimes.map((entry) => renderCardItem(entry, true))
                     : filteredSpecials.map((entry) => renderCardItem(entry, false))}
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             ) : (
               <div
@@ -404,14 +404,14 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
           <AnimatePresence>
             {selectedPreview && (
               <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setSelectedPreview(null)}
                   className="fixed inset-0 bg-black/75 backdrop-blur-md"
                 />
-                <motion.div
+                <m.div
                   initial={{ scale: 0.95, opacity: 0, y: 8 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.95, opacity: 0, y: 8 }}
@@ -505,7 +505,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                       </a>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,
@@ -519,14 +519,14 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
           <AnimatePresence>
             {replaceTarget && (
               <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => !isReplacing && setReplaceTarget(null)}
                   className="fixed inset-0 bg-black/75 backdrop-blur-md"
                 />
-                <motion.div
+                <m.div
                   initial={{ scale: 0.95, opacity: 0, y: 8 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.95, opacity: 0, y: 8 }}
@@ -600,7 +600,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                       </Button>
                     </div>
                   </form>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,

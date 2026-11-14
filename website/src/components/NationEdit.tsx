@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowLeft, Check, Copy, Flame, Globe, Heart, ImageIcon, Loader2, Shield, Swords, Trash2, Upload, X } from '@/components/icons';
 import { useEffect, useState, useId } from 'react';
 import { createPortal } from 'react-dom';
@@ -445,7 +445,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
 
       <AnimatePresence>
         {feedback && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -464,7 +464,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
             >
               <X className="h-3.5 w-3.5" />
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -564,7 +564,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
           )}
         >
           {activeTab === 'identity' && (
-            <motion.span
+            <m.span
               layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
               transition={springSnappy}
@@ -587,7 +587,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
           )}
         >
           {activeTab === 'ability' && (
-            <motion.span
+            <m.span
               layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
               transition={springSnappy}
@@ -610,7 +610,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
           )}
         >
           {activeTab === 'visuals' && (
-            <motion.span
+            <m.span
               layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
               transition={springSnappy}
@@ -1038,14 +1038,14 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
           <AnimatePresence>
             {showDeleteModal && (
               <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setShowDeleteModal(false)}
                   className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                 />
-                <motion.div
+                <m.div
                   initial={{ scale: 0.94, opacity: 0, y: 12 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.94, opacity: 0, y: 12 }}
@@ -1101,7 +1101,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       Delete Collectible
                     </Button>
                   </div>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,

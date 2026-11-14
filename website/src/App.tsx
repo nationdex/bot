@@ -1,4 +1,4 @@
-import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, MotionConfig, m } from 'framer-motion';
 import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import HeaderSearch from '@/components/HeaderSearch';
@@ -34,6 +34,8 @@ const CardsPage = lazy(() => import('@/components/Cards'));
 const BotSettingsPage = lazy(() => import('@/components/BotSettings'));
 const PanelUsersPage = lazy(() => import('@/components/PanelUsers'));
 const Settings = lazy(() => import('@/components/Settings'));
+
+const loadMotionFeatures = () => import('@/lib/motion-features').then((mod) => mod.default);
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -327,6 +329,7 @@ export default function App() {
   );
 
   return (
+    <LazyMotion features={loadMotionFeatures} strict>
     <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
@@ -338,7 +341,7 @@ export default function App() {
           style={{ ['--sidebar-width' as string]: `${SIDEBAR_WIDTH}px` }}
         >
           <div className="h-full p-3 md:p-4 perspective-scene">
-            <motion.main
+            <m.main
               initial={!pageTransitions ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={!pageTransitions ? { duration: 0 } : { duration: 0.2 }}
@@ -359,7 +362,7 @@ export default function App() {
                   <div className="min-w-0">
                     {pageTransitions ? (
                       <AnimatePresence mode="wait">
-                        <motion.div
+                        <m.div
                           key={currentSection}
                           {...headerTitleMotion}
                           style={enable3D ? { transformPerspective: 900 } : undefined}
@@ -373,7 +376,7 @@ export default function App() {
                               ({nationsCount})
                             </span>
                           )}
-                        </motion.div>
+                        </m.div>
                       </AnimatePresence>
                     ) : (
                       <div className="flex items-center gap-2.5">
@@ -392,7 +395,7 @@ export default function App() {
                   <div className="flex shrink-0 items-center gap-2">
                     <HeaderSearch onNavigate={handleGlobalNavigate} />
 
-                    <motion.button
+                    <m.button
                       type="button"
                       onClick={() => setMobileOpen(true)}
                       whileHover={hoverFeedback ? { scale: 1.05 } : undefined}
@@ -405,7 +408,7 @@ export default function App() {
                       aria-label="Open menu"
                     >
                       <Menu className="h-5 w-5" />
-                    </motion.button>
+                    </m.button>
                   </div>
                 </div>
               </header>
@@ -416,7 +419,7 @@ export default function App() {
               >
                 {pageTransitions ? (
                   <AnimatePresence mode="wait">
-                    <motion.div
+                    <m.div
                       key={currentSection}
                       {...pageMotion}
                       className="preserve-3d gpu-layer w-full min-h-0"
@@ -424,7 +427,7 @@ export default function App() {
                       <Suspense fallback={<SectionSkeleton section={currentSection} />}>
                         {renderContent()}
                       </Suspense>
-                    </motion.div>
+                    </m.div>
                   </AnimatePresence>
                 ) : (
                   <div className="w-full min-h-0">
@@ -434,11 +437,12 @@ export default function App() {
                   </div>
                 )}
               </div>
-            </motion.main>
+            </m.main>
           </div>
         </div>
       </div>
     </MotionConfig>
+    </LazyMotion>
   );
 }
 

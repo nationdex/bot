@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Loader2 } from '@/components/icons';
 import { createPortal } from 'react-dom';
 
@@ -31,7 +31,7 @@ export function ConfirmModal({
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -39,7 +39,7 @@ export function ConfirmModal({
             className="fixed inset-0 bg-black/60 backdrop-blur-md"
           />
 
-          <motion.div
+          <m.div
             initial={{ scale: 0.94, opacity: 0, y: 12 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.94, opacity: 0, y: 12 }}
@@ -81,7 +81,7 @@ export function ConfirmModal({
                 <span>{confirmText}</span>
               </button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

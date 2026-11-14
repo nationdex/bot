@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/components/icons';
 import { useState } from 'react';
 import InstallApp from '@/components/InstallApp';
@@ -90,7 +90,7 @@ export default function Settings() {
 
         <AnimatePresence initial={false}>
           {openSections.has('theme') && (
-            <motion.div
+            <m.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -100,7 +100,7 @@ export default function Settings() {
               <CardContent className="px-5 pb-5 pt-0">
                 <ThemeSettings />
               </CardContent>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </Card>
@@ -126,7 +126,7 @@ export default function Settings() {
 
         <AnimatePresence initial={false}>
           {openSections.has('motion') && (
-            <motion.div
+            <m.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -180,7 +180,7 @@ export default function Settings() {
                   </div>
                 )}
               </CardContent>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </Card>
@@ -205,7 +205,7 @@ export default function Settings() {
             <Gauge className="h-3.5 w-3.5 shrink-0" />
             <span>Low spec mode</span>
           </button>
-          <motion.button
+          <m.button
             type="button"
             onClick={resetAnimationPrefs}
             whileTap={hoverFeedback ? { scale: 0.98 } : undefined}
@@ -217,7 +217,7 @@ export default function Settings() {
           >
             <RotateCcw className="h-3.5 w-3.5 shrink-0" />
             <span>Restore defaults</span>
-          </motion.button>
+          </m.button>
         </div>
       </div>
     </div>

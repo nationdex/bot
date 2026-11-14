@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Search } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -127,14 +127,14 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                   ))}
                 </tbody>
               ) : listReveal ? (
-                <motion.tbody
+                <m.tbody
                   variants={staggerContainer}
                   initial="hidden"
                   animate="show"
                   key={localQuery + '-' + statusFilter + '-' + currentPage + '-' + pageSize}
                 >
                   {paginatedGuilds.map((item) => (
-                    <motion.tr
+                    <m.tr
                       key={item.id}
                       variants={listItem}
                       className={cn(
@@ -149,9 +149,9 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                       <td className={cn('py-3 px-4 pr-5 sm:pr-6 text-sm', admin.muted)}>
                         {item.enabled ? 'Enabled' : 'Disabled'}
                       </td>
-                    </motion.tr>
+                    </m.tr>
                   ))}
-                </motion.tbody>
+                </m.tbody>
               ) : (
                 <tbody key={localQuery + '-' + statusFilter + '-' + currentPage + '-' + pageSize}>
                   {paginatedGuilds.map((item) => (

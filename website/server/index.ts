@@ -19,6 +19,7 @@ async function serveStatic(req: Request, pathname: string): Promise<Response> {
 
   const headers: Record<string, string> = { Vary: 'Accept-Encoding' };
   if (/(chunk|logo)-[a-z0-9]+\./.test(source.name ?? '')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+  else if (pathname.startsWith('/fonts/')) headers['Cache-Control'] = 'public, max-age=31536000, immutable'; // renamed if ever changed
   else if (pathname.startsWith('/icons/')) headers['Cache-Control'] = 'public, max-age=86400';
   else headers['Cache-Control'] = 'no-cache'; // the shell, manifest and service worker must always be revalidated
   if (pathname === '/manifest.webmanifest') headers['Content-Type'] = 'application/manifest+json';
@@ -61,15 +62,21 @@ async function route(req: Request): Promise<Response> {
 }
 
 // Runs inside the bot's Bun process; the caller has already initialised the panel tables in the bot's PGlite.
-export function startPanelServer(opts: { port: number; hostname: string; tokens: TokenProvider }): void {
+export function startPanelServer(opts: { port: number; hostname: string; tokens: TokenProvider; tls?: { cert: string; key: string } }): void {
   useTokenProvider(opts.tokens);
   ensureCatchIndex().catch((err) => console.error('Admin panel: could not build the catch index:', err));
   Bun.serve({
     port: opts.port,
     hostname: opts.hostname,
-    fetch: (req) => route(req).catch((err) => {
-      console.error('Admin panel request failed:', err);
-      return json({ error: 'Internal Server Error' }, 500);
-    }),
+    ...(opts.tls ? { tls: { cert: Bun.file(opts.tls.cert), key: Bun.file(opts.tls.key) } } : {}),
+    fetch: async (req) => {
+      const started = performance.now();
+      const res = await route(req).catch((err) => {
+        console.error('Admin panel request failed:', err);
+        return json({ error: 'Internal Server Error' }, 500);
+      });
+      if (new URL(req.url).pathname.startsWith('/api/')) res.headers.append('Server-Timing', `app;dur=${(performance.now() - started).toFixed(1)}`);
+      return res;
+    },
   });
 }

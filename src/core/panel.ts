@@ -95,6 +95,8 @@ export async function startPanel(client: ForgeClient): Promise<void> {
   const port = parseInt(process.env.PANEL_PORT || '3000', 10);
   const hostname = process.env.PANEL_HOST || '0.0.0.0';
   const { startPanelServer } = await import(path.join(panelRoot, 'server'));
-  startPanelServer({ port, hostname, tokens: botTokens(client, { get: store.getMeta, set: store.setMeta }) });
-  Logger.info(`Admin panel listening on http://${hostname}:${port}`);
+  // HTTPS lets browsers ask for Brotli and install the panel as an app away from localhost.
+  const tls = process.env.PANEL_TLS_CERT && process.env.PANEL_TLS_KEY ? { cert: process.env.PANEL_TLS_CERT, key: process.env.PANEL_TLS_KEY } : undefined;
+  startPanelServer({ port, hostname, tls, tokens: botTokens(client, { get: store.getMeta, set: store.setMeta }) });
+  Logger.info(`Admin panel listening on ${tls ? 'https' : 'http'}://${hostname}:${port}`);
 }

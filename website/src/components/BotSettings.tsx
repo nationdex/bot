@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, Code2, Copy, Plus, RotateCcw, Search, Sliders, Trash2, X } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -171,7 +171,7 @@ function NewFieldModal({
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -180,7 +180,7 @@ function NewFieldModal({
             onClick={onClose}
           />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -313,16 +313,16 @@ function NewFieldModal({
                 >
                   Cancel
                 </Button>
-                <motion.button
+                <m.button
                   type="submit"
                   whileTap={hoverFeedback ? { scale: 0.96 } : undefined}
                   className="px-5 py-2 text-xs font-semibold rounded-xl bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] transition-colors cursor-pointer"
                 >
                   Add Field
-                </motion.button>
+                </m.button>
               </div>
             </form>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,
@@ -774,7 +774,7 @@ export default function BotSettings() {
               )}
             >
               {viewMode === 'visual' && (
-                <motion.span
+                <m.span
                   layoutId="bot-settings-view-pill"
                   className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                   transition={springSnappy}
@@ -795,7 +795,7 @@ export default function BotSettings() {
               )}
             >
               {viewMode === 'json' && (
-                <motion.span
+                <m.span
                   layoutId="bot-settings-view-pill"
                   className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                   transition={springSnappy}
@@ -806,7 +806,7 @@ export default function BotSettings() {
             </button>
           </div>
 
-          <motion.button
+          <m.button
             type="button"
             onClick={() => openAddFieldModal('general')}
             whileTap={hoverFeedback ? { scale: 0.96 } : undefined}
@@ -814,13 +814,13 @@ export default function BotSettings() {
           >
             <Plus className="h-3.5 w-3.5 text-[var(--admin-accent)] shrink-0" />
             <span className="whitespace-nowrap">Add Field</span>
-          </motion.button>
+          </m.button>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
         {viewMode === 'visual' ? (
-          <motion.div
+          <m.div
             key="visual-view"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -990,9 +990,9 @@ export default function BotSettings() {
                 </CardContent>
               </Card>
             ))}
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             key="json-view"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1040,7 +1040,7 @@ export default function BotSettings() {
                 />
               </CardContent>
             </Card>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

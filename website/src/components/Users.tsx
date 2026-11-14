@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Search } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -181,14 +181,14 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                   ))}
                 </tbody>
               ) : listReveal ? (
-                <motion.tbody
+                <m.tbody
                   variants={staggerContainer}
                   initial="hidden"
                   animate="show"
                   key={localQuery + '-' + currentPage + '-' + pageSize}
                 >
                   {paginatedUsers.map((user) => (
-                    <motion.tr
+                    <m.tr
                       key={user.discordId}
                       variants={listItem}
                       className={cn(
@@ -226,9 +226,9 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                           Edit
                         </Button>
                       </td>
-                    </motion.tr>
+                    </m.tr>
                   ))}
-                </motion.tbody>
+                </m.tbody>
               ) : (
                 <tbody key={localQuery + '-' + currentPage + '-' + pageSize}>
                   {paginatedUsers.map((user) => (

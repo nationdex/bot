@@ -1,4 +1,4 @@
-import { AnimatePresence, type HTMLMotionProps, motion } from 'framer-motion';
+import { AnimatePresence, type HTMLMotionProps, m } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { SIDEBAR_WIDTH, SidebarProvider, useSidebar } from '@/components/ui/sidebar-context';
 import { useIs3DEnabled, useMotionPref } from '@/hooks/useReducedMotion';
@@ -72,7 +72,7 @@ function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
         {open && (
           <>
             {pageTransitions ? (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -86,7 +86,7 @@ function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
               />
             )}
             {pageTransitions ? (
-              <motion.aside
+              <m.aside
                 initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
@@ -97,7 +97,7 @@ function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
                 <div className={cn('flex min-h-0 flex-1 flex-col justify-between', className)}>
                   {children}
                 </div>
-              </motion.aside>
+              </m.aside>
             ) : (
               <aside
                 className={cn('fixed inset-y-0 left-0 z-[100] flex w-64 flex-col', admin.sidebar)}
@@ -125,7 +125,7 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
   const hoverFeedback = useMotionPref('hoverFeedback');
 
   return (
-    <motion.a
+    <m.a
       href={link.href}
       whileHover={
         !hoverFeedback
@@ -147,7 +147,7 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
       {...props}
     >
       {active && (
-        <motion.span
+        <m.span
           layoutId="sidebar-active-pill"
           className="absolute inset-0 rounded-lg bg-[var(--admin-accent)]"
           transition={springSnappy}
@@ -162,6 +162,6 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
         {link.icon}
       </span>
       <span className="relative z-10 truncate">{link.label}</span>
-    </motion.a>
+    </m.a>
   );
 }

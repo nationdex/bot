@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from '@/components/icons';
 import { useEffect, useId, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -353,7 +353,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
 
       <AnimatePresence>
         {feedback && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
@@ -373,7 +373,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
             >
               <X className="h-3.5 w-3.5" />
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -931,7 +931,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
           <AnimatePresence>
             {showGiveModal && (
               <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -941,7 +941,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   }}
                   className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                 />
-                <motion.div
+                <m.div
                   initial={{ scale: 0.94, opacity: 0, y: 12 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.94, opacity: 0, y: 12 }}
@@ -1145,20 +1145,20 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       </Button>
                     </div>
                   </form>
-                </motion.div>
+                </m.div>
               </div>
             )}
 
             {showAuctionModal && (
               <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setShowAuctionModal(false)}
                   className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                 />
-                <motion.div
+                <m.div
                   initial={{ scale: 0.94, opacity: 0, y: 12 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.94, opacity: 0, y: 12 }}
@@ -1242,7 +1242,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       </Button>
                     </div>
                   </form>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,

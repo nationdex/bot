@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowUpRight, Globe, Users } from '@/components/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -289,7 +289,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
             >
               {selectedFilter === filter &&
                 (hoverFeedback ? (
-                  <motion.span
+                  <m.span
                     layoutId="dashboard-filter-pill"
                     className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                     transition={springSnappy}
@@ -306,7 +306,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       {listReveal ? (
         <AnimatePresence mode="popLayout">
           {showStats && (
-            <motion.div
+            <m.div
               key={`stats-${selectedFilter}`}
               variants={staggerContainer}
               initial="hidden"
@@ -322,7 +322,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
               {visibleStats.map((stat) => {
                 const Icon = stat.icon;
                 return (
-                  <motion.div key={stat.id} variants={listItem} className="h-full">
+                  <m.div key={stat.id} variants={listItem} className="h-full">
                     <Card className="bg-[var(--admin-card)] hover:border-[var(--admin-border)] transition-colors h-full">
                       <CardContent className="p-4 sm:p-5">
                         <div className="flex items-start justify-between mb-3 gap-3">
@@ -339,7 +339,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                           </div>
                         </div>
                         {listReveal ? (
-                          <motion.p
+                          <m.p
                             key={stat.value}
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -347,7 +347,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                             className="text-xl sm:text-2xl font-bold text-[var(--admin-fg)] mb-1 tabular-nums"
                           >
                             {stat.value}
-                          </motion.p>
+                          </m.p>
                         ) : (
                           <p className="text-xl sm:text-2xl font-bold text-[var(--admin-fg)] mb-1 tabular-nums">
                             {stat.value}
@@ -355,10 +355,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         )}
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </m.div>
                 );
               })}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       ) : (
@@ -478,7 +478,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                           );
 
                           return chartMotion ? (
-                            <motion.tr
+                            <m.tr
                               key={entry.id}
                               initial={{ opacity: 0, x: -12 }}
                               animate={{ opacity: 1, x: 0 }}
@@ -486,7 +486,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors"
                             >
                               {row}
-                            </motion.tr>
+                            </m.tr>
                           ) : (
                             <tr key={entry.id} className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors">
                               {row}
@@ -566,7 +566,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                           );
 
                           return chartMotion ? (
-                            <motion.tr
+                            <m.tr
                               key={user.discordId}
                               initial={{ opacity: 0, x: -12 }}
                               animate={{ opacity: 1, x: 0 }}
@@ -574,7 +574,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors"
                             >
                               {row}
-                            </motion.tr>
+                            </m.tr>
                           ) : (
                             <tr key={user.discordId} className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors">
                               {row}
@@ -619,7 +619,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                     >
                       {timeRange === 'Month' &&
                         (hoverFeedback ? (
-                          <motion.span
+                          <m.span
                             layoutId="time-range-pill"
                             className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                             transition={springSnappy}
@@ -642,7 +642,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                     >
                       {timeRange === 'Annually' &&
                         (hoverFeedback ? (
-                          <motion.span
+                          <m.span
                             layoutId="time-range-pill"
                             className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                             transition={springSnappy}
@@ -746,7 +746,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               >
                                 <div className="w-full max-w-[52px] flex items-end justify-center h-full">
                                   {chartMotion ? (
-                                    <motion.div
+                                    <m.div
                                       key={`${item.label}-${timeRange}-${selectedFilter}`}
                                       initial={{ height: 0 }}
                                       animate={{ height: `${heightPercent}%` }}
@@ -755,7 +755,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                     >
                                       <AnimatePresence>
                                         {isHovered && (
-                                          <motion.div
+                                          <m.div
                                             initial={{ opacity: 0, y: 2 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 2 }}
@@ -768,10 +768,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                                 ({item.pct})
                                               </span>
                                             )}
-                                          </motion.div>
+                                          </m.div>
                                         )}
                                       </AnimatePresence>
-                                    </motion.div>
+                                    </m.div>
                                   ) : (
                                     <div
                                       style={{ height: `${heightPercent}%` }}
@@ -779,7 +779,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                     >
                                       <AnimatePresence>
                                         {isHovered && (
-                                          <motion.div
+                                          <m.div
                                             initial={{ opacity: 0, y: 2 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 2 }}
@@ -792,7 +792,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                                 ({item.pct})
                                               </span>
                                             )}
-                                          </motion.div>
+                                          </m.div>
                                         )}
                                       </AnimatePresence>
                                     </div>

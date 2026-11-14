@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Plus, Search } from '@/components/icons';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -117,7 +117,7 @@ export default function Nations({
     <div className="w-full space-y-4 sm:space-y-6">
       <Card className="space-y-4 p-5">
         <div className="space-y-3">
-          <motion.div
+          <m.div
             className="relative z-20 flex flex-col gap-2 md:flex-row md:items-center"
             variants={listReveal ? fadeUp : undefined}
             initial={listReveal ? 'hidden' : false}
@@ -166,7 +166,7 @@ export default function Nations({
               <Plus className="h-3.5 w-3.5" />
               <span>Add Nation</span>
             </Button>
-          </motion.div>
+          </m.div>
         </div>
 
         {isLoading ? (
@@ -185,7 +185,7 @@ export default function Nations({
             ))}
           </div>
         ) : (
-          <motion.div
+          <m.div
             variants={listReveal ? staggerContainer : undefined}
             initial={listReveal ? 'hidden' : false}
             animate={listReveal ? 'show' : undefined}
@@ -264,16 +264,16 @@ export default function Nations({
             );
 
             return listReveal ? (
-              <motion.div key={entry.id} variants={listItem} className="h-full">
+              <m.div key={entry.id} variants={listItem} className="h-full">
                 {card}
-              </motion.div>
+              </m.div>
             ) : (
               <div key={entry.id} className="h-full">
                 {card}
               </div>
             );
           })}
-        </motion.div>
+        </m.div>
         )}
 
         {!isLoading && filteredCatalog.length === 0 && (

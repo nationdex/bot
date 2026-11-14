@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowRight, Search, X } from '@/components/icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -71,7 +71,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
 
   return (
     <>
-      <motion.button
+      <m.button
         type="button"
         onClick={() => setOpen(true)}
         whileHover={hoverFeedback ? { scale: 1.08, rotate: 8 } : undefined}
@@ -85,14 +85,14 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
         aria-haspopup="dialog"
       >
         <Search className="h-5 w-5" />
-      </motion.button>
+      </m.button>
 
       {typeof document !== 'undefined' &&
         createPortal(
           <AnimatePresence>
             {open && (
               <>
-                <motion.button
+                <m.button
                   type="button"
                   aria-label="Close search"
                   initial={searchMotion ? { opacity: 0 } : false}
@@ -103,7 +103,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                   onClick={close}
                 />
 
-                <motion.div
+                <m.div
                   role="dialog"
                   aria-modal="true"
                   aria-label="Search"
@@ -186,7 +186,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                       Ctrl K
                     </kbd>
                   </div>
-                </motion.div>
+                </m.div>
               </>
             )}
           </AnimatePresence>,

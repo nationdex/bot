@@ -3,6 +3,9 @@
 const VERSION = 'dev'; // build.ts replaces this with a build id so every build installs a fresh worker
 const SHELL = `ndx-shell-${VERSION}`;
 const ASSETS = `ndx-assets-${VERSION}`;
+const PUBLIC = `ndx-public-${VERSION}`;
+// The nation catalog is public game data, so it is safe to show from the cache while a fresh copy loads.
+const PUBLIC_API = new Set(['/api/bot/collectibles', '/api/bot/collectibles/data']);
 
 // Bundles are named by hash and import each other, so read them out of the page and out of each other.
 async function precache() {
@@ -10,7 +13,7 @@ async function precache() {
   const assets = await caches.open(ASSETS);
   const home = await fetch('/', { cache: 'no-cache' });
   await shell.put('/', home.clone());
-  await shell.addAll(['/manifest.webmanifest', '/icons/icon-192.png']);
+  await shell.addAll(['/manifest.webmanifest', '/icons/icon-192.png', '/fonts/inter.css', '/fonts/inter-latin.woff2', '/fonts/inter-latin-ext.woff2']);
 
   const found = (text) => text.match(/\/?(?:chunk|logo)-[a-z0-9]+\.(?:js|css|png)/g) ?? [];
   const queue = found(await home.text()).map((n) => '/' + n.replace(/^\//, ''));
@@ -33,7 +36,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('ndx-') && k !== SHELL && k !== ASSETS).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('ndx-') && k !== SHELL && k !== ASSETS && k !== PUBLIC).map((k) => caches.delete(k))))
+      .then(() => self.registration.navigationPreload?.enable())
       .then(() => self.clients.claim())
   );
 });
@@ -41,12 +45,40 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  if (url.origin !== self.location.origin) return;
+
+  // An edit may change the catalog: forget the cached copy so the next read is fresh.
+  if (request.method !== 'GET') {
+    if (url.pathname.startsWith('/api/bot/')) {
+      event.respondWith(fetch(request).then((res) => (res.ok ? caches.delete(PUBLIC).then(() => res) : res)));
+    }
+    return;
+  }
+
+  if (PUBLIC_API.has(url.pathname)) {
+    event.respondWith(
+      caches.open(PUBLIC).then(async (cache) => {
+        const hit = await cache.match(request);
+        const fresh = fetch(request).then((res) => {
+          if (res.ok) cache.put(request, res.clone());
+          return res;
+        });
+        if (hit) {
+          event.waitUntil(fresh.catch(() => {}));
+          return hit;
+        }
+        return fresh;
+      })
+    );
+    return;
+  }
+  if (url.pathname.startsWith('/api/')) return; // everything else is private: never cached
 
   // Page loads: network first so a new build shows up, the cached shell when offline.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      Promise.resolve(event.preloadResponse)
+        .then((pre) => pre || fetch(request))
         .then((res) => {
           const copy = res.clone();
           caches.open(SHELL).then((cache) => cache.put('/', copy));

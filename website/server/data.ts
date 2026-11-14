@@ -13,6 +13,15 @@ const MAX_CACHED_BYTES = 2_000_000;
 const cache = new Map<string, Entry>();
 const pending = new Map<string, Promise<Entry>>();
 
+// PGlite runs one query at a time and shares its thread with the bot, so panel queries never overlap each other:
+// a burst of cache misses queues up instead of starving the bot.
+let gate: Promise<unknown> = Promise.resolve();
+function exclusive<T>(job: () => Promise<T>): Promise<T> {
+  const run = gate.then(job, job);
+  gate = run.catch(() => {});
+  return run;
+}
+
 // Panel writes (and the bot's own edits through it) change what these answers say.
 export function invalidateData(): void {
   cache.clear();
@@ -23,7 +32,7 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>):
   if (hit && Date.now() - hit.at < hit.ttl) return hit;
   let job = pending.get(key);
   if (!job) {
-    job = compute()
+    job = exclusive(compute)
       .then((data) => {
         const body = JSON.stringify(data);
         const bytes = new TextEncoder().encode(body);
@@ -46,8 +55,11 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>):
 }
 
 export async function cachedAnswer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>): Promise<Response> {
+  const started = performance.now();
+  const hit = cache.has(key);
   const made = await entry(key, ttl, compute);
-  const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json' };
+  const timing = `${hit ? 'cache;desc=hit' : `db;desc=miss;dur=${(performance.now() - started).toFixed(1)}`}`;
+  const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json', 'Server-Timing': timing };
   if (req.headers.get('if-none-match') === made.etag) return new Response(null, { status: 304, headers });
   const wanted = accepted(req.headers.get('accept-encoding'));
   if (wanted.has('br') && made.br) return new Response(made.br, { headers: { ...headers, 'Content-Encoding': 'br' } });
@@ -190,7 +202,7 @@ export async function handleData(req: Request, path: string, search: URLSearchPa
     const q = (search.get('q') ?? '').trim().slice(0, 100);
     const rarity = (search.get('class') ?? 'all').trim().slice(0, 20);
     const limit = int(search.get('limit'), 10, 1, 200);
-    const offset = int(search.get('offset'), 0, 0, 10_000_000);
+    const offset = int(search.get('offset'), 0, 0, 200_000);
     return cachedAnswer(req, `instances:${q}|${rarity}|${limit}|${offset}`, 15_000, () => instances(q, rarity, limit, offset));
   }
   return null;

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, RefreshCw } from '@/components/icons';
 import { createPortal } from 'react-dom';
 
@@ -24,7 +24,7 @@ export function UnsavedChangesBar({
   return createPortal(
     <AnimatePresence>
       {show && (
-        <motion.div
+        <m.div
           initial={{ y: 80, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
@@ -47,7 +47,7 @@ export function UnsavedChangesBar({
               Reset
             </button>
 
-            <motion.button
+            <m.button
               type="button"
               disabled={isSaving}
               onClick={onSave}
@@ -60,9 +60,9 @@ export function UnsavedChangesBar({
                 <Check className="h-4 w-4 text-white" />
               ) : null}
               <span>{saveSuccess ? 'Saved!' : 'Save Changes'}</span>
-            </motion.button>
+            </m.button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body

@@ -41,6 +41,8 @@ async function precompress(): Promise<void> {
 
 // PWA tags are added after bundling: Bun's HTML bundler would try to resolve and rename these root-level files.
 const PWA_HEAD = `
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts/inter.css" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0a0a0a" />
   <meta name="color-scheme" content="dark light" />
@@ -66,9 +68,18 @@ export async function buildPanel(): Promise<void> {
     splitting: true,
     target: 'browser',
     publicPath: '/',
+    metafile: true,
     define: { 'process.env.NODE_ENV': '"production"' },
   });
   if (!result.success) throw new AggregateError(result.logs, 'Admin panel build failed');
+
+  // The Dashboard is the first page after sign-in and loads lazily: preload it (and what it imports) with the shell.
+  const outputs = (result.metafile?.outputs ?? {}) as Record<string, { inputs: Record<string, unknown>; imports: Array<{ path: string; kind: string }> }>;
+  const dash = Object.entries(outputs).find(([, o]) => Object.keys(o.inputs).some((i) => i.endsWith('components/Dashboard.tsx')));
+  const motion = Object.entries(outputs).find(([, o]) => Object.keys(o.inputs).some((i) => i.endsWith('lib/motion-features.ts')));
+  const preload = dash
+    ? [dash[0], ...dash[1].imports.filter((i) => i.kind === 'import-statement').map((i) => i.path), ...(motion ? [motion[0]] : [])].map((p) => `  <link rel="modulepreload" href="/${path.basename(p)}" />\n`).join('')
+    : '';
   await cp(path.join(root, 'public'), distDir, { recursive: true });
 
   const swPath = path.join(distDir, 'sw.js');
@@ -77,7 +88,7 @@ export async function buildPanel(): Promise<void> {
   const indexPath = path.join(distDir, 'index.html');
   const html = (await readFile(indexPath, 'utf8'))
     .replace('<meta name="viewport" content="width=device-width, initial-scale=1.0" />', '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />')
-    .replace('</head>', `${PWA_HEAD}</head>`);
+    .replace('</head>', `${preload}${PWA_HEAD}</head>`);
   await writeFile(indexPath, html);
 
   await precompress();

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PanelUsersSkeleton } from '@/components/SectionSkeleton';
 import { TablePagination } from '@/components/TablePagination';
@@ -841,7 +841,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
             )}
           >
             {activeTab === 'users' && (
-              <motion.span
+              <m.span
                 layoutId="panel-tab-pill"
                 className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                 transition={springSnappy}
@@ -864,7 +864,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
             )}
           >
             {activeTab === 'groups' && (
-              <motion.span
+              <m.span
                 layoutId="panel-tab-pill"
                 className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
                 transition={springSnappy}
@@ -893,9 +893,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   </tr>
                 </thead>
                 {listReveal ? (
-                  <motion.tbody variants={staggerContainer} initial="hidden" animate="show" key={currentPage + '-' + pageSize}>
+                  <m.tbody variants={staggerContainer} initial="hidden" animate="show" key={currentPage + '-' + pageSize}>
                     {paginatedUsers.map((u) => (
-                      <motion.tr
+                      <m.tr
                         key={u.id}
                         variants={listItem}
                         onClick={() => openEditUser(u)}
@@ -912,9 +912,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                           }}
                           onDelete={() => handleDeleteUser(u)}
                         />
-                      </motion.tr>
+                      </m.tr>
                     ))}
-                  </motion.tbody>
+                  </m.tbody>
                 ) : (
                   <tbody key={currentPage + '-' + pageSize}>
                     {paginatedUsers.map((u) => (
@@ -1042,14 +1042,14 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           <AnimatePresence>
             {ownerModalOpen && targetOwnerUser && (
               <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="fixed inset-0 bg-black/70 backdrop-blur-sm"
                   onClick={() => setOwnerModalOpen(false)}
                 />
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, scale: 0.95, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -1084,7 +1084,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       {submitting ? 'Transferring...' : 'Confirm Ownership Transfer'}
                     </Button>
                   </div>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,
