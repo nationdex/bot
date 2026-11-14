@@ -657,7 +657,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-[var(--admin-fg)]">Rarity Class</label>
-                      <select
+                      <select name="nationclass"
                         value={nationClass}
                         onChange={(e) => setNationClass(e.target.value)}
                         className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] focus:outline-none border-0 shadow-none cursor-pointer capitalize"
@@ -825,7 +825,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         {capacityDescription.length}/600
                       </span>
                     </div>
-                    <textarea
+                    <textarea name="capacitydescription"
                       value={capacityDescription}
                       onChange={(e) => setCapacityDescription(e.target.value)}
                       maxLength={600}
@@ -957,7 +957,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       <label className="flex h-8 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 transition-colors border-0 shadow-none">
                         <Upload className="h-3.5 w-3.5 text-[var(--admin-muted)]" />
                         <span className="truncate">{spawnArtName ? `Selected: ${spawnArtName}` : 'Choose Spawn PNG/JPG/WebP'}</span>
-                        <input
+                        <input name="file-960"
                           type="file"
                           accept="image/png,image/jpeg,image/webp"
                           onChange={(e) => handleFileChange(e, 'spawn')}
@@ -992,7 +992,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       <label className="flex h-8 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 transition-colors border-0 shadow-none">
                         <Upload className="h-3.5 w-3.5 text-[var(--admin-muted)]" />
                         <span className="truncate">{windowArtName ? `Selected: ${windowArtName}` : 'Choose Collection PNG/JPG/WebP'}</span>
-                        <input
+                        <input name="file-995"
                           type="file"
                           accept="image/png,image/jpeg,image/webp"
                           onChange={(e) => handleFileChange(e, 'window')}

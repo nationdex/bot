@@ -36,7 +36,7 @@ export function TablePagination({
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <span>Rows per page:</span>
-          <select
+          <select name="pagesize"
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));

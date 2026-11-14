@@ -484,6 +484,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 </label>
                 <Input
                   type="password"
+                  autoComplete="new-password"
                   required={!editingUser}
                   minLength={4}
                   value={userPassword}
@@ -507,7 +508,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
                     Group / Division
                   </label>
-                  <select
+                  <select name="usergroupid"
                     value={userGroupId ?? ''}
                     onChange={(e) => {
                       setUserGroupId(e.target.value ? Number(e.target.value) : null);
@@ -528,7 +529,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
                     Role Category
                   </label>
-                  <select
+                  <select name="userrole"
                     value={userRole}
                     onChange={(e) => {
                       setUserRole(e.target.value as 'owner' | 'admin' | 'member');

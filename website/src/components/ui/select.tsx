@@ -21,12 +21,15 @@ function collectItems(node: React.ReactNode, items: ItemProps[]): void {
   });
 }
 
-function Select({ value, onValueChange, disabled, children }: {
+function Select({ value, onValueChange, disabled, id, name, children }: {
+  id?: string;
+  name?: string;
   value: string;
   onValueChange: (value: string) => void;
   disabled?: boolean;
   children: React.ReactNode;
 }) {
+  const auto = React.useId();
   const items: ItemProps[] = [];
   let triggerClass: string | undefined;
   React.Children.forEach(children, (child) => {
@@ -38,6 +41,8 @@ function Select({ value, onValueChange, disabled, children }: {
   return (
     <div className={cn('relative flex h-10 w-full items-center rounded-md border text-sm', triggerClass)}>
       <select
+        id={id ?? (name ? undefined : auto)}
+        name={name}
         value={value}
         disabled={disabled}
         onChange={(e) => onValueChange(e.target.value)}

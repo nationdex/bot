@@ -203,7 +203,7 @@ function NewFieldModal({
                 <label className="text-xs font-medium text-[var(--admin-muted)]">
                   Target Section
                 </label>
-                <select
+                <select name="sectiontarget"
                   value={sectionTarget}
                   onChange={(e) => setSectionTarget(e.target.value)}
                   className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
@@ -277,7 +277,7 @@ function NewFieldModal({
                   Initial Value
                 </label>
                 {fieldType === 'boolean' ? (
-                  <select
+                  <select name="initialvalue"
                     value={initialValue}
                     onChange={(e) => setInitialValue(e.target.value)}
                     className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
@@ -461,7 +461,7 @@ function SettingRow({
               className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
             />
           ) : isString && (value as string).length > 60 ? (
-            <textarea
+            <textarea name="string-value"
               rows={3}
               value={String(value)}
               onChange={(e) => onUpdate(path, e.target.value)}
@@ -1032,7 +1032,7 @@ export default function BotSettings() {
 
             <Card className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none overflow-hidden">
               <CardContent className="p-4">
-                <textarea
+                <textarea name="jsontext"
                   rows={18}
                   value={jsonText}
                   onChange={(e) => handleJsonChange(e.target.value)}

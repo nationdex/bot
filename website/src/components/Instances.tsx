@@ -213,7 +213,7 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
               <thead>
                 <tr className="border-b border-[var(--admin-border)]">
                   <th className="w-10 py-3.5 pl-5 sm:pl-6 pr-3 text-left">
-                    <input
+                    <input name="allpageselected"
                       type="checkbox"
                       checked={allPageSelected}
                       onChange={toggleSelectAll}
@@ -274,7 +274,7 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
                       )}
                     >
                       <td className="py-3 pl-5 sm:pl-6 pr-3">
-                        <input
+                        <input name="selectedids-has-inst-id"
                           type="checkbox"
                           checked={selectedIds.has(inst.id)}
                           onChange={() => toggleSelect(inst.id)}

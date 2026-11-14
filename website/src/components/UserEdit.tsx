@@ -978,7 +978,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           </div>
                           <div className="relative flex items-center">
                             <Search className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-[var(--admin-muted)]" />
-                            <input
+                            <input name="givesearchquery"
                               type="text"
                               value={giveSearchQuery}
                               onChange={(e) => setGiveSearchQuery(e.target.value)}
@@ -1045,7 +1045,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
 
                         <div className="space-y-1.5">
                           <label className="text-xs font-medium text-[var(--admin-fg)]">Or Select From Dropdown</label>
-                          <select
+                          <select name="givenationid"
                             value={giveNationId}
                             onChange={(e) => setGiveNationId(e.target.value)}
                             className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] focus:outline-none border-0 shadow-none cursor-pointer"
@@ -1110,7 +1110,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         <label className="text-xs font-medium text-[var(--admin-fg)]">Count (1 - 25)</label>
                         <span className="text-xs font-semibold tabular-nums text-[var(--admin-fg)]">{giveCount}</span>
                       </div>
-                      <input
+                      <input name="givecount"
                         type="range"
                         min="1"
                         max="25"

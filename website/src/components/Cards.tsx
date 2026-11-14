@@ -546,7 +546,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                   <form onSubmit={handleReplaceSubmit} className="space-y-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-[var(--admin-fg)]">New PNG Image (1428 x 2000 px, max 10MB)</label>
-                      <input
+                      <input name="file-549"
                         ref={replaceFileInputRef}
                         type="file"
                         accept=".png"
