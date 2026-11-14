@@ -547,7 +547,7 @@ export async function fetchInstancesPage(opts: { query: string; rarity: string; 
   });
   const [raw, collectibles] = await Promise.all([
     apiFetch<{ total: number; results: Array<Record<string, unknown>> }>(`/api/panel/data/instances?${params}`),
-    fetchCollectibles(),
+    Promise.resolve(getCache<CollectibleEntry[]>('collectibles_all')).then((hit) => hit ?? fetchCollectibles()),
   ]);
   if (!raw || !Array.isArray(raw.results)) return null;
   return { total: Number(raw.total) || 0, items: mapInstances(raw.results, collectibles) };

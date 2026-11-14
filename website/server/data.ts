@@ -42,7 +42,7 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>):
   return job;
 }
 
-async function answer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>): Promise<Response> {
+export async function cachedAnswer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>): Promise<Response> {
   const made = await entry(key, ttl, compute);
   const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json' };
   if (req.headers.get('if-none-match') === made.etag) return new Response(null, { status: 304, headers });
@@ -176,19 +176,19 @@ const int = (v: string | null, fallback: number, min: number, max: number): numb
 
 export async function handleData(req: Request, path: string, search: URLSearchParams): Promise<Response | null> {
   if (req.method !== 'GET') return null;
-  if (path === '/api/bot/stats') return answer(req, 'stats', TTL_MS, stats);
-  if (path === '/api/panel/data/users') return answer(req, 'users', TTL_MS, users);
+  if (path === '/api/bot/stats') return cachedAnswer(req, 'stats', TTL_MS, stats);
+  if (path === '/api/panel/data/users') return cachedAnswer(req, 'users', TTL_MS, users);
   if (path === '/api/panel/data/growth') {
     const t = ['t0', 't1', 't2', 't3'].map((k) => Number(search.get(k)));
     if (t.some((n) => !Number.isFinite(n))) return json({ error: 't0..t3 are required' }, 400);
-    return answer(req, `growth:${t.join(',')}`, TTL_MS, () => growth(t));
+    return cachedAnswer(req, `growth:${t.join(',')}`, TTL_MS, () => growth(t));
   }
   if (path === '/api/panel/data/instances') {
     const q = (search.get('q') ?? '').trim().slice(0, 100);
     const rarity = (search.get('class') ?? 'all').trim().slice(0, 20);
     const limit = int(search.get('limit'), 10, 1, 200);
     const offset = int(search.get('offset'), 0, 0, 10_000_000);
-    return answer(req, `instances:${q}|${rarity}|${limit}|${offset}`, 15_000, () => instances(q, rarity, limit, offset));
+    return cachedAnswer(req, `instances:${q}|${rarity}|${limit}|${offset}`, 15_000, () => instances(q, rarity, limit, offset));
   }
   return null;
 }
