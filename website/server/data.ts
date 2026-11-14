@@ -14,10 +14,10 @@ const cache = new Map<string, Entry>();
 const pending = new Map<string, Promise<Entry>>();
 
 // PGlite runs inside this process, so a panel query is time the bot does not get. Panel queries run one at a time and
-// then rest for three times as long as they took (at least 10 ms), which caps the panel at about a quarter of the
-// database's time no matter how hard it is hit.
+// then rest for twice as long as they took (quick ones under 25 ms skip it), which caps the panel at about a third of
+// the database's time no matter how hard it is hit.
 let gate: Promise<unknown> = Promise.resolve();
-const rest = (took: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, Math.min(1000, Math.max(10, took * 3))));
+const rest = (took: number): Promise<void> => (took < 25 ? Promise.resolve() : new Promise((resolve) => setTimeout(resolve, Math.min(500, took * 2))));
 function exclusive<T>(job: () => Promise<T>): Promise<T> {
   let took = 0;
   const run = gate.then(async () => {
@@ -54,12 +54,12 @@ export function invalidateData(): void {
   cache.clear();
 }
 
-async function entry(key: string, ttl: number, compute: () => Promise<unknown>): Promise<Entry> {
+async function entry(key: string, ttl: number, compute: () => Promise<unknown>, gated: boolean): Promise<Entry> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < hit.ttl) return hit;
   let job = pending.get(key);
   if (!job) {
-    job = exclusive(compute)
+    job = (gated ? exclusive(compute) : compute())
       .then((data) => {
         const body = JSON.stringify(data);
         const bytes = new TextEncoder().encode(body);
@@ -81,10 +81,11 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>):
   return job;
 }
 
-export async function cachedAnswer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>): Promise<Response> {
+// gated=false is for upstream HTTP reads, which cost the panel no database time of its own.
+export async function cachedAnswer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>, gated = true): Promise<Response> {
   const started = performance.now();
   const hit = cache.has(key);
-  const made = await entry(key, ttl, compute);
+  const made = await entry(key, ttl, compute, gated);
   const timing = `${hit ? 'cache;desc=hit' : `db;desc=miss;dur=${(performance.now() - started).toFixed(1)}`}`;
   const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json', 'Server-Timing': timing };
   if (req.headers.get('if-none-match') === made.etag) return new Response(null, { status: 304, headers });

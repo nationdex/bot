@@ -87,7 +87,7 @@ export async function proxyBot(req: Request, path: string, search: string): Prom
   try {
     if (hasBody) return json(await upstream(req, path, search, true));
     const ttl = /^\/api\/bot\/(collectibles|cards|config)/.test(path) ? 30_000 : 10_000;
-    return await cachedAnswer(req, `proxy:${path}${search}`, ttl, () => upstream(req, path, search, false));
+    return await cachedAnswer(req, `proxy:${path}${search}`, ttl, () => upstream(req, path, search, false), false);
   } catch (err) {
     if (err instanceof Passthrough) return err.response;
     return json({ ok: false, status: 502, error: err instanceof Error ? err.message : 'Upstream API error' }, 502);
