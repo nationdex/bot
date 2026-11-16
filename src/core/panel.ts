@@ -89,12 +89,13 @@ export async function startPanel(client: ForgeClient): Promise<void> {
   // The DB extension is ready after login.
   const botDb = (client as any).db;
   await botDb.ready;
-  const store = await import(path.join(panelRoot, 'server', 'db'));
+  // Literal paths so `bun build --compile` bundles the panel server into the binary; only website/dist stays on disk.
+  const store = require('../../website/server/db');
   await store.initPanelDb(botDb.pg);
 
   const port = parseInt(process.env.PANEL_PORT || '3000', 10);
   const hostname = process.env.PANEL_HOST || '0.0.0.0';
-  const { startPanelServer } = await import(path.join(panelRoot, 'server'));
+  const { startPanelServer } = require('../../website/server');
   // HTTPS lets browsers ask for Brotli and install the panel as an app away from localhost.
   const tls = process.env.PANEL_TLS_CERT && process.env.PANEL_TLS_KEY ? { cert: process.env.PANEL_TLS_CERT, key: process.env.PANEL_TLS_KEY } : undefined;
   startPanelServer({ port, hostname, tls, tokens: botTokens(client, { get: store.getMeta, set: store.setMeta }) });

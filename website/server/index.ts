@@ -1,10 +1,12 @@
 import path from 'node:path';
-import { distDir } from '../build';
 import { authUser, handleAuth } from './auth';
 import { ensureCatchIndex, handleData } from './data';
 import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
 import { accepted, json } from './util';
+
+// The built UI sits next to the bot (cwd/website/dist), also when everything runs from one compiled binary.
+const distDir = path.join(process.cwd(), 'website', 'dist');
 
 // Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
 const ENCODINGS = [['br', 'br'], ['gzip', 'gz']] as const;
