@@ -12,25 +12,22 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $if[$isJSON[$env[data]];
-  $return[$js[const data = $env[data];
-    if (data == null || typeof data !== "object" || Array.isArray(data) || Object.keys(data).length === 0) { "" }
-    else {
-    const entries = Object.entries(data);
-    const weights = entries.map(([_, val\\]) => val != null && val.rarity != null ? val.rarity : 0);
-    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-    
-    if (totalWeight <= 0) { "" }
-    else {
-    let random = Math.random() * totalWeight;
-    let result = entries[entries.length - 1\\][0\\];
-    
-    for (let i = 0; i < entries.length; i++) {
-      random -= weights[i\\];
-      if (random <= 0) { result = entries[i\\][0\\]; break; }
-    }
-    
-    result } }]]
-  ;$return[$env[data]]]
+  $if[$isJSON[$env[data]]==false;$return[$env[data]]]
+  $jsonLoad[pool;$env[data]]
+  $if[$isArray[$env[pool]];$return[]]
+  $jsonLoad[ids;$jsonKeys[pool]]
+  $let[total;0]
+  $arrayForEach[ids;id;
+    $let[total;$math[$get[total]+$default[$env[pool;$env[id];rarity];0]]]
+  ]
+  $if[$get[total]<=0;$return[]]
+  $let[roll;$randomNumber[0;$get[total];true]]
+  $let[acc;0]
+  $let[pick;]
+  $arrayForEach[ids;id;
+    $let[acc;$math[$get[acc]+$default[$env[pool;$env[id];rarity];0]]]
+    $if[$and[$get[pick]==;$get[acc]>$get[roll]];$let[pick;$env[id]]]
+  ]
+  $return[$default[$get[pick];$arrayAt[ids;-1]]]
   `,
 });
