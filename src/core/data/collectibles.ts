@@ -27,6 +27,8 @@ export interface ValidationReport {
   };
 }
 
+// IDs of every emoji a nation may use: the application's own emojis plus the emojis of the home server.
+// Server emojis of other servers the bot is in also work in Discord, but cannot be audited from here.
 export async function fetchApplicationEmojis(token?: string): Promise<Set<string> | null> {
   const authToken = token || process.env.TOKEN;
   if (!authToken) {
@@ -39,33 +41,21 @@ export async function fetchApplicationEmojis(token?: string): Promise<Set<string
     if (!app?.id) return null;
 
     const res: any = await rest.get(Routes.applicationEmojis(app.id));
-    const emojis = Array.isArray(res) ? res : res?.items || [];
-    const emojiSet = new Set<string>();
-
-    const emojiMap = new Map<string, any>();
-    for (const em of emojis) {
-      if (typeof em === 'string') {
-        emojiSet.add(em);
-      } else if (em && typeof em === 'object') {
-        if (em.id) emojiSet.add(em.id);
-        if (em.name) emojiSet.add(em.name);
-        const id = String(em.id);
-        const name = String(em.name);
-        const animated = Boolean(em.animated);
-        const formatted = `<${animated ? 'a' : ''}:${name}:${id}>`;
-        const data = { id, name, animated, formatted };
-        emojiMap.set(id.toLowerCase(), data);
-        emojiMap.set(name.toLowerCase(), data);
-      }
+    const emojis: any[] = Array.isArray(res) ? res : res?.items || [];
+    const homeGuild = process.env.HOME_GUILD_ID;
+    if (homeGuild) {
+      const guildEmojis: any = await rest.get(Routes.guildEmojis(homeGuild)).catch(() => []);
+      if (Array.isArray(guildEmojis)) emojis.push(...guildEmojis);
     }
 
-    (globalThis as any).__ndxEmojiMap = emojiMap;
-    (globalThis as any).__ndxEmojiCache = emojis;
-    (globalThis as any).__ndxEmojiCacheAt = Date.now();
-
+    const emojiSet = new Set<string>();
+    for (const em of emojis) {
+      if (typeof em === 'string') emojiSet.add(em);
+      else if (em?.id) emojiSet.add(String(em.id));
+    }
     return emojiSet;
   } catch (err: any) {
-    console.warn(`[WARN] [validateCollectibles] Could not fetch application emojis from Discord API: ${err?.message ?? err}`);
+    console.warn(`[WARN] [validateCollectibles] Could not fetch emojis from Discord API: ${err?.message ?? err}`);
     return null;
   }
 }
@@ -190,14 +180,14 @@ export function validateCollectibles(options?: ValidateCollectiblesOptions): Val
 
     const emoji = col.emoji_id || col.emoji;
     if (!emoji || typeof emoji !== 'string' || emoji.trim().length === 0) {
-      errors.push(`[${id}] Missing or invalid 'emoji_id' in collectiblesData (must be a valid application emoji)`);
+      errors.push(`[${id}] Missing or invalid 'emoji_id' in collectiblesData (must be the ID of an application or server emoji)`);
       isItemValid = false;
     } else {
       totalEmojis++;
       if (appEmojiSet && appEmojiSet.size > 0) {
         const cleanEmoji = emoji.trim();
         if (!appEmojiSet.has(cleanEmoji)) {
-          errors.push(`[${id}] Application emoji '${cleanEmoji}' was not found in Discord application emojis`);
+          errors.push(`[${id}] Emoji '${cleanEmoji}' was not found among the application emojis or the home server emojis`);
           isItemValid = false;
         }
       }

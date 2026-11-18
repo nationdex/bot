@@ -303,8 +303,8 @@ $get[hint]
       $ifx[
         $if[$env[s;type]==nation;
           $modal[suggestion-qam-$get[id]-$arrayAt[cid;3]-$arrayAt[cid;4];Approve suggestion #$get[id]]
-          $addLabel[Application emoji;Name or ID of the emoji uploaded to the application;
-            $addTextInput[emoji;Application emoji;Short;true;;;1;64]
+          $addLabel[Nation emoji;ID of an application emoji or of an emoji from a server the bot is in;
+            $addTextInput[emoji;Nation emoji ID;Short;true;;;1;64]
           ]
           $addLabel[Note to the submitter;Optional;
             $addTextInput[note;Note;Paragraph;false;;;;500]
@@ -359,10 +359,9 @@ $get[hint]
       $jsonLoad[s;$getSuggestion[$get[id]]]
       $let[emojiIn;$trim[$input[emoji]]]
       $let[note;$input[note]]
-      $!js[ctx.client.application?.emojis.fetch().catch(() => null)]
-      $let[emojiId;$default[$appEmoji[$get[emojiIn];id];$if[$isNumber[$get[emojiIn]];$get[emojiIn]]]]
+      $let[emojiId;$appEmoji[$get[emojiIn];id]]
       $onlyIf[$get[emojiId]!=;
-        $err[No application emoji matches \`$get[emojiIn]\`. Upload it to the application first.;true]
+        $err[No application or server emoji has the ID \`$get[emojiIn]\`. Upload it to the application or to a server the bot is in first.;true]
       ]
       $deferUpdate
       $jsonLoad[res;$approveNationSuggestion[$get[id];$get[emojiId]]]
