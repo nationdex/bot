@@ -45,7 +45,7 @@
     "@nationdex/db": "github:nationdex/db#dev",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
     "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "framer-motion": "^14.13.0",
+    "framer-motion": "^14.14.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^3.7.0"
@@ -54,8 +54,8 @@
     "@types/bun": "^1.4.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@unocss/core": "^66.12.0",
-    "@unocss/preset-wind4": "^66.12.0",
+    "@unocss/core": "^66.13.0",
+    "@unocss/preset-wind4": "^66.13.0",
     "forge.lint": "^1.1.0",
     "typescript": "^7.0.2"
   },
