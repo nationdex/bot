@@ -1,6 +1,6 @@
 import { m } from '@/lib/panel-motion';
 import { Search } from '@/components/icons';
-import { useEffect, useState } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,10 +10,18 @@ import { admin } from '@/lib/admin-classes';
 import { fetchUserData, getCache, type UserEntry } from '@/lib/api';
 import { collectibleLabel } from '@/lib/bot';
 import { TablePagination } from '@/components/ui/TablePagination';
-import UserEdit from '@/pages/players/UserEdit';
+import { lazy, Suspense } from 'preact/compat';
+import { SectionSkeleton } from '@/components/feedback/SectionSkeleton';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { listItem, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
+
+const loadEditor = () => import('./UserEdit');
+const UserEdit = lazy(loadEditor);
+
+function preloadEditor() {
+  void loadEditor().catch(() => {});
+}
 
 export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }) {
   const listReveal = useMotionPref('listReveal');
@@ -66,7 +74,11 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
   }, []);
 
   if (selectedUserId) {
-    return <UserEdit userId={selectedUserId} onBack={() => setSelectedUserId(null)} />;
+    return (
+      <Suspense fallback={<SectionSkeleton section="users" />}>
+        <UserEdit userId={selectedUserId} onBack={() => setSelectedUserId(null)} />
+      </Suspense>
+    );
   }
 
   const filteredUsers = users.filter((user) => {
@@ -199,6 +211,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
                         <button
                           type="button"
+                          onPointerEnter={preloadEditor}
+                          onFocus={preloadEditor}
                           onClick={() => setSelectedUserId(user.discordId)}
                           className="hover:underline text-left cursor-pointer"
                         >
@@ -220,6 +234,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                         <Button
                           variant="ghost"
                           size="sm"
+                          onPointerEnter={preloadEditor}
+                          onFocus={preloadEditor}
                           onClick={() => setSelectedUserId(user.discordId)}
                           className={cn(admin.muted, 'hover:text-[var(--admin-fg)] cursor-pointer')}
                         >
@@ -242,6 +258,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
                         <button
                           type="button"
+                          onPointerEnter={preloadEditor}
+                          onFocus={preloadEditor}
                           onClick={() => setSelectedUserId(user.discordId)}
                           className="hover:underline text-left cursor-pointer"
                         >
@@ -261,6 +279,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                         <Button
                           variant="ghost"
                           size="sm"
+                          onPointerEnter={preloadEditor}
+                          onFocus={preloadEditor}
                           onClick={() => setSelectedUserId(user.discordId)}
                           className={cn(admin.muted, 'hover:text-[var(--admin-fg)] cursor-pointer')}
                         >

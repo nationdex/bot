@@ -1,4 +1,6 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'preact/compat';
+import { type ReactNode } from 'preact/compat';
+import { createContext } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
 import { type AnimationPrefs, applyAnimationPrefsToDocument, applyLowSpecAnimationPrefs, defaultAnimationPrefs, loadAnimationPrefs, normalizeAnimationPrefs, saveAnimationPrefs, type MotionPrefKey } from '@/lib/animation-prefs';
 
 type AnimationPrefsContextValue = AnimationPrefs & {

@@ -1,5 +1,5 @@
 import { Check, ChevronDown, RotateCcw } from '@/components/icons';
-import { useState } from 'preact/compat';
+import { useState } from 'preact/hooks';
 import { Input } from '@/components/ui/input';
 import { useThemePrefs } from '@/hooks/useThemePrefs';
 import { admin } from '@/lib/admin-classes';

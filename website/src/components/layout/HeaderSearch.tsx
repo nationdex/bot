@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowRight, Search, X } from '@/components/icons';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/compat';
-import { createPortal } from 'preact/compat';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact';
 import { Input } from '@/components/ui/input';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { type SearchResult, searchAdmin, searchTypeLabels } from '@/lib/search';

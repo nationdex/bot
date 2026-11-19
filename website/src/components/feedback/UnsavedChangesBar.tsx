@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Check, RefreshCw } from '@/components/icons';
-import { createPortal } from 'preact/compat';
+import { createPortal } from 'preact';
 
 interface UnsavedChangesBarProps {
   show: boolean;

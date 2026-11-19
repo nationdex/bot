@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from '@/components/icons';
-import { useEffect, useRef, useState } from 'preact/compat';
-import { createPortal } from 'preact/compat';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact';
 import { ConfirmModal } from '@/components/feedback/ConfirmModal';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';

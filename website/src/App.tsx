@@ -1,6 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
-import { lazy, Suspense, useEffect, useState } from 'preact/compat';
+import { lazy, Suspense } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import HeaderSearch from '@/components/layout/HeaderSearch';
 import Login from '@/pages/login/Login';
 import { SectionSkeleton } from '@/components/feedback/SectionSkeleton';

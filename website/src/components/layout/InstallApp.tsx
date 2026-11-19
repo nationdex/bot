@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import { Download } from '@/components/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { admin } from '@/lib/admin-classes';

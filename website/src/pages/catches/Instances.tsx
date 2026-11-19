@@ -1,5 +1,5 @@
 import { Search } from '@/components/icons';
-import { useEffect, useRef, useState } from 'preact/compat';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

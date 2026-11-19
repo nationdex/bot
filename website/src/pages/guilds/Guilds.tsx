@@ -1,6 +1,6 @@
 import { m } from '@/lib/panel-motion';
 import { Search } from '@/components/icons';
-import { useEffect, useState } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';

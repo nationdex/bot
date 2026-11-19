@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Loader2 } from '@/components/icons';
-import { createPortal } from 'preact/compat';
+import { createPortal } from 'preact';
 
 interface ConfirmModalProps {
   open: boolean;

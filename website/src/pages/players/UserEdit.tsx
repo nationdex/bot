@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from '@/components/icons';
-import { useEffect, useId, useMemo, useState } from 'preact/compat';
-import { createPortal } from 'preact/compat';
+import { useEffect, useId, useMemo, useState } from 'preact/hooks';
+import { createPortal } from 'preact';
 import { ConfirmModal } from '@/components/feedback/ConfirmModal';
 import { TablePagination } from '@/components/ui/TablePagination';
 import { UnsavedChangesBar } from '@/components/feedback/UnsavedChangesBar';

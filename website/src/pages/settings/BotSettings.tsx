@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Check, Code2, Copy, Plus, RotateCcw, Search, Sliders, Trash2, X } from '@/components/icons';
-import { useEffect, useState } from 'preact/compat';
-import { createPortal } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
+import { createPortal } from 'preact';
 import { BotSettingsSkeleton } from '@/components/feedback/SectionSkeleton';
 import { UnsavedChangesBar } from '@/components/feedback/UnsavedChangesBar';
 import { Button } from '@/components/ui/button';

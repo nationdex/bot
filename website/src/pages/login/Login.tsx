@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { admin } from '@/lib/admin-classes';

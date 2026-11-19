@@ -1,8 +1,9 @@
 import { m } from '@/lib/panel-motion';
 import { Plus, Search } from '@/components/icons';
-import { useEffect, useState } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
 import { ConfirmModal } from '@/components/feedback/ConfirmModal';
-import NationEdit from '@/pages/nations/NationEdit';
+import { lazy, Suspense } from 'preact/compat';
+import { SectionSkeleton } from '@/components/feedback/SectionSkeleton';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,6 +15,13 @@ import { bot, formatRarity, type RarityClass, rarityBadgeClass } from '@/lib/bot
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { fadeUp, listItem, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
+
+const loadEditor = () => import('./NationEdit');
+const NationEdit = lazy(loadEditor);
+
+function preloadEditor() {
+  void loadEditor().catch(() => {});
+}
 
 export default function Nations({
   searchQuery = '',
@@ -83,25 +91,29 @@ export default function Nations({
 
   if (selectedNationId) {
     return (
-      <NationEdit
-        nationId={selectedNationId}
-        onBack={() => {
-          setSelectedNationId(null);
-          loadData();
-        }}
-      />
+      <Suspense fallback={<SectionSkeleton section="nations" />}>
+        <NationEdit
+          nationId={selectedNationId}
+          onBack={() => {
+            setSelectedNationId(null);
+            loadData();
+          }}
+        />
+      </Suspense>
     );
   }
 
   if (isCreatingNew) {
     return (
-      <NationEdit
-        isNew
-        onBack={() => {
-          setIsCreatingNew(false);
-          loadData();
-        }}
-      />
+      <Suspense fallback={<SectionSkeleton section="nations" />}>
+        <NationEdit
+          isNew
+          onBack={() => {
+            setIsCreatingNew(false);
+            loadData();
+          }}
+        />
+      </Suspense>
     );
   }
 
@@ -160,6 +172,8 @@ export default function Nations({
             <Button
               type="button"
               size="sm"
+              onPointerEnter={preloadEditor}
+              onFocus={preloadEditor}
               onClick={() => setIsCreatingNew(true)}
               omitDefaults="rounded-md text-sm rounded-md" className="h-9 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
             >
@@ -243,6 +257,8 @@ export default function Nations({
                         type="button"
                         variant="ghost"
                         size="sm"
+                        onPointerEnter={preloadEditor}
+                        onFocus={preloadEditor}
                         onClick={() => setSelectedNationId(entry.id)}
                         omitDefaults="text-sm h-9" className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80"
                       >

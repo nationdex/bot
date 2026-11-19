@@ -1,4 +1,6 @@
-import { createContext, type ReactNode, useContext, useState } from 'preact/compat';
+import { type ReactNode } from 'preact/compat';
+import { createContext } from 'preact';
+import { useContext, useState } from 'preact/hooks';
 
 export const SIDEBAR_WIDTH = 256;
 

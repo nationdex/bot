@@ -1,5 +1,4 @@
-import { StrictMode } from 'preact/compat';
-import { createRoot } from 'preact/compat/client';
+import { render } from 'preact';
 import { AnimationPrefsProvider } from '@/hooks/useAnimationPrefs';
 import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
 import { storage } from '@/lib/storage';
@@ -17,14 +16,13 @@ applyThemeToDocument(loadThemePrefs());
 
 const root = document.getElementById('root');
 if (root) {
-  createRoot(root).render(
-    <StrictMode>
-      <ThemePrefsProvider>
-        <AnimationPrefsProvider>
-          <App />
-        </AnimationPrefsProvider>
-      </ThemePrefsProvider>
-    </StrictMode>
+  render(
+    <ThemePrefsProvider>
+      <AnimationPrefsProvider>
+        <App />
+      </AnimationPrefsProvider>
+    </ThemePrefsProvider>,
+    root,
   );
 }
 

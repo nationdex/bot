@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowUpRight, Globe, Users } from '@/components/icons';
-import { useEffect, useMemo, useState } from 'preact/compat';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMotionPref } from '@/hooks/useReducedMotion';

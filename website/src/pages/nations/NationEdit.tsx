@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowLeft, Check, Copy, Flame, Globe, Heart, ImageIcon, Loader2, Shield, Swords, Trash2, Upload, X } from '@/components/icons';
-import { useEffect, useState, useId } from 'preact/compat';
-import { createPortal } from 'preact/compat';
+import { useEffect, useState, useId } from 'preact/hooks';
+import { createPortal } from 'preact';
 import { UnsavedChangesBar } from '@/components/feedback/UnsavedChangesBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
