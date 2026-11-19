@@ -33,7 +33,7 @@
 
     "@discordjs/ws": ["@discordjs/ws@1.2.3", "", { "dependencies": { "@discordjs/collection": "^2.1.0", "@discordjs/rest": "^2.5.1", "@discordjs/util": "^1.1.0", "@sapphire/async-queue": "^1.5.2", "@types/ws": "^8.5.10", "@vladfrangu/async_event_emitter": "^2.2.4", "discord-api-types": "^0.38.1", "tslib": "^2.6.2", "ws": "^8.17.0" } }, "sha512-wPlQDxEmlDg5IxhJPuxXr3Vy9AjYq5xCvFWGJyD7w7Np8ZGu+Mc+97LCoEc/+AYCo2IDpKioiH0/c/mj5ZR9Uw=="],
 
-    "@electric-sql/pglite": ["@electric-sql/pglite@0.5.16", "", {}, "sha512-Nj8KcIsJL748W408U2N8q4+9IlONdpRIU8MJypIAAINMJ5nqKyqpX7Mgg/5XKkXiAib3AoZGR6hnJFlrlLBrcg=="],
+    "@electric-sql/pglite": ["@electric-sql/pglite@0.5.17", "", {}, "sha512-8SvKjiUjaU+0O0dbxjOfN+jXz14TEqDWbwDkYOW1aQ11y/ph2JvFVI27ABBo5nfw+ZfSqy4hKCNlbnbB1TDE+g=="],
 
     "@gifsx/gifsx": ["@gifsx/gifsx@1.0.15", "", { "optionalDependencies": { "@gifsx/gifsx-android-arm-eabi": "1.0.15", "@gifsx/gifsx-android-arm64": "1.0.15", "@gifsx/gifsx-darwin-arm64": "1.0.15", "@gifsx/gifsx-darwin-x64": "1.0.15", "@gifsx/gifsx-freebsd-x64": "1.0.15", "@gifsx/gifsx-linux-arm-gnueabihf": "1.0.15", "@gifsx/gifsx-linux-arm64-gnu": "1.0.15", "@gifsx/gifsx-linux-arm64-musl": "1.0.15", "@gifsx/gifsx-linux-x64-gnu": "1.0.15", "@gifsx/gifsx-linux-x64-musl": "1.0.15", "@gifsx/gifsx-win32-arm64-msvc": "1.0.15", "@gifsx/gifsx-win32-ia32-msvc": "1.0.15", "@gifsx/gifsx-win32-x64-msvc": "1.0.15" } }, "sha512-ViCKTISHChRxdeKdKARvaExW8jaGhrE7Ypq4bJmXb5Lewx8CsH6HriUZy9vDpTyPo+1aQPfg5PbcZ0/qnI5g5g=="],
 

@@ -32,7 +32,7 @@ const notConfigured = (): Response => json({ error: 'API_BASE_URL is not configu
 export async function proxyCardImage(path: string): Promise<Response> {
   if (!baseUrl()) return notConfigured();
   const raw = path.startsWith('/api/bot/cards/image/') ? path.slice('/api/bot/cards/image/'.length) : path.slice('/api/bot/cards/'.length, -'/image'.length);
-  const id = decodeURIComponent(raw.trim()).replace(/\.(png|jpg|webp|svg)$/i, '');
+  const id = raw.trim().replace(/\.(png|jpg|webp|svg)$/i, '');
   try {
     const res = await fetch(`${baseUrl()}/cards/${encodeURIComponent(id)}/image`, { headers: await authHeaders(), signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS) });
     if (!res.ok) return json({ error: 'Card Not Found' }, res.status);
@@ -50,7 +50,7 @@ class Passthrough extends Error {
 }
 
 async function upstream(req: Request, path: string, search: string, hasBody: boolean): Promise<unknown> {
-  const res = await fetch(`${baseUrl()}${upstreamPath(path)}${search}`, {
+  const res = await fetch(`${baseUrl()}${upstreamPath(path).split('/').map(encodeURIComponent).join('/')}${search}`, {
     method: req.method,
     headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: hasBody ? JSON.stringify(await readJson(req)) : undefined,

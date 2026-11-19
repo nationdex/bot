@@ -38,6 +38,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
   const [shortName, setShortName] = useState('');
   const [nationClass, setNationClass] = useState<string>('common');
   const [emojiId, setEmojiId] = useState('');
+  const previewEmojiId = emojiId.trim();
+  const emojiPreviewUrl = /^\d{17,20}$/.test(previewEmojiId)
+    ? `https://cdn.discordapp.com/emojis/${previewEmojiId}.png`
+    : undefined;
   const [credits, setCredits] = useState('');
   const [attack, setAttack] = useState<number | string>(100);
   const [health, setHealth] = useState<number | string>(150);
@@ -471,9 +475,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
       <div className="rounded-xl bg-[var(--admin-card)] p-5 sm:p-6">
         <div className="flex flex-col xl:flex-row xl:items-center gap-6 xl:gap-8">
           <div className="flex items-center gap-3.5 min-w-0 shrink-0">
-            {emojiId ? (
+            {emojiPreviewUrl ? (
               <img
-                src={`https://cdn.discordapp.com/emojis/${emojiId}.png`}
+                src={emojiPreviewUrl}
                 alt=""
                 className="h-16 w-16 shrink-0 rounded-lg p-1.5 object-contain"
                 onError={(e) => {
@@ -673,9 +677,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       Application Emoji ID <span className="text-red-400">*</span>
                     </label>
                     <div className="flex items-center gap-2">
-                      {emojiId ? (
+                      {emojiPreviewUrl ? (
                         <img
-                          src={`https://cdn.discordapp.com/emojis/${emojiId}.png`}
+                          src={emojiPreviewUrl}
                           alt=""
                           className="h-9 w-9 shrink-0 rounded-lg bg-[var(--admin-elevated)] p-1 object-contain border-0 shadow-none"
                           onError={(e) => {
