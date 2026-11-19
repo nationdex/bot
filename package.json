@@ -48,8 +48,6 @@
   },
   "devDependencies": {
     "@types/bun": "^1.4.4",
-    "@unocss/core": "^66.13.0",
-    "@unocss/preset-wind4": "^66.13.0",
     "forge.lint": "^1.1.0"
   },
   "trustedDependencies": [

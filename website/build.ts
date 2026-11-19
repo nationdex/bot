@@ -1,20 +1,9 @@
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { brotliCompressSync, constants } from 'node:zlib';
-import { createGenerator } from '@unocss/core';
-import unoConfig from './uno.config';
 
 const root = import.meta.dir;
 export const distDir = path.join(root, 'dist');
-
-// UnoCSS has no Bun plugin: scan the sources and write the utilities the UI imports (src/main.tsx).
-async function generateUno(): Promise<void> {
-  const files = [...new Bun.Glob('src/**/*.{ts,tsx}').scanSync({ cwd: root }), 'index.html'];
-  const code = (await Promise.all(files.map((f) => Bun.file(path.join(root, f)).text()))).join('\n');
-  const { css } = await (await createGenerator(unoConfig)).generate(code);
-  await mkdir(path.join(root, '.generated'), { recursive: true });
-  await Bun.write(path.join(root, '.generated', 'uno.css'), css);
-}
 
 // Text assets are compressed once at build time and served as .br / .gz siblings (see server/index.ts).
 // Brotli is the smallest, but browsers only ask for it over HTTPS (or localhost), so plain-HTTP visitors get gzip.
@@ -57,9 +46,8 @@ const PWA_HEAD = `
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
 `;
 
-// Bundles the panel UI (React + UnoCSS) into website/dist with Bun's own bundler.
+// Bundles the panel UI (Preact + CSS) into website/dist with Bun's own bundler.
 export async function buildPanel(): Promise<void> {
-  await generateUno();
   await rm(distDir, { recursive: true, force: true });
   const result = await Bun.build({
     entrypoints: [path.join(root, 'index.html')],

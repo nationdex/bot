@@ -1,4 +1,3 @@
-.vscode/
 assets/window_art
 assets/spawn_art
 assets/suggestions
@@ -30,7 +29,6 @@ CLAUDE.local.md
 .antigravity/
 .aider*
 .lsp.json
-forgeconfig.json
 tests/temp/
 
 # Secrets and credentials (never commit)

@@ -7,7 +7,7 @@ import { applyAnimationPrefsToDocument, loadAnimationPrefs } from '@/lib/animati
 import { installSessionHeader } from '@/lib/auth';
 import { applyThemeToDocument, loadThemePrefs } from '@/lib/theme-prefs';
 import App from './App';
-import '../.generated/uno.css';
+import './styles/utilities.css';
 import './index.css';
 
 installSessionHeader();
