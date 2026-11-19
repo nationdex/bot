@@ -11,4 +11,4 @@ const route: RouteDefinition = {
   $sendJson[$decodeURIComponent[${payload}]]
 `};
 
-export = route;
+export default route;

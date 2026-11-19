@@ -10,17 +10,13 @@ Join our cause at the NDS [headquarters](https://dsc.nationdex.com/)!
 
 ## ⚙️ Setup
 
-To install dependencies:
+Install Bun 1.4.4 or newer, then install dependencies:
 
 ```bash
 bun install
 ```
 
-To build the bot:
-
-```bash
-bun run build
-```
+Bun runs the bot directly from TypeScript source.
 
 To run on dev:
 
@@ -36,18 +32,7 @@ bun run start
 
 ## 🛠️ Troubleshooting
 
-⚠️ Sometimes you remove a command from the src directory but it still shows up on Discord. In that case, run:
-
-```bash
-# Linux
-rm -rf dist/ && bun run build
-
-# Windows
-Remove-Item dist/ -Recurse -Force
-bun run build
-```
-
-This will recreate the dist directory, up to date with the src directory.
+After adding, renaming, or removing a bot function or command file, run `bun run bundle:prep` to refresh the registration list.
 
 In order to check for any errors and warnings on the codebase, run:
 

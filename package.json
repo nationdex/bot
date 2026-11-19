@@ -3,27 +3,27 @@
   "version": "1.0.1",
   "description": "The Project Nationdex 2026, also known as Nationdex 2.0, is a modern revival from one of the oldest dex bots in existence, which is named Nationdex.bot!",
   "type": "commonjs",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "bun run bundle:prep",
     "panel:build": "bun website/build.ts",
     "panel:bench": "bun website/bench.ts",
     "panel:ngrok": "ngrok http ${PANEL_PORT:-3000}",
     "bundle:prep": "bun src/scripts/bundle-prep.ts",
-    "build:binary": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --outfile binaries/nationdex-bot-linux-x64 && tar -czf binaries/nationdex-bot-linux-x64.tar.gz -C binaries nationdex-bot-linux-x64 && rm -f binaries/nationdex-bot-linux-x64",
-    "build:binary:arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-linux-arm64 --outfile binaries/nationdex-bot-linux-arm64 && tar -czf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries nationdex-bot-linux-arm64 && rm -f binaries/nationdex-bot-linux-arm64",
-    "build:binary:windows-x64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-windows-x64 --outfile binaries/nationdex-bot-windows-x64.exe && zip -9 -j binaries/nationdex-bot-windows-x64.zip binaries/nationdex-bot-windows-x64.exe && rm -f binaries/nationdex-bot-windows-x64.exe",
-    "build:binary:darwin-arm64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-darwin-arm64 --outfile binaries/nationdex-bot-darwin-arm64 && tar -czf binaries/nationdex-bot-darwin-arm64.tar.gz -C binaries nationdex-bot-darwin-arm64 && rm -f binaries/nationdex-bot-darwin-arm64",
-    "build:binary:darwin-x64": "bun run build && bun run bundle:prep && bun run build && bun build dist/index.js --compile --target=bun-darwin-x64 --outfile binaries/nationdex-bot-darwin-x64 && tar -czf binaries/nationdex-bot-darwin-x64.tar.gz -C binaries nationdex-bot-darwin-x64 && rm -f binaries/nationdex-bot-darwin-x64",
-    "start": "bun dist/index.js",
+    "build:binary": "bun run bundle:prep && bun build src/index.ts --compile --outfile binaries/nationdex-bot-linux-x64 && tar -czf binaries/nationdex-bot-linux-x64.tar.gz -C binaries nationdex-bot-linux-x64 && rm -f binaries/nationdex-bot-linux-x64",
+    "build:binary:arm64": "bun run bundle:prep && bun build src/index.ts --compile --target=bun-linux-arm64 --outfile binaries/nationdex-bot-linux-arm64 && tar -czf binaries/nationdex-bot-linux-arm64.tar.gz -C binaries nationdex-bot-linux-arm64 && rm -f binaries/nationdex-bot-linux-arm64",
+    "build:binary:windows-x64": "bun run bundle:prep && bun build src/index.ts --compile --target=bun-windows-x64 --outfile binaries/nationdex-bot-windows-x64.exe && zip -9 -j binaries/nationdex-bot-windows-x64.zip binaries/nationdex-bot-windows-x64.exe && rm -f binaries/nationdex-bot-windows-x64.exe",
+    "build:binary:darwin-arm64": "bun run bundle:prep && bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile binaries/nationdex-bot-darwin-arm64 && tar -czf binaries/nationdex-bot-darwin-arm64.tar.gz -C binaries nationdex-bot-darwin-arm64 && rm -f binaries/nationdex-bot-darwin-arm64",
+    "build:binary:darwin-x64": "bun run bundle:prep && bun build src/index.ts --compile --target=bun-darwin-x64 --outfile binaries/nationdex-bot-darwin-x64 && tar -czf binaries/nationdex-bot-darwin-x64.tar.gz -C binaries nationdex-bot-darwin-x64 && rm -f binaries/nationdex-bot-darwin-x64",
+    "start": "bun src/index.ts",
     "start:binary": "test -f ./binaries/nationdex-bot-linux-x64 || tar -xzf ./binaries/nationdex-bot-linux-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-linux-x64",
     "start:binary:arm64": "test -f ./binaries/nationdex-bot-linux-arm64 || tar -xzf ./binaries/nationdex-bot-linux-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-linux-arm64",
     "start:binary:darwin-arm64": "test -f ./binaries/nationdex-bot-darwin-arm64 || tar -xzf ./binaries/nationdex-bot-darwin-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-arm64",
     "start:binary:darwin-x64": "test -f ./binaries/nationdex-bot-darwin-x64 || tar -xzf ./binaries/nationdex-bot-darwin-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-x64",
-    "dev": "bun run build && bun --watch dist/index.js",
+    "dev": "bun --watch src/index.ts",
     "lint": "forgelint",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p website",
-    "validate:collectibles": "bun run build && bun dist/core/data/collectibles.js"
+    "typecheck": "bun check --no-script && bun check --no-script -p website",
+    "validate:collectibles": "bun src/core/data/collectibles.ts"
   },
   "author": "Nationdex Solutions (https://github.com/nationdex)",
   "license": "Apache-2.0",
@@ -37,8 +37,7 @@
   },
   "homepage": "https://github.com/nationdex/bot#readme",
   "engines": {
-    "node": ">=22.0.0",
-    "bun": ">=1.0.0"
+    "bun": ">=1.4.4"
   },
   "dependencies": {
     "@nationdex/api": "github:nationdex/api#main",
@@ -51,8 +50,7 @@
     "@types/bun": "^1.4.4",
     "@unocss/core": "^66.13.0",
     "@unocss/preset-wind4": "^66.13.0",
-    "forge.lint": "^1.1.0",
-    "typescript": "^7.0.2"
+    "forge.lint": "^1.1.0"
   },
   "trustedDependencies": [
     "@nationdex/api"
