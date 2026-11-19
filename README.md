@@ -10,7 +10,7 @@ Join our cause at the NDS [headquarters](https://dsc.nationdex.com/)!
 
 ## ⚙️ Setup
 
-Install Bun 1.4.4 or newer, then install dependencies:
+Install Bun 1.4.3 or newer, then install dependencies:
 
 ```bash
 bun install
@@ -214,34 +214,3 @@ And Nationdex as a whole was only possible at some point thanks to the help from
 
 Project Nationdex 2026, our gratitude to everyone who made it possible, our response to everyone who fought for a better community.
 **Wishes, are eternal, and hope, is not lost.**
-
-### Release binaries
-
-Run `bun run build:binary` for Linux x64. The existing ARM64 Linux, macOS,
-and Windows build scripts use the same packager. Each archive contains the
-executable and the two matching native bindings. Extract the archive into
-one directory and keep its `node_modules` alongside the executable.
-The bot still needs its normal configuration and game assets. Include the
-prebuilt `website/dist` in that directory if you use the admin panel.
-
-Gzip is the default on Unix targets and Windows uses ZIP. Pass `--zstd`
-to a Unix build script to make a smaller-download candidate instead.
-The packager reports compressed and installed byte counts and writes a SHA-256 checksum beside each archive.
-Set `NATIONDEX_BINARY_DIR` to write archives outside `binaries/`.
-
-For the experimental Android ARM64 binary, use Bun 1.4.5 for the build.
-From the project root on the build host, stage the locked Android packages
-in a separate directory so the host install can still run the build tools:
-
-```sh
-native_root="$(mktemp -d)"
-cp package.json bun.lock bunfig.toml "$native_root"
-bun install --cwd "$native_root" --frozen-lockfile --ignore-scripts --os=android --cpu=arm64
-NATIONDEX_NATIVE_ROOT="$native_root" bun run build:binary:android-arm64
-```
-
-Extract the Android archive into Termux's private home storage and launch
-`./nationdex-bot-android-arm64` from the extraction directory. Before using
-it with a live token, verify startup, a temporary PGlite database, card
-rendering, and GIF processing on the device. Native Termux support is
-experimental until those checks pass.
