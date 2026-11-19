@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'preact/compat';
 import { applyThemeToDocument, defaultDarkPalette, defaultLightPalette, defaultThemePrefs, getActivePalette, loadThemePrefs, saveThemePrefs, type ThemeMode, type ThemePalette, type ThemePrefs } from '@/lib/theme-prefs';
 import { applyPresetToPrefs, type ThemePreset } from '@/lib/theme-presets';
 

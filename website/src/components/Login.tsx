@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { admin } from '@/lib/admin-classes';
@@ -39,7 +39,7 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
 
   return (
     <div className={cn('flex h-full items-center justify-center overflow-y-auto p-4', admin.shell)}>
-      <div className={cn('w-full max-w-sm rounded-2xl p-6 bg-[var(--admin-card)]', admin.panel)}>
+      <div className={cn("w-full max-w-sm rounded-2xl p-6", admin.panel)}>
         <div className="mb-6 flex items-center gap-3">
           <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 shrink-0 object-contain" />
           <div className="min-w-0">
@@ -69,7 +69,7 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
                 id="admin-username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.currentTarget.value)}
                 className={cn('bg-[var(--admin-elevated)] text-[var(--admin-fg)] focus:ring-0', admin.input)}
                 autoComplete="username"
                 required
@@ -87,7 +87,7 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
                 id="admin-password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.currentTarget.value)}
                 className={cn('bg-[var(--admin-elevated)] text-[var(--admin-fg)] focus:ring-0', admin.input)}
                 autoComplete={needsSetup ? 'new-password' : 'current-password'}
                 required
@@ -106,7 +106,7 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity font-medium"
+              omitDefaults="transition-colors" className="w-full bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity font-medium"
             >
               {needsSetup ? 'Create owner account' : 'Sign in'}
             </Button>

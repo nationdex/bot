@@ -1,13 +1,13 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowUpRight, Globe, Users } from '@/components/icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'preact/compat';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import { fetchCollectibles, fetchGrowth, fetchStats, fetchUserData, getCache, type BotStats, type CollectibleEntry, type UserEntry } from '@/lib/api';
 import { bot, formatRarity, type RarityClass } from '@/lib/bot';
-import { listItem, springSnappy, staggerContainer } from '@/lib/motion';
+import { listItem, quickTransition, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import TablePagination from './TablePagination';
 
@@ -290,9 +290,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
               {selectedFilter === filter &&
                 (hoverFeedback ? (
                   <m.span
-                    layoutId="dashboard-filter-pill"
                     className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                    transition={springSnappy}
+                    transition={quickTransition}
                   />
                 ) : (
                   <span className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0" />
@@ -324,7 +323,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                 return (
                   <m.div key={stat.id} variants={listItem} className="h-full">
                     <Card className="bg-[var(--admin-card)] hover:border-[var(--admin-border)] transition-colors h-full">
-                      <CardContent className="p-4 sm:p-5">
+                      <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5">
                         <div className="flex items-start justify-between mb-3 gap-3">
                           <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">
                             {stat.label}
@@ -378,7 +377,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                   key={stat.id}
                   className="bg-[var(--admin-card)] hover:border-[var(--admin-border)] transition-colors h-full"
                 >
-                  <CardContent className="p-4 sm:p-5">
+                  <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5">
                     <div className="flex items-start justify-between mb-3 gap-3">
                       <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">
                         {stat.label}
@@ -406,15 +405,15 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       {showCharts && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-stretch">
           {showNationsTable && (
-            <Card className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
-              <CardContent className="p-0 flex flex-col flex-1 justify-between">
+            <Card omitDefaults="rounded-lg" className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
+              <CardContent omitDefaults="p-6 pt-0" className="p-0 flex flex-col flex-1 justify-between">
                 <div className="p-4 sm:p-5 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <h3 className="text-sm font-medium text-[var(--admin-muted)] capitalize">
                     Top caught {bot.collectible.plural}
                   </h3>
                   <div className="relative z-20 w-full sm:w-auto">
                     <Select value={selectedClassFilter} onValueChange={setSelectedClassFilter}>
-                      <SelectTrigger className="min-h-9 w-full cursor-pointer touch-manipulation bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs sm:min-w-[9rem] sm:w-auto h-9">
+                      <SelectTrigger omitDefaults="h-10 text-sm" className="min-h-9 w-full cursor-pointer touch-manipulation bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs sm:min-w-[9rem] sm:w-auto h-9">
                         <SelectValue placeholder="All classes" />
                       </SelectTrigger>
                       <SelectContent className="bg-[var(--admin-elevated)]">
@@ -509,8 +508,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
           )}
 
           {showUsersTable && (
-            <Card className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
-              <CardContent className="p-0 flex flex-col flex-1 justify-between">
+            <Card omitDefaults="rounded-lg" className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
+              <CardContent omitDefaults="p-6 pt-0" className="p-0 flex flex-col flex-1 justify-between">
                 <div className="p-4 sm:p-5 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <h3 className="text-sm font-medium text-[var(--admin-muted)]">
                     Top players
@@ -600,7 +599,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
             <Card
               className={`${growthChartSpan} bg-[var(--admin-card)] hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between`}
             >
-              <CardContent className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+              <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                   <h3 className="text-sm font-medium text-[var(--admin-muted)]">
                     {growthChartTitles[selectedFilter]}
@@ -620,9 +619,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                       {timeRange === 'Month' &&
                         (hoverFeedback ? (
                           <m.span
-                            layoutId="time-range-pill"
                             className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                            transition={springSnappy}
+                            transition={quickTransition}
                           />
                         ) : (
                           <span className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0" />
@@ -643,9 +641,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                       {timeRange === 'Annually' &&
                         (hoverFeedback ? (
                           <m.span
-                            layoutId="time-range-pill"
                             className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                            transition={springSnappy}
+                            transition={quickTransition}
                           />
                         ) : (
                           <span className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0" />
@@ -750,7 +747,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                       key={`${item.label}-${timeRange}-${selectedFilter}`}
                                       initial={{ height: 0 }}
                                       animate={{ height: `${heightPercent}%` }}
-                                      transition={{ delay: 0.1 + idx * 0.06, ...springSnappy }}
+                                      transition={{ delay: 0.1 + idx * 0.06, ...quickTransition }}
                                       className={`w-full rounded-t relative transition-colors duration-150 ${barColorClass}`}
                                     >
                                       <AnimatePresence>

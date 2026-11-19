@@ -1,5 +1,5 @@
 import { Check, ChevronDown, RotateCcw } from '@/components/icons';
-import { useState } from 'react';
+import { useState } from 'preact/compat';
 import { Input } from '@/components/ui/input';
 import { useThemePrefs } from '@/hooks/useThemePrefs';
 import { admin } from '@/lib/admin-classes';
@@ -124,7 +124,7 @@ function SwatchInput({
             id={id}
             type="color"
             value={swatchColor}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(e.currentTarget.value)}
             className="sr-only"
           />
         </label>
@@ -144,8 +144,8 @@ function SwatchInput({
           <Input
             id={id}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className={cn('mt-0.5 h-8 text-xs', admin.input)}
+            onChange={(e) => onChange(e.currentTarget.value)}
+            omitDefaults="h-10 text-sm" className={cn('mt-0.5 h-8 text-xs', admin.input)}
           />
         )}
       </div>
@@ -343,7 +343,7 @@ function PaletteEditor({
                   min={0}
                   max={360}
                   value={palette.gradientAngle}
-                  onChange={(e) => onChange({ gradientAngle: Number(e.target.value) })}
+                  onChange={(e) => onChange({ gradientAngle: Number(e.currentTarget.value) })}
                   className="mt-2 w-full accent-[var(--admin-accent)]"
                 />
               </div>

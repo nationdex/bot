@@ -1,6 +1,6 @@
-import { m } from 'framer-motion';
+import { m } from '@/lib/panel-motion';
 import { Search } from '@/components/icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/compat';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -71,7 +71,7 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
           <Input
             value={localQuery}
             onChange={(e) => {
-              setLocalQuery(e.target.value);
+              setLocalQuery(e.currentTarget.value);
               setCurrentPage(1);
             }}
             className={cn('pl-9', admin.input)}
@@ -79,7 +79,7 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
           />
         </div>
         <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
-          <SelectTrigger className={cn('h-9 w-full sm:w-36 text-xs', admin.input)}>
+          <SelectTrigger omitDefaults="h-10 text-sm" className={cn('h-9 w-full sm:w-36 text-xs', admin.input)}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent className={cn(admin.elevated, admin.fg)}>
@@ -90,8 +90,8 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
         </Select>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
-        <CardContent className="p-0">
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
+        <CardContent omitDefaults="p-6 pt-0" className="p-0">
           <div className="overflow-x-auto w-full">
             <table className="w-full min-w-[640px]">
               <thead>
@@ -121,7 +121,7 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                         <Skeleton className="h-4 w-32" />
                       </td>
                       <td className="py-3 px-4 pr-5 sm:pr-6">
-                        <Skeleton className="h-5 w-16 rounded-full" />
+                        <Skeleton omitDefaults="rounded-md" className="h-5 w-16 rounded-full" />
                       </td>
                     </tr>
                   ))}

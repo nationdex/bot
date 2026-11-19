@@ -1,9 +1,9 @@
-import { AnimatePresence, type HTMLMotionProps, m } from 'framer-motion';
-import type { ReactNode } from 'react';
+import { AnimatePresence, type HTMLMotionProps, m } from '@/lib/panel-motion';
+import type { ReactNode } from 'preact/compat';
 import { SIDEBAR_WIDTH, SidebarProvider, useSidebar } from '@/components/ui/sidebar-context';
 import { useIs3DEnabled, useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
-import { springSnappy } from '@/lib/motion';
+import { quickTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 export { SIDEBAR_WIDTH } from '@/components/ui/sidebar-context';
@@ -90,7 +90,7 @@ function MobileSidebar({ className, children, ...props }: SidebarBodyProps) {
                 initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
-                transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+                transition={{ duration: 0.22 }}
                 className={cn('fixed inset-y-0 left-0 z-[100] flex w-64 flex-col', admin.sidebar)}
                 style={{ width: SIDEBAR_WIDTH }}
               >
@@ -137,7 +137,7 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
               : { x: 3 }
       }
       whileTap={hoverFeedback ? { scale: 0.98 } : undefined}
-      transition={springSnappy}
+      transition={quickTransition}
       style={enable3D ? { transformPerspective: 900 } : undefined}
       className={cn(
         'preserve-3d relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
@@ -148,9 +148,8 @@ export function SidebarLink({ link, className, active = false, ...props }: Sideb
     >
       {active && (
         <m.span
-          layoutId="sidebar-active-pill"
           className="absolute inset-0 rounded-lg bg-[var(--admin-accent)]"
-          transition={springSnappy}
+          transition={quickTransition}
         />
       )}
       <span

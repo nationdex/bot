@@ -1,7 +1,7 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Check, Code2, Copy, Plus, RotateCcw, Search, Sliders, Trash2, X } from '@/components/icons';
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { BotSettingsSkeleton } from '@/components/SectionSkeleton';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { addConfigItem, deleteConfigItem, fetchFullConfig, getCache, resetConfigItem, updateConfigItem } from '@/lib/api';
-import { springSnappy } from '@/lib/motion';
+import { quickTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'visual' | 'json';
@@ -205,7 +205,7 @@ function NewFieldModal({
                 </label>
                 <select name="sectiontarget"
                   value={sectionTarget}
-                  onChange={(e) => setSectionTarget(e.target.value)}
+                  onChange={(e) => setSectionTarget(e.currentTarget.value)}
                   className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
                 >
                   {availableSections.map((sec) => (
@@ -224,9 +224,9 @@ function NewFieldModal({
                   </label>
                   <Input
                     value={newSectionName}
-                    onChange={(e) => setNewSectionName(e.target.value)}
+                    onChange={(e) => setNewSectionName(e.currentTarget.value)}
                     placeholder="e.g. economy or discord"
-                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                     required
                   />
                 </div>
@@ -238,9 +238,9 @@ function NewFieldModal({
                 </label>
                 <Input
                   value={keyName}
-                  onChange={(e) => setKeyName(e.target.value)}
+                  onChange={(e) => setKeyName(e.currentTarget.value)}
                   placeholder="e.g. spawn_cooldown"
-                  className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                  omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   required
                 />
               </div>
@@ -279,7 +279,7 @@ function NewFieldModal({
                 {fieldType === 'boolean' ? (
                   <select name="initialvalue"
                     value={initialValue}
-                    onChange={(e) => setInitialValue(e.target.value)}
+                    onChange={(e) => setInitialValue(e.currentTarget.value)}
                     className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
                   >
                     <option value="true">Enabled (true)</option>
@@ -288,17 +288,17 @@ function NewFieldModal({
                 ) : fieldType === 'array' ? (
                   <Input
                     value={initialValue}
-                    onChange={(e) => setInitialValue(e.target.value)}
+                    onChange={(e) => setInitialValue(e.currentTarget.value)}
                     placeholder="Comma separated values (e.g. common, rare)"
-                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   />
                 ) : (
                   <Input
                     type={fieldType === 'number' ? 'number' : 'text'}
                     value={initialValue}
-                    onChange={(e) => setInitialValue(e.target.value)}
+                    onChange={(e) => setInitialValue(e.currentTarget.value)}
                     placeholder="Enter value"
-                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   />
                 )}
               </div>
@@ -309,7 +309,7 @@ function NewFieldModal({
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  className="text-xs rounded-xl"
+                  omitDefaults="rounded-md text-sm rounded-md" className="text-xs rounded-xl"
                 >
                   Cancel
                 </Button>
@@ -423,7 +423,7 @@ function SettingRow({
                 <Input
                   id={`tag-input-${path.join('-')}`}
                   placeholder="Add item…"
-                  className="bg-[var(--admin-elevated)] text-xs h-9 text-[var(--admin-fg)] flex-1 rounded-xl border-0"
+                  omitDefaults="h-10 rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-9 text-[var(--admin-fg)] flex-1 rounded-xl border-0"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -457,22 +457,22 @@ function SettingRow({
             <Input
               type="number"
               value={Number(value)}
-              onChange={(e) => onUpdate(path, Number(e.target.value))}
-              className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
+              onChange={(e) => onUpdate(path, Number(e.currentTarget.value))}
+              omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
             />
           ) : isString && (value as string).length > 60 ? (
             <textarea name="string-value"
               rows={3}
               value={String(value)}
-              onChange={(e) => onUpdate(path, e.target.value)}
+              onChange={(e) => onUpdate(path, e.currentTarget.value)}
               className="w-full p-3 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs focus:outline-none resize-none leading-relaxed border-0"
             />
           ) : (
             <Input
               type="text"
               value={String(value ?? '')}
-              onChange={(e) => onUpdate(path, e.target.value)}
-              className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
+              onChange={(e) => onUpdate(path, e.currentTarget.value)}
+              omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
             />
           )}
         </div>
@@ -775,9 +775,8 @@ export default function BotSettings() {
             >
               {viewMode === 'visual' && (
                 <m.span
-                  layoutId="bot-settings-view-pill"
                   className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                  transition={springSnappy}
+                  transition={quickTransition}
                 />
               )}
               <Sliders className="h-3.5 w-3.5 relative z-10 shrink-0" />
@@ -796,9 +795,8 @@ export default function BotSettings() {
             >
               {viewMode === 'json' && (
                 <m.span
-                  layoutId="bot-settings-view-pill"
                   className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                  transition={springSnappy}
+                  transition={quickTransition}
                 />
               )}
               <Code2 className="h-3.5 w-3.5 relative z-10 shrink-0" />
@@ -832,15 +830,15 @@ export default function BotSettings() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--admin-muted)]" />
               <Input
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.currentTarget.value)}
                 placeholder="Filter parameters by name or value…"
-                className="pl-9 bg-[var(--admin-card)] text-xs h-10 text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] rounded-xl border-0"
+                omitDefaults="rounded-md text-sm" className="pl-9 bg-[var(--admin-card)] text-xs h-10 text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] rounded-xl border-0"
               />
             </div>
 
             {visibleBotInfo.length > 0 && (
-              <Card className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
-                <CardContent className="p-4 sm:p-6 space-y-4">
+              <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
+                <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[var(--admin-border)] flex-nowrap min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--admin-fg)] whitespace-nowrap truncate min-w-0">
                       Bot Information
@@ -875,8 +873,8 @@ export default function BotSettings() {
             )}
 
             {visibleRarity.length > 0 && (
-              <Card className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
-                <CardContent className="p-4 sm:p-6 space-y-4">
+              <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
+                <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[var(--admin-border)] flex-nowrap min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--admin-fg)] whitespace-nowrap truncate min-w-0">
                       Rarity &amp; Tiers
@@ -911,8 +909,8 @@ export default function BotSettings() {
             )}
 
             {visiblePrimitives.length > 0 && (
-              <Card className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
-                <CardContent className="p-4 sm:p-6 space-y-4">
+              <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
+                <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[var(--admin-border)] flex-nowrap min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--admin-fg)] whitespace-nowrap truncate min-w-0">
                       Configuration Parameters
@@ -946,8 +944,8 @@ export default function BotSettings() {
             )}
 
             {visibleObjects.map((sec) => (
-              <Card key={sec.sectionKey} className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
-                <CardContent className="p-4 sm:p-6 space-y-4">
+              <Card key={sec.sectionKey} omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
+                <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[var(--admin-border)] flex-nowrap min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--admin-fg)] whitespace-nowrap truncate min-w-0">
                       {formatKeyName(sec.sectionKey)} Settings
@@ -1019,7 +1017,7 @@ export default function BotSettings() {
                 variant="ghost"
                 size="sm"
                 onClick={handleCopyJson}
-                className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] rounded-full"
+                omitDefaults="rounded-md text-sm rounded-md" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] rounded-full"
               >
                 {copiedJson ? (
                   <Check className="h-3.5 w-3.5 mr-1 text-emerald-400" />
@@ -1030,12 +1028,12 @@ export default function BotSettings() {
               </Button>
             </div>
 
-            <Card className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none overflow-hidden">
-              <CardContent className="p-4">
+            <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none overflow-hidden">
+              <CardContent omitDefaults="p-6 pt-0" className="p-4">
                 <textarea name="jsontext"
                   rows={18}
                   value={jsonText}
-                  onChange={(e) => handleJsonChange(e.target.value)}
+                  onChange={(e) => handleJsonChange(e.currentTarget.value)}
                   className="w-full text-xs bg-transparent text-[var(--admin-fg)] focus:outline-none resize-none leading-relaxed font-sans"
                 />
               </CardContent>

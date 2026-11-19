@@ -39,7 +39,7 @@ export function TablePagination({
           <select name="pagesize"
             value={pageSize}
             onChange={(e) => {
-              setPageSize(Number(e.target.value));
+              setPageSize(Number(e.currentTarget.value));
               setCurrentPage(1);
             }}
             className="bg-[var(--admin-elevated)] text-[var(--admin-fg)] rounded-lg px-2.5 py-1 text-xs font-medium focus:outline-none cursor-pointer"
@@ -65,7 +65,7 @@ export function TablePagination({
           size="sm"
           disabled={safePage <= 1}
           onClick={() => setCurrentPage(1)}
-          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="First Page"
         >
           <ChevronsLeft className="h-3.5 w-3.5" />
@@ -77,7 +77,7 @@ export function TablePagination({
           size="sm"
           disabled={safePage <= 1}
           onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Previous Page"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
@@ -93,7 +93,7 @@ export function TablePagination({
           size="sm"
           disabled={safePage >= totalPages}
           onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Next Page"
         >
           <ChevronRight className="h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ export function TablePagination({
           size="sm"
           disabled={safePage >= totalPages}
           onClick={() => setCurrentPage(totalPages)}
-          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Last Page"
         >
           <ChevronsRight className="h-3.5 w-3.5" />

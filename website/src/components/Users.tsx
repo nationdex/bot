@@ -1,6 +1,6 @@
-import { m } from 'framer-motion';
+import { m } from '@/lib/panel-motion';
 import { Search } from '@/components/icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -92,7 +92,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
             <Input
               value={localQuery}
               onChange={(e) => {
-                setLocalQuery(e.target.value);
+                setLocalQuery(e.currentTarget.value);
                 setCurrentPage(1);
               }}
               className={cn('pl-9', admin.input)}
@@ -106,7 +106,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className={cn('h-9 w-full sm:w-32 text-xs rounded-lg bg-[var(--admin-card)] text-[var(--admin-fg)] border-0 shadow-none', admin.elevated)}>
+            <SelectTrigger omitDefaults="h-10 rounded-md border text-sm" className={cn("h-9 w-full sm:w-32 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none", admin.elevated)}>
               <SelectValue placeholder="All Privacy" />
             </SelectTrigger>
             <SelectContent className={cn(admin.elevated, admin.fg)}>
@@ -122,7 +122,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className={cn('h-9 w-full sm:w-28 text-xs rounded-lg bg-[var(--admin-card)] text-[var(--admin-fg)] border-0 shadow-none', admin.elevated)}>
+            <SelectTrigger omitDefaults="h-10 rounded-md border text-sm" className={cn("h-9 w-full sm:w-28 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none", admin.elevated)}>
               <SelectValue placeholder="All Gifts" />
             </SelectTrigger>
             <SelectContent className={cn(admin.elevated, admin.fg)}>
@@ -134,8 +134,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
         </div>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
-        <CardContent className="p-0">
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
+        <CardContent omitDefaults="p-6 pt-0" className="p-0">
           <div>
             <table className="w-full min-w-[640px]">
               <thead>
@@ -175,7 +175,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                         <Skeleton className="h-4 w-10" />
                       </td>
                       <td className="py-3 pr-5 sm:pr-6 text-right">
-                        <Skeleton className="h-7 w-14 rounded-lg ml-auto" />
+                        <Skeleton omitDefaults="rounded-md" className="h-7 w-14 rounded-lg ml-auto" />
                       </td>
                     </tr>
                   ))}

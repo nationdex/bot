@@ -1,7 +1,7 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from '@/components/icons';
-import { useEffect, useId, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useId, useMemo, useState } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { TablePagination } from '@/components/TablePagination';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
@@ -475,7 +475,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Coins className="h-4 w-4 text-[var(--admin-muted)]" />
-              <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Balance Management</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Balance Management</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -512,9 +512,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   max="999999999999"
                   step="1"
                   value={balanceAmount}
-                  onChange={(e) => setBalanceAmount(e.target.value)}
+                  onChange={(e) => setBalanceAmount(e.currentTarget.value)}
                   placeholder="Enter amount (whole number, max 12 digits)..."
-                  className={cn('h-9 text-xs', admin.input)}
+                  omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
                 />
 
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -534,7 +534,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               <Button
                 type="submit"
                 disabled={isUpdatingBalance || !balanceAmount}
-                className="w-full h-9 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity"
+                omitDefaults="rounded-md text-sm transition-colors h-10" className="w-full h-9 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity"
               >
                 {isUpdatingBalance ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                 Apply Balance Change
@@ -548,7 +548,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-[var(--admin-muted)]" />
-                <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Settings & Privacy</CardTitle>
+                <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Settings & Privacy</CardTitle>
               </div>
               <button
                 type="button"
@@ -639,11 +639,11 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
       </div>
 
       <Card className="overflow-hidden">
-        <CardHeader className="p-5 pb-3">
+        <CardHeader omitDefaults="p-6" className="p-5 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Gavel className="h-4 w-4 text-[var(--admin-muted)]" />
-              <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Auction Activity</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Auction Activity</CardTitle>
               <span className="rounded-full bg-[var(--admin-elevated)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--admin-muted)]">
                 {user.auctionData.onSale.length} on sale
               </span>
@@ -657,13 +657,13 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                 setAuctionEarningsInput(String(user.auctionData.earnings));
                 setShowAuctionModal(true);
               }}
-              className="h-7 rounded-md border-0 bg-[var(--admin-elevated)] px-2.5 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 cursor-pointer shadow-none"
+              omitDefaults="text-sm h-9 px-3" className="h-7 rounded-md border-0 bg-[var(--admin-elevated)] px-2.5 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 cursor-pointer shadow-none"
             >
               Adjust
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-5 pt-0 space-y-4">
+        <CardContent omitDefaults="p-6" className="p-5 pt-0 space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-lg bg-[var(--admin-elevated)] px-3 pt-2 pb-2.5">
               <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">Total Listed</span>
@@ -775,10 +775,10 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
       </Card>
 
       <Card>
-        <CardHeader className="p-5 pb-3">
+        <CardHeader omitDefaults="p-6" className="p-5 pb-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Nation Inventory</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Nation Inventory</CardTitle>
               <span className="rounded-full bg-[var(--admin-elevated)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--admin-muted)]">
                 {user.collectiblesData.length}
               </span>
@@ -790,16 +790,16 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                 <Input
                   id={filterId}
                   value={catchFilter}
-                  onChange={(e) => setCatchFilter(e.target.value)}
+                  onChange={(e) => setCatchFilter(e.currentTarget.value)}
                   placeholder="Filter catches..."
-                  className={cn('h-8 pl-8 text-xs', admin.input)}
+                  omitDefaults="h-10 text-sm" className={cn('h-8 pl-8 text-xs', admin.input)}
                 />
               </div>
 
               <Button
                 size="sm"
                 onClick={() => setShowGiveModal(true)}
-                className="h-8 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3.5 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
+                omitDefaults="rounded-md text-sm h-9 rounded-md px-3" className="h-8 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3.5 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Give Nation</span>
@@ -808,7 +808,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="p-0 rounded-xl bg-[var(--admin-card)] overflow-hidden">
+        <CardContent omitDefaults="p-6 pt-0" className="p-0 rounded-xl bg-[var(--admin-card)] overflow-hidden">
           <div className="overflow-x-auto w-full">
             <table className="w-full min-w-[560px]">
               <thead>
@@ -869,7 +869,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => setCatchToRemove(entry)}
-                            className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-400 cursor-pointer"
+                            omitDefaults="text-sm h-9 px-3" className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-400 cursor-pointer"
                             title="Remove nation catch"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -981,7 +981,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             <input name="givesearchquery"
                               type="text"
                               value={giveSearchQuery}
-                              onChange={(e) => setGiveSearchQuery(e.target.value)}
+                              onChange={(e) => setGiveSearchQuery(e.currentTarget.value)}
                               placeholder="Search by name, ID, or rarity..."
                               className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] pl-9 pr-8 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                             />
@@ -1047,7 +1047,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           <label className="text-xs font-medium text-[var(--admin-fg)]">Or Select From Dropdown</label>
                           <select name="givenationid"
                             value={giveNationId}
-                            onChange={(e) => setGiveNationId(e.target.value)}
+                            onChange={(e) => setGiveNationId(e.currentTarget.value)}
                             className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] focus:outline-none border-0 shadow-none cursor-pointer"
                           >
                             <option value="">Select a nation...</option>
@@ -1098,9 +1098,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         <label className="text-xs font-medium text-[var(--admin-fg)]">Nation (Catalog ID)</label>
                         <Input
                           value={giveNationId}
-                          onChange={(e) => setGiveNationId(e.target.value)}
+                          onChange={(e) => setGiveNationId(e.currentTarget.value)}
                           placeholder="e.g. US, JP, DE..."
-                          className={cn('h-9 text-xs border-0 shadow-none bg-[var(--admin-elevated)]', admin.input)}
+                          omitDefaults="h-10 text-sm" className={cn('h-9 text-xs border-0 shadow-none bg-[var(--admin-elevated)]', admin.input)}
                         />
                       </div>
                     )}
@@ -1116,7 +1116,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         max="25"
                         step="1"
                         value={giveCount}
-                        onChange={(e) => setGiveCount(Number(e.target.value))}
+                        onChange={(e) => setGiveCount(Number(e.currentTarget.value))}
                         className="w-full accent-[var(--admin-accent)] cursor-pointer"
                       />
                     </div>
@@ -1130,7 +1130,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           setShowGiveModal(false);
                           setGiveSearchQuery('');
                         }}
-                        className="h-8 text-xs border-0 shadow-none"
+                        omitDefaults="text-sm h-9" className="h-8 text-xs border-0 shadow-none"
                       >
                         Cancel
                       </Button>
@@ -1138,7 +1138,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         type="submit"
                         size="sm"
                         disabled={isGiving || !giveNationId}
-                        className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 border-0 shadow-none"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 border-0 shadow-none"
                       >
                         {isGiving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                         Grant Nation
@@ -1187,9 +1187,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         max="999999999999"
                         step="1"
                         value={auctionTotalInput}
-                        onChange={(e) => setAuctionTotalInput(e.target.value)}
+                        onChange={(e) => setAuctionTotalInput(e.currentTarget.value)}
                         placeholder="0"
-                        className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1201,9 +1201,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         max="999999999999"
                         step="1"
                         value={auctionSoldInput}
-                        onChange={(e) => setAuctionSoldInput(e.target.value)}
+                        onChange={(e) => setAuctionSoldInput(e.currentTarget.value)}
                         placeholder="0"
-                        className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1215,9 +1215,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         max="999999999999"
                         step="1"
                         value={auctionEarningsInput}
-                        onChange={(e) => setAuctionEarningsInput(e.target.value)}
+                        onChange={(e) => setAuctionEarningsInput(e.currentTarget.value)}
                         placeholder="0"
-                        className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1227,7 +1227,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowAuctionModal(false)}
-                        className="h-8 text-xs cursor-pointer"
+                        omitDefaults="text-sm h-9" className="h-8 text-xs cursor-pointer"
                       >
                         Cancel
                       </Button>
@@ -1235,7 +1235,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         type="submit"
                         size="sm"
                         disabled={isUpdatingAuction}
-                        className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
                       >
                         {isUpdatingAuction ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                         Save Stats

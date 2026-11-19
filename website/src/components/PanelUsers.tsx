@@ -1,17 +1,17 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PanelUsersSkeleton } from '@/components/SectionSkeleton';
 import { TablePagination } from '@/components/TablePagination';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
 import { ArrowLeft, ArrowRight, Check, FolderGit2, Plus, Search, StarPlus, Trash2, UserPlus, Users } from '@/components/icons';
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { createPanelGroup, createPanelUser, deletePanelGroup, deletePanelUser, fetchPanelGroups, fetchPanelUsers, transferPanelOwnership, updatePanelGroup, updatePanelUser, type PanelGroup, type PanelUser } from '@/lib/auth';
 import { useMotionPref } from '@/hooks/useReducedMotion';
-import { listItem, springSnappy, staggerContainer } from '@/lib/motion';
+import { listItem, quickTransition, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 const availablePermissions: Array<{ key: string; label: string; description: string }> = [
@@ -406,7 +406,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   setTargetOwnerUser(editingUser);
                   setOwnerModalOpen(true);
                 }}
-                className="text-xs text-amber-400 hover:bg-amber-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm" className="text-xs text-amber-400 hover:bg-amber-500/10 flex items-center gap-1.5"
               >
                 <StarPlus className="h-4 w-4" />
                 Transfer Ownership
@@ -418,7 +418,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 type="button"
                 variant="ghost"
                 onClick={() => handleDeleteUser(editingUser)}
-                className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -430,7 +430,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
+              omitDefaults="inline-flex text-sm" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Users
@@ -440,7 +440,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
 
         <form id="user-edit-form" onSubmit={handleSaveUser} className="space-y-6">
           <Card className="bg-[var(--admin-card)]">
-            <CardContent className="p-5 space-y-4">
+            <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-4">
               <h3 className="text-sm font-semibold text-[var(--admin-fg)]">Account Credentials</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -453,7 +453,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     type="text"
                     value={userUsername}
                     onChange={(e) => {
-                      setUserUsername(e.target.value);
+                      setUserUsername(e.currentTarget.value);
                       setIsUserFormDirty(true);
                     }}
                     className="bg-[var(--admin-elevated)] text-[var(--admin-fg)]"
@@ -469,7 +469,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     type="text"
                     value={userDisplayName}
                     onChange={(e) => {
-                      setUserDisplayName(e.target.value);
+                      setUserDisplayName(e.currentTarget.value);
                       setIsUserFormDirty(true);
                     }}
                     className="bg-[var(--admin-elevated)] text-[var(--admin-fg)]"
@@ -489,7 +489,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   minLength={4}
                   value={userPassword}
                   onChange={(e) => {
-                    setUserPassword(e.target.value);
+                    setUserPassword(e.currentTarget.value);
                     setIsUserFormDirty(true);
                   }}
                   className="bg-[var(--admin-elevated)] text-[var(--admin-fg)]"
@@ -500,7 +500,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           </Card>
 
           <Card className="bg-[var(--admin-card)]">
-            <CardContent className="p-5 space-y-4">
+            <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-4">
               <h3 className="text-sm font-semibold text-[var(--admin-fg)]">Role & Division</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -511,7 +511,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   <select name="usergroupid"
                     value={userGroupId ?? ''}
                     onChange={(e) => {
-                      setUserGroupId(e.target.value ? Number(e.target.value) : null);
+                      setUserGroupId(e.currentTarget.value ? Number(e.currentTarget.value) : null);
                       setIsUserFormDirty(true);
                     }}
                     className="w-full h-9 rounded-md bg-[var(--admin-elevated)] text-[var(--admin-fg)] px-3 text-xs focus:outline-none"
@@ -532,7 +532,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   <select name="userrole"
                     value={userRole}
                     onChange={(e) => {
-                      setUserRole(e.target.value as 'owner' | 'admin' | 'member');
+                      setUserRole(e.currentTarget.value as 'owner' | 'admin' | 'member');
                       setIsUserFormDirty(true);
                     }}
                     disabled={editingUser?.role === 'owner' || (userRole === 'owner' && !isOwner)}
@@ -548,7 +548,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           </Card>
 
           <Card className="bg-[var(--admin-card)]">
-            <CardContent className="p-5 space-y-4">
+            <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--admin-fg)]">Granular System Permissions</h3>
                 <span className="text-xs text-[var(--admin-muted)]">
@@ -621,7 +621,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 type="button"
                 variant="ghost"
                 onClick={() => handleDeleteGroup(editingGroup)}
-                className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete Group
@@ -633,7 +633,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
+              omitDefaults="inline-flex text-sm" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Groups
@@ -643,7 +643,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
 
         <form id="group-edit-form" onSubmit={handleSaveGroup} className="space-y-6">
           <Card className="bg-[var(--admin-card)]">
-            <CardContent className="p-5 space-y-4">
+            <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-4">
               <h3 className="text-sm font-semibold text-[var(--admin-fg)]">Group Information</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -656,7 +656,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     type="text"
                     value={groupName}
                     onChange={(e) => {
-                      setGroupName(e.target.value);
+                      setGroupName(e.currentTarget.value);
                       setIsGroupFormDirty(true);
                     }}
                     className="bg-[var(--admin-elevated)] text-[var(--admin-fg)]"
@@ -672,7 +672,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     type="text"
                     value={groupDesc}
                     onChange={(e) => {
-                      setGroupDesc(e.target.value);
+                      setGroupDesc(e.currentTarget.value);
                       setIsGroupFormDirty(true);
                     }}
                     className="bg-[var(--admin-elevated)] text-[var(--admin-fg)]"
@@ -709,7 +709,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           </Card>
 
           <Card className="bg-[var(--admin-card)]">
-            <CardContent className="p-5 space-y-4">
+            <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--admin-fg)]">Default Division Permissions</h3>
                 <span className="text-xs text-[var(--admin-muted)]">
@@ -785,7 +785,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           {activeTab === 'users' ? (
             <Button
               onClick={openAddUser}
-              className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
+              omitDefaults="inline-flex text-sm transition-colors" className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
             >
               <UserPlus className="h-4 w-4" />
               Add User
@@ -793,7 +793,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           ) : (
             <Button
               onClick={openAddGroup}
-              className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
+              omitDefaults="inline-flex text-sm transition-colors" className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
             >
               <Plus className="h-4 w-4" />
               Create Group
@@ -811,10 +811,10 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               placeholder="Search staff accounts..."
               value={searchQuery}
               onChange={(e) => {
-                setSearchQuery(e.target.value);
+                setSearchQuery(e.currentTarget.value);
                 setCurrentPage(1);
               }}
-              className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
+              omitDefaults="h-10 rounded-md text-sm" className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
             />
           </div>
         ) : (
@@ -824,8 +824,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               type="text"
               placeholder="Search groups & divisions..."
               value={groupSearchQuery}
-              onChange={(e) => setGroupSearchQuery(e.target.value)}
-              className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
+              onChange={(e) => setGroupSearchQuery(e.currentTarget.value)}
+              omitDefaults="h-10 rounded-md text-sm" className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
             />
           </div>
         )}
@@ -843,9 +843,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           >
             {activeTab === 'users' && (
               <m.span
-                layoutId="panel-tab-pill"
                 className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                transition={springSnappy}
+                transition={quickTransition}
               />
             )}
             <span className="relative z-10 flex items-center gap-2">
@@ -866,9 +865,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           >
             {activeTab === 'groups' && (
               <m.span
-                layoutId="panel-tab-pill"
                 className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                transition={springSnappy}
+                transition={quickTransition}
               />
             )}
             <span className="relative z-10 flex items-center gap-2">
@@ -880,8 +878,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
       </div>
 
       {activeTab === 'users' && (
-        <Card className="bg-[var(--admin-card)] overflow-hidden rounded-xl">
-          <CardContent className="p-0">
+        <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] overflow-hidden rounded-xl">
+          <CardContent omitDefaults="p-6 pt-0" className="p-0">
             <div className="overflow-x-auto w-full">
               <table className="w-full min-w-[650px]">
                 <thead>
@@ -963,9 +961,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
             filteredGroups.map((g) => (
               <Card
                 key={g.id}
-                className="bg-[var(--admin-card)] rounded-xl border-0 shadow-none p-0 gap-0 overflow-hidden flex flex-col justify-between"
+                omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-xl border-0 shadow-none p-0 gap-0 overflow-hidden flex flex-col justify-between"
               >
-                <CardContent className="p-5 space-y-3 flex-1 flex flex-col justify-between">
+                <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -1010,13 +1008,13 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   </div>
                 </CardContent>
 
-                <CardFooter className="flex items-center justify-between border-t border-[var(--admin-border)] px-5 py-2.5">
+                <CardFooter omitDefaults="pt-0" className="flex items-center justify-between border-t border-[var(--admin-border)] px-5 py-2.5">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => openEditGroup(g)}
-                    className="h-8 gap-1.5 px-2 text-xs font-medium text-[var(--admin-accent)] hover:text-[var(--admin-accent)] hover:bg-[var(--admin-elevated)] border-0 shadow-none"
+                    omitDefaults="text-sm h-9 px-3" className="h-8 gap-1.5 px-2 text-xs font-medium text-[var(--admin-accent)] hover:text-[var(--admin-accent)] hover:bg-[var(--admin-elevated)] border-0 shadow-none"
                   >
                     <span>Edit Group</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -1026,7 +1024,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteGroup(g)}
-                    className="h-8 gap-1.5 px-2 text-xs text-rose-400 hover:bg-rose-500/10 hover:text-red-400 border-0 shadow-none"
+                    omitDefaults="text-sm h-9 px-3" className="h-8 gap-1.5 px-2 text-xs text-rose-400 hover:bg-rose-500/10 hover:text-red-400 border-0 shadow-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span>Delete</span>
@@ -1072,7 +1070,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       type="button"
                       variant="ghost"
                       onClick={() => setOwnerModalOpen(false)}
-                      className="text-xs text-[var(--admin-muted)]"
+                      omitDefaults="text-sm" className="text-xs text-[var(--admin-muted)]"
                     >
                       Cancel
                     </Button>
@@ -1080,7 +1078,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       type="button"
                       disabled={submitting}
                       onClick={handleTransferOwnership}
-                      className="bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
+                      omitDefaults="text-sm font-medium" className="bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
                     >
                       {submitting ? 'Transferring...' : 'Confirm Ownership Transfer'}
                     </Button>
@@ -1205,7 +1203,7 @@ function UserRowContent({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            className="text-xs text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]"
+            omitDefaults="text-sm" className="text-xs text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]"
           >
             Edit
           </Button>
@@ -1215,7 +1213,7 @@ function UserRowContent({
               variant="ghost"
               size="sm"
               onClick={onTransfer}
-              className="text-xs text-amber-400 hover:bg-amber-500/10"
+              omitDefaults="text-sm" className="text-xs text-amber-400 hover:bg-amber-500/10"
               title="Transfer Ownership"
             >
               <StarPlus className="h-3.5 w-3.5" />
@@ -1227,7 +1225,7 @@ function UserRowContent({
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              className="text-xs text-rose-400 hover:bg-rose-500/10"
+              omitDefaults="text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>

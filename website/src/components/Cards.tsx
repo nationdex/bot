@@ -1,7 +1,7 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from '@/components/icons';
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { deleteCardBackground, fetchCardBackgrounds, fetchConfig, fetchSpecialsCards, getCache, getCardImageUrl, replaceCardBackground, setCache, type RegimeCardItem, type SpecialCardItem } from '@/lib/api';
 import { type CardCategoryId, cardCategories } from '@/lib/bot';
 import { useMotionPref } from '@/hooks/useReducedMotion';
-import { springSnappy } from '@/lib/motion';
+import { quickTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }) {
@@ -123,7 +123,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
   };
 
   const handleReplaceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.currentTarget.files?.[0];
     if (!file) return;
     setReplaceFile(file);
     setReplaceError('');
@@ -307,7 +307,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
 
   return (
     <div className="w-full space-y-4 sm:space-y-6">
-      <CardContent className="space-y-4 p-5">
+      <CardContent omitDefaults="p-6 pt-0" className="space-y-4 p-5">
         <div className="relative z-20 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-[var(--admin-elevated)] w-fit flex-wrap">
             {cardCategories.map((item) => (
@@ -322,9 +322,8 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
               >
                 {category === item.id && (
                   <m.span
-                    layoutId="cards-category-pill"
                     className="absolute inset-0 rounded-full bg-[var(--admin-accent)] z-0"
-                    transition={springSnappy}
+                    transition={quickTransition}
                   />
                 )}
                 <span className="relative z-10">{item.label}</span>
@@ -339,8 +338,8 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
               />
               <Input
                 value={localQuery}
-                onChange={(e) => setLocalQuery(e.target.value)}
-                className="h-9 rounded-full bg-[var(--admin-elevated)] pl-9 pr-4 text-xs text-[var(--admin-fg)] border-0 focus-visible:ring-0"
+                onChange={(e) => setLocalQuery(e.currentTarget.value)}
+                omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-full bg-[var(--admin-elevated)] pl-9 pr-4 text-xs text-[var(--admin-fg)] border-0 focus-visible:ring-0"
                 placeholder="Search cards..."
               />
             </div>
@@ -415,7 +414,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                   initial={{ scale: 0.95, opacity: 0, y: 8 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.95, opacity: 0, y: 8 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                  transition={{ duration: 0.22 }}
                   className="relative z-10 w-full max-w-sm max-h-[88vh] rounded-3xl bg-[var(--admin-card)] text-[var(--admin-fg)] p-5 flex flex-col justify-between"
                 >
                   <div className="flex items-center justify-between pb-1 shrink-0">
@@ -530,7 +529,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                   initial={{ scale: 0.95, opacity: 0, y: 8 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.95, opacity: 0, y: 8 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                  transition={{ duration: 0.22 }}
                   className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-xl bg-[var(--admin-card)] text-[var(--admin-fg)] p-6 space-y-4"
                 >
                   <div className="flex items-center justify-between pb-1">
@@ -585,7 +584,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                         size="sm"
                         disabled={isReplacing}
                         onClick={() => setReplaceTarget(null)}
-                        className="h-8 text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
+                        omitDefaults="text-sm h-9" className="h-8 text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                       >
                         Cancel
                       </Button>
@@ -593,7 +592,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                         type="submit"
                         size="sm"
                         disabled={isReplacing || !replacePreview}
-                        className="h-8 rounded-lg gap-1.5 text-xs bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg gap-1.5 text-xs bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
                       >
                         {isReplacing && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         Replace Background

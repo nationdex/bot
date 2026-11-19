@@ -1,5 +1,5 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { StrictMode } from 'preact/compat';
+import { createRoot } from 'preact/compat/client';
 import { AnimationPrefsProvider } from '@/hooks/useAnimationPrefs';
 import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
 import { storage } from '@/lib/storage';

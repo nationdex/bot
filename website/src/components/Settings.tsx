@@ -1,6 +1,6 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/components/icons';
-import { useState } from 'react';
+import { useState } from 'preact/compat';
 import InstallApp from '@/components/InstallApp';
 import ThemeSettings from '@/components/ThemeSettings';
 import { Card, CardContent } from '@/components/ui/card';

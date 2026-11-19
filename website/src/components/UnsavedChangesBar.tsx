@@ -1,6 +1,6 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Check, RefreshCw } from '@/components/icons';
-import { createPortal } from 'react-dom';
+import { createPortal } from 'preact/compat';
 
 interface UnsavedChangesBarProps {
   show: boolean;
@@ -28,7 +28,7 @@ export function UnsavedChangesBar({
           initial={{ y: 80, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 80, opacity: 0, scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+          transition={{ duration: 0.22 }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[990] w-[min(calc(100vw-2rem),36rem)] rounded-xl bg-[var(--admin-elevated)]/95 text-[var(--admin-fg)] pl-4 pr-1 py-1 backdrop-blur-xl flex items-center justify-between gap-3 shadow-2xl"
         >
           <div className="flex items-center gap-2 min-w-0">

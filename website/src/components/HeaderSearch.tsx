@@ -1,7 +1,7 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowRight, Search, X } from '@/components/icons';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { Input } from '@/components/ui/input';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { type SearchResult, searchAdmin, searchTypeLabels } from '@/lib/search';
@@ -56,7 +56,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
     }
   }, [open]);
 
-  const handleInputKeyDown = (event: React.KeyboardEvent) => {
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       setActiveIndex((i) => Math.min(i + 1, results.length - 1));
@@ -119,12 +119,12 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                       ref={inputRef}
                       value={query}
                       onChange={(e) => {
-                        setQuery(e.target.value);
+                        setQuery(e.currentTarget.value);
                         setActiveIndex(0);
                       }}
                       onKeyDown={handleInputKeyDown}
                       placeholder="Search whole panel (pages, settings, nations, users...)"
-                      className="h-9 flex-1 bg-transparent px-0 text-sm text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]"
+                      omitDefaults="h-10 px-3" className="h-9 flex-1 bg-transparent px-0 text-sm text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]"
                     />
                     <button
                       type="button"

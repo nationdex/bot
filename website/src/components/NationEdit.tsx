@@ -1,14 +1,14 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ArrowLeft, Check, Copy, Flame, Globe, Heart, ImageIcon, Loader2, Shield, Swords, Trash2, Upload, X } from '@/components/icons';
-import { useEffect, useState, useId } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState, useId } from 'preact/compat';
+import { createPortal } from 'preact/compat';
 import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { createNation, deleteNation, fetchNationDetail, updateNation, updateNationCard, uploadNationArt, type NationDetailData } from '@/lib/api';
 import { bot, formatRarity, rarityBadgeClass, type RarityClass } from '@/lib/bot';
-import { springSnappy } from '@/lib/motion';
+import { quickTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 interface NationEditProps {
@@ -331,7 +331,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, kind: 'spawn' | 'window') => {
-    const file = e.target.files?.[0];
+    const file = e.currentTarget.files?.[0];
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
@@ -423,7 +423,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
           variant="ghost"
           size="sm"
           onClick={onBack}
-          className="h-9 w-fit gap-1.5 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 border-0 shadow-none"
+          omitDefaults="rounded-md text-sm rounded-md" className="h-9 w-fit gap-1.5 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 border-0 shadow-none"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Nations</span>
@@ -435,7 +435,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
             variant="ghost"
             size="sm"
             onClick={() => setShowDeleteModal(true)}
-            className="h-9 gap-1.5 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400 border-0 shadow-none"
+            omitDefaults="rounded-md text-sm rounded-md" className="h-9 gap-1.5 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400 border-0 shadow-none"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span>Delete Nation</span>
@@ -565,9 +565,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
         >
           {activeTab === 'identity' && (
             <m.span
-              layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
-              transition={springSnappy}
+              transition={quickTransition}
             />
           )}
           <span className="relative z-10 flex min-w-0 flex-row items-center justify-center gap-1.5 text-center leading-tight">
@@ -588,9 +587,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
         >
           {activeTab === 'ability' && (
             <m.span
-              layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
-              transition={springSnappy}
+              transition={quickTransition}
             />
           )}
           <span className="relative z-10 flex min-w-0 flex-row items-center justify-center gap-1.5 text-center leading-tight">
@@ -611,9 +609,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
         >
           {activeTab === 'visuals' && (
             <m.span
-              layoutId="nation-edit-tab-pill"
               className="absolute inset-0 rounded-full bg-[var(--admin-accent)]"
-              transition={springSnappy}
+              transition={quickTransition}
             />
           )}
           <span className="relative z-10 flex min-w-0 flex-row items-center justify-center gap-1.5 text-center leading-tight">
@@ -635,10 +632,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     </label>
                     <Input
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setName(e.currentTarget.value)}
                       maxLength={100}
                       placeholder="e.g. United States, Japan, Germany..."
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                       required
                     />
                   </div>
@@ -648,10 +645,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       <label className="text-xs font-medium text-[var(--admin-fg)]">Short Name</label>
                       <Input
                         value={shortName}
-                        onChange={(e) => setShortName(e.target.value)}
+                        onChange={(e) => setShortName(e.currentTarget.value)}
                         maxLength={100}
                         placeholder="e.g. USA, JPN..."
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                       />
                     </div>
 
@@ -659,7 +656,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       <label className="text-xs font-medium text-[var(--admin-fg)]">Rarity Class</label>
                       <select name="nationclass"
                         value={nationClass}
-                        onChange={(e) => setNationClass(e.target.value)}
+                        onChange={(e) => setNationClass(e.currentTarget.value)}
                         className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] focus:outline-none border-0 shadow-none cursor-pointer capitalize"
                       >
                         {bot.rarityClasses.map((rc) => (
@@ -688,10 +685,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       ) : null}
                       <Input
                         value={emojiId}
-                        onChange={(e) => setEmojiId(e.target.value)}
+                        onChange={(e) => setEmojiId(e.currentTarget.value)}
                         maxLength={64}
                         placeholder="e.g. 110293847564738291"
-                        className="h-9 flex-1 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 flex-1 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                         required
                       />
                     </div>
@@ -701,10 +698,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     <label className="text-xs font-medium text-[var(--admin-fg)]">Credits / Artist</label>
                     <Input
                       value={credits}
-                      onChange={(e) => setCredits(e.target.value)}
+                      onChange={(e) => setCredits(e.currentTarget.value)}
                       maxLength={120}
                       placeholder="e.g. Community, Artist Name..."
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                   </div>
                 </CardContent>
@@ -724,8 +721,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         type="number"
                         min="0"
                         value={attack}
-                        onChange={(e) => setAttack(e.target.value)}
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        onChange={(e) => setAttack(e.currentTarget.value)}
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                         required
                       />
                     </div>
@@ -739,8 +736,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         type="number"
                         min="0"
                         value={health}
-                        onChange={(e) => setHealth(e.target.value)}
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        onChange={(e) => setHealth(e.currentTarget.value)}
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                         required
                       />
                     </div>
@@ -754,9 +751,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         step="any"
                         min="0.01"
                         value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
+                        onChange={(e) => setWeight(e.currentTarget.value)}
                         placeholder="e.g. 10 or 0.8"
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                         required
                       />
                     </div>
@@ -767,8 +764,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         type="number"
                         min="0"
                         value={globalCaught}
-                        onChange={(e) => setGlobalCaught(e.target.value)}
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        onChange={(e) => setGlobalCaught(e.currentTarget.value)}
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                       />
                     </div>
                   </div>
@@ -780,8 +777,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         type="number"
                         min="0"
                         value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        onChange={(e) => setPrice(e.currentTarget.value)}
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                       />
                     </div>
 
@@ -791,8 +788,8 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         type="number"
                         min="0"
                         value={sellPrice}
-                        onChange={(e) => setSellPrice(e.target.value)}
-                        className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
+                        onChange={(e) => setSellPrice(e.currentTarget.value)}
+                        omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] tabular-nums focus:outline-none border-0 shadow-none"
                       />
                     </div>
                   </div>
@@ -811,10 +808,10 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     <label className="text-xs font-medium text-[var(--admin-fg)]">Capacity / Ability Name</label>
                     <Input
                       value={capacityName}
-                      onChange={(e) => setCapacityName(e.target.value)}
+                      onChange={(e) => setCapacityName(e.currentTarget.value)}
                       maxLength={64}
                       placeholder="e.g. Iron Bastion, Blitzkrieg..."
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                   </div>
 
@@ -827,7 +824,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     </div>
                     <textarea name="capacitydescription"
                       value={capacityDescription}
-                      onChange={(e) => setCapacityDescription(e.target.value)}
+                      onChange={(e) => setCapacityDescription(e.currentTarget.value)}
                       maxLength={600}
                       rows={4}
                       placeholder="Explain what the nation's capacity does in combat..."
@@ -847,9 +844,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     </label>
                     <Input
                       value={catchNamesInput}
-                      onChange={(e) => setCatchNamesInput(e.target.value)}
+                      onChange={(e) => setCatchNamesInput(e.currentTarget.value)}
                       placeholder="e.g. united states, usa, america"
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                     {catchPills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
@@ -869,9 +866,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     <label className="text-xs font-medium text-[var(--admin-fg)]">Translations (Comma Separated)</label>
                     <Input
                       value={translationsInput}
-                      onChange={(e) => setTranslationsInput(e.target.value)}
+                      onChange={(e) => setTranslationsInput(e.currentTarget.value)}
                       placeholder="e.g. etats-unis, estados unidos"
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                     {translationPills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
@@ -900,7 +897,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ImageIcon className="h-4 w-4 text-[var(--admin-muted)]" />
-                      <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Card Background & Icon</CardTitle>
+                      <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Card Background & Icon</CardTitle>
                     </div>
                     {!isNew && (
                       <Button
@@ -908,7 +905,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                         variant="ghost"
                         size="sm"
                         onClick={handleUpdateCardOnly}
-                        className="h-7 text-[11px] bg-[var(--admin-elevated)] text-[var(--admin-fg)] border-0 shadow-none"
+                        omitDefaults="text-sm h-9" className="h-7 text-[11px] bg-[var(--admin-elevated)] text-[var(--admin-fg)] border-0 shadow-none"
                       >
                         Save Params
                       </Button>
@@ -920,9 +917,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     <label className="text-xs font-medium text-[var(--admin-fg)]">Regime (Background Name)</label>
                     <Input
                       value={regime}
-                      onChange={(e) => setRegime(e.target.value)}
+                      onChange={(e) => setRegime(e.currentTarget.value)}
                       placeholder="e.g. democracy, monarchy (in assets/cards)"
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                   </div>
 
@@ -930,9 +927,9 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                     <label className="text-xs font-medium text-[var(--admin-fg)]">Economy Icon Filename</label>
                     <Input
                       value={economy}
-                      onChange={(e) => setEconomy(e.target.value)}
+                      onChange={(e) => setEconomy(e.currentTarget.value)}
                       placeholder="e.g. capitalism.png (in assets/icons)"
-                      className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
+                      omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] focus:outline-none border-0 shadow-none"
                     />
                   </div>
                 </CardContent>
@@ -944,7 +941,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Upload className="h-4 w-4 text-[var(--admin-muted)]" />
-                    <CardTitle className="text-sm font-semibold text-[var(--admin-fg)]">Artwork Assets</CardTitle>
+                    <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Artwork Assets</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -970,7 +967,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                           size="sm"
                           disabled={uploadingKind === 'spawn' || saving}
                           onClick={() => handleUploadArt('spawn')}
-                          className="h-8 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] border-0 shadow-none"
+                          omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] border-0 shadow-none"
                         >
                           {uploadingKind === 'spawn' || (saving && isNew) ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -1005,7 +1002,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                           size="sm"
                           disabled={uploadingKind === 'window' || saving}
                           onClick={() => handleUploadArt('window')}
-                          className="h-8 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] border-0 shadow-none"
+                          omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] border-0 shadow-none"
                         >
                           {uploadingKind === 'window' || (saving && isNew) ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -1072,7 +1069,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       type="checkbox"
                       id="cascade-checkbox"
                       checked={deleteCascade}
-                      onChange={(e) => setDeleteCascade(e.target.checked)}
+                      onChange={(e) => setDeleteCascade(e.currentTarget.checked)}
                       className="h-4 w-4 rounded accent-[var(--admin-accent)] cursor-pointer"
                     />
                     <label htmlFor="cascade-checkbox" className="text-xs text-[var(--admin-fg)] cursor-pointer">
@@ -1086,7 +1083,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowDeleteModal(false)}
-                      className="h-8 text-xs border-0 shadow-none"
+                      omitDefaults="text-sm h-9" className="h-8 text-xs border-0 shadow-none"
                     >
                       Cancel
                     </Button>
@@ -1095,7 +1092,7 @@ export default function NationEdit({ nationId, isNew = false, onBack }: NationEd
                       size="sm"
                       disabled={deleting}
                       onClick={handleDeleteConfirm}
-                      className="h-8 rounded-lg bg-red-500 text-xs font-medium text-white hover:bg-red-600 border-0 shadow-none"
+                      omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg bg-red-500 text-xs font-medium text-white hover:bg-red-600 border-0 shadow-none"
                     >
                       {deleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                       Delete Collectible

@@ -1,6 +1,6 @@
-import { m } from 'framer-motion';
+import { m } from '@/lib/panel-motion';
 import { Plus, Search } from '@/components/icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/compat';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import NationEdit from '@/components/NationEdit';
 import { Button } from '@/components/ui/button';
@@ -132,15 +132,15 @@ export default function Nations({
               />
               <Input
                 value={localQuery}
-                onChange={(e) => setLocalQuery(e.target.value)}
-                className={cn('h-9 w-full pl-9 pr-3', admin.input)}
+                onChange={(e) => setLocalQuery(e.currentTarget.value)}
+                omitDefaults="h-10" className={cn('h-9 w-full pl-9 pr-3', admin.input)}
                 placeholder="Search by name or ID..."
               />
             </div>
 
             <Select value={classFilter} onValueChange={setClassFilter}>
               <SelectTrigger
-                className={cn(
+                omitDefaults="h-10 text-sm" className={cn(
                   'min-h-9 h-9 w-full shrink-0 cursor-pointer touch-manipulation text-xs md:w-36',
                   admin.input
                 )}
@@ -161,7 +161,7 @@ export default function Nations({
               type="button"
               size="sm"
               onClick={() => setIsCreatingNew(true)}
-              className="h-9 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
+              omitDefaults="rounded-md text-sm rounded-md" className="h-9 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Nation</span>
@@ -176,10 +176,10 @@ export default function Nations({
                 key={i}
                 className="h-60 sm:h-64 rounded-xl border-2 border-[var(--admin-border)] bg-[var(--admin-card)] p-5 flex flex-col items-center justify-center space-y-3 animate-pulse"
               >
-                <Skeleton className="h-6 w-36 rounded" />
+                <Skeleton omitDefaults="rounded-md" className="h-6 w-36 rounded" />
                 <div className="flex gap-2">
-                  <Skeleton className="h-4 w-16 rounded" />
-                  <Skeleton className="h-4 w-20 rounded" />
+                  <Skeleton omitDefaults="rounded-md" className="h-4 w-16 rounded" />
+                  <Skeleton omitDefaults="rounded-md" className="h-4 w-20 rounded" />
                 </div>
               </div>
             ))}
@@ -244,7 +244,7 @@ export default function Nations({
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedNationId(entry.id)}
-                        className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80"
+                        omitDefaults="text-sm h-9" className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80"
                       >
                         Edit
                       </Button>
@@ -253,7 +253,7 @@ export default function Nations({
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleteItem(entry)}
-                        className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400"
+                        omitDefaults="text-sm h-9" className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400"
                       >
                         Delete
                       </Button>

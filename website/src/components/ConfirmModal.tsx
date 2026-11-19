@@ -1,6 +1,6 @@
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Loader2 } from '@/components/icons';
-import { createPortal } from 'react-dom';
+import { createPortal } from 'preact/compat';
 
 interface ConfirmModalProps {
   open: boolean;
@@ -43,7 +43,7 @@ export function ConfirmModal({
             initial={{ scale: 0.94, opacity: 0, y: 12 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.94, opacity: 0, y: 12 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+            transition={{ duration: 0.22 }}
             className="relative z-10 w-full max-w-sm rounded-2xl bg-[var(--admin-card)] text-[var(--admin-fg)] p-6 shadow-2xl space-y-4"
           >
             <div className="flex items-start gap-4">

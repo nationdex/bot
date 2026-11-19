@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/compat';
 import { Download } from '@/components/icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { admin } from '@/lib/admin-classes';
@@ -41,7 +41,7 @@ export default function InstallApp() {
 
   return (
     <Card className={cn(admin.card, 'overflow-hidden')}>
-      <CardContent className="flex items-center justify-between gap-4 p-5">
+      <CardContent omitDefaults="p-6 pt-0" className="flex items-center justify-between gap-4 p-5">
         <div className="flex min-w-0 items-start gap-3">
           <Download className={cn('mt-0.5 h-4 w-4 shrink-0', admin.muted)} />
           <div className="min-w-0">

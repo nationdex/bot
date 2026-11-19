@@ -1,11 +1,11 @@
-import { AnimatePresence, LazyMotion, MotionConfig, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'preact/compat';
 import HeaderSearch from '@/components/HeaderSearch';
 import Login from '@/components/Login';
 import { SectionSkeleton } from '@/components/SectionSkeleton';
 import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
-import { useIs3DEnabled, useMotionPref, useReducedMotion } from '@/hooks/useReducedMotion';
+import { useIs3DEnabled, useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import { fetchCollectibles, getCache, type CollectibleEntry } from '@/lib/api';
 import { checkSession, isCookieless, logout, type PanelUser } from '@/lib/auth';
@@ -35,7 +35,6 @@ const BotSettingsPage = lazy(() => import('@/components/BotSettings'));
 const PanelUsersPage = lazy(() => import('@/components/PanelUsers'));
 const Settings = lazy(() => import('@/components/Settings'));
 
-const loadMotionFeatures = () => import('@/lib/motion-features').then((mod) => mod.default);
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -71,7 +70,6 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sectionFilterQuery, setSectionFilterQuery] = useState('');
-  const reducedMotion = useReducedMotion();
   const enable3D = useIs3DEnabled();
   const pageTransitions = useMotionPref('pageTransitions');
   const hoverFeedback = useMotionPref('hoverFeedback');
@@ -95,7 +93,7 @@ export default function App() {
     setMobileOpen(false);
   };
 
-  const handleLinkClick = (e: React.MouseEvent, id: string) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLElement>, id: string) => {
     e.preventDefault();
     setCurrentSection(id);
     setSectionFilterQuery('');
@@ -329,8 +327,6 @@ export default function App() {
   );
 
   return (
-    <LazyMotion features={loadMotionFeatures} strict>
-    <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
           <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
@@ -359,7 +355,7 @@ export default function App() {
               <header
                 className={cn(
                   'shrink-0 z-40 border-b backdrop-blur-sm',
-                  admin.panel,
+                  'border-[var(--admin-border)]',
                   'bg-[color-mix(in_srgb,var(--admin-panel)_95%,transparent)]'
                 )}
               >
@@ -446,8 +442,6 @@ export default function App() {
           </div>
         </div>
       </div>
-    </MotionConfig>
-    </LazyMotion>
   );
 }
 

@@ -9,7 +9,8 @@ export default SlashCommand('suggestions.nation', `
     $err[$get[gate];true]
   ]
 
-  $!js[ctx.interaction.deferReply({ flags: 64 })]
+  $ephemeral
+  $defer
   $let[token;u$authorID-$getTimestamp]
   $let[spawn;$suggestionArt[$option[image];$get[token]_spawn]]
   $onlyIf[$get[spawn]!=;

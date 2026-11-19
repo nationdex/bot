@@ -7,15 +7,15 @@ function UsersSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-32 rounded-xl" />
-          <Skeleton className="h-10 w-32 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-32 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-32 rounded-xl" />
         </div>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
-        <CardContent className="p-0">
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
+        <CardContent omitDefaults="p-6 pt-0" className="p-0">
           <div className="p-4 border-b border-[var(--admin-border)] flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-4 w-40" />
@@ -30,7 +30,7 @@ function UsersSkeleton() {
                 <div className="flex items-center gap-4">
                   <Skeleton className="h-4 w-20 hidden md:block" />
                   <Skeleton className="h-4 w-16 hidden sm:block" />
-                  <Skeleton className="h-7 w-16 rounded-lg" />
+                  <Skeleton omitDefaults="rounded-md" className="h-7 w-16 rounded-lg" />
                 </div>
               </div>
             ))}
@@ -45,28 +45,28 @@ function NationsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
         <div className="flex flex-wrap items-center gap-1.5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-9 w-18 rounded-xl" />
+            <Skeleton key={i} omitDefaults="rounded-md" className="h-9 w-18 rounded-xl" />
           ))}
-          <Skeleton className="h-9 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-9 w-28 rounded-xl" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i} className={cn('rounded-2xl p-4 bg-[var(--admin-card)] space-y-3', admin.card)}>
-            <Skeleton className="h-36 w-full rounded-xl" />
+          <Card key={i} omitDefaults="rounded-lg" className={cn('rounded-2xl p-4 bg-[var(--admin-card)] space-y-3', admin.card)}>
+            <Skeleton omitDefaults="rounded-md" className="h-36 w-full rounded-xl" />
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-5 w-28" />
-                <Skeleton className="h-4 w-16 rounded-full" />
+                <Skeleton omitDefaults="rounded-md" className="h-4 w-16 rounded-full" />
               </div>
               <Skeleton className="h-3 w-36 opacity-60" />
               <div className="pt-2 flex items-center justify-between gap-2 border-t border-[var(--admin-border)]">
                 <Skeleton className="h-3 w-20" />
-                <Skeleton className="h-7 w-16 rounded-lg" />
+                <Skeleton omitDefaults="rounded-md" className="h-7 w-16 rounded-lg" />
               </div>
             </div>
           </Card>
@@ -80,12 +80,12 @@ function GuildsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
-        <Skeleton className="h-10 w-32 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-32 rounded-xl" />
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
-        <CardContent className="p-0">
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
+        <CardContent omitDefaults="p-6 pt-0" className="p-0">
           <div className="p-4 border-b border-[var(--admin-border)] flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-4 w-40" />
@@ -98,8 +98,8 @@ function GuildsSkeleton() {
                   <Skeleton className="h-3 w-32 opacity-60" />
                 </div>
                 <div className="flex items-center gap-3">
-                  <Skeleton className="h-5 w-20 rounded-full hidden sm:block" />
-                  <Skeleton className="h-7 w-16 rounded-lg" />
+                  <Skeleton omitDefaults="rounded-md" className="h-5 w-20 rounded-full hidden sm:block" />
+                  <Skeleton omitDefaults="rounded-md" className="h-7 w-16 rounded-lg" />
                 </div>
               </div>
             ))}
@@ -115,10 +115,10 @@ function CardsSkeleton() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-28 rounded-xl" />
-          <Skeleton className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
         </div>
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
@@ -134,8 +134,8 @@ function CardsSkeleton() {
               <Skeleton className="h-6 w-40" />
               <Skeleton className="h-3.5 w-24 opacity-60" />
               <div className="mt-3.5 pt-2.5 border-t border-[var(--admin-border)] flex items-center justify-end gap-1.5">
-                <Skeleton className="h-7 w-20 rounded-lg" />
-                <Skeleton className="h-7 w-16 rounded-lg" />
+                <Skeleton omitDefaults="rounded-md" className="h-7 w-20 rounded-lg" />
+                <Skeleton omitDefaults="rounded-md" className="h-7 w-16 rounded-lg" />
               </div>
             </div>
           </div>
@@ -149,17 +149,17 @@ export function BotSettingsSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-28 rounded-xl" />
-          <Skeleton className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
         </div>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] rounded-2xl p-6', admin.card)}>
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] rounded-2xl p-6', admin.card)}>
         <div className="flex flex-wrap gap-2 pb-5 border-b border-[var(--admin-border)]">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-24 rounded-lg" />
+            <Skeleton key={i} omitDefaults="rounded-md" className="h-8 w-24 rounded-lg" />
           ))}
         </div>
 
@@ -170,7 +170,7 @@ export function BotSettingsSkeleton() {
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-56 opacity-60" />
               </div>
-              <Skeleton className="h-10 w-full sm:w-64 rounded-xl" />
+              <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-64 rounded-xl" />
             </div>
           ))}
         </div>
@@ -184,26 +184,26 @@ export function PanelUsersSkeleton() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-28 rounded-xl" />
-          <Skeleton className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
         </div>
-        <Skeleton className="h-10 w-36 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-36 rounded-xl" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className={cn('bg-[var(--admin-card)] rounded-xl p-4', admin.card)}>
+          <Card key={i} omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] rounded-xl p-4', admin.card)}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton omitDefaults="rounded-md" className="h-10 w-10 rounded-full" />
                 <div className="space-y-1.5">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-3 w-20 opacity-60" />
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-8 w-16 rounded-lg" />
+                <Skeleton omitDefaults="rounded-md" className="h-5 w-16 rounded-full" />
+                <Skeleton omitDefaults="rounded-md" className="h-8 w-16 rounded-lg" />
               </div>
             </div>
           </Card>
@@ -217,20 +217,20 @@ function SettingsSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 border-b border-[var(--admin-border)] pb-3">
-        <Skeleton className="h-9 w-32 rounded-xl" />
-        <Skeleton className="h-9 w-32 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-9 w-32 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-9 w-32 rounded-xl" />
       </div>
 
       <div className="space-y-4">
         <Skeleton className="h-5 w-40" />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
+            <Skeleton key={i} omitDefaults="rounded-md" className="h-24 rounded-xl" />
           ))}
         </div>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] rounded-2xl p-5 space-y-4', admin.card)}>
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] rounded-2xl p-5 space-y-4', admin.card)}>
         <Skeleton className="h-5 w-48" />
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -239,7 +239,7 @@ function SettingsSkeleton() {
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-52 opacity-60" />
               </div>
-              <Skeleton className="h-6 w-11 rounded-full" />
+              <Skeleton omitDefaults="rounded-md" className="h-6 w-11 rounded-full" />
             </div>
           ))}
         </div>
@@ -252,15 +252,15 @@ function InstancesSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full sm:w-72 rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-10 w-full sm:w-72 rounded-xl" />
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-28 rounded-xl" />
-          <Skeleton className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-10 w-28 rounded-xl" />
         </div>
       </div>
 
-      <Card className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
-        <CardContent className="p-0">
+      <Card omitDefaults="rounded-lg" className={cn('bg-[var(--admin-card)] overflow-x-auto rounded-xl', admin.card)}>
+        <CardContent omitDefaults="p-6 pt-0" className="p-0">
           <div className="divide-y divide-[var(--admin-border)]">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between p-4 px-5 sm:px-6">
@@ -269,9 +269,9 @@ function InstancesSkeleton() {
                   <Skeleton className="h-3 w-28 opacity-60" />
                 </div>
                 <div className="flex items-center gap-4">
-                  <Skeleton className="h-5 w-16 rounded-full hidden sm:block" />
+                  <Skeleton omitDefaults="rounded-md" className="h-5 w-16 rounded-full hidden sm:block" />
                   <Skeleton className="h-4 w-24 hidden md:block" />
-                  <Skeleton className="h-7 w-16 rounded-lg" />
+                  <Skeleton omitDefaults="rounded-md" className="h-7 w-16 rounded-lg" />
                 </div>
               </div>
             ))}
@@ -287,10 +287,10 @@ function DashboardSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className={cn('p-5 rounded-2xl bg-[var(--admin-card)] space-y-3', admin.card)}>
+          <Card key={i} omitDefaults="rounded-lg" className={cn('p-5 rounded-2xl bg-[var(--admin-card)] space-y-3', admin.card)}>
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-8 rounded-xl" />
+              <Skeleton omitDefaults="rounded-md" className="h-8 w-8 rounded-xl" />
             </div>
             <Skeleton className="h-8 w-20" />
             <Skeleton className="h-3 w-32 opacity-60" />
@@ -298,12 +298,12 @@ function DashboardSkeleton() {
         ))}
       </div>
 
-      <Card className={cn('p-6 rounded-2xl bg-[var(--admin-card)] space-y-4', admin.card)}>
+      <Card omitDefaults="rounded-lg" className={cn('p-6 rounded-2xl bg-[var(--admin-card)] space-y-4', admin.card)}>
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-36" />
-          <Skeleton className="h-8 w-28 rounded-xl" />
+          <Skeleton omitDefaults="rounded-md" className="h-8 w-28 rounded-xl" />
         </div>
-        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton omitDefaults="rounded-md" className="h-64 w-full rounded-xl" />
       </Card>
     </div>
   );
