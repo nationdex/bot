@@ -1,8 +1,8 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
-import { ConfirmModal } from '@/components/ConfirmModal';
-import { PanelUsersSkeleton } from '@/components/SectionSkeleton';
-import { TablePagination } from '@/components/TablePagination';
-import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
+import { ConfirmModal } from '@/components/feedback/ConfirmModal';
+import { PanelUsersSkeleton } from '@/components/feedback/SectionSkeleton';
+import { TablePagination } from '@/components/ui/TablePagination';
+import { UnsavedChangesBar } from '@/components/feedback/UnsavedChangesBar';
 import { ArrowLeft, ArrowRight, Check, FolderGit2, Plus, Search, StarPlus, Trash2, UserPlus, Users } from '@/components/icons';
 import { useEffect, useState } from 'preact/compat';
 import { createPortal } from 'preact/compat';

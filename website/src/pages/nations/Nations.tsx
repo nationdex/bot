@@ -1,8 +1,8 @@
 import { m } from '@/lib/panel-motion';
 import { Plus, Search } from '@/components/icons';
 import { useEffect, useState } from 'preact/compat';
-import { ConfirmModal } from '@/components/ConfirmModal';
-import NationEdit from '@/components/NationEdit';
+import { ConfirmModal } from '@/components/feedback/ConfirmModal';
+import NationEdit from '@/pages/nations/NationEdit';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -9,7 +9,7 @@ import { fetchCollectibles, fetchGrowth, fetchStats, fetchUserData, getCache, ty
 import { bot, formatRarity, type RarityClass } from '@/lib/bot';
 import { listItem, quickTransition, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
-import TablePagination from './TablePagination';
+import TablePagination from '@/components/ui/TablePagination';
 
 type StatCategory = 'Users' | 'Nations' | 'Servers';
 type DashboardFilter = 'All' | StatCategory;

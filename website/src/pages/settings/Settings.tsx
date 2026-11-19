@@ -1,8 +1,8 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/components/icons';
 import { useState } from 'preact/compat';
-import InstallApp from '@/components/InstallApp';
-import ThemeSettings from '@/components/ThemeSettings';
+import InstallApp from '@/components/layout/InstallApp';
+import ThemeSettings from '@/pages/settings/ThemeSettings';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAnimationPrefs } from '@/hooks/useAnimationPrefs';
 import { useMotionPref, useOsPrefersReducedMotion } from '@/hooks/useReducedMotion';

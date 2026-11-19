@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { admin } from '@/lib/admin-classes';
 import { fetchGuildConfigs, getCache, type GuildConfigEntry } from '@/lib/api';
-import { TablePagination } from '@/components/TablePagination';
+import { TablePagination } from '@/components/ui/TablePagination';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { listItem, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';

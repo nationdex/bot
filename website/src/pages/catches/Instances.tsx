@@ -7,8 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { admin } from '@/lib/admin-classes';
 import { fetchInstancesPage, removeUserNation, type NationInstanceEntry } from '@/lib/api';
 import { bot, formatRarity } from '@/lib/bot';
-import { TablePagination } from '@/components/TablePagination';
-import { ConfirmModal } from '@/components/ConfirmModal';
+import { TablePagination } from '@/components/ui/TablePagination';
+import { ConfirmModal } from '@/components/feedback/ConfirmModal';
 import { cn } from '@/lib/utils';
 
 function formatTimeToCatch(val: number | string): string {

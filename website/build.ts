@@ -63,7 +63,7 @@ export async function buildPanel(): Promise<void> {
 
   // The Dashboard is the first page after sign-in and loads lazily: preload it (and what it imports) with the shell.
   const outputs = (result.metafile?.outputs ?? {}) as Record<string, { inputs: Record<string, unknown>; imports: Array<{ path: string; kind: string }> }>;
-  const dash = Object.entries(outputs).find(([, o]) => Object.keys(o.inputs).some((i) => i.endsWith('components/Dashboard.tsx')));
+  const dash = Object.entries(outputs).find(([, o]) => Object.keys(o.inputs).some((i) => i.endsWith('pages/dashboard/Dashboard.tsx')));
   const preload = dash
     ? [dash[0], ...dash[1].imports.filter((i) => i.kind === 'import-statement').map((i) => i.path)].map((p) => `  <link rel="modulepreload" href="/${path.basename(p)}" />\n`).join('')
     : '';

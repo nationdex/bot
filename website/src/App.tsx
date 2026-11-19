@@ -1,9 +1,9 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
 import { lazy, Suspense, useEffect, useState } from 'preact/compat';
-import HeaderSearch from '@/components/HeaderSearch';
-import Login from '@/components/Login';
-import { SectionSkeleton } from '@/components/SectionSkeleton';
+import HeaderSearch from '@/components/layout/HeaderSearch';
+import Login from '@/pages/login/Login';
+import { SectionSkeleton } from '@/components/feedback/SectionSkeleton';
 import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useIs3DEnabled, useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
@@ -25,15 +25,15 @@ const sectionTitles: Record<string, string> = {
   settings: 'Panel Settings',
 };
 
-const Dashboard = lazy(() => import('@/components/Dashboard'));
-const UsersPage = lazy(() => import('@/components/Users'));
-const Nations = lazy(() => import('@/components/Nations'));
-const InstancesPage = lazy(() => import('@/components/Instances'));
-const GuildsPage = lazy(() => import('@/components/Guilds'));
-const CardsPage = lazy(() => import('@/components/Cards'));
-const BotSettingsPage = lazy(() => import('@/components/BotSettings'));
-const PanelUsersPage = lazy(() => import('@/components/PanelUsers'));
-const Settings = lazy(() => import('@/components/Settings'));
+const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
+const UsersPage = lazy(() => import('@/pages/players/Users'));
+const Nations = lazy(() => import('@/pages/nations/Nations'));
+const InstancesPage = lazy(() => import('@/pages/catches/Instances'));
+const GuildsPage = lazy(() => import('@/pages/guilds/Guilds'));
+const CardsPage = lazy(() => import('@/pages/cards/Cards'));
+const BotSettingsPage = lazy(() => import('@/pages/settings/BotSettings'));
+const PanelUsersPage = lazy(() => import('@/pages/panel-users/PanelUsers'));
+const Settings = lazy(() => import('@/pages/settings/Settings'));
 
 
 export default function App() {
