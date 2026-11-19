@@ -1,17 +1,8 @@
 /** @type {import("forge.lint").IForgeLintConfig} */
-const config = {
-    // files and folders with your commands, events and custom functions
+module.exports = {
+    // Detect ForgeScript definitions and calls throughout the bot source.
     include: ["src"],
-
-    // folders with custom functions, like the `functions` option of ForgeClient. They must be compiled .js
-    // functions: "./functions",
-
-    // functions ForgeLint can't find in your files, for example ones whose names are built in code.
-    // They are never reported as unknown
-    // known: ["$swordPrice"],
-
-    // "error", "warning", "info" or "off" for each rule
-    // rules: { "function-case": "off" },
+    exclude: ["src/bundle-imports.ts"],
+    // Keep the indentation already used by each code block.
+    alignToKey: false,
 }
-
-module.exports = config

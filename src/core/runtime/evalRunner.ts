@@ -19,7 +19,7 @@ export interface EvalResult {
 }
 
 export function workerPath(): string {
-  return path.join(__dirname, 'evalWorker.js');
+  return path.join(__dirname, 'evalWorker.ts');
 }
 
 // One fresh process per run: no shared state between users, killed on timeout.

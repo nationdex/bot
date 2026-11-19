@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from 'preact/compat';
 
-import { cn } from '@/lib/utils';
+import { cn, withoutDefaults } from '@/lib/utils';
 
 // Only the variants that carry styles; the shadcn colour variants never had a theme behind them.
 const variantClass = {
@@ -17,18 +17,20 @@ const sizes = {
   icon: 'h-10 w-10',
 };
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export type ButtonProps = Omit<React.ComponentProps<'button'>, 'className' | 'ref'> & {
+  className?: string;
+  omitDefaults?: string;
   variant?: Variant;
   size?: keyof typeof sizes;
-}
+};
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', ...props }, ref) => (
+  ({ className, omitDefaults, variant = 'default', size = 'default', ...props }, ref) => (
     <button
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50',
-        variantClass[variant as keyof typeof variantClass],
-        sizes[size],
+        withoutDefaults('inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50', omitDefaults),
+        withoutDefaults(variantClass[variant as keyof typeof variantClass] ?? '', omitDefaults),
+        withoutDefaults(sizes[size], omitDefaults),
         className
       )}
       ref={ref}

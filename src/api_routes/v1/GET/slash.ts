@@ -1,15 +1,14 @@
 import { RouteDefinition } from '@nationdex/api';
+import { slashes } from '../../../config/slash';
+
+// Encode the static JSON so the ForgeScript parser treats it as one argument.
+const payload = encodeURIComponent(JSON.stringify(slashes));
 
 const route: RouteDefinition = {
   url: 'v1/slash/data',
   method: 'GET',
   code: `
-  $jsonLoad[data;$djsEval[
-    const path = require('path');
-    const { slashes } = require(path.resolve(process.cwd(), 'dist/config/slash.js'));
-    JSON.stringify(slashes)
-  ]]
-  $sendJson[$env[data]]
+  $sendJson[$decodeURIComponent[${payload}]]
 `};
 
-export = route;
+export default route;

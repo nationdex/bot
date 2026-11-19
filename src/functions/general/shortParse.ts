@@ -19,25 +19,13 @@ export default new ForgeFunction({
   ],
   code: `
   $onlyIf[$isInteger[$env[ms]]]
-  $return[$js[
-    const ms = Number($env[ms]);
-    const dec = "$default[$env[decimals];0]";
-    const decimals = Number(dec);
-    const units = [
-      { label: "d", value: 86400000 },
-      { label: "h", value: 3600000 },
-      { label: "m", value: 60000 },
-      { label: "s", value: 1000 },
-    \\];
-    let result = ms + "ms";
-    for (const u of units) {
-      if (Math.abs(ms) >= u.value) {
-        const val = ms / u.value;
-        result = (decimals === -1 ? String(val) : val.toFixed(decimals).replace(/\\.?0+$/, "")) + u.label;
-        break;
-      }
-    }
-    result;
-  ]]
+  $let[ms;$env[ms]]
+  $let[dec;$default[$replace[$env[decimals];null;];0]]
+  $let[abs;$abs[$get[ms]]]
+  $let[unit;$if[$get[abs]>=86400000;86400000;$if[$get[abs]>=3600000;3600000;$if[$get[abs]>=60000;60000;$if[$get[abs]>=1000;1000;1]]]]]
+  $let[label;$if[$get[unit]==86400000;d;$if[$get[unit]==3600000;h;$if[$get[unit]==60000;m;$if[$get[unit]==1000;s;ms]]]]]
+  $if[$get[unit]==1;$return[$get[ms]ms]]
+  $if[$get[dec]==-1;$return[$math[$get[ms]/$get[unit]]$get[label]]]
+  $return[$round[$math[$get[ms]/$get[unit]];$get[dec]]$get[label]]
   `
 });

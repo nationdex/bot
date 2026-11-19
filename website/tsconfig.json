@@ -5,6 +5,7 @@
     "moduleResolution": "bundler",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -15,5 +16,5 @@
     "types": ["bun"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "server", "build.ts", "uno.config.ts"]
+  "include": ["src", "server", "build.ts"]
 }

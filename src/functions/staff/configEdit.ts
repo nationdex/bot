@@ -19,7 +19,11 @@ export default new ForgeFunction({
   ],
   code: `
   $let[body;$replace[$env[body];null;]]
-  $let[root;$js[(() => { try { return String((JSON.parse(ctx.getKeyword('body') || 'null') || {}).root ?? ''); } catch (e) { return ''; } })()]]
+  $let[root;]
+  $if[$isJSON[$get[body]];
+    $jsonLoad[configEditRequest;$get[body]]
+    $let[root;$env[configEditRequest;root]]
+  ]
   $if[$and[$get[root]!=config;$get[root]!=keywords];$return[{"status":400,"error":"root must be config or keywords."}]]
   $let[lock;$mutex[acquire;config:$get[root]]]
   $let[current;$if[$get[root]==config;$getGlobalVar[config];$getGlobalVar[keywords]]]

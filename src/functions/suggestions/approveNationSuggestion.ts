@@ -13,7 +13,7 @@ export default new ForgeFunction({
     },
     {
       name: 'emojiId',
-      // Resolved application emoji ID for the new catalog entry.
+      // Resolved emoji ID (application or server emoji) for the new catalog entry.
       type: 'String',
       required: true,
     },

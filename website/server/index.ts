@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { authUser, handleAuth } from './auth';
+import { authUser, handleAuth, hasPermission } from './auth';
 import { ensureCatchIndex, handleData } from './data';
 import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
@@ -47,6 +47,25 @@ async function serveStatic(req: Request, pathname: string): Promise<Response> {
   return new Response(source, { headers });
 }
 
+// Match both the HTTP method and the complete path before using the shared bot token.
+const BOT_READ_RULES: ReadonlyArray<readonly [RegExp, string]> = [
+  [/^\/stats$/, 'view_dashboard'],
+  [/^\/collectibles(?:\/data)?$/, 'view_dashboard'],
+  [/^\/config$/, 'manage_bot_settings'],
+  [/^\/(?:user|users\/[^/]+\/auction|search_db\/(?:balance|auctionHouse))$/, 'manage_users'],
+  [/^\/search_db\/collectible$/, 'manage_nations'],
+  [/^\/(?:guilds\/[^/]+|search_db\/spawnConfig)$/, 'manage_servers'],
+  [/^\/(?:cards(?:\/backgrounds)?|search_db\/specials)$/, 'manage_cards'],
+];
+
+const BOT_WRITE_RULES: ReadonlyArray<readonly [RegExp, string]> = [
+  [/^\/config(?:\/(?:add|delete|reset))?$/, 'manage_bot_settings'],
+  [/^\/users\/[^/]+\/(?:balance|settings(?:\/reset)?|stats|auction|nations\/(?:give|remove|edit))$/, 'manage_users'],
+  [/^\/nations(?:\/[^/]+(?:\/(?:delete|category))?)?$/, 'manage_nations'],
+  [/^\/guilds\/[^/]+\/edit$/, 'manage_servers'],
+  [/^\/(?:nations\/[^/]+\/(?:art|card)|cards\/(?:add\/(?:special|regime)|backgrounds(?:\/[^/]+\/(?:replace|delete))?|[^/]+\/edit)|categories(?:\/[^/]+\/delete)?)$/, 'manage_cards'],
+];
+
 async function route(req: Request): Promise<Response> {
   const url = new URL(req.url);
   let pathname: string;
@@ -59,17 +78,37 @@ async function route(req: Request): Promise<Response> {
   if (!pathname.startsWith('/api/')) {
     return req.method === 'GET' || req.method === 'HEAD' ? serveStatic(req, pathname) : new Response(null, { status: 405 });
   }
-  if (pathname.startsWith('/api/auth')) return handleAuth(req, pathname);
-  if (pathname.startsWith('/api/bot/cards/') && (pathname.endsWith('/image') || pathname.startsWith('/api/bot/cards/image/'))) {
+  if (pathname.startsWith('/api/auth/')) return handleAuth(req, pathname);
+
+  // Keep path segments stable between the permission check and upstream URL parsing.
+  if (/%(?:2f|5c)/i.test(url.pathname) || /[\\%\x00-\x1f\x7f]/.test(pathname)
+    || pathname.split('/').some((segment) => segment === '.' || segment === '..')) {
+    return new Response(null, { status: 400 });
+  }
+
+  const read = req.method === 'GET' || req.method === 'HEAD';
+  if (read && /^\/api\/bot\/cards\/(?:image\/[^/]+|[^/]+\/image)$/.test(pathname)) {
     return proxyCardImage(pathname);
   }
 
-  if (pathname.startsWith('/api/panel') || pathname.startsWith('/api/bot')) {
+  if (pathname.startsWith('/api/panel/') || pathname.startsWith('/api/bot/')) {
     const me = await authUser(req);
     if (!me) return json({ error: 'Unauthorized' }, 401);
-    const data = await handleData(req, pathname, url.searchParams);
-    if (data) return data;
-    return pathname.startsWith('/api/panel') ? handlePanel(req, pathname, me) : proxyBot(req, pathname, url.search);
+    if (pathname.startsWith('/api/bot/')) {
+      const rules = read ? BOT_READ_RULES : req.method === 'POST' ? BOT_WRITE_RULES : [];
+      const permission = rules.find(([pattern]) => pattern.test(pathname.slice('/api/bot'.length)))?.[1];
+      if (!permission || !hasPermission(me, permission)) return json({ error: 'Forbidden' }, 403);
+      const data = await handleData(req, pathname, url.searchParams);
+      return data ?? proxyBot(req, pathname, url.search);
+    }
+    if (pathname.startsWith('/api/panel/data/')) {
+      const permission = pathname === '/api/panel/data/instances' ? 'manage_nations'
+        : pathname === '/api/panel/data/users' ? 'manage_users' : 'view_dashboard';
+      if (!hasPermission(me, permission)) return json({ error: 'Forbidden' }, 403);
+      const data = await handleData(req, pathname, url.searchParams);
+      if (data) return data;
+    }
+    return handlePanel(req, pathname, me);
   }
   return json({ status: 404, error: 'Not found' }, 404);
 }

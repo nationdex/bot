@@ -1,11 +1,12 @@
-import { AnimatePresence, LazyMotion, MotionConfig, m } from 'framer-motion';
+import { AnimatePresence, m } from '@/lib/panel-motion';
 import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
-import { lazy, Suspense, useEffect, useState } from 'react';
-import HeaderSearch from '@/components/HeaderSearch';
-import Login from '@/components/Login';
-import { SectionSkeleton } from '@/components/SectionSkeleton';
+import { lazy, Suspense } from 'preact/compat';
+import { useEffect, useState } from 'preact/hooks';
+import HeaderSearch from '@/components/layout/HeaderSearch';
+import Login from '@/pages/login/Login';
+import { SectionSkeleton } from '@/components/feedback/SectionSkeleton';
 import { SIDEBAR_WIDTH, Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
-import { useIs3DEnabled, useMotionPref, useReducedMotion } from '@/hooks/useReducedMotion';
+import { useIs3DEnabled, useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
 import { fetchCollectibles, getCache, type CollectibleEntry } from '@/lib/api';
 import { checkSession, isCookieless, logout, type PanelUser } from '@/lib/auth';
@@ -25,17 +26,16 @@ const sectionTitles: Record<string, string> = {
   settings: 'Panel Settings',
 };
 
-const Dashboard = lazy(() => import('@/components/Dashboard'));
-const UsersPage = lazy(() => import('@/components/Users'));
-const Nations = lazy(() => import('@/components/Nations'));
-const InstancesPage = lazy(() => import('@/components/Instances'));
-const GuildsPage = lazy(() => import('@/components/Guilds'));
-const CardsPage = lazy(() => import('@/components/Cards'));
-const BotSettingsPage = lazy(() => import('@/components/BotSettings'));
-const PanelUsersPage = lazy(() => import('@/components/PanelUsers'));
-const Settings = lazy(() => import('@/components/Settings'));
+const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
+const UsersPage = lazy(() => import('@/pages/players/Users'));
+const Nations = lazy(() => import('@/pages/nations/Nations'));
+const InstancesPage = lazy(() => import('@/pages/catches/Instances'));
+const GuildsPage = lazy(() => import('@/pages/guilds/Guilds'));
+const CardsPage = lazy(() => import('@/pages/cards/Cards'));
+const BotSettingsPage = lazy(() => import('@/pages/settings/BotSettings'));
+const PanelUsersPage = lazy(() => import('@/pages/panel-users/PanelUsers'));
+const Settings = lazy(() => import('@/pages/settings/Settings'));
 
-const loadMotionFeatures = () => import('@/lib/motion-features').then((mod) => mod.default);
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -71,7 +71,6 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sectionFilterQuery, setSectionFilterQuery] = useState('');
-  const reducedMotion = useReducedMotion();
   const enable3D = useIs3DEnabled();
   const pageTransitions = useMotionPref('pageTransitions');
   const hoverFeedback = useMotionPref('hoverFeedback');
@@ -95,7 +94,7 @@ export default function App() {
     setMobileOpen(false);
   };
 
-  const handleLinkClick = (e: React.MouseEvent, id: string) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLElement>, id: string) => {
     e.preventDefault();
     setCurrentSection(id);
     setSectionFilterQuery('');
@@ -329,8 +328,6 @@ export default function App() {
   );
 
   return (
-    <LazyMotion features={loadMotionFeatures} strict>
-    <MotionConfig reducedMotion={reducedMotion ? 'always' : 'user'}>
       <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
         <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
           <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
@@ -359,7 +356,7 @@ export default function App() {
               <header
                 className={cn(
                   'shrink-0 z-40 border-b backdrop-blur-sm',
-                  admin.panel,
+                  'border-[var(--admin-border)]',
                   'bg-[color-mix(in_srgb,var(--admin-panel)_95%,transparent)]'
                 )}
               >
@@ -446,8 +443,6 @@ export default function App() {
           </div>
         </div>
       </div>
-    </MotionConfig>
-    </LazyMotion>
   );
 }
 

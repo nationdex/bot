@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from 'preact/compat';
 
 // Lucide icon shapes (ISC licence), inlined so the panel does not ship the whole icon package.
 const shapes = {

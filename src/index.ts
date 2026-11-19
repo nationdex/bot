@@ -1,8 +1,7 @@
 import './core/runtime/native';
 
 import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
-import * as recursiveReaddirSyncModule from '@tryforge/forgescript/dist/functions/recursiveReaddirSync';
-(recursiveReaddirSyncModule as any).default = () => [];
+require('@tryforge/forgescript/dist/functions/recursiveReaddirSync').default = () => [];
 
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { API } from '@nationdex/api';
@@ -18,7 +17,7 @@ import { evalFunctions } from './core/runtime/evalRunner';
 import { startPanel } from './core/panel';
 
 const api = new API({
-  path: 'dist/api_routes',
+  path: 'src/api_routes',
   port: parseInt(process.env.API_PORT || '2222', 10),
 });
 

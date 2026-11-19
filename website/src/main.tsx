@@ -1,5 +1,4 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { render } from 'preact';
 import { AnimationPrefsProvider } from '@/hooks/useAnimationPrefs';
 import { ThemePrefsProvider } from '@/hooks/useThemePrefs';
 import { storage } from '@/lib/storage';
@@ -7,7 +6,7 @@ import { applyAnimationPrefsToDocument, loadAnimationPrefs } from '@/lib/animati
 import { installSessionHeader } from '@/lib/auth';
 import { applyThemeToDocument, loadThemePrefs } from '@/lib/theme-prefs';
 import App from './App';
-import '../.generated/uno.css';
+import './styles/utilities.css';
 import './index.css';
 
 installSessionHeader();
@@ -17,14 +16,13 @@ applyThemeToDocument(loadThemePrefs());
 
 const root = document.getElementById('root');
 if (root) {
-  createRoot(root).render(
-    <StrictMode>
-      <ThemePrefsProvider>
-        <AnimationPrefsProvider>
-          <App />
-        </AnimationPrefsProvider>
-      </ThemePrefsProvider>
-    </StrictMode>
+  render(
+    <ThemePrefsProvider>
+      <AnimationPrefsProvider>
+        <App />
+      </AnimationPrefsProvider>
+    </ThemePrefsProvider>,
+    root,
   );
 }
 

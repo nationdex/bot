@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-function getFiles(dir: string): string[] {
+function getFiles(dir: string, extension = '.js'): string[] {
   let results: string[] = [];
   if (!fs.existsSync(dir)) return results;
   const list = fs.readdirSync(dir);
@@ -9,8 +9,8 @@ function getFiles(dir: string): string[] {
     const full = path.join(dir, file);
     const stat = fs.statSync(full);
     if (stat && stat.isDirectory()) {
-      results = results.concat(getFiles(full));
-    } else if (full.endsWith('.js')) {
+      results = results.concat(getFiles(full, extension));
+    } else if (full.endsWith(extension)) {
       results.push(full);
     }
   }
@@ -24,9 +24,9 @@ const dbFunctionsFiles = getFiles('node_modules/@nationdex/db/dist/functions');
 const dbEventsFiles = getFiles('node_modules/@nationdex/db/dist/events');
 const apiFunctionsFiles = getFiles('node_modules/@nationdex/api/dist/functions');
 
-const botFunctionsFiles = getFiles('dist/functions');
-const botCommandsFiles = getFiles('dist/commands');
-const botSlashFiles = getFiles('dist/slash');
+const botFunctionsFiles = getFiles('src/functions', '.ts');
+const botCommandsFiles = getFiles('src/commands', '.ts');
+const botSlashFiles = getFiles('src/slash', '.ts');
 
 let code = `
 // AUTO-GENERATED BUNDLE IMPORTS
@@ -41,7 +41,7 @@ function generateImportBlock(name: string, files: string[], isModule: boolean) {
     if (isModule) {
       reqPath = posixFile.replace('node_modules/', '');
     } else {
-      reqPath = '../' + posixFile;
+      reqPath = './' + posixFile.slice('src/'.length);
     }
     result += `  require(${JSON.stringify(reqPath)}),\n`;
   }

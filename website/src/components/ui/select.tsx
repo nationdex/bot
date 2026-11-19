@@ -1,11 +1,12 @@
-import * as React from 'react';
+import * as React from 'preact/compat';
+import { isValidElement } from 'preact';
 
 import { ChevronDown } from '@/components/icons';
-import { cn } from '@/lib/utils';
+import { cn, withoutDefaults } from '@/lib/utils';
 
 // Native <select> with the same compound API as before (Select > SelectTrigger/SelectContent > SelectItem).
 // The compound parts only describe the control; Select reads them and renders one real <select>.
-type PartProps = { className?: string; children?: React.ReactNode };
+type PartProps = { omitDefaults?: string; className?: string; children?: React.ReactNode };
 type ItemProps = PartProps & { value: string };
 
 const SelectTrigger = (_: PartProps) => null;
@@ -15,7 +16,7 @@ const SelectItem = (_: ItemProps) => null;
 
 function collectItems(node: React.ReactNode, items: ItemProps[]): void {
   React.Children.forEach(node, (child) => {
-    if (!React.isValidElement<PartProps>(child)) return;
+    if (!isValidElement(child)) return;
     if (child.type === SelectItem) items.push(child.props as ItemProps);
     else collectItems(child.props.children, items);
   });
@@ -31,21 +32,21 @@ function Select({ value, onValueChange, disabled, id, name, children }: {
 }) {
   const auto = React.useId();
   const items: ItemProps[] = [];
-  let triggerClass: string | undefined;
+  let trigger: PartProps | undefined;
   React.Children.forEach(children, (child) => {
-    if (!React.isValidElement<PartProps>(child)) return;
-    if (child.type === SelectTrigger) triggerClass = child.props.className;
+    if (!isValidElement(child)) return;
+    if (child.type === SelectTrigger) trigger = child.props;
     else collectItems(child.props.children, items);
   });
 
   return (
-    <div className={cn('relative flex h-10 w-full items-center rounded-md border text-sm', triggerClass)}>
+    <div className={cn(withoutDefaults('relative flex h-10 w-full items-center rounded-md border text-sm', trigger?.omitDefaults), trigger?.className)}>
       <select
         id={id ?? (name ? undefined : auto)}
         name={name}
         value={value}
         disabled={disabled}
-        onChange={(e) => onValueChange(e.target.value)}
+        onChange={(e) => onValueChange(e.currentTarget.value)}
         style={{ colorScheme: 'dark' }}
         className="h-full w-full cursor-pointer appearance-none truncate rounded-[inherit] bg-transparent pl-3 pr-8 text-inherit outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >

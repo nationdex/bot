@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EdexLabs/ForgeScript/main/forgeconfig.schema.json",
+  "extensions": [
+    "github:tryforge/ForgeScript#main",
+    "github:tryforge/ForgeCanvas#dev"
+  ],
+  "custom_functions_path": "src/functions",
+  "semantic_decorations": true
+}

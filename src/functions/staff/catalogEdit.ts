@@ -44,9 +44,7 @@ export default new ForgeFunction({
     }
   })()]]
   $if[$get[emojiIn]!=;
-    $let[emojiState;$emojiExists[$get[emojiIn]]]
-    $if[$get[emojiState]==false;$return[{"status":400,"error":"No application emoji matches that emoji_id. Upload the nation emoji to the application first."}]]
-    $if[$get[emojiState]==unverified;$return[{"status":503,"error":"The application emojis could not be checked with Discord right now. Try again in a moment."}]]
+    $if[$emojiExists[$get[emojiIn]]==false;$return[{"status":400,"error":"No application or server emoji has that ID. Send the emoji ID, and upload the emoji to the application or to a server the bot is in first."}]]
   ]
   $let[lock;$mutex[acquire;catalog]]
   $let[catalog;$getGlobalVar[collectiblesData]]

@@ -155,3 +155,49 @@
 [data-animations3d="off"] .perspective-scene {
   perspective: none;
 }
+@keyframes panel-motion-enter {
+  from { opacity: var(--panel-motion-opacity); transform: var(--panel-motion-transform); }
+}
+
+@keyframes panel-motion-exit {
+  to { opacity: var(--panel-motion-opacity); transform: var(--panel-motion-transform); }
+}
+
+@keyframes panel-motion-expand {
+  from { height: var(--panel-motion-height); }
+}
+
+@keyframes panel-motion-collapse {
+  to { height: var(--panel-motion-height); }
+}
+
+.panel-motion-enter, .panel-motion-exit {
+  animation: var(--panel-motion-duration) ease-out var(--panel-motion-delay) both;
+}
+
+.panel-motion-enter { animation-name: panel-motion-enter; animation-fill-mode: backwards; }
+.panel-motion-exit { animation-name: panel-motion-exit; }
+.panel-motion-height { interpolate-size: allow-keywords; }
+.panel-motion-enter.panel-motion-height { animation-name: panel-motion-enter, panel-motion-expand; }
+.panel-motion-exit.panel-motion-height { animation-name: panel-motion-exit, panel-motion-collapse; }
+
+.panel-motion-feedback {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: 150ms;
+}
+
+@media (hover: hover) {
+  .panel-motion-feedback:hover { transform: var(--panel-motion-hover) !important; }
+}
+
+.panel-motion-feedback:active { transform: var(--panel-motion-tap) !important; }
+
+.panel-motion-enter {
+  animation-delay: calc(var(--panel-motion-delay) + var(--panel-motion-stagger) * var(--panel-motion-index, 0));
+}
+
+.panel-motion-enter:nth-child(2) { --panel-motion-index: 1; }
+.panel-motion-enter:nth-child(3) { --panel-motion-index: 2; }
+.panel-motion-enter:nth-child(4) { --panel-motion-index: 3; }
+.panel-motion-enter:nth-child(5) { --panel-motion-index: 4; }
+.panel-motion-enter:nth-child(n+6) { --panel-motion-index: 5; }

@@ -10,17 +10,13 @@ Join our cause at the NDS [headquarters](https://dsc.nationdex.com/)!
 
 ## ⚙️ Setup
 
-To install dependencies:
+Install Bun 1.4.3 or newer, then install dependencies:
 
 ```bash
 bun install
 ```
 
-To build the bot:
-
-```bash
-bun run build
-```
+Bun runs the bot directly from TypeScript source.
 
 To run on dev:
 
@@ -36,18 +32,7 @@ bun run start
 
 ## 🛠️ Troubleshooting
 
-⚠️ Sometimes you remove a command from the src directory but it still shows up on Discord. In that case, run:
-
-```bash
-# Linux
-rm -rf dist/ && bun run build
-
-# Windows
-Remove-Item dist/ -Recurse -Force
-bun run build
-```
-
-This will recreate the dist directory, up to date with the src directory.
+After adding, renaming, or removing a bot function or command file, run `bun run bundle:prep` to refresh the registration list.
 
 In order to check for any errors and warnings on the codebase, run:
 
@@ -129,7 +114,6 @@ Every answer has the same shape, and `ok` is `true` only for status `200`:
 | `404` | `users` routes only: no such Discord user |
 | `413` | Body too large (64 KB, or 15 MB for the background upload) |
 | `500` | Unexpected error, nothing was changed |
-| `503` | The application emojis could not be checked with Discord. Try again in a moment |
 
 Successful calls are written to `/access audit` as `api:<route>`. Request bodies are never logged.
 
@@ -137,8 +121,8 @@ Successful calls are written to `/access audit` as `api:<route>`. Request bodies
 
 | Route | Body keys |
 |---|---|
-| `POST /v1/nations` | **`name`** text, 1-80 chars, must be unique. **`class`** an existing category. **`emoji_id`** the name or ID of an existing application emoji, up to 64 chars (`400` if it does not exist, `503` if Discord cannot be asked right now; emojis uploaded after startup are found). **`attack`** whole number, 0 or more. **`health`** whole number, 0 or more. `rarity` / `weight` positive number, float or int (spawn weight, default `10`). Optional `short_name`, `regime`, `economy`, `capacity_name`, `capacity_description`, `credits`, `translations`, `catch_names` / `catching_names`, `global_caught`, `price`, `sell_price`. `wild_card` and `collection_card` are artwork file names that must already exist (see `/art` below). Answers `{ "value": { "id": "112" } }`. A new nation cannot spawn or be given to players until it has artwork |
-| `POST /v1/nations/:id` | Send any or all fields to change. `name` (1-80), `short_name` (up to 48, empty or null clears it), `class` (existing category, moves category and updates counters), `emoji_id` (up to 64, skips Discord re-verification if unchanged), `credits` (up to 120), `attack`, `health` (0 or more), `rarity` / `weight` (positive number, float or int like `0.8`, updates both and recounts owner inventories), `regime` (background name in `assets/cards`, `.png` extension optional), `economy` (icon filename in `assets/icons`), `price`, `sell_price` (0 or more), `global_caught` (0 or more), `capacity_name` (up to 64), `capacity_description` (up to 600), `catch_names` and `catching_names` (array or comma separated text, lowercased, at least one, kept in sync, no clash with other nations), `translations` (same, empty clears it), `wild_card` and `collection_card` (existing artwork filename in `assets/spawn_art` or `assets/window_art`, skips check if unchanged). If an `id` field is present in the payload, it is automatically ignored. At least one valid field is required |
+| `POST /v1/nations` | **`name`** text, 1-80 chars, must be unique. **`class`** an existing category. **`emoji_id`** the ID of an existing emoji, up to 64 chars: an application emoji or an emoji of any server the bot is in (`400` if no such emoji exists). **`attack`** whole number, 0 or more. **`health`** whole number, 0 or more. `rarity` / `weight` positive number, float or int (spawn weight, default `10`). Optional `short_name`, `regime`, `economy`, `capacity_name`, `capacity_description`, `credits`, `translations`, `catch_names` / `catching_names`, `global_caught`, `price`, `sell_price`. `wild_card` and `collection_card` are artwork file names that must already exist (see `/art` below). Answers `{ "value": { "id": "112" } }`. A new nation cannot spawn or be given to players until it has artwork |
+| `POST /v1/nations/:id` | Send any or all fields to change. `name` (1-80), `short_name` (up to 48, empty or null clears it), `class` (existing category, moves category and updates counters), `emoji_id` (up to 64, skips verification if unchanged), `credits` (up to 120), `attack`, `health` (0 or more), `rarity` / `weight` (positive number, float or int like `0.8`, updates both and recounts owner inventories), `regime` (background name in `assets/cards`, `.png` extension optional), `economy` (icon filename in `assets/icons`), `price`, `sell_price` (0 or more), `global_caught` (0 or more), `capacity_name` (up to 64), `capacity_description` (up to 600), `catch_names` and `catching_names` (array or comma separated text, lowercased, at least one, kept in sync, no clash with other nations), `translations` (same, empty clears it), `wild_card` and `collection_card` (existing artwork filename in `assets/spawn_art` or `assets/window_art`, skips check if unchanged). If an `id` field is present in the payload, it is automatically ignored. At least one valid field is required |
 | `POST /v1/nations/:id/category` | **`class`** an existing category. Moves the nation and fixes every counter |
 | `POST /v1/nations/:id/delete` | `cascade` `true` also deletes every catch of the nation and recounts the owners. Without it, the call fails while catches exist. Always refused while an auction holds the nation |
 | `POST /v1/nations/:id/art` | Needs `cards.edit`. **`kind`** `spawn` (the wild artwork shown when it spawns) or `window` (the collection artwork). **`data`** the image, base64 encoded, PNG, JPEG or WebP, up to 10 MB. `name` the file name without extension (letters, numbers, `-`, `_`, up to 60); it is generated from the nation when left out. Answers `{ "value": { "file": "Atlantis.png" } }`. A nation needs `spawn` artwork to spawn and both kinds before it can be given to a player |
