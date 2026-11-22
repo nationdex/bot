@@ -13,7 +13,13 @@ async function precache() {
   const assets = await caches.open(ASSETS);
   const home = await fetch('/', { cache: 'no-cache' });
   await shell.put('/', home.clone());
-  await shell.addAll(['/manifest.webmanifest', '/icons/icon-192.png', '/fonts/inter.css', '/fonts/inter-latin.woff2', '/fonts/inter-latin-ext.woff2']);
+  await shell.addAll([
+    '/manifest.webmanifest',
+    '/icons/icon-192.png',
+    '/fonts/inter.css',
+    '/fonts/inter-latin.woff2',
+    '/fonts/inter-latin-ext.woff2',
+  ]);
 
   const found = (text) => text.match(/\/?(?:chunk|logo)-[a-z0-9]+\.(?:js|css|png)/g) ?? [];
   const queue = found(await home.text()).map((n) => '/' + n.replace(/^\//, ''));
@@ -35,10 +41,17 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('ndx-') && k !== SHELL && k !== ASSETS && k !== PUBLIC).map((k) => caches.delete(k))))
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((k) => k.startsWith('ndx-') && k !== SHELL && k !== ASSETS && k !== PUBLIC)
+            .map((k) => caches.delete(k)),
+        ),
+      )
       .then(() => self.registration.navigationPreload?.enable())
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -68,7 +81,7 @@ self.addEventListener('fetch', (event) => {
           return hit;
         }
         return fresh;
-      })
+      }),
     );
     return;
   }
@@ -84,19 +97,23 @@ self.addEventListener('fetch', (event) => {
           caches.open(SHELL).then((cache) => cache.put('/', copy));
           return res;
         })
-        .catch(() => caches.match('/'))
+        .catch(() => caches.match('/')),
     );
     return;
   }
 
   // Hashed bundles and images never change under the same name: cache first.
   event.respondWith(
-    caches.match(request).then((hit) => hit || fetch(request).then((res) => {
-      if (res.ok) {
-        const copy = res.clone();
-        caches.open(ASSETS).then((cache) => cache.put(request, copy));
-      }
-      return res;
-    }))
+    caches.match(request).then(
+      (hit) =>
+        hit ||
+        fetch(request).then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(ASSETS).then((cache) => cache.put(request, copy));
+          }
+          return res;
+        }),
+    ),
   );
 });

@@ -9,17 +9,22 @@ import { accepted, json } from './util';
 const distDir = path.join(process.cwd(), 'website', 'dist');
 
 // Best encoding the browser accepts, from the precompressed files the build wrote next to each asset.
-const ENCODINGS = [['br', 'br'], ['gzip', 'gz']] as const;
+const ENCODINGS = [
+  ['br', 'br'],
+  ['gzip', 'gz'],
+] as const;
 
 // Nothing here needs third parties, so say so: scripts, styles, fonts, images and requests only from this origin.
 const SECURITY_HEADERS: Record<string, string> = {
-  'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+  'Content-Security-Policy':
+    "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'same-origin',
   'X-Frame-Options': 'DENY',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()',
+  'Permissions-Policy':
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()',
 };
 
 async function serveStatic(req: Request, pathname: string): Promise<Response> {
@@ -31,8 +36,10 @@ async function serveStatic(req: Request, pathname: string): Promise<Response> {
   if (!(await source.exists()) || pathname.endsWith('/')) source = Bun.file(path.join(distDir, 'index.html'));
 
   const headers: Record<string, string> = { Vary: 'Accept-Encoding' };
-  if (/(chunk|logo)-[a-z0-9]+\./.test(source.name ?? '')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
-  else if (pathname.startsWith('/fonts/')) headers['Cache-Control'] = 'public, max-age=31536000, immutable'; // renamed if ever changed
+  if (/(chunk|logo)-[a-z0-9]+\./.test(source.name ?? ''))
+    headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+  else if (pathname.startsWith('/fonts/'))
+    headers['Cache-Control'] = 'public, max-age=31536000, immutable'; // renamed if ever changed
   else if (pathname.startsWith('/icons/')) headers['Cache-Control'] = 'public, max-age=86400';
   else headers['Cache-Control'] = 'no-cache'; // the shell, manifest and service worker must always be revalidated
   if (pathname === '/manifest.webmanifest') headers['Content-Type'] = 'application/manifest+json';
@@ -42,7 +49,8 @@ async function serveStatic(req: Request, pathname: string): Promise<Response> {
   const wanted = accepted(req.headers.get('accept-encoding'));
   for (const [encoding, ext] of ENCODINGS) {
     const packed = Bun.file(`${source.name}.${ext}`);
-    if (wanted.has(encoding) && (await packed.exists())) return new Response(packed, { headers: { ...headers, 'Content-Encoding': encoding } });
+    if (wanted.has(encoding) && (await packed.exists()))
+      return new Response(packed, { headers: { ...headers, 'Content-Encoding': encoding } });
   }
   return new Response(source, { headers });
 }
@@ -63,7 +71,10 @@ const BOT_WRITE_RULES: ReadonlyArray<readonly [RegExp, string]> = [
   [/^\/users\/[^/]+\/(?:balance|settings(?:\/reset)?|stats|auction|nations\/(?:give|remove|edit))$/, 'manage_users'],
   [/^\/nations(?:\/[^/]+(?:\/(?:delete|category))?)?$/, 'manage_nations'],
   [/^\/guilds\/[^/]+\/edit$/, 'manage_servers'],
-  [/^\/(?:nations\/[^/]+\/(?:art|card)|cards\/(?:add\/(?:special|regime)|backgrounds(?:\/[^/]+\/(?:replace|delete))?|[^/]+\/edit)|categories(?:\/[^/]+\/delete)?)$/, 'manage_cards'],
+  [
+    /^\/(?:nations\/[^/]+\/(?:art|card)|cards\/(?:add\/(?:special|regime)|backgrounds(?:\/[^/]+\/(?:replace|delete))?|[^/]+\/edit)|categories(?:\/[^/]+\/delete)?)$/,
+    'manage_cards',
+  ],
 ];
 
 async function route(req: Request): Promise<Response> {
@@ -76,13 +87,18 @@ async function route(req: Request): Promise<Response> {
   }
 
   if (!pathname.startsWith('/api/')) {
-    return req.method === 'GET' || req.method === 'HEAD' ? serveStatic(req, pathname) : new Response(null, { status: 405 });
+    return req.method === 'GET' || req.method === 'HEAD'
+      ? serveStatic(req, pathname)
+      : new Response(null, { status: 405 });
   }
   if (pathname.startsWith('/api/auth/')) return handleAuth(req, pathname);
 
   // Keep path segments stable between the permission check and upstream URL parsing.
-  if (/%(?:2f|5c)/i.test(url.pathname) || /[\\%\x00-\x1f\x7f]/.test(pathname)
-    || pathname.split('/').some((segment) => segment === '.' || segment === '..')) {
+  if (
+    /%(?:2f|5c)/i.test(url.pathname) ||
+    /[\\%\x00-\x1f\x7f]/.test(pathname) ||
+    pathname.split('/').some((segment) => segment === '.' || segment === '..')
+  ) {
     return new Response(null, { status: 400 });
   }
 
@@ -102,8 +118,12 @@ async function route(req: Request): Promise<Response> {
       return data ?? proxyBot(req, pathname, url.search, `panel:${me.id}`);
     }
     if (pathname.startsWith('/api/panel/data/')) {
-      const permission = pathname === '/api/panel/data/instances' ? 'manage_nations'
-        : pathname === '/api/panel/data/users' ? 'manage_users' : 'view_dashboard';
+      const permission =
+        pathname === '/api/panel/data/instances'
+          ? 'manage_nations'
+          : pathname === '/api/panel/data/users'
+            ? 'manage_users'
+            : 'view_dashboard';
       if (!hasPermission(me, permission)) return json({ error: 'Forbidden' }, 403);
       const data = await handleData(req, pathname, url.searchParams);
       if (data) return data;
@@ -114,7 +134,12 @@ async function route(req: Request): Promise<Response> {
 }
 
 // Runs inside the bot's Bun process; the caller has already initialised the panel tables in the bot's PGlite.
-export function startPanelServer(opts: { port: number; hostname: string; run: BotRunner; tls?: { cert: string; key: string } }): void {
+export function startPanelServer(opts: {
+  port: number;
+  hostname: string;
+  run: BotRunner;
+  tls?: { cert: string; key: string };
+}): void {
   useBotRunner(opts.run);
   ensureCatchIndex().catch((err) => console.error('Admin panel: could not build the catch index:', err));
   Bun.serve({
@@ -128,7 +153,8 @@ export function startPanelServer(opts: { port: number; hostname: string; run: Bo
         return json({ error: 'Internal Server Error' }, 500);
       });
       for (const [name, value] of Object.entries(SECURITY_HEADERS)) res.headers.set(name, value);
-      if (new URL(req.url).pathname.startsWith('/api/')) res.headers.append('Server-Timing', `app;dur=${(performance.now() - started).toFixed(1)}`);
+      if (new URL(req.url).pathname.startsWith('/api/'))
+        res.headers.append('Server-Timing', `app;dur=${(performance.now() - started).toFixed(1)}`);
       return res;
     },
   });

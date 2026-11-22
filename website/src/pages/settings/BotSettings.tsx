@@ -8,7 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useMotionPref } from '@/hooks/useReducedMotion';
-import { addConfigItem, deleteConfigItem, fetchFullConfig, getCache, resetConfigItem, updateConfigItem } from '@/lib/api';
+import {
+  addConfigItem,
+  deleteConfigItem,
+  fetchFullConfig,
+  getCache,
+  resetConfigItem,
+  updateConfigItem,
+} from '@/lib/api';
 import { quickTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -29,7 +36,12 @@ function flattenObject(obj: Record<string, unknown>, prefix = ''): Record<string
   return result;
 }
 
-function resolveRootAndPath(rawPath: string): { root: 'config' | 'keywords'; path: string; parent?: string; key: string } {
+function resolveRootAndPath(rawPath: string): {
+  root: 'config' | 'keywords';
+  path: string;
+  parent?: string;
+  key: string;
+} {
   let root: 'config' | 'keywords' = 'config';
   let path = rawPath;
   if (path.startsWith('keywords.')) {
@@ -65,11 +77,7 @@ function getKeyDescription(key: string): string {
   return `Configures the ${formatKeyName(key)} parameter for bot operations`;
 }
 
-function setNestedValue(
-  obj: Record<string, unknown>,
-  path: string[],
-  value: unknown
-): Record<string, unknown> {
+function setNestedValue(obj: Record<string, unknown>, path: string[], value: unknown): Record<string, unknown> {
   const result = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
   let current: Record<string, unknown> = result;
   for (let i = 0; i < path.length - 1; i++) {
@@ -83,10 +91,7 @@ function setNestedValue(
   return result;
 }
 
-function deleteNestedValue(
-  obj: Record<string, unknown>,
-  path: string[]
-): Record<string, unknown> {
+function deleteNestedValue(obj: Record<string, unknown>, path: string[]): Record<string, unknown> {
   const result = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
   let current: Record<string, unknown> = result;
   for (let i = 0; i < path.length - 1; i++) {
@@ -108,23 +113,12 @@ interface SectionOption {
 interface NewFieldModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (
-    sectionTarget: string,
-    newSectionName: string,
-    fieldKey: string,
-    value: unknown
-  ) => void;
+  onAdd: (sectionTarget: string, newSectionName: string, fieldKey: string, value: unknown) => void;
   availableSections: SectionOption[];
   defaultSection?: string;
 }
 
-function NewFieldModal({
-  open,
-  onClose,
-  onAdd,
-  availableSections,
-  defaultSection = 'general',
-}: NewFieldModalProps) {
+function NewFieldModal({ open, onClose, onAdd, availableSections, defaultSection = 'general' }: NewFieldModalProps) {
   const [sectionTarget, setSectionTarget] = useState(defaultSection);
   const [newSectionName, setNewSectionName] = useState('');
   const [keyName, setKeyName] = useState('');
@@ -189,9 +183,7 @@ function NewFieldModal({
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-[var(--admin-fg)]">
-                  Add Setting Field
-                </h3>
+                <h3 className="text-base font-bold text-[var(--admin-fg)]">Add Setting Field</h3>
                 <p className="text-xs text-[var(--admin-muted)] mt-0.5">
                   Select a section and create a custom parameter
                 </p>
@@ -200,10 +192,9 @@ function NewFieldModal({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[var(--admin-muted)]">
-                  Target Section
-                </label>
-                <select name="sectiontarget"
+                <label className="text-xs font-medium text-[var(--admin-muted)]">Target Section</label>
+                <select
+                  name="sectiontarget"
                   value={sectionTarget}
                   onChange={(e) => setSectionTarget(e.currentTarget.value)}
                   className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
@@ -219,36 +210,32 @@ function NewFieldModal({
 
               {sectionTarget === '__new__' && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-[var(--admin-muted)]">
-                    New Section Name
-                  </label>
+                  <label className="text-xs font-medium text-[var(--admin-muted)]">New Section Name</label>
                   <Input
                     value={newSectionName}
                     onChange={(e) => setNewSectionName(e.currentTarget.value)}
                     placeholder="e.g. economy or discord"
-                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm"
+                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                     required
                   />
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[var(--admin-muted)]">
-                  Field Key Name
-                </label>
+                <label className="text-xs font-medium text-[var(--admin-muted)]">Field Key Name</label>
                 <Input
                   value={keyName}
                   onChange={(e) => setKeyName(e.currentTarget.value)}
                   placeholder="e.g. spawn_cooldown"
-                  omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                  omitDefaults="rounded-md text-sm"
+                  className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[var(--admin-muted)]">
-                  Data Type
-                </label>
+                <label className="text-xs font-medium text-[var(--admin-muted)]">Data Type</label>
                 <div className="grid grid-cols-4 gap-1.5 p-1.5 rounded-xl bg-[var(--admin-elevated)]">
                   {(['string', 'number', 'boolean', 'array'] as const).map((type) => (
                     <button
@@ -263,7 +250,7 @@ function NewFieldModal({
                         'py-1.5 text-xs font-semibold rounded-lg transition-colors capitalize cursor-pointer',
                         fieldType === type
                           ? 'bg-[var(--admin-accent)] text-[var(--admin-accent-fg)]'
-                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                       )}
                     >
                       {type}
@@ -273,11 +260,10 @@ function NewFieldModal({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[var(--admin-muted)]">
-                  Initial Value
-                </label>
+                <label className="text-xs font-medium text-[var(--admin-muted)]">Initial Value</label>
                 {fieldType === 'boolean' ? (
-                  <select name="initialvalue"
+                  <select
+                    name="initialvalue"
                     value={initialValue}
                     onChange={(e) => setInitialValue(e.currentTarget.value)}
                     className="w-full h-10 rounded-xl bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs px-3 focus:outline-none cursor-pointer border-0"
@@ -290,7 +276,8 @@ function NewFieldModal({
                     value={initialValue}
                     onChange={(e) => setInitialValue(e.currentTarget.value)}
                     placeholder="Comma separated values (e.g. common, rare)"
-                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm"
+                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   />
                 ) : (
                   <Input
@@ -298,7 +285,8 @@ function NewFieldModal({
                     value={initialValue}
                     onChange={(e) => setInitialValue(e.currentTarget.value)}
                     placeholder="Enter value"
-                    omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
+                    omitDefaults="rounded-md text-sm"
+                    className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl border-0"
                   />
                 )}
               </div>
@@ -309,7 +297,8 @@ function NewFieldModal({
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  omitDefaults="rounded-md text-sm rounded-md" className="text-xs rounded-xl"
+                  omitDefaults="rounded-md text-sm rounded-md"
+                  className="text-xs rounded-xl"
                 >
                   Cancel
                 </Button>
@@ -326,7 +315,7 @@ function NewFieldModal({
         </div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }
 
@@ -340,15 +329,7 @@ interface SettingRowProps {
   removable?: boolean;
 }
 
-function SettingRow({
-  fieldKey,
-  value,
-  path,
-  onUpdate,
-  onDelete,
-  onReset,
-  removable = true,
-}: SettingRowProps) {
+function SettingRow({ fieldKey, value, path, onUpdate, onDelete, onReset, removable = true }: SettingRowProps) {
   const isArray = Array.isArray(value);
   const isBoolean = typeof value === 'boolean';
   const isNumber = typeof value === 'number';
@@ -358,18 +339,14 @@ function SettingRow({
     <div className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4 first:pt-0 last:pb-0">
       <div className="space-y-1 sm:max-w-xs md:max-w-sm">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-[var(--admin-fg)]">
-            {formatKeyName(fieldKey)}
-          </span>
+          <span className="text-sm font-semibold text-[var(--admin-fg)]">{formatKeyName(fieldKey)}</span>
           {removable && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--admin-elevated)] text-[var(--admin-muted)] font-medium">
               Custom
             </span>
           )}
         </div>
-        <p className="text-xs text-[var(--admin-muted)] leading-relaxed">
-          {getKeyDescription(fieldKey)}
-        </p>
+        <p className="text-xs text-[var(--admin-muted)] leading-relaxed">{getKeyDescription(fieldKey)}</p>
       </div>
 
       <div className="flex items-center gap-3 w-full sm:w-72 md:w-80 shrink-0 justify-end">
@@ -386,13 +363,13 @@ function SettingRow({
                 onClick={() => onUpdate(path, !value)}
                 className={cn(
                   'relative h-6 w-11 shrink-0 rounded-full transition-colors cursor-pointer',
-                  value ? 'bg-[var(--admin-accent)]' : 'bg-[var(--admin-elevated)]'
+                  value ? 'bg-[var(--admin-accent)]' : 'bg-[var(--admin-elevated)]',
                 )}
               >
                 <span
                   className={cn(
                     'absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform bg-white shadow-sm',
-                    value ? 'translate-x-5' : 'translate-x-0 opacity-60'
+                    value ? 'translate-x-5' : 'translate-x-0 opacity-60',
                   )}
                 />
               </button>
@@ -423,7 +400,8 @@ function SettingRow({
                 <Input
                   id={`tag-input-${path.join('-')}`}
                   placeholder="Add item…"
-                  omitDefaults="h-10 rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-9 text-[var(--admin-fg)] flex-1 rounded-xl border-0"
+                  omitDefaults="h-10 rounded-md text-sm"
+                  className="bg-[var(--admin-elevated)] text-xs h-9 text-[var(--admin-fg)] flex-1 rounded-xl border-0"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -438,9 +416,7 @@ function SettingRow({
                 <button
                   type="button"
                   onClick={() => {
-                    const input = document.getElementById(
-                      `tag-input-${path.join('-')}`
-                    ) as HTMLInputElement | null;
+                    const input = document.getElementById(`tag-input-${path.join('-')}`) as HTMLInputElement | null;
                     if (input && input.value.trim()) {
                       onUpdate(path, [...(value as unknown[]), input.value.trim()]);
                       input.value = '';
@@ -458,10 +434,12 @@ function SettingRow({
               type="number"
               value={Number(value)}
               onChange={(e) => onUpdate(path, Number(e.currentTarget.value))}
-              omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
+              omitDefaults="rounded-md text-sm"
+              className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
             />
           ) : isString && (value as string).length > 60 ? (
-            <textarea name="string-value"
+            <textarea
+              name="string-value"
               rows={3}
               value={String(value)}
               onChange={(e) => onUpdate(path, e.currentTarget.value)}
@@ -472,7 +450,8 @@ function SettingRow({
               type="text"
               value={String(value ?? '')}
               onChange={(e) => onUpdate(path, e.currentTarget.value)}
-              omitDefaults="rounded-md text-sm" className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
+              omitDefaults="rounded-md text-sm"
+              className="bg-[var(--admin-elevated)] text-xs h-10 text-[var(--admin-fg)] rounded-xl w-full border-0"
             />
           )}
         </div>
@@ -503,12 +482,13 @@ function SettingRow({
 
 export default function BotSettings() {
   const [config, setConfig] = useState<Record<string, unknown>>(() => {
-    return getCache<Record<string, unknown>>('config_raw') || {
-      name: 'Nationdex',
-      description:
-        'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
-      rarityClasses: ['common', 'uncommon', 'rare', 'mythic', 'legendary'],
-    };
+    return (
+      getCache<Record<string, unknown>>('config_raw') || {
+        name: 'Nationdex',
+        description: 'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
+        rarityClasses: ['common', 'uncommon', 'rare', 'mythic', 'legendary'],
+      }
+    );
   });
 
   const [initialConfig, setInitialConfig] = useState<Record<string, unknown>>(config);
@@ -605,7 +585,13 @@ export default function BotSettings() {
       }
 
       const results = await Promise.allSettled(tasks);
-      if (results.some(r => r.status === 'rejected' || (r.status === 'fulfilled' && (!r.value || (r.value as { ok?: boolean }).ok === false)))) {
+      if (
+        results.some(
+          (r) =>
+            r.status === 'rejected' ||
+            (r.status === 'fulfilled' && (!r.value || (r.value as { ok?: boolean }).ok === false)),
+        )
+      ) {
         setJsonError('Some settings could not be saved. Reload and retry.');
         return;
       }
@@ -648,12 +634,7 @@ export default function BotSettings() {
     setModalOpen(true);
   };
 
-  const handleAddFieldSubmit = (
-    sectionTarget: string,
-    newSectionName: string,
-    fieldKey: string,
-    val: unknown
-  ) => {
+  const handleAddFieldSubmit = (sectionTarget: string, newSectionName: string, fieldKey: string, val: unknown) => {
     let resolvedSection = sectionTarget;
     if (sectionTarget === '__new__') {
       if (!newSectionName.trim()) return;
@@ -758,9 +739,7 @@ export default function BotSettings() {
     <div className="w-full space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-[var(--admin-fg)] tracking-tight">
-            Bot Settings
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[var(--admin-fg)] tracking-tight">Bot Settings</h2>
           <p className="text-xs sm:text-sm text-[var(--admin-muted)] mt-1">
             Manage bot parameters, and dynamic options
           </p>
@@ -775,7 +754,7 @@ export default function BotSettings() {
                 'relative px-2 sm:px-3.5 py-1.5 text-xs font-semibold rounded-full transition-colors flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap',
                 viewMode === 'visual'
                   ? 'text-[var(--admin-accent-fg)]'
-                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
               )}
             >
               {viewMode === 'visual' && (
@@ -795,7 +774,7 @@ export default function BotSettings() {
                 'relative px-2 sm:px-3.5 py-1.5 text-xs font-semibold rounded-full transition-colors flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap',
                 viewMode === 'json'
                   ? 'text-[var(--admin-accent-fg)]'
-                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
               )}
             >
               {viewMode === 'json' && (
@@ -837,7 +816,8 @@ export default function BotSettings() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.currentTarget.value)}
                 placeholder="Filter parameters by name or value…"
-                omitDefaults="rounded-md text-sm" className="pl-9 bg-[var(--admin-card)] text-xs h-10 text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] rounded-xl border-0"
+                omitDefaults="rounded-md text-sm"
+                className="pl-9 bg-[var(--admin-card)] text-xs h-10 text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] rounded-xl border-0"
               />
             </div>
 
@@ -949,7 +929,11 @@ export default function BotSettings() {
             )}
 
             {visibleObjects.map((sec) => (
-              <Card key={sec.sectionKey} omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none">
+              <Card
+                key={sec.sectionKey}
+                omitDefaults="rounded-lg"
+                className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none"
+              >
                 <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-2 sm:gap-3 pb-3 border-b border-[var(--admin-border)] flex-nowrap min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--admin-fg)] whitespace-nowrap truncate min-w-0">
@@ -1008,9 +992,7 @@ export default function BotSettings() {
                 <span
                   className={cn(
                     'text-xs font-semibold px-3 py-1 rounded-full',
-                    jsonError
-                      ? 'bg-rose-500/20 text-rose-400'
-                      : 'bg-emerald-500/20 text-emerald-400'
+                    jsonError ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400',
                   )}
                 >
                   {jsonError || 'Valid JSON'}
@@ -1022,7 +1004,8 @@ export default function BotSettings() {
                 variant="ghost"
                 size="sm"
                 onClick={handleCopyJson}
-                omitDefaults="rounded-md text-sm rounded-md" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] rounded-full"
+                omitDefaults="rounded-md text-sm rounded-md"
+                className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] rounded-full"
               >
                 {copiedJson ? (
                   <Check className="h-3.5 w-3.5 mr-1 text-emerald-400" />
@@ -1033,9 +1016,13 @@ export default function BotSettings() {
               </Button>
             </div>
 
-            <Card omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none overflow-hidden">
+            <Card
+              omitDefaults="rounded-lg"
+              className="bg-[var(--admin-card)] rounded-2xl border-0 shadow-none overflow-hidden"
+            >
               <CardContent omitDefaults="p-6 pt-0" className="p-4">
-                <textarea name="jsontext"
+                <textarea
+                  name="jsontext"
                   rows={18}
                   value={jsonText}
                   onChange={(e) => handleJsonChange(e.currentTarget.value)}

@@ -28,15 +28,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, omitDefaults, variant = 'default', size = 'default', ...props }, ref) => (
     <button
       className={cn(
-        withoutDefaults('inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50', omitDefaults),
+        withoutDefaults(
+          'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50',
+          omitDefaults,
+        ),
         withoutDefaults(variantClass[variant as keyof typeof variantClass] ?? '', omitDefaults),
         withoutDefaults(sizes[size], omitDefaults),
-        className
+        className,
       )}
       ref={ref}
       {...props}
     />
-  )
+  ),
 );
 Button.displayName = 'Button';
 

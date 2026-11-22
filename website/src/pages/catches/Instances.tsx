@@ -74,10 +74,10 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
     if (selectedIds.size === 0) return;
     setIsDeleting(true);
     try {
-      const targets = [...selectedIds].map((id) => ({ id, player: owners.current.get(id) ?? '' })).filter((t) => t.player);
-      await Promise.allSettled(
-        targets.map((item) => removeUserNation(item.player, item.id))
-      );
+      const targets = [...selectedIds]
+        .map((id) => ({ id, player: owners.current.get(id) ?? '' }))
+        .filter((t) => t.player);
+      await Promise.allSettled(targets.map((item) => removeUserNation(item.player, item.id)));
       setReload((n) => n + 1);
       setSelectedIds(new Set());
       setDeleteSelectedModalOpen(false);
@@ -103,14 +103,16 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
   useEffect(() => {
     let active = true;
     setIsLoading(true);
-    void fetchInstancesPage({ query: debouncedQuery.trim(), rarity: classFilter, page: currentPage, pageSize }).then((data) => {
-      if (!active) return;
-      if (data) {
-        setInstances(data.items);
-        setTotal(data.total);
-      }
-      setIsLoading(false);
-    });
+    void fetchInstancesPage({ query: debouncedQuery.trim(), rarity: classFilter, page: currentPage, pageSize }).then(
+      (data) => {
+        if (!active) return;
+        if (data) {
+          setInstances(data.items);
+          setTotal(data.total);
+        }
+        setIsLoading(false);
+      },
+    );
     return () => {
       active = false;
     };
@@ -118,8 +120,7 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
 
   const paginatedInstances = instances;
 
-  const allPageSelected =
-    paginatedInstances.length > 0 && paginatedInstances.every((inst) => selectedIds.has(inst.id));
+  const allPageSelected = paginatedInstances.length > 0 && paginatedInstances.every((inst) => selectedIds.has(inst.id));
 
   const toggleSelectAll = () => {
     if (allPageSelected) {
@@ -157,22 +158,34 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center flex-1">
           <div className="relative w-full sm:w-64">
-            <Search
-              className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)}
-            />
+            <Search className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)} />
             <Input
               value={localQuery}
               onChange={(e) => {
                 setLocalQuery(e.currentTarget.value);
                 setCurrentPage(1);
               }}
-              omitDefaults="h-10 rounded-md text-sm" className={cn('pl-9 h-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]')}
+              omitDefaults="h-10 rounded-md text-sm"
+              className={cn(
+                'pl-9 h-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]',
+              )}
               placeholder="Search instances like India"
             />
           </div>
 
-          <Select value={classFilter} onValueChange={(val) => { setClassFilter(val); setCurrentPage(1); }}>
-            <SelectTrigger omitDefaults="h-10 rounded-md border text-sm" className={cn('h-9 w-full sm:w-36 text-xs rounded-lg bg-[var(--admin-card)] text-[var(--admin-fg)] border-0 shadow-none')}>
+          <Select
+            value={classFilter}
+            onValueChange={(val) => {
+              setClassFilter(val);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger
+              omitDefaults="h-10 rounded-md border text-sm"
+              className={cn(
+                'h-9 w-full sm:w-36 text-xs rounded-lg bg-[var(--admin-card)] text-[var(--admin-fg)] border-0 shadow-none',
+              )}
+            >
               <SelectValue placeholder="All Classes" />
             </SelectTrigger>
             <SelectContent className={cn(admin.elevated, admin.fg, 'border-0 shadow-lg')}>
@@ -188,15 +201,14 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
 
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 shrink-0">
-            <span className={cn('text-xs', admin.muted)}>
-              {selectedIds.size} selected
-            </span>
+            <span className={cn('text-xs', admin.muted)}>{selectedIds.size} selected</span>
             <Button
               variant="ghost"
               size="sm"
-              omitDefaults="rounded-md text-sm h-9 rounded-md" className={cn(
+              omitDefaults="rounded-md text-sm h-9 rounded-md"
+              className={cn(
                 'h-8 px-3 text-xs bg-[var(--admin-card)] text-red-400/90 rounded-lg border-0 shadow-none',
-                'hover:bg-red-500/10 hover:text-red-400'
+                'hover:bg-red-500/10 hover:text-red-400',
               )}
               onClick={() => setDeleteSelectedModalOpen(true)}
             >
@@ -213,104 +225,91 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
               <thead>
                 <tr className="border-b border-[var(--admin-border)]">
                   <th className="w-10 py-3.5 pl-5 sm:pl-6 pr-3 text-left">
-                    <input name="allpageselected"
+                    <input
+                      name="allpageselected"
                       type="checkbox"
                       checked={allPageSelected}
                       onChange={toggleSelectAll}
                       className="h-4 w-4 rounded accent-zinc-500 cursor-pointer"
                     />
                   </th>
-                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>
-                    Description
-                  </th>
-                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>
-                    Class
-                  </th>
-                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>
-                    Player
-                  </th>
-                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>
-                    Time to Catch
-                  </th>
-                  <th className={cn('py-3.5 pr-5 sm:pr-6 text-right text-xs font-semibold', admin.muted)}>
-                    Actions
-                  </th>
+                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>Description</th>
+                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>Class</th>
+                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>Player</th>
+                  <th className={cn('py-3.5 px-4 text-left text-xs font-semibold', admin.muted)}>Time to Catch</th>
+                  <th className={cn('py-3.5 pr-5 sm:pr-6 text-right text-xs font-semibold', admin.muted)}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  Array.from({ length: pageSize > 10 ? 10 : pageSize }).map((_, i) => (
-                    <tr key={i} className="border-b border-[var(--admin-border)] last:border-0 animate-pulse">
-                      <td className="py-3.5 pl-5 sm:pl-6 pr-3">
-                        <div className="h-4 w-4 rounded bg-[var(--admin-elevated)]" />
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="h-4 w-40 sm:w-48 rounded bg-[var(--admin-elevated)]" />
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="h-5 w-16 rounded-full bg-[var(--admin-elevated)]" />
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="h-4 w-24 sm:w-28 rounded bg-[var(--admin-elevated)]" />
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="h-4 w-16 rounded bg-[var(--admin-elevated)]" />
-                      </td>
-                      <td className="py-3.5 pr-5 sm:pr-6 text-right">
-                        <div className="flex items-center justify-end">
-                          <div className="h-7 w-14 rounded bg-[var(--admin-elevated)]" />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  paginatedInstances.map((inst) => (
-                    <tr
-                      key={inst.id}
-                      className={cn(
-                        'border-b border-[var(--admin-border)] last:border-0 transition-colors',
-                        admin.hoverRow,
-                        selectedIds.has(inst.id) && 'bg-[var(--admin-elevated)]/60'
-                      )}
-                    >
-                      <td className="py-3 pl-5 sm:pl-6 pr-3">
-                        <input name="selectedids-has-inst-id"
-                          type="checkbox"
-                          checked={selectedIds.has(inst.id)}
-                          onChange={() => toggleSelect(inst.id)}
-                          className="h-4 w-4 rounded accent-zinc-500 cursor-pointer"
-                        />
-                      </td>
-                      <td className={cn('py-3 px-4 text-sm font-medium', admin.fg)}>
-                        {inst.description}
-                      </td>
-                      <td className="py-3 px-4 text-xs">
-                        <span className="capitalize px-2 py-0.5 rounded-full bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-[11px] font-medium">
-                          {formatRarity(inst.class)}
-                        </span>
-                      </td>
-                      <td className={cn('py-3 px-4 text-sm', admin.fg)}>{inst.player}</td>
-                      <td className={cn('py-3 px-4 text-sm', admin.muted)}>
-                        {formatTimeToCatch(inst.timeToCatch)}
-                      </td>
-                      <td className="py-3 pr-5 sm:pr-6 text-right">
-                        <div className="flex items-center justify-end">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            omitDefaults="text-sm h-9 px-3" className={cn(
-                              'h-7 px-2.5 text-xs bg-[var(--admin-elevated)] text-red-400/80',
-                              'hover:bg-red-500/10 hover:text-red-400'
-                            )}
-                            onClick={() => setDeleteInstance(inst)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                {isLoading
+                  ? Array.from({ length: pageSize > 10 ? 10 : pageSize }).map((_, i) => (
+                      <tr key={i} className="border-b border-[var(--admin-border)] last:border-0 animate-pulse">
+                        <td className="py-3.5 pl-5 sm:pl-6 pr-3">
+                          <div className="h-4 w-4 rounded bg-[var(--admin-elevated)]" />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="h-4 w-40 sm:w-48 rounded bg-[var(--admin-elevated)]" />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="h-5 w-16 rounded-full bg-[var(--admin-elevated)]" />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="h-4 w-24 sm:w-28 rounded bg-[var(--admin-elevated)]" />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="h-4 w-16 rounded bg-[var(--admin-elevated)]" />
+                        </td>
+                        <td className="py-3.5 pr-5 sm:pr-6 text-right">
+                          <div className="flex items-center justify-end">
+                            <div className="h-7 w-14 rounded bg-[var(--admin-elevated)]" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : paginatedInstances.map((inst) => (
+                      <tr
+                        key={inst.id}
+                        className={cn(
+                          'border-b border-[var(--admin-border)] last:border-0 transition-colors',
+                          admin.hoverRow,
+                          selectedIds.has(inst.id) && 'bg-[var(--admin-elevated)]/60',
+                        )}
+                      >
+                        <td className="py-3 pl-5 sm:pl-6 pr-3">
+                          <input
+                            name="selectedids-has-inst-id"
+                            type="checkbox"
+                            checked={selectedIds.has(inst.id)}
+                            onChange={() => toggleSelect(inst.id)}
+                            className="h-4 w-4 rounded accent-zinc-500 cursor-pointer"
+                          />
+                        </td>
+                        <td className={cn('py-3 px-4 text-sm font-medium', admin.fg)}>{inst.description}</td>
+                        <td className="py-3 px-4 text-xs">
+                          <span className="capitalize px-2 py-0.5 rounded-full bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-[11px] font-medium">
+                            {formatRarity(inst.class)}
+                          </span>
+                        </td>
+                        <td className={cn('py-3 px-4 text-sm', admin.fg)}>{inst.player}</td>
+                        <td className={cn('py-3 px-4 text-sm', admin.muted)}>{formatTimeToCatch(inst.timeToCatch)}</td>
+                        <td className="py-3 pr-5 sm:pr-6 text-right">
+                          <div className="flex items-center justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              omitDefaults="text-sm h-9 px-3"
+                              className={cn(
+                                'h-7 px-2.5 text-xs bg-[var(--admin-elevated)] text-red-400/80',
+                                'hover:bg-red-500/10 hover:text-red-400',
+                              )}
+                              onClick={() => setDeleteInstance(inst)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -361,8 +360,9 @@ export default function InstancesPage({ searchQuery = '' }: { searchQuery?: stri
       <ConfirmModal
         open={deleteSelectedModalOpen}
         title={`Delete ${selectedIds.size} Selected Instance${selectedIds.size > 1 ? 's' : ''}?`}
-        description={`Are you sure you want to permanently delete ${selectedIds.size} selected nation instance${selectedIds.size > 1 ? 's' : ''
-          }? This action cannot be undone.`}
+        description={`Are you sure you want to permanently delete ${selectedIds.size} selected nation instance${
+          selectedIds.size > 1 ? 's' : ''
+        }? This action cannot be undone.`}
         confirmText="Delete Selected"
         isLoading={isDeleting}
         onConfirm={handleConfirmBulkDelete}

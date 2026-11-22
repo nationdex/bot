@@ -33,7 +33,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
       onNavigate(result.section, result.filterQuery);
       close();
     },
-    [close, onNavigate]
+    [close, onNavigate],
   );
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
         whileTap={hoverFeedback ? { scale: 0.95 } : undefined}
         className={cn(
           'rounded-lg p-2 text-[var(--admin-muted)] transition-colors hover:bg-[var(--admin-accent)]/10 hover:text-[var(--admin-fg)]',
-          className
+          className,
         )}
         aria-label="Search admin panel"
         aria-expanded={open}
@@ -124,7 +124,8 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                       }}
                       onKeyDown={handleInputKeyDown}
                       placeholder="Search whole panel (pages, settings, nations, users...)"
-                      omitDefaults="h-10 px-3" className="h-9 flex-1 bg-transparent px-0 text-sm text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]"
+                      omitDefaults="h-10 px-3"
+                      className="h-9 flex-1 bg-transparent px-0 text-sm text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)]"
                     />
                     <button
                       type="button"
@@ -148,16 +149,14 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                               'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
                               index === activeIndex
                                 ? 'bg-[var(--admin-accent)]/10'
-                                : 'hover:bg-[var(--admin-accent)]/5'
+                                : 'hover:bg-[var(--admin-accent)]/5',
                             )}
                           >
                             <span className="shrink-0 rounded-md bg-[var(--admin-elevated)] px-2 py-0.5 text-[10px] font-medium tracking-wide text-[var(--admin-muted)]">
                               {searchTypeLabels[result.type] ?? 'Item'}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm text-[var(--admin-fg)]">
-                                {result.title}
-                              </span>
+                              <span className="block truncate text-sm text-[var(--admin-fg)]">{result.title}</span>
                               {result.subtitle && (
                                 <span className="block truncate text-xs text-[var(--admin-muted)]">
                                   {result.subtitle}
@@ -167,7 +166,7 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
                             <ArrowRight
                               className={cn(
                                 'h-3.5 w-3.5 shrink-0 text-[var(--admin-muted)] transition-transform',
-                                index === activeIndex && 'translate-x-0.5 text-[var(--admin-fg)]'
+                                index === activeIndex && 'translate-x-0.5 text-[var(--admin-fg)]',
                               )}
                             />
                           </button>
@@ -182,15 +181,13 @@ export default function HeaderSearch({ onNavigate, className }: HeaderSearchProp
 
                   <div className="flex items-center justify-between border-t border-[var(--admin-border)] px-3 py-2 text-[10px] text-[var(--admin-muted)]">
                     <span>↑↓ navigate | Enter open | Esc close</span>
-                    <kbd className="rounded bg-[var(--admin-elevated)] px-1.5 py-0.5">
-                      Ctrl K
-                    </kbd>
+                    <kbd className="rounded bg-[var(--admin-elevated)] px-1.5 py-0.5">Ctrl K</kbd>
                   </div>
                 </m.div>
               </>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
     </>
   );

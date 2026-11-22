@@ -25,7 +25,7 @@ export default new ForgeFunction({
   ],
   code: `
   $if[$isJSON[$env[data]];
-  $return[$js[const json = $env[data];
+      $return[$js[const json = $env[data];
     if (json == null || typeof json !== "object") { JSON.stringify(json != null ? json : null) }
     else if ((Array.isArray(json) && json.length === 0) || Object.keys(json).length === 0) { JSON.stringify(json) }
     else {

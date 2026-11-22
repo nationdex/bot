@@ -47,14 +47,9 @@ export function ConfirmModal({
             className="relative z-10 w-full max-w-sm rounded-2xl bg-[var(--admin-card)] text-[var(--admin-fg)] p-6 shadow-2xl space-y-4"
           >
             <div className="flex items-start gap-4">
-
               <div className="space-y-1.5 min-w-0">
-                <h3 className="text-base sm:text-lg font-bold text-[var(--admin-fg)] tracking-tight">
-                  {title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[var(--admin-muted)] leading-relaxed">
-                  {description}
-                </p>
+                <h3 className="text-base sm:text-lg font-bold text-[var(--admin-fg)] tracking-tight">{title}</h3>
+                <p className="text-xs sm:text-sm text-[var(--admin-muted)] leading-relaxed">{description}</p>
               </div>
             </div>
 
@@ -72,10 +67,9 @@ export function ConfirmModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={isLoading}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${isDanger
-                  ? 'bg-[#ff453a] text-white hover:bg-[#e03b32]'
-                  : 'bg-amber-500 text-black hover:bg-amber-400'
-                  } disabled:opacity-50`}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  isDanger ? 'bg-[#ff453a] text-white hover:bg-[#e03b32]' : 'bg-amber-500 text-black hover:bg-amber-400'
+                } disabled:opacity-50`}
               >
                 {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 <span>{confirmText}</span>
@@ -85,6 +79,6 @@ export function ConfirmModal({
         </div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

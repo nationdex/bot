@@ -75,11 +75,11 @@ export default new ForgeFunction({
 
   $addContainer[
     $addTextDisplay[## Auction #$get[aid]
-$getSpecial[$collectible[$get[nat];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** \`#$get[nat]\`
+      $getSpecial[$collectible[$get[nat];special];emoji]$appEmoji[$collectibleInfo[$get[colID];emoji_id]] **$collectibleInfo[$get[colID];name]** \`#$get[nat]\`
 -# ATK: **$collectible[$get[nat];attack]** ($collectible[$get[nat];attack_type]) / HP: **$collectible[$get[nat];health]** ($collectible[$get[nat];health_type])]
     $addSeparator
     $addTextDisplay[- **Seller:** $get[sellerName]
-$if[$get[bidder]==;- **Starting bid:** $separateNumber[$env[a;start]] $get[curName];- **Current bid:** $separateNumber[$get[cur]] $get[curName] by **$get[bidderName]**]
+      $if[$get[bidder]==;- **Starting bid:** $separateNumber[$env[a;start]] $get[curName];- **Current bid:** $separateNumber[$get[cur]] $get[curName] by **$get[bidderName]**]
 - **Minimum next bid:** $separateNumber[$get[min]] $get[curName]
 - **Buyout:** $if[$get[buyout]>0;$separateNumber[$get[buyout]] $get[curName];None]
 - **Bids:** $default[$env[a;bids];0]

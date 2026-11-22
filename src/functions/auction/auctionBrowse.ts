@@ -75,7 +75,7 @@ export default new ForgeFunction({
     $return[- **#$env[it;id]** · $getSpecial[$collectible[$env[it;nation];special];emoji]$appEmoji[$collectibleInfo[$env[it;colID];emoji_id]] **$collectibleInfo[$env[it;colID];name]** · $env[it;price] $get[curName] ($env[it;bidsText]) · ends <t:$env[it;endsSec]:R>]
   ;lines]
   $let[body;$arrayJoin[lines;
-]]
+  ]]
   $let[empty;$if[$get[filter]==mine;You have no active listings. Use \`/auction create\` to list one.;$if[$get[filter]==bidding;You are not the top bidder on any auction.;No active auctions right now. Use \`/auction create\` to list one.]]]
 
   $let[navId;$get[viewer]-$get[filter]]

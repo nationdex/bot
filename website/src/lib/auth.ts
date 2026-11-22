@@ -123,7 +123,7 @@ export async function updatePanelUser(
     role?: 'owner' | 'admin' | 'member';
     groupId?: number | null;
     permissions?: string[];
-  }
+  },
 ): Promise<{ ok: boolean; error?: string; user?: PanelUser; users?: PanelUser[] }> {
   const res = await fetch(`/api/panel/users/${id}`, {
     method: 'PUT',
@@ -134,7 +134,9 @@ export async function updatePanelUser(
   return res.json() as Promise<{ ok: boolean; error?: string; user?: PanelUser; users?: PanelUser[] }>;
 }
 
-export async function transferPanelOwnership(id: number): Promise<{ ok: boolean; error?: string; users?: PanelUser[] }> {
+export async function transferPanelOwnership(
+  id: number,
+): Promise<{ ok: boolean; error?: string; users?: PanelUser[] }> {
   const res = await fetch(`/api/panel/users/${id}/owner`, {
     method: 'POST',
     credentials: 'include',
@@ -178,7 +180,7 @@ export async function updatePanelGroup(
     description?: string;
     color?: string;
     permissions?: string[];
-  }
+  },
 ): Promise<{ ok: boolean; error?: string; groups?: PanelGroup[] }> {
   const res = await fetch(`/api/panel/groups/${id}`, {
     method: 'PUT',

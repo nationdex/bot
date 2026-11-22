@@ -65,6 +65,6 @@ export function UnsavedChangesBar({
         </m.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

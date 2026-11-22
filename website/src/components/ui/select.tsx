@@ -22,7 +22,14 @@ function collectItems(node: React.ReactNode, items: ItemProps[]): void {
   });
 }
 
-function Select({ value, onValueChange, disabled, id, name, children }: {
+function Select({
+  value,
+  onValueChange,
+  disabled,
+  id,
+  name,
+  children,
+}: {
   id?: string;
   name?: string;
   value: string;
@@ -40,7 +47,12 @@ function Select({ value, onValueChange, disabled, id, name, children }: {
   });
 
   return (
-    <div className={cn(withoutDefaults('relative flex h-10 w-full items-center rounded-md border text-sm', trigger?.omitDefaults), trigger?.className)}>
+    <div
+      className={cn(
+        withoutDefaults('relative flex h-10 w-full items-center rounded-md border text-sm', trigger?.omitDefaults),
+        trigger?.className,
+      )}
+    >
       <select
         id={id ?? (name ? undefined : auto)}
         name={name}

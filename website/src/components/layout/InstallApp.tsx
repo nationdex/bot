@@ -9,10 +9,11 @@ import { cn } from '@/lib/utils';
 type InstallPrompt = Event & { prompt: () => Promise<void> };
 
 const isStandalone = (): boolean =>
-  window.matchMedia('(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui)').matches ||
-  (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  window.matchMedia('(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui)')
+    .matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
 
-const isApple = (): boolean => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isApple = (): boolean =>
+  /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 export default function InstallApp() {
   const [prompt, setPrompt] = useState<InstallPrompt | null>(null);
@@ -34,7 +35,8 @@ export default function InstallApp() {
 
   let text: string;
   if (installed) text = 'You are using the installed app.';
-  else if (!window.isSecureContext) text = 'Installing needs HTTPS (or localhost). Open the panel through a secure address to install it.';
+  else if (!window.isSecureContext)
+    text = 'Installing needs HTTPS (or localhost). Open the panel through a secure address to install it.';
   else if (prompt) text = 'Install the panel as an app with its own window and icon.';
   else if (isApple()) text = 'In Safari, tap Share, then "Add to Home Screen" (on a Mac: File, then "Add to Dock").';
   else text = 'Use your browser menu: "Install app" or "Add to Home screen".';

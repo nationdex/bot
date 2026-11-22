@@ -38,7 +38,7 @@ export default new ForgeFunction({
 
   $addContainer[
     $addTextDisplay[$env[d;title]
-$env[d;status]]
+      $env[d;status]]
     $addSeparator
     $addTextDisplay[### History
 $env[d;history]]

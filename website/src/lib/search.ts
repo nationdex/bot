@@ -4,25 +4,9 @@ import type { PanelUser } from '@/lib/auth';
 import { bot, formatRarity } from '@/lib/bot';
 
 type AdminSection =
-  | 'dashboard'
-  | 'users'
-  | 'nations'
-  | 'instances'
-  | 'guilds'
-  | 'cards'
-  | 'bot_settings'
-  | 'panel_users'
-  | 'settings';
+  'dashboard' | 'users' | 'nations' | 'instances' | 'guilds' | 'cards' | 'bot_settings' | 'panel_users' | 'settings';
 
-type SearchResultType =
-  | 'page'
-  | 'setting'
-  | 'user'
-  | 'nation'
-  | 'instance'
-  | 'guild'
-  | 'card'
-  | 'staff';
+type SearchResultType = 'page' | 'setting' | 'user' | 'nation' | 'instance' | 'guild' | 'card' | 'staff';
 
 export type SearchResult = {
   id: string;
@@ -128,7 +112,21 @@ const staticItems: StaticIndexItem[] = [
     title: 'Dashboard',
     subtitle: 'Stats, charts, metrics and bot activity',
     section: 'dashboard',
-    keywords: ['stats', 'statistics', 'charts', 'analytics', 'overview', 'summary', 'metrics', 'activity', 'graph', 'server count', 'user count', 'catches', 'home'],
+    keywords: [
+      'stats',
+      'statistics',
+      'charts',
+      'analytics',
+      'overview',
+      'summary',
+      'metrics',
+      'activity',
+      'graph',
+      'server count',
+      'user count',
+      'catches',
+      'home',
+    ],
   },
   {
     id: 'page-users',
@@ -136,7 +134,22 @@ const staticItems: StaticIndexItem[] = [
     title: 'Users',
     subtitle: 'Player balances, inventories, and gifts',
     section: 'users',
-    keywords: ['players', 'accounts', 'discord id', 'money', 'cash', 'balance', 'economy', 'wealth', 'inventory', 'privacy', 'gifts', 'trades', 'auctions', 'user list'],
+    keywords: [
+      'players',
+      'accounts',
+      'discord id',
+      'money',
+      'cash',
+      'balance',
+      'economy',
+      'wealth',
+      'inventory',
+      'privacy',
+      'gifts',
+      'trades',
+      'auctions',
+      'user list',
+    ],
   },
   {
     id: 'page-nations',
@@ -144,7 +157,25 @@ const staticItems: StaticIndexItem[] = [
     title: bot.collectible.plural.charAt(0).toUpperCase() + bot.collectible.plural.slice(1),
     subtitle: 'Global catalog, rarities, and spawn weights',
     section: 'nations',
-    keywords: ['catalog', 'collectibles', 'balls', 'countries', 'nations', 'rarity', 'common', 'uncommon', 'rare', 'mystic', 'legendary', 'hp', 'health', 'attack', 'combat', 'weight', 'art'],
+    keywords: [
+      'catalog',
+      'collectibles',
+      'balls',
+      'countries',
+      'nations',
+      'rarity',
+      'common',
+      'uncommon',
+      'rare',
+      'mystic',
+      'legendary',
+      'hp',
+      'health',
+      'attack',
+      'combat',
+      'weight',
+      'art',
+    ],
   },
   {
     id: 'page-instances',
@@ -160,7 +191,18 @@ const staticItems: StaticIndexItem[] = [
     title: 'Guild Configs',
     subtitle: 'Registered guild spawn channels and drop timers',
     section: 'guilds',
-    keywords: ['servers', 'guilds', 'discord servers', 'spawn', 'channels', 'drop rate', 'drop interval', 'spawn channel', 'guild id', 'prefixes'],
+    keywords: [
+      'servers',
+      'guilds',
+      'discord servers',
+      'spawn',
+      'channels',
+      'drop rate',
+      'drop interval',
+      'spawn channel',
+      'guild id',
+      'prefixes',
+    ],
   },
   {
     id: 'page-cards',
@@ -168,7 +210,18 @@ const staticItems: StaticIndexItem[] = [
     title: 'Cards',
     subtitle: 'Regimes, special event cards, and artwork',
     section: 'cards',
-    keywords: ['cards', 'regimes', 'specials', 'frames', 'artwork', 'backgrounds', 'card designs', 'borders', 'events', 'assets'],
+    keywords: [
+      'cards',
+      'regimes',
+      'specials',
+      'frames',
+      'artwork',
+      'backgrounds',
+      'card designs',
+      'borders',
+      'events',
+      'assets',
+    ],
   },
   {
     id: 'page-bot-settings',
@@ -176,7 +229,20 @@ const staticItems: StaticIndexItem[] = [
     title: 'Bot Settings',
     subtitle: 'Configuration parameters, prefix, and dynamic flags',
     section: 'bot_settings',
-    keywords: ['config', 'configuration', 'bot configuration', 'prefix', 'parameters', 'cooldown', 'drop timer', 'flags', 'maintainers', 'raw json', 'bot name', 'currency name'],
+    keywords: [
+      'config',
+      'configuration',
+      'bot configuration',
+      'prefix',
+      'parameters',
+      'cooldown',
+      'drop timer',
+      'flags',
+      'maintainers',
+      'raw json',
+      'bot name',
+      'currency name',
+    ],
   },
   {
     id: 'page-panel-users',
@@ -184,7 +250,20 @@ const staticItems: StaticIndexItem[] = [
     title: 'Panel Users',
     subtitle: 'Staff accounts, roles, and administrative permissions',
     section: 'panel_users',
-    keywords: ['staff', 'admins', 'moderators', 'roles', 'permissions', 'groups', 'divisions', 'access control', 'panel users', 'security', 'owner', 'member'],
+    keywords: [
+      'staff',
+      'admins',
+      'moderators',
+      'roles',
+      'permissions',
+      'groups',
+      'divisions',
+      'access control',
+      'panel users',
+      'security',
+      'owner',
+      'member',
+    ],
   },
   {
     id: 'page-settings',
@@ -192,7 +271,17 @@ const staticItems: StaticIndexItem[] = [
     title: 'Panel Settings',
     subtitle: 'Theme presets, custom palette, and animations',
     section: 'settings',
-    keywords: ['settings', 'preferences', 'theme', 'appearance', 'motion', 'animations', 'display', 'ui', 'performance'],
+    keywords: [
+      'settings',
+      'preferences',
+      'theme',
+      'appearance',
+      'motion',
+      'animations',
+      'display',
+      'ui',
+      'performance',
+    ],
   },
   {
     id: 'setting-theme',
@@ -200,7 +289,20 @@ const staticItems: StaticIndexItem[] = [
     title: 'Theme Presets',
     subtitle: 'Panel Settings > Obsidian, Charcoal, Slate, Emerald, Violet, Rose',
     section: 'settings',
-    keywords: ['dark mode', 'light mode', 'theme', 'appearance', 'obsidian', 'charcoal', 'slate', 'emerald', 'violet', 'rose', 'colors', 'styling'],
+    keywords: [
+      'dark mode',
+      'light mode',
+      'theme',
+      'appearance',
+      'obsidian',
+      'charcoal',
+      'slate',
+      'emerald',
+      'violet',
+      'rose',
+      'colors',
+      'styling',
+    ],
   },
   {
     id: 'setting-palette',
@@ -216,7 +318,18 @@ const staticItems: StaticIndexItem[] = [
     title: 'Motion & Effects',
     subtitle: 'Panel Settings > Fade transitions, 3D card tilt, springs, and hover feedback',
     section: 'settings',
-    keywords: ['animations', 'motion', 'effects', 'fade', 'smooth', 'page transitions', 'springs', 'hover feedback', 'card tilt', 'tilt'],
+    keywords: [
+      'animations',
+      'motion',
+      'effects',
+      'fade',
+      'smooth',
+      'page transitions',
+      'springs',
+      'hover feedback',
+      'card tilt',
+      'tilt',
+    ],
   },
   {
     id: 'setting-low-spec',
@@ -224,7 +337,18 @@ const staticItems: StaticIndexItem[] = [
     title: 'Low-Spec Mode',
     subtitle: 'Panel Settings > Optimize performance and minimize animations',
     section: 'settings',
-    keywords: ['low spec', 'performance', 'lag', 'fps', 'boost', 'battery', 'slow', 'hardware acceleration', 'reduce motion', 'fast'],
+    keywords: [
+      'low spec',
+      'performance',
+      'lag',
+      'fps',
+      'boost',
+      'battery',
+      'slow',
+      'hardware acceleration',
+      'reduce motion',
+      'fast',
+    ],
   },
   {
     id: 'setting-economy',
@@ -240,7 +364,15 @@ const staticItems: StaticIndexItem[] = [
     title: 'Spawn Timers & Channels',
     subtitle: 'Guild Configs > Server drop intervals and active spawn channels',
     section: 'guilds',
-    keywords: ['spawn timers', 'drop intervals', 'channel drops', 'cooldowns', 'spawn rate', 'intervals', 'drop frequency'],
+    keywords: [
+      'spawn timers',
+      'drop intervals',
+      'channel drops',
+      'cooldowns',
+      'spawn rate',
+      'intervals',
+      'drop frequency',
+    ],
   },
   {
     id: 'setting-staff-roles',
@@ -248,7 +380,15 @@ const staticItems: StaticIndexItem[] = [
     title: 'Staff Roles & Permissions',
     subtitle: 'Panel Users > Configure owner, admin, and member privileges',
     section: 'panel_users',
-    keywords: ['staff roles', 'permissions', 'admin privileges', 'owner access', 'member permissions', 'authorization', 'security'],
+    keywords: [
+      'staff roles',
+      'permissions',
+      'admin privileges',
+      'owner access',
+      'member permissions',
+      'authorization',
+      'security',
+    ],
   },
   {
     id: 'setting-user-privacy',
@@ -256,7 +396,14 @@ const staticItems: StaticIndexItem[] = [
     title: 'User Privacy & Gift Filters',
     subtitle: 'Users > Public or private inventories and gift permissions',
     section: 'users',
-    keywords: ['user privacy', 'public inventory', 'private inventory', 'accept gifts', 'block gifts', 'trading settings'],
+    keywords: [
+      'user privacy',
+      'public inventory',
+      'private inventory',
+      'accept gifts',
+      'block gifts',
+      'trading settings',
+    ],
   },
 ];
 
@@ -294,12 +441,7 @@ function tokenFuzzyMatches(word: string, token: string): boolean {
   return levenshtein(word, token) <= maxDistance;
 }
 
-function calculateScore(
-  title: string,
-  subtitle: string,
-  keywords: string[],
-  query: string
-): number {
+function calculateScore(title: string, subtitle: string, keywords: string[], query: string): number {
   const q = query.toLowerCase().trim();
   const t = title.toLowerCase();
   const s = subtitle.toLowerCase();
@@ -322,23 +464,22 @@ function calculateScore(
 
   const qTokens = q.split(/[\s\-_,.:;/|\\()+]+/).filter(Boolean);
   if (qTokens.length > 0) {
-    const titleFuzzy = qTokens.every((token) =>
-      titleWords.some((w) => tokenFuzzyMatches(w, token))
-    );
+    const titleFuzzy = qTokens.every((token) => titleWords.some((w) => tokenFuzzyMatches(w, token)));
     if (titleFuzzy) return 30;
 
     const kwFuzzy = qTokens.every((token) =>
       keywords.some((kw) => {
-        const kwWords = kw.toLowerCase().split(/[\s\-_,.:;/|\\()+]+/).filter(Boolean);
+        const kwWords = kw
+          .toLowerCase()
+          .split(/[\s\-_,.:;/|\\()+]+/)
+          .filter(Boolean);
         return kwWords.some((w) => tokenFuzzyMatches(w, token));
-      })
+      }),
     );
     if (kwFuzzy) return 25;
 
     const subWords = s.split(/[\s\-_,.:;/|\\()+]+/).filter(Boolean);
-    const subFuzzy = qTokens.every((token) =>
-      subWords.some((w) => tokenFuzzyMatches(w, token))
-    );
+    const subFuzzy = qTokens.every((token) => subWords.some((w) => tokenFuzzyMatches(w, token)));
     if (subFuzzy) return 15;
   }
 
@@ -354,7 +495,7 @@ function getCachedPanelUsers(): PanelUser[] {
 export function searchAdmin(
   rawQuery: string,
   dynamicUsers?: UserEntry[],
-  dynamicCatalog?: CollectibleEntry[]
+  dynamicCatalog?: CollectibleEntry[],
 ): SearchResult[] {
   const query = rawQuery.trim();
   if (!query) return defaultPages;
@@ -376,10 +517,7 @@ export function searchAdmin(
     }
   }
 
-  const usersList =
-    dynamicUsers && dynamicUsers.length > 0
-      ? dynamicUsers
-      : getCache<UserEntry[]>('users_all') ?? [];
+  const usersList = dynamicUsers && dynamicUsers.length > 0 ? dynamicUsers : (getCache<UserEntry[]>('users_all') ?? []);
 
   for (const user of usersList) {
     const keywords = [
@@ -407,7 +545,7 @@ export function searchAdmin(
   const catalogList =
     dynamicCatalog && dynamicCatalog.length > 0
       ? dynamicCatalog
-      : getCache<CollectibleEntry[]>('collectibles_all') ?? [];
+      : (getCache<CollectibleEntry[]>('collectibles_all') ?? []);
 
   for (const entry of catalogList) {
     const rarityLabel = formatRarity(entry.class);
@@ -427,9 +565,7 @@ export function searchAdmin(
   }
 
   const instances =
-    getCache<NationInstanceEntry[]>('instances_all_v2') ??
-    getCache<NationInstanceEntry[]>('instances_all') ??
-    [];
+    getCache<NationInstanceEntry[]>('instances_all_v2') ?? getCache<NationInstanceEntry[]>('instances_all') ?? [];
 
   for (const inst of instances) {
     const title = inst.name || inst.id;
@@ -493,7 +629,14 @@ export function searchAdmin(
   for (const pUser of panelUsers) {
     const title = pUser.displayName || pUser.username;
     const subtitle = `@${pUser.username} | Role: ${pUser.role}${pUser.groupName ? ` (${pUser.groupName})` : ''}`;
-    const keywords = [pUser.username, pUser.displayName || '', pUser.role, pUser.groupName || '', 'staff', 'panel user'];
+    const keywords = [
+      pUser.username,
+      pUser.displayName || '',
+      pUser.role,
+      pUser.groupName || '',
+      'staff',
+      'panel user',
+    ];
     const score = calculateScore(title, subtitle, keywords, query);
     if (score > 0) {
       scoredResults.push({

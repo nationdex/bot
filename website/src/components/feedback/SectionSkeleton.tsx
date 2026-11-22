@@ -56,7 +56,11 @@ function NationsSkeleton() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i} omitDefaults="rounded-lg" className={cn('rounded-2xl p-4 bg-[var(--admin-card)] space-y-3', admin.card)}>
+          <Card
+            key={i}
+            omitDefaults="rounded-lg"
+            className={cn('rounded-2xl p-4 bg-[var(--admin-card)] space-y-3', admin.card)}
+          >
             <Skeleton omitDefaults="rounded-md" className="h-36 w-full rounded-xl" />
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -234,7 +238,10 @@ function SettingsSkeleton() {
         <Skeleton className="h-5 w-48" />
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--admin-border)] last:border-0">
+            <div
+              key={i}
+              className="flex items-center justify-between py-2 border-b border-[var(--admin-border)] last:border-0"
+            >
               <div className="space-y-1">
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-52 opacity-60" />
@@ -287,7 +294,11 @@ function DashboardSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} omitDefaults="rounded-lg" className={cn('p-5 rounded-2xl bg-[var(--admin-card)] space-y-3', admin.card)}>
+          <Card
+            key={i}
+            omitDefaults="rounded-lg"
+            className={cn('p-5 rounded-2xl bg-[var(--admin-card)] space-y-3', admin.card)}
+          >
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24" />
               <Skeleton omitDefaults="rounded-md" className="h-8 w-8 rounded-xl" />

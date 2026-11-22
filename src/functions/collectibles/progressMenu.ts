@@ -40,18 +40,18 @@ export default new ForgeFunction({
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
   $let[listStInd;$multi[$get[maxperpage];$max[$sub[$get[listPage];1];0]]]
   $let[listEndInd;$multi[$get[maxperpage];$get[listPage]]]
-  
+
   $jsonLoad[catalog;$getGlobalVar[collectiblesData]]
   $jsonLoad[classes;$env[catalog;classes]]
   $jsonLoad[ids;$collectibleIDs]
   $let[total;$env[catalog;total]]
   $arrayForEach[classes;class;$let[$env[class];$env[catalog;$env[class]]]]
-  
+
   $jsonLoad[userCollectibles;$getUserData[$get[user];collectibleIDs]]
   $jsonLoad[userUniques;$collectibleIDs[$get[user]]]
   $let[userTotal;$getUserData[$get[user];total]]
   $arrayForEach[classes;class;$let[user$env[class];$default[$getUserData[$get[user];$env[class]];0]]]
-      
+
   $ifx[
     $if[$isValidClass[$get[class]];
       $jsonLoad[clids;$classCatchIDs[$jsonStringify[userCollectibles];$jsonStringify[catalog];$get[class]]]
@@ -74,12 +74,12 @@ export default new ForgeFunction({
           $return[$if[$get[idEmojiVal]==;\`$get[idName]\` ;$get[idEmojiVal]]]
         ]
       ;missing]
-      
+
       $let[classTotal;$default[$get[$get[class]];0]]
       $let[owned;$arrayLength[owned]]
       $let[missing;$arrayLength[missing]]
       $let[progress;$if[$get[classTotal]>0;$cropText[$math[($get[owned]/$get[classTotal])*100];0;4];NaN]]
-      
+
       $if[$or[$get[classTotal]<1;$get[classTotal]==];
         $return[$err[no_collectibles_found;true]]
       ;
@@ -96,20 +96,20 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
 **Owned**: $arrayJoin[owned;]]$if[$get[missing]>0;
 
 **Missing**: $arrayJoin[missing;]]
-]
+            ]
             $addSeparator
             $addActionRow
-          $if[$arrayLength[colID]>0;
-            $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info]
-            $arrayForEach[colID;nat;
-              $let[id;$env[nat]]
-              $jsonLoad[colData;$getVar[collectible;$get[id]]]
-              $let[colID;$env[colData;id]]
-              $addOption[$cropText[$getSpecial[$env[colData;special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $env[colData;attack] | HEALTH: $env[colData;health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
-            ]
+            $if[$arrayLength[colID]>0;
+              $addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info]
+              $arrayForEach[colID;nat;
+                $let[id;$env[nat]]
+                $jsonLoad[colData;$getVar[collectible;$get[id]]]
+                $let[colID;$env[colData;id]]
+                $addOption[$cropText[$getSpecial[$env[colData;special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $env[colData;attack] | HEALTH: $env[colData;health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
+              ]
             ;$addStringSelectMenu[collectibles-info-$authorID-$get[class];Select a $jsonVar[keywords;collectible.singular] to view its info;true]
-            $addOption[null;null;null]
-          ]
+              $addOption[null;null;null]
+            ]
           ;$jsonVar[config;accent]]
           $addActionRow
           $addButton[pages-collectibles-$authorID-$sub[$get[page];1]-$get[user]-$get[class];Previous;Secondary;;$checkCondition[$get[page]==1]]
@@ -118,7 +118,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
         ]
       ]
     ]
-    
+
     $else[
       $if[$or[$get[total]<1;$get[total]==];
         $return[$err[no_collectibles_found;true]]
@@ -187,27 +187,27 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
 **Owned**: $arrayJoin[classOwned$get[pageClass];]]$if[$get[missingCount]>0;
 
 **Missing**: $arrayJoin[classMissing$get[pageClass];]]
-]
+              ]
               $addSeparator
               $addActionRow
-            $if[$arrayLength[colID]>0;
-              $addStringSelectMenu[collectibles-info-$authorID-$get[pageClass];Select a $jsonVar[keywords;collectible.singular] to view its info]
-              $arrayForEach[colID;nat;
-                $let[id;$env[nat]]
-                $jsonLoad[colData;$getVar[collectible;$get[id]]]
-                $let[colID;$env[colData;id]]
-                $addOption[$cropText[$getSpecial[$env[colData;special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $env[colData;attack] | HEALTH: $env[colData;health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
-              ]
+              $if[$arrayLength[colID]>0;
+                $addStringSelectMenu[collectibles-info-$authorID-$get[pageClass];Select a $jsonVar[keywords;collectible.singular] to view its info]
+                $arrayForEach[colID;nat;
+                  $let[id;$env[nat]]
+                  $jsonLoad[colData;$getVar[collectible;$get[id]]]
+                  $let[colID;$env[colData;id]]
+                  $addOption[$cropText[$getSpecial[$env[colData;special];emoji] $env[catalog;collectibles;$get[colID];name];0;90;...];ATTACK: $env[colData;attack] | HEALTH: $env[colData;health];$env[nat];$appEmoji[$env[catalog;collectibles;$get[colID];emoji_id]]]
+                ]
               ;$addStringSelectMenu[collectibles-info-$authorID-$get[pageClass];Select a $jsonVar[keywords;collectible.singular] to view its info;true]
-              $addOption[null;null;null]
-            ]
-            $addActionRow
-            $addButton[pages-progress-$authorID-$get[prevPage]-$get[user]-$get[prevList];Previous;Secondary;;$checkCondition[$and[$get[page]<=1;$get[listPage]<=1]]]
-            $addButton[pages-progress-$authorID-index;$toTitleCase[$get[pageClass]] · $get[listPage] / $get[listPages];Primary;;true]
-            $addButton[pages-progress-$authorID-$get[nextPage]-$get[user]-$get[nextList];Next;Secondary;;$checkCondition[$and[$get[page]>=$get[pages];$get[listPage]>=$get[listPages]]]]
+                $addOption[null;null;null]
+              ]
+              $addActionRow
+              $addButton[pages-progress-$authorID-$get[prevPage]-$get[user]-$get[prevList];Previous;Secondary;;$checkCondition[$and[$get[page]<=1;$get[listPage]<=1]]]
+              $addButton[pages-progress-$authorID-index;$toTitleCase[$get[pageClass]] · $get[listPage] / $get[listPages];Primary;;true]
+              $addButton[pages-progress-$authorID-$get[nextPage]-$get[user]-$get[nextList];Next;Secondary;;$checkCondition[$and[$get[page]>=$get[pages];$get[listPage]>=$get[listPages]]]]
             ;$jsonVar[config;accent]]
           ]
-          ;
+        ;
           $arrayMap[unclassifiedIds;id;$if[$arrayIncludes[userUniques;$env[id]];$return[$env[id]]];noClassOwnedIds]
           $arrayMap[unclassifiedIds;id;$if[$arrayIncludes[userUniques;$env[id]]==false;$return[$env[id]]];noClassMissingIds]
           $arrayMap[noClassOwnedIds;uu;
@@ -235,7 +235,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
 **Owned**: $arrayJoin[noClassOwned;]]$if[$get[noClassMissingCount]>0;
 
 **Missing**: $arrayJoin[noClassMissing;]]
-]
+              ]
               $addSeparator
               $addActionRow
               $addButton[pages-progress-$authorID-$sub[$get[page];1]-$get[user]-1;Previous;Secondary]
@@ -247,7 +247,7 @@ Total $toTitleCase[$get[class]] $jsonVar[keywords;collectible.plural]: **$defaul
       ]
     ]
   ]
-  
+
   $return
   `,
 });

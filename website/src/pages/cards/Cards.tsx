@@ -1,12 +1,33 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
-import { Download, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2, Upload, X } from '@/components/icons';
+import {
+  Download,
+  ExternalLink,
+  Image as ImageIcon,
+  Loader2,
+  RefreshCw,
+  Search,
+  Trash2,
+  Upload,
+  X,
+} from '@/components/icons';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { createPortal } from 'preact';
 import { ConfirmModal } from '@/components/feedback/ConfirmModal';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { deleteCardBackground, fetchCardBackgrounds, fetchConfig, fetchSpecialsCards, getCache, getCardImageUrl, replaceCardBackground, setCache, type RegimeCardItem, type SpecialCardItem } from '@/lib/api';
+import {
+  deleteCardBackground,
+  fetchCardBackgrounds,
+  fetchConfig,
+  fetchSpecialsCards,
+  getCache,
+  getCardImageUrl,
+  replaceCardBackground,
+  setCache,
+  type RegimeCardItem,
+  type SpecialCardItem,
+} from '@/lib/api';
 import { type CardCategoryId, cardCategories } from '@/lib/bot';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { quickTransition } from '@/lib/motion';
@@ -18,7 +39,9 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
   const [regimes, setRegimes] = useState<RegimeCardItem[]>(() => getCache<RegimeCardItem[]>('cards_regimes') || []);
-  const [specials, setSpecials] = useState<SpecialCardItem[]>(() => getCache<SpecialCardItem[]>('cards_specials') || []);
+  const [specials, setSpecials] = useState<SpecialCardItem[]>(
+    () => getCache<SpecialCardItem[]>('cards_specials') || [],
+  );
   const [isLoading, setIsLoading] = useState<boolean>(() => !getCache<RegimeCardItem[]>('cards_regimes')?.length);
 
   const [selectedPreview, setSelectedPreview] = useState<{
@@ -62,10 +85,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
 
     async function loadCards() {
       try {
-        const [bgData, spData] = await Promise.all([
-          fetchCardBackgrounds(),
-          fetchSpecialsCards(),
-        ]);
+        const [bgData, spData] = await Promise.all([fetchCardBackgrounds(), fetchSpecialsCards()]);
         if (!active) return;
         if (Array.isArray(bgData)) {
           setRegimes(bgData);
@@ -92,14 +112,14 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
   const filteredRegimes = regimes.filter(
     (entry) =>
       entry.name.toLowerCase().includes(localQuery.toLowerCase()) ||
-      entry.id.toLowerCase().includes(localQuery.toLowerCase())
+      entry.id.toLowerCase().includes(localQuery.toLowerCase()),
   );
 
   const filteredSpecials = specials.filter(
     (entry) =>
       entry.name.toLowerCase().includes(localQuery.toLowerCase()) ||
       entry.id.toLowerCase().includes(localQuery.toLowerCase()) ||
-      (entry.description && entry.description.toLowerCase().includes(localQuery.toLowerCase()))
+      (entry.description && entry.description.toLowerCase().includes(localQuery.toLowerCase())),
   );
 
   const handleImageLoad = (id: string) => {
@@ -194,7 +214,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
             : hoveredCardId !== null
               ? 'scale-[0.97] opacity-60 blur-[2px]'
               : 'scale-100 opacity-100 blur-none',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)]'
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-accent)]',
         )}
       >
         <div className="absolute inset-0 bg-[var(--admin-elevated)]/60">
@@ -217,7 +237,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
               onError={() => handleImageError(entry.id)}
               className={cn(
                 'h-full w-full object-cover transition-transform duration-500',
-                isLoaded ? 'opacity-100' : 'opacity-0'
+                isLoaded ? 'opacity-100' : 'opacity-0',
               )}
             />
           )}
@@ -234,19 +254,15 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
         </div>
 
         <div className="absolute bottom-0 inset-x-0 p-5 text-white z-10 flex flex-col justify-end">
-
           <h3 className="mt-1 text-2xl font-semibold tracking-tight text-white truncate" title={entry.name}>
             {entry.name}
           </h3>
 
           {!isRegime && (entry as SpecialCardItem).description && (
-            <p className="mt-1 text-xs text-white/70 line-clamp-2">
-              {(entry as SpecialCardItem).description}
-            </p>
+            <p className="mt-1 text-xs text-white/70 line-clamp-2">{(entry as SpecialCardItem).description}</p>
           )}
 
           <div className="mt-3.5 flex items-center justify-between pt-2.5 border-t border-white/15">
-
             {isRegime && (
               <div className="flex items-center gap-1.5">
                 <button
@@ -317,7 +333,9 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                 onClick={() => setCategory(item.id)}
                 className={cn(
                   'relative px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-colors flex items-center justify-center cursor-pointer select-none touch-manipulation',
-                  category === item.id ? 'text-[var(--admin-accent-fg)]' : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                  category === item.id
+                    ? 'text-[var(--admin-accent-fg)]'
+                    : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                 )}
               >
                 {category === item.id && (
@@ -333,13 +351,12 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
 
           <div className="flex items-center gap-2">
             <div className="relative min-w-0 flex-1 sm:w-64">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]"
-              />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
               <Input
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.currentTarget.value)}
-                omitDefaults="h-10 rounded-md text-sm" className="h-9 rounded-full bg-[var(--admin-elevated)] pl-9 pr-4 text-xs text-[var(--admin-fg)] border-0 focus-visible:ring-0"
+                omitDefaults="h-10 rounded-md text-sm"
+                className="h-9 rounded-full bg-[var(--admin-elevated)] pl-9 pr-4 text-xs text-[var(--admin-fg)] border-0 focus-visible:ring-0"
                 placeholder="Search cards..."
               />
             </div>
@@ -379,21 +396,21 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
 
             {((category === 'regimes' && filteredRegimes.length === 0) ||
               (category === 'specials' && filteredSpecials.length === 0)) && (
-                <div className="py-12 text-center space-y-1.5">
-                  <p className="text-sm font-medium text-[var(--admin-fg)]">
-                    {localQuery
-                      ? `No cards found matching "${localQuery}"`
-                      : category === 'specials'
-                        ? 'No special cards available'
-                        : 'No regime cards available'}
-                  </p>
-                  <p className="text-xs text-[var(--admin-muted)]">
-                    {localQuery
-                      ? 'Try checking the spelling or search for another card.'
-                      : 'Cards will appear here once added to the bot.'}
-                  </p>
-                </div>
-              )}
+              <div className="py-12 text-center space-y-1.5">
+                <p className="text-sm font-medium text-[var(--admin-fg)]">
+                  {localQuery
+                    ? `No cards found matching "${localQuery}"`
+                    : category === 'specials'
+                      ? 'No special cards available'
+                      : 'No regime cards available'}
+                </p>
+                <p className="text-xs text-[var(--admin-muted)]">
+                  {localQuery
+                    ? 'Try checking the spelling or search for another card.'
+                    : 'Cards will appear here once added to the bot.'}
+                </p>
+              </div>
+            )}
           </>
         )}
       </CardContent>
@@ -448,7 +465,9 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                     <div className="w-full space-y-1 rounded-2xl bg-[var(--admin-elevated)]/60 p-3 text-xs">
                       <div className="flex items-center justify-between py-0.5">
                         <span className="text-[var(--admin-muted)]">Card Type</span>
-                        <span className="font-medium text-[var(--admin-fg)] capitalize">{selectedPreview.category}</span>
+                        <span className="font-medium text-[var(--admin-fg)] capitalize">
+                          {selectedPreview.category}
+                        </span>
                       </div>
                       {selectedPreview.nationsCount !== undefined && (
                         <div className="flex items-center justify-between py-0.5">
@@ -508,10 +527,8 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
               </div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
-
-
 
       {typeof document !== 'undefined' &&
         createPortal(
@@ -537,15 +554,20 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                       <RefreshCw className="h-4 w-4 text-[var(--admin-accent)]" />
                       <div>
                         <h3 className="text-base font-semibold text-[var(--admin-fg)]">Replace Card Background</h3>
-                        <p className="text-xs text-[var(--admin-muted)]">Overwrites {replaceTarget.name} ({replaceTarget.id}.png)</p>
+                        <p className="text-xs text-[var(--admin-muted)]">
+                          Overwrites {replaceTarget.name} ({replaceTarget.id}.png)
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <form onSubmit={handleReplaceSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-[var(--admin-fg)]">New PNG Image (1428 x 2000 px, max 10MB)</label>
-                      <input name="file-549"
+                      <label className="text-xs font-medium text-[var(--admin-fg)]">
+                        New PNG Image (1428 x 2000 px, max 10MB)
+                      </label>
+                      <input
+                        name="file-549"
                         ref={replaceFileInputRef}
                         type="file"
                         accept=".png"
@@ -565,16 +587,16 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                           <div className="flex flex-col items-center gap-2 py-3">
                             <Upload className="h-5 w-5 text-[var(--admin-muted)]" />
                             <span className="text-xs text-[var(--admin-muted)]">Click to choose replacement PNG</span>
-                            <span className="text-[10px] text-[var(--admin-muted)]/70">Exactly 1428 x 2000 px, up to 10MB</span>
+                            <span className="text-[10px] text-[var(--admin-muted)]/70">
+                              Exactly 1428 x 2000 px, up to 10MB
+                            </span>
                           </div>
                         )}
                       </div>
                     </div>
 
                     {replaceError && (
-                      <p className="text-xs text-red-400 bg-red-500/10 rounded-xl p-2.5">
-                        {replaceError}
-                      </p>
+                      <p className="text-xs text-red-400 bg-red-500/10 rounded-xl p-2.5">{replaceError}</p>
                     )}
 
                     <div className="flex items-center justify-end gap-2">
@@ -584,7 +606,8 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                         size="sm"
                         disabled={isReplacing}
                         onClick={() => setReplaceTarget(null)}
-                        omitDefaults="text-sm h-9" className="h-8 text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
+                        omitDefaults="text-sm h-9"
+                        className="h-8 text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)]"
                       >
                         Cancel
                       </Button>
@@ -592,7 +615,8 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
                         type="submit"
                         size="sm"
                         disabled={isReplacing || !replacePreview}
-                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg gap-1.5 text-xs bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md"
+                        className="h-8 rounded-lg gap-1.5 text-xs bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
                       >
                         {isReplacing && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         Replace Background
@@ -603,7 +627,7 @@ export default function CardsPage({ searchQuery = '' }: { searchQuery?: string }
               </div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
 
       <ConfirmModal

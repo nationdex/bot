@@ -50,11 +50,6 @@ export const accessCommand: SlashCommandConfig = {
   integration_types: [ApplicationIntegrationType.GuildInstall],
   contexts: [InteractionContextType.Guild],
   subcommands: {
-    claim: {
-      name: 'claim',
-      description: 'Claim ownership (application owner only, while no owner exists)',
-      tags: ['access'],
-    },
     grant: {
       name: 'grant',
       description: 'Give a user a role or capability',

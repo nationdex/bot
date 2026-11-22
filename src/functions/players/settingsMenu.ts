@@ -17,7 +17,7 @@ export default new ForgeFunction({
   $let[inv;$userSettings[$authorID;inventory_privacy]]
   $let[profile;$userSettings[$authorID;profile_privacy]]
   $let[gifts;$userSettings[$authorID;accept_gifts]]
-  
+
   $return[
     $addContainer[
       $addSection[

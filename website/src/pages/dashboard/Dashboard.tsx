@@ -5,7 +5,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { admin } from '@/lib/admin-classes';
-import { fetchCollectibles, fetchGrowth, fetchStats, fetchUserData, getCache, type BotStats, type CollectibleEntry, type UserEntry } from '@/lib/api';
+import {
+  fetchCollectibles,
+  fetchGrowth,
+  fetchStats,
+  fetchUserData,
+  getCache,
+  type BotStats,
+  type CollectibleEntry,
+  type UserEntry,
+} from '@/lib/api';
 import { bot, formatRarity, type RarityClass } from '@/lib/bot';
 import { listItem, quickTransition, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
@@ -20,7 +29,7 @@ const growthChartTitles: Record<DashboardFilter, string> = {
   All: 'Catch Growth',
   Users: 'New Players',
   Nations: 'Catch Growth',
-  Servers: 'Spawn Activity'
+  Servers: 'Spawn Activity',
 };
 
 const getUnitLabel = (count: number, filter: DashboardFilter) => {
@@ -36,7 +45,11 @@ const getUnitLabel = (count: number, filter: DashboardFilter) => {
 // Start of the three chart buckets and the end of the last one, in the browser's time zone.
 function rangeBounds(range: 'Month' | 'Annually'): [number, number, number, number] {
   const now = new Date();
-  const at = (i: number) => (range === 'Month' ? new Date(now.getFullYear(), now.getMonth() + i, 1) : new Date(now.getFullYear() + i, 0, 1)).getTime();
+  const at = (i: number) =>
+    (range === 'Month'
+      ? new Date(now.getFullYear(), now.getMonth() + i, 1)
+      : new Date(now.getFullYear() + i, 0, 1)
+    ).getTime();
   return [at(-2), at(-1), at(0), at(1)];
 }
 
@@ -46,12 +59,14 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
   const [timeRange, setTimeRange] = useState<'Month' | 'Annually'>('Month');
   const [liveStats, setLiveStats] = useState<BotStats>(() => {
     const cached = getCache<BotStats>('stats');
-    return cached || {
-      userCount: 0,
-      totalCaught: 0,
-      catalogTotal: 0,
-      guildCount: 0,
-    };
+    return (
+      cached || {
+        userCount: 0,
+        totalCaught: 0,
+        catalogTotal: 0,
+        guildCount: 0,
+      }
+    );
   });
   const [topNations, setTopNations] = useState<
     Array<{ id: string; name: string; class: RarityClass; globalCaught: number }>
@@ -70,11 +85,11 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
   });
 
   const isChartLoading =
-    (selectedFilter === 'All' || selectedFilter === 'Nations')
+    selectedFilter === 'All' || selectedFilter === 'Nations'
       ? isLoadingInstances
       : selectedFilter === 'Users'
-      ? isLoadingUsers
-      : false;
+        ? isLoadingUsers
+        : false;
 
   const listReveal = useMotionPref('listReveal');
   const hoverFeedback = useMotionPref('hoverFeedback');
@@ -137,7 +152,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
             name: entry.name,
             class: entry.class,
             globalCaught: entry.globalCaught,
-          }))
+          })),
         );
       }
     });
@@ -192,8 +207,8 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
 
     const baseline0 = c0 > 0 ? Math.max(1, Math.round(c0 * 0.85)) : 0;
     const pct0 = baseline0 > 0 ? Math.round(((c0 - baseline0) / baseline0) * 1000) / 10 : 0;
-    const pct1 = c0 > 0 ? Math.round(((c1 - c0) / c0) * 1000) / 10 : (c1 > 0 ? 100 : 0);
-    const pct2 = c1 > 0 ? Math.round(((c2 - c1) / c1) * 1000) / 10 : (c2 > 0 ? 100 : 0);
+    const pct1 = c0 > 0 ? Math.round(((c1 - c0) / c0) * 1000) / 10 : c1 > 0 ? 100 : 0;
+    const pct2 = c1 > 0 ? Math.round(((c2 - c1) / c1) * 1000) / 10 : c2 > 0 ? 100 : 0;
 
     return [
       { label: label0, count: c0, pct: formatPct(pct0), numGrowth: pct0, isLatest: false },
@@ -252,10 +267,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
     },
   ];
 
-  const visibleStats =
-    selectedFilter === 'All'
-      ? stats
-      : stats.filter((stat) => stat.category === selectedFilter);
+  const visibleStats = selectedFilter === 'All' ? stats : stats.filter((stat) => stat.category === selectedFilter);
 
   const showNationsTable = selectedFilter === 'All' || selectedFilter === 'Nations';
   const showUsersTable = selectedFilter === 'Users';
@@ -273,7 +285,6 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
   return (
     <div className="w-full space-y-4 sm:space-y-6">
       <div className="mb-4 sm:mb-6 space-y-3">
-
         <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-[var(--admin-card)] w-fit flex-wrap">
           {filterOptions.map((filter) => (
             <button
@@ -284,7 +295,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                 'relative px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-colors flex items-center justify-center cursor-pointer select-none touch-manipulation',
                 selectedFilter === filter
                   ? 'text-[var(--admin-accent-fg)]'
-                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                  : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
               )}
             >
               {selectedFilter === filter &&
@@ -311,12 +322,13 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
               initial="hidden"
               animate="show"
               exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
-              className={`grid gap-3 sm:gap-4 ${visibleStats.length === 1
-                ? 'grid-cols-1 max-w-sm'
-                : visibleStats.length === 2
-                  ? 'grid-cols-1 sm:grid-cols-2'
-                  : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
-                }`}
+              className={`grid gap-3 sm:gap-4 ${
+                visibleStats.length === 1
+                  ? 'grid-cols-1 max-w-sm'
+                  : visibleStats.length === 2
+                    ? 'grid-cols-1 sm:grid-cols-2'
+                    : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
+              }`}
             >
               {visibleStats.map((stat) => {
                 const Icon = stat.icon;
@@ -325,13 +337,11 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                     <Card className="bg-[var(--admin-card)] hover:border-[var(--admin-border)] transition-colors h-full">
                       <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5">
                         <div className="flex items-start justify-between mb-3 gap-3">
-                          <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">
-                            {stat.label}
-                          </h3>
+                          <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">{stat.label}</h3>
                           <div
                             className={cn(
                               'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                              admin.elevated
+                              admin.elevated,
                             )}
                           >
                             <Icon className="h-4 w-4 text-[var(--admin-accent)]" />
@@ -363,12 +373,13 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       ) : (
         showStats && (
           <div
-            className={`grid gap-3 sm:gap-4 ${visibleStats.length === 1
-              ? 'grid-cols-1 max-w-sm'
-              : visibleStats.length === 2
-                ? 'grid-cols-1 sm:grid-cols-2'
-                : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
-              }`}
+            className={`grid gap-3 sm:gap-4 ${
+              visibleStats.length === 1
+                ? 'grid-cols-1 max-w-sm'
+                : visibleStats.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
+            }`}
           >
             {visibleStats.map((stat) => {
               const Icon = stat.icon;
@@ -379,14 +390,9 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                 >
                   <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5">
                     <div className="flex items-start justify-between mb-3 gap-3">
-                      <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">
-                        {stat.label}
-                      </h3>
+                      <h3 className="text-xs sm:text-sm font-medium text-[var(--admin-muted)]">{stat.label}</h3>
                       <div
-                        className={cn(
-                          'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                          admin.elevated
-                        )}
+                        className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', admin.elevated)}
                       >
                         <Icon className="h-4 w-4 text-[var(--admin-accent)]" />
                       </div>
@@ -405,7 +411,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
       {showCharts && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-stretch">
           {showNationsTable && (
-            <Card omitDefaults="rounded-lg" className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
+            <Card
+              omitDefaults="rounded-lg"
+              className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between"
+            >
               <CardContent omitDefaults="p-6 pt-0" className="p-0 flex flex-col flex-1 justify-between">
                 <div className="p-4 sm:p-5 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <h3 className="text-sm font-medium text-[var(--admin-muted)] capitalize">
@@ -413,7 +422,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                   </h3>
                   <div className="relative z-20 w-full sm:w-auto">
                     <Select value={selectedClassFilter} onValueChange={setSelectedClassFilter}>
-                      <SelectTrigger omitDefaults="h-10 text-sm" className="min-h-9 w-full cursor-pointer touch-manipulation bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs sm:min-w-[9rem] sm:w-auto h-9">
+                      <SelectTrigger
+                        omitDefaults="h-10 text-sm"
+                        className="min-h-9 w-full cursor-pointer touch-manipulation bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs sm:min-w-[9rem] sm:w-auto h-9"
+                      >
                         <SelectValue placeholder="All classes" />
                       </SelectTrigger>
                       <SelectContent className="bg-[var(--admin-elevated)]">
@@ -432,18 +444,12 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                   <table className="w-full min-w-[400px]">
                     <thead>
                       <tr className="border-b border-[var(--admin-border)]">
-                        <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 pl-4 sm:pl-5 pr-4">
-                          ID
-                        </th>
+                        <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 pl-4 sm:pl-5 pr-4">ID</th>
                         <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 px-4 capitalize">
                           {bot.collectible.singular}
                         </th>
-                        <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 px-4">
-                          Class
-                        </th>
-                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 pr-4 sm:pr-5">
-                          Caught
-                        </th>
+                        <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 px-4">Class</th>
+                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 pr-4 sm:pr-5">Caught</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -461,10 +467,11 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         return paginatedTopNations.map((entry, i) => {
                           const row = (
                             <>
-                              <td className="py-2.5 pl-4 sm:pl-5 pr-4 text-xs text-[var(--admin-muted)]">
-                                {entry.id}
-                              </td>
-                              <td className="text-xs sm:text-sm text-[var(--admin-muted)] py-2.5 px-4 font-medium" title={entry.name}>
+                              <td className="py-2.5 pl-4 sm:pl-5 pr-4 text-xs text-[var(--admin-muted)]">{entry.id}</td>
+                              <td
+                                className="text-xs sm:text-sm text-[var(--admin-muted)] py-2.5 px-4 font-medium"
+                                title={entry.name}
+                              >
                                 {entry.name}
                               </td>
                               <td className="py-2.5 px-4 text-xs text-[var(--admin-muted)] capitalize">
@@ -487,7 +494,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               {row}
                             </m.tr>
                           ) : (
-                            <tr key={entry.id} className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors">
+                            <tr
+                              key={entry.id}
+                              className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors"
+                            >
                               {row}
                             </tr>
                           );
@@ -508,12 +518,13 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
           )}
 
           {showUsersTable && (
-            <Card omitDefaults="rounded-lg" className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between">
+            <Card
+              omitDefaults="rounded-lg"
+              className="lg:col-span-2 bg-[var(--admin-card)] overflow-hidden rounded-xl hover:border-[var(--admin-border)] transition-colors h-full flex flex-col justify-between"
+            >
               <CardContent omitDefaults="p-6 pt-0" className="p-0 flex flex-col flex-1 justify-between">
                 <div className="p-4 sm:p-5 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <h3 className="text-sm font-medium text-[var(--admin-muted)]">
-                    Top players
-                  </h3>
+                  <h3 className="text-sm font-medium text-[var(--admin-muted)]">Top players</h3>
                 </div>
 
                 <div className="overflow-x-auto w-full flex-1">
@@ -523,15 +534,9 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         <th className="text-left text-xs text-[var(--admin-muted)] py-2.5 pl-4 sm:pl-5 pr-4">
                           Discord ID
                         </th>
-                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 px-4">
-                          Total
-                        </th>
-                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 px-4">
-                          Unique
-                        </th>
-                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 pr-4 sm:pr-5">
-                          Value
-                        </th>
+                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 px-4">Total</th>
+                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 px-4">Unique</th>
+                        <th className="text-right text-xs text-[var(--admin-muted)] py-2.5 pr-4 sm:pr-5">Value</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -549,7 +554,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         return paginatedTopUsers.map((user, i) => {
                           const row = (
                             <>
-                              <td className="py-2.5 pl-4 sm:pl-5 pr-4 text-xs font-medium text-[var(--admin-fg)]" title={user.username || user.discordId}>
+                              <td
+                                className="py-2.5 pl-4 sm:pl-5 pr-4 text-xs font-medium text-[var(--admin-fg)]"
+                                title={user.username || user.discordId}
+                              >
                                 {user.discordId}
                               </td>
                               <td className="py-2.5 px-4 text-right text-xs text-[var(--admin-fg)] tabular-nums font-semibold">
@@ -575,7 +583,10 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               {row}
                             </m.tr>
                           ) : (
-                            <tr key={user.discordId} className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors">
+                            <tr
+                              key={user.discordId}
+                              className="border-b border-[var(--admin-border)] last:border-0 hover:bg-[var(--admin-elevated)] transition-colors"
+                            >
                               {row}
                             </tr>
                           );
@@ -601,9 +612,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
             >
               <CardContent omitDefaults="p-6 pt-0" className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                  <h3 className="text-sm font-medium text-[var(--admin-muted)]">
-                    {growthChartTitles[selectedFilter]}
-                  </h3>
+                  <h3 className="text-sm font-medium text-[var(--admin-muted)]">{growthChartTitles[selectedFilter]}</h3>
 
                   <div className="relative z-20 inline-flex items-center gap-1 p-1 rounded-full bg-[var(--admin-elevated)] w-full sm:w-auto">
                     <button
@@ -613,7 +622,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         'relative px-3 py-1.5 text-xs font-medium rounded-full transition-colors flex-1 sm:flex-none flex items-center justify-center cursor-pointer select-none touch-manipulation',
                         timeRange === 'Month'
                           ? 'text-[var(--admin-accent-fg)]'
-                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                       )}
                     >
                       {timeRange === 'Month' &&
@@ -635,7 +644,7 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                         'relative px-3 py-1.5 text-xs font-medium rounded-full transition-colors flex-1 sm:flex-none flex items-center justify-center cursor-pointer select-none touch-manipulation',
                         timeRange === 'Annually'
                           ? 'text-[var(--admin-accent-fg)]'
-                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                          : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                       )}
                     >
                       {timeRange === 'Annually' &&
@@ -692,7 +701,12 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                   <>
                     {(() => {
                       const latestIndex = chartData.findIndex((d) => d.isLatest);
-                      const activeIndex = hoveredBarIndex !== null ? hoveredBarIndex : (latestIndex >= 0 ? latestIndex : chartData.length - 1);
+                      const activeIndex =
+                        hoveredBarIndex !== null
+                          ? hoveredBarIndex
+                          : latestIndex >= 0
+                            ? latestIndex
+                            : chartData.length - 1;
                       const activeItem = chartData[activeIndex] || chartData[chartData.length - 1];
 
                       return (
@@ -702,14 +716,19 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                               {activeItem?.label ? `${activeItem.label} Growth Rate` : 'Growth Rate'}
                             </p>
                             <p className="text-sm sm:text-base font-bold text-[var(--admin-fg)] mt-0.5">
-                              {activeItem ? `${activeItem.count.toLocaleString()} ${getUnitLabel(activeItem.count, selectedFilter)}` : '0 Catches'}
+                              {activeItem
+                                ? `${activeItem.count.toLocaleString()} ${getUnitLabel(activeItem.count, selectedFilter)}`
+                                : '0 Catches'}
                             </p>
                           </div>
                           {activeItem && activeItem.pct && (
-                            <div className={`text-xs font-semibold px-2.5 py-1 rounded-full ${activeItem.numGrowth >= 0
-                              ? 'bg-emerald-500/20 text-emerald-400'
-                              : 'bg-rose-500/20 text-rose-400'
-                              }`}>
+                            <div
+                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                                activeItem.numGrowth >= 0
+                                  ? 'bg-emerald-500/20 text-emerald-400'
+                                  : 'bg-rose-500/20 text-rose-400'
+                              }`}
+                            >
                               {activeItem.pct}
                             </div>
                           )}
@@ -721,7 +740,12 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                       <div className="flex-1 w-full flex items-end justify-between gap-4 px-3 border-b border-[var(--admin-border)] min-h-[140px]">
                         {(() => {
                           const latestIndex = chartData.findIndex((d) => d.isLatest);
-                          const activeIndex = hoveredBarIndex !== null ? hoveredBarIndex : (latestIndex >= 0 ? latestIndex : chartData.length - 1);
+                          const activeIndex =
+                            hoveredBarIndex !== null
+                              ? hoveredBarIndex
+                              : latestIndex >= 0
+                                ? latestIndex
+                                : chartData.length - 1;
 
                           return chartData.map((item, idx) => {
                             const maxVal = Math.max(...chartData.map((d) => d.count), 1);
@@ -730,8 +754,12 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                             const isActive = activeIndex === idx;
 
                             const barColorClass = isActive
-                              ? (isHovered ? 'bg-purple-400' : 'bg-purple-500')
-                              : (isHovered ? 'bg-[var(--admin-fg)]/20' : 'bg-[var(--admin-elevated)]');
+                              ? isHovered
+                                ? 'bg-purple-400'
+                                : 'bg-purple-500'
+                              : isHovered
+                                ? 'bg-[var(--admin-fg)]/20'
+                                : 'bg-[var(--admin-elevated)]';
 
                             return (
                               <div
@@ -759,9 +787,17 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                             transition={{ duration: 0.1 }}
                                             className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs font-semibold px-2 py-0.5 rounded pointer-events-none whitespace-nowrap z-30 flex items-center gap-1.5 border border-[var(--admin-border)]"
                                           >
-                                            <span>{item.count.toLocaleString()} {getUnitLabel(item.count, selectedFilter)}</span>
+                                            <span>
+                                              {item.count.toLocaleString()} {getUnitLabel(item.count, selectedFilter)}
+                                            </span>
                                             {item.pct && (
-                                              <span className={item.numGrowth >= 0 ? 'text-emerald-400 font-medium' : 'text-rose-400 font-medium'}>
+                                              <span
+                                                className={
+                                                  item.numGrowth >= 0
+                                                    ? 'text-emerald-400 font-medium'
+                                                    : 'text-rose-400 font-medium'
+                                                }
+                                              >
                                                 ({item.pct})
                                               </span>
                                             )}
@@ -783,9 +819,17 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                                             transition={{ duration: 0.1 }}
                                             className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[var(--admin-elevated)] text-[var(--admin-fg)] text-xs font-semibold px-2 py-0.5 rounded pointer-events-none whitespace-nowrap z-30 flex items-center gap-1.5 border border-[var(--admin-border)]"
                                           >
-                                            <span>{item.count.toLocaleString()} {getUnitLabel(item.count, selectedFilter)}</span>
+                                            <span>
+                                              {item.count.toLocaleString()} {getUnitLabel(item.count, selectedFilter)}
+                                            </span>
                                             {item.pct && (
-                                              <span className={item.numGrowth >= 0 ? 'text-emerald-400 font-medium' : 'text-rose-400 font-medium'}>
+                                              <span
+                                                className={
+                                                  item.numGrowth >= 0
+                                                    ? 'text-emerald-400 font-medium'
+                                                    : 'text-rose-400 font-medium'
+                                                }
+                                              >
                                                 ({item.pct})
                                               </span>
                                             )}
@@ -804,14 +848,20 @@ export default function Dashboard({ logSearchQuery = '' }: { logSearchQuery?: st
                       <div className="flex justify-between gap-4 px-3 pt-2 text-xs font-medium text-center">
                         {chartData.map((item, idx) => {
                           const latestIndex = chartData.findIndex((d) => d.isLatest);
-                          const activeIndex = hoveredBarIndex !== null ? hoveredBarIndex : (latestIndex >= 0 ? latestIndex : chartData.length - 1);
+                          const activeIndex =
+                            hoveredBarIndex !== null
+                              ? hoveredBarIndex
+                              : latestIndex >= 0
+                                ? latestIndex
+                                : chartData.length - 1;
                           const isActive = activeIndex === idx;
 
                           return (
                             <div
                               key={item.label}
-                              className={`flex-1 transition-colors duration-150 ${isActive ? 'text-[var(--admin-fg)] font-bold' : 'text-[var(--admin-muted)]'
-                                }`}
+                              className={`flex-1 transition-colors duration-150 ${
+                                isActive ? 'text-[var(--admin-fg)] font-bold' : 'text-[var(--admin-muted)]'
+                              }`}
                             >
                               {item.label}
                             </div>

@@ -65,9 +65,7 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
     <div className="w-full space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative w-full sm:w-64">
-          <Search
-            className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)}
-          />
+          <Search className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)} />
           <Input
             value={localQuery}
             onChange={(e) => {
@@ -78,7 +76,13 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
             placeholder="Search by Guild ID or Spawn Channel ID..."
           />
         </div>
-        <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
+        <Select
+          value={statusFilter}
+          onValueChange={(val) => {
+            setStatusFilter(val);
+            setCurrentPage(1);
+          }}
+        >
           <SelectTrigger omitDefaults="h-10 text-sm" className={cn('h-9 w-full sm:w-36 text-xs', admin.input)}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
@@ -99,21 +103,14 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                   <th className={cn('py-4 pl-5 sm:pl-6 pr-4 text-left text-xs font-semibold', admin.muted)}>
                     Guild ID
                   </th>
-                  <th className={cn('py-4 px-4 text-left text-xs font-semibold', admin.muted)}>
-                    Spawn Channel
-                  </th>
-                  <th className={cn('py-4 px-4 pr-5 sm:pr-6 text-left text-xs font-semibold', admin.muted)}>
-                    Enabled
-                  </th>
+                  <th className={cn('py-4 px-4 text-left text-xs font-semibold', admin.muted)}>Spawn Channel</th>
+                  <th className={cn('py-4 px-4 pr-5 sm:pr-6 text-left text-xs font-semibold', admin.muted)}>Enabled</th>
                 </tr>
               </thead>
               {isLoading ? (
                 <tbody>
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-[var(--admin-border)] last:border-0"
-                    >
+                    <tr key={i} className="border-b border-[var(--admin-border)] last:border-0">
                       <td className="py-3 pl-5 sm:pl-6 pr-4">
                         <Skeleton className="h-4 w-40" />
                       </td>
@@ -139,12 +136,10 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                       variants={listItem}
                       className={cn(
                         'border-b border-[var(--admin-border)] last:border-0 transition-colors',
-                        admin.hoverRow
+                        admin.hoverRow,
                       )}
                     >
-                      <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
-                        {item.guildId}
-                      </td>
+                      <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>{item.guildId}</td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{item.spawnChannel}</td>
                       <td className={cn('py-3 px-4 pr-5 sm:pr-6 text-sm', admin.muted)}>
                         {item.enabled ? 'Enabled' : 'Disabled'}
@@ -159,12 +154,10 @@ export default function GuildsPage({ searchQuery = '' }: { searchQuery?: string 
                       key={item.id}
                       className={cn(
                         'border-b border-[var(--admin-border)] last:border-0 transition-colors',
-                        admin.hoverRow
+                        admin.hoverRow,
                       )}
                     >
-                      <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
-                        {item.guildId}
-                      </td>
+                      <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>{item.guildId}</td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{item.spawnChannel}</td>
                       <td className={cn('py-3 px-4 pr-5 sm:pr-6 text-sm', admin.muted)}>
                         {item.enabled ? 'Enabled' : 'Disabled'}

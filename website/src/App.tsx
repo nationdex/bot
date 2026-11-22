@@ -1,5 +1,17 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
-import { Database, Globe, Layers, LayoutDashboard, LogOut, Menu, Server, Settings as SettingsIcon, Sliders, UserCheck, Users } from '@/components/icons';
+import {
+  Database,
+  Globe,
+  Layers,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Server,
+  Settings as SettingsIcon,
+  Sliders,
+  UserCheck,
+  Users,
+} from '@/components/icons';
 import { lazy, Suspense } from 'preact/compat';
 import { useEffect, useState } from 'preact/hooks';
 import HeaderSearch from '@/components/layout/HeaderSearch';
@@ -35,7 +47,6 @@ const CardsPage = lazy(() => import('@/pages/cards/Cards'));
 const BotSettingsPage = lazy(() => import('@/pages/settings/BotSettings'));
 const PanelUsersPage = lazy(() => import('@/pages/panel-users/PanelUsers'));
 const Settings = lazy(() => import('@/pages/settings/Settings'));
-
 
 export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -75,18 +86,16 @@ export default function App() {
   const pageTransitions = useMotionPref('pageTransitions');
   const hoverFeedback = useMotionPref('hoverFeedback');
 
-  const pageMotion = !pageTransitions
-    ? pageTransitionNone
-    : pageTransition;
+  const pageMotion = !pageTransitions ? pageTransitionNone : pageTransition;
 
   const headerTitleMotion = !pageTransitions
     ? pageTransitionNone
     : {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-      transition: { duration: 0.15 },
-    };
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.15 },
+      };
 
   const handleGlobalNavigate = (section: string, filterQuery?: string) => {
     setCurrentSection(section);
@@ -219,8 +228,14 @@ export default function App() {
     return (
       <div className={cn('flex h-full flex-col items-center justify-center gap-3 p-6 text-center', admin.shell)}>
         <h1 className={cn('text-lg font-semibold', admin.fg)}>Can&apos;t reach the panel</h1>
-        <p className={cn('max-w-sm text-sm', admin.muted)}>You are offline or the bot is not running. The panel reconnects by itself, or try again now.</p>
-        <button type="button" onClick={fetchSession} className="cursor-pointer rounded-lg bg-[var(--admin-accent)] px-4 py-2 text-sm font-medium text-[var(--admin-accent-fg)]">
+        <p className={cn('max-w-sm text-sm', admin.muted)}>
+          You are offline or the bot is not running. The panel reconnects by itself, or try again now.
+        </p>
+        <button
+          type="button"
+          onClick={fetchSession}
+          className="cursor-pointer rounded-lg bg-[var(--admin-accent)] px-4 py-2 text-sm font-medium text-[var(--admin-accent-fg)]"
+        >
           Try again
         </button>
       </div>
@@ -263,21 +278,12 @@ export default function App() {
 
           {navCategories.map((cat) => (
             <div key={cat.title} className="flex flex-col gap-1">
-              <p
-                className={cn(
-                  'mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider',
-                  admin.muted
-                )}
-              >
+              <p className={cn('mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider', admin.muted)}>
                 {cat.title}
               </p>
               <div className="flex flex-col gap-1">
                 {cat.links.map((link) => (
-                  <div
-                    key={link.id}
-                    onClick={(e) => handleLinkClick(e, link.id)}
-                    className="cursor-pointer"
-                  >
+                  <div key={link.id} onClick={(e) => handleLinkClick(e, link.id)} className="cursor-pointer">
                     <SidebarLink link={link} active={currentSection === link.id} />
                   </div>
                 ))}
@@ -305,9 +311,7 @@ export default function App() {
                     {currentUser.groupName}
                   </span>
                 ) : (
-                  <span className="text-[10px] text-[var(--admin-muted)] capitalize">
-                    {currentUser.role}
-                  </span>
+                  <span className="text-[10px] text-[var(--admin-muted)] capitalize">{currentUser.role}</span>
                 )}
               </div>
             </div>
@@ -328,121 +332,105 @@ export default function App() {
   );
 
   return (
-      <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
-        <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
-          <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
-        </Sidebar>
+    <div className={cn('h-full overflow-hidden transition-colors duration-300', admin.shell)}>
+      <Sidebar open={mobileOpen} setOpen={setMobileOpen}>
+        <SidebarBody className="flex flex-col justify-between">{sidebarContent}</SidebarBody>
+      </Sidebar>
 
-        <div
-          className="h-full transition-[margin] duration-200 md:ml-[calc(var(--sidebar-width)+1rem)]"
-          style={{ ['--sidebar-width' as string]: `${SIDEBAR_WIDTH}px` }}
-        >
-          <div className="h-full p-3 md:p-4 perspective-scene">
-            {isCookieless() && (
-              <p role="status" className={cn('mb-2 rounded-lg px-3 py-1.5 text-center text-xs', admin.elevated, admin.muted)}>
-                Signed in without cookies: this session ends when you reload or close the tab.
-              </p>
+      <div
+        className="h-full transition-[margin] duration-200 md:ml-[calc(var(--sidebar-width)+1rem)]"
+        style={{ ['--sidebar-width' as string]: `${SIDEBAR_WIDTH}px` }}
+      >
+        <div className="h-full p-3 md:p-4 perspective-scene">
+          {isCookieless() && (
+            <p
+              role="status"
+              className={cn('mb-2 rounded-lg px-3 py-1.5 text-center text-xs', admin.elevated, admin.muted)}
+            >
+              Signed in without cookies: this session ends when you reload or close the tab.
+            </p>
+          )}
+          <m.main
+            initial={!pageTransitions ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={!pageTransitions ? { duration: 0 } : { duration: 0.2 }}
+            style={enable3D ? { transformPerspective: perspectiveDefault } : undefined}
+            className={cn(
+              'preserve-3d gpu-layer flex h-full min-h-0 flex-col overflow-hidden rounded-2xl',
+              admin.panel,
             )}
-            <m.main
-              initial={!pageTransitions ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={!pageTransitions ? { duration: 0 } : { duration: 0.2 }}
-              style={enable3D ? { transformPerspective: perspectiveDefault } : undefined}
+          >
+            <header
               className={cn(
-                'preserve-3d gpu-layer flex h-full min-h-0 flex-col overflow-hidden rounded-2xl',
-                admin.panel
+                'shrink-0 z-40 border-b backdrop-blur-sm',
+                'border-[var(--admin-border)]',
+                'bg-[color-mix(in_srgb,var(--admin-panel)_95%,transparent)]',
               )}
             >
-              <header
-                className={cn(
-                  'shrink-0 z-40 border-b backdrop-blur-sm',
-                  'border-[var(--admin-border)]',
-                  'bg-[color-mix(in_srgb,var(--admin-panel)_95%,transparent)]'
-                )}
-              >
-                <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6">
-                  <div className="min-w-0">
-                    {pageTransitions ? (
-                      <AnimatePresence mode="wait">
-                        <m.div
-                          key={currentSection}
-                          {...headerTitleMotion}
-                          style={enable3D ? { transformPerspective: 900 } : undefined}
-                          className={cn('flex items-center gap-2.5', enable3D && 'preserve-3d')}
-                        >
-                          <h1 className={cn('truncate text-base font-semibold sm:text-lg', admin.fg)}>
-                            {sectionTitles[currentSection] ?? 'Admin'}
-                          </h1>
-                          {currentSection === 'nations' && nationsCount !== null && (
-                            <span className="text-[var(--admin-muted)]">
-                              ({nationsCount})
-                            </span>
-                          )}
-                        </m.div>
-                      </AnimatePresence>
-                    ) : (
-                      <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6">
+                <div className="min-w-0">
+                  {pageTransitions ? (
+                    <AnimatePresence mode="wait">
+                      <m.div
+                        key={currentSection}
+                        {...headerTitleMotion}
+                        style={enable3D ? { transformPerspective: 900 } : undefined}
+                        className={cn('flex items-center gap-2.5', enable3D && 'preserve-3d')}
+                      >
                         <h1 className={cn('truncate text-base font-semibold sm:text-lg', admin.fg)}>
                           {sectionTitles[currentSection] ?? 'Admin'}
                         </h1>
                         {currentSection === 'nations' && nationsCount !== null && (
-                          <span className="text-[var(--admin-muted)]">
-                            ({nationsCount})
-                          </span>
+                          <span className="text-[var(--admin-muted)]">({nationsCount})</span>
                         )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    <HeaderSearch onNavigate={handleGlobalNavigate} />
-
-                    <m.button
-                      type="button"
-                      onClick={() => setMobileOpen(true)}
-                      whileHover={hoverFeedback ? { scale: 1.05 } : undefined}
-                      whileTap={hoverFeedback ? { scale: 0.92 } : undefined}
-                      className={cn(
-                        'rounded-lg p-2 md:hidden transition-colors',
-                        admin.muted,
-                        admin.hoverRow
+                      </m.div>
+                    </AnimatePresence>
+                  ) : (
+                    <div className="flex items-center gap-2.5">
+                      <h1 className={cn('truncate text-base font-semibold sm:text-lg', admin.fg)}>
+                        {sectionTitles[currentSection] ?? 'Admin'}
+                      </h1>
+                      {currentSection === 'nations' && nationsCount !== null && (
+                        <span className="text-[var(--admin-muted)]">({nationsCount})</span>
                       )}
-                      aria-label="Open menu"
-                    >
-                      <Menu className="h-5 w-5" />
-                    </m.button>
-                  </div>
+                    </div>
+                  )}
                 </div>
-              </header>
 
-              <div
-                data-admin-scroll
-                className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6"
-              >
-                {pageTransitions ? (
-                  <AnimatePresence mode="wait">
-                    <m.div
-                      key={currentSection}
-                      {...pageMotion}
-                      className="preserve-3d gpu-layer w-full min-h-0"
-                    >
-                      <Suspense fallback={<SectionSkeleton section={currentSection} />}>
-                        {renderContent()}
-                      </Suspense>
-                    </m.div>
-                  </AnimatePresence>
-                ) : (
-                  <div className="w-full min-h-0">
-                    <Suspense fallback={<SectionSkeleton section={currentSection} />}>
-                      {renderContent()}
-                    </Suspense>
-                  </div>
-                )}
+                <div className="flex shrink-0 items-center gap-2">
+                  <HeaderSearch onNavigate={handleGlobalNavigate} />
+
+                  <m.button
+                    type="button"
+                    onClick={() => setMobileOpen(true)}
+                    whileHover={hoverFeedback ? { scale: 1.05 } : undefined}
+                    whileTap={hoverFeedback ? { scale: 0.92 } : undefined}
+                    className={cn('rounded-lg p-2 md:hidden transition-colors', admin.muted, admin.hoverRow)}
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </m.button>
+                </div>
               </div>
-            </m.main>
-          </div>
+            </header>
+
+            <div data-admin-scroll className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6">
+              {pageTransitions ? (
+                <AnimatePresence mode="wait">
+                  <m.div key={currentSection} {...pageMotion} className="preserve-3d gpu-layer w-full min-h-0">
+                    <Suspense fallback={<SectionSkeleton section={currentSection} />}>{renderContent()}</Suspense>
+                  </m.div>
+                </AnimatePresence>
+              ) : (
+                <div className="w-full min-h-0">
+                  <Suspense fallback={<SectionSkeleton section={currentSection} />}>{renderContent()}</Suspense>
+                </div>
+              )}
+            </div>
+          </m.main>
         </div>
       </div>
+    </div>
   );
 }
 
@@ -456,13 +444,7 @@ const Logo = () => {
       style={enable3D ? { perspective: 800 } : undefined}
       className="preserve-3d flex items-center gap-3 rounded-lg px-2 py-1.5"
     >
-      <img
-        src="/logo.png"
-        alt="Nationdex"
-        width={36}
-        height={36}
-        className="h-9 w-9 shrink-0 object-contain"
-      />
+      <img src="/logo.png" alt="Nationdex" width={36} height={36} className="h-9 w-9 shrink-0 object-contain" />
       <div className="min-w-0">
         <span className={cn('block truncate text-base font-semibold', admin.fg)}>{bot.name}</span>
         <span className={cn('block truncate text-[10px]', admin.muted)}>Admin panel</span>

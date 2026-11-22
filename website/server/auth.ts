@@ -1,7 +1,16 @@
 import { randomBytes } from 'node:crypto';
 import {
-  createPanelUser, createSession, deleteSession, getGroups, getPanelUserById, getPanelUserByUsername,
-  getPanelUsers, getSessionUser, hasPassword, purgeExpiredSessions, type PanelUserWithGroup,
+  createPanelUser,
+  createSession,
+  deleteSession,
+  getGroups,
+  getPanelUserById,
+  getPanelUserByUsername,
+  getPanelUsers,
+  getSessionUser,
+  hasPassword,
+  purgeExpiredSessions,
+  type PanelUserWithGroup,
 } from './db';
 import { hashPassword, verifyPassword } from './password';
 import { json, readJson } from './util';
@@ -11,7 +20,8 @@ const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 
 // Behind Nginx or Ngrok the browser talks HTTPS while this server sees HTTP, so trust X-Forwarded-Proto for the flag.
 // (A client that fakes it only loses its own login: the browser will not send a Secure cookie back over HTTP.)
-const isSecure = (req: Request): boolean => new URL(req.url).protocol === 'https:' || req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https';
+const isSecure = (req: Request): boolean =>
+  new URL(req.url).protocol === 'https:' || req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https';
 
 const sessionCookie = (token: string, maxAge: number, secure: boolean): string =>
   `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
@@ -22,7 +32,8 @@ const bearer = (req: Request): string | undefined => {
   const h = req.headers.get('authorization') ?? '';
   return h.toLowerCase().startsWith('bearer ') ? h.slice(7).trim() || undefined : undefined;
 };
-const sessionToken = (req: Request): string | undefined => new Bun.CookieMap(req.headers.get('cookie') ?? '').get(COOKIE) ?? bearer(req);
+const sessionToken = (req: Request): string | undefined =>
+  new Bun.CookieMap(req.headers.get('cookie') ?? '').get(COOKIE) ?? bearer(req);
 
 export async function authUser(req: Request): Promise<PanelUserWithGroup | null> {
   const token = sessionToken(req);

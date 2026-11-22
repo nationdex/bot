@@ -1,5 +1,18 @@
 import { AnimatePresence, m } from '@/lib/panel-motion';
-import { ArrowLeft, Check, Coins, Copy, Gavel, Loader2, Plus, RotateCw, Search, Shield, Trash2, X } from '@/components/icons';
+import {
+  ArrowLeft,
+  Check,
+  Coins,
+  Copy,
+  Gavel,
+  Loader2,
+  Plus,
+  RotateCw,
+  Search,
+  Shield,
+  Trash2,
+  X,
+} from '@/components/icons';
 import { useEffect, useId, useMemo, useState } from 'preact/hooks';
 import { createPortal } from 'preact';
 import { ConfirmModal } from '@/components/feedback/ConfirmModal';
@@ -9,11 +22,27 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { admin } from '@/lib/admin-classes';
-import { fetchCollectibles, fetchUserDetail, getCache, giveUserNation, removeUserNation, resetUserSettings, updateUserBalance, updateUserAuction, updateUserSettings, type CollectibleEntry, type UserCatchItem, type UserDetailData } from '@/lib/api';
+import {
+  fetchCollectibles,
+  fetchUserDetail,
+  getCache,
+  giveUserNation,
+  removeUserNation,
+  resetUserSettings,
+  updateUserBalance,
+  updateUserAuction,
+  updateUserSettings,
+  type CollectibleEntry,
+  type UserCatchItem,
+  type UserDetailData,
+} from '@/lib/api';
 import { rarityBadgeClass, type RarityClass } from '@/lib/bot';
 import { cn } from '@/lib/utils';
 
-interface UserEditProps { userId: string; onBack: () => void; }
+interface UserEditProps {
+  userId: string;
+  onBack: () => void;
+}
 
 export default function UserEdit({ userId, onBack }: UserEditProps) {
   const [user, setUser] = useState<UserDetailData | null>(null);
@@ -61,15 +90,13 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
     const q = giveSearchQuery.toLowerCase().trim();
     return catalog.filter(
       (cat) =>
-        cat.name.toLowerCase().includes(q) ||
-        cat.id.toLowerCase().includes(q) ||
-        cat.class.toLowerCase().includes(q)
+        cat.name.toLowerCase().includes(q) || cat.id.toLowerCase().includes(q) || cat.class.toLowerCase().includes(q),
     );
   }, [catalog, giveSearchQuery]);
 
   const selectedGiveNation = useMemo(
     () => catalog.find((c) => String(c.id).toLowerCase() === String(giveNationId).toLowerCase()),
-    [catalog, giveNationId]
+    [catalog, giveNationId],
   );
 
   const loadData = async () => {
@@ -171,7 +198,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
 
   const handleSettingSelect = (
     key: 'inventory_privacy' | 'profile_privacy' | 'accept_gifts',
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setPendingSettings((prev) => ({
       inventory_privacy: user?.settings.inventory_privacy || 'public',
@@ -187,17 +214,23 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
     user &&
     (pendingSettings.inventory_privacy !== user.settings.inventory_privacy ||
       pendingSettings.profile_privacy !== user.settings.profile_privacy ||
-      pendingSettings.accept_gifts !== user.settings.accept_gifts)
+      pendingSettings.accept_gifts !== user.settings.accept_gifts),
   );
 
   const handleSaveSettings = async () => {
     if (!pendingSettings || !user) return;
     setIsSavingSettings(true);
     const entries: Array<['inventory_privacy' | 'profile_privacy' | 'accept_gifts', string | boolean]> = [];
-    if (pendingSettings.inventory_privacy !== undefined && pendingSettings.inventory_privacy !== user.settings.inventory_privacy) {
+    if (
+      pendingSettings.inventory_privacy !== undefined &&
+      pendingSettings.inventory_privacy !== user.settings.inventory_privacy
+    ) {
       entries.push(['inventory_privacy', pendingSettings.inventory_privacy]);
     }
-    if (pendingSettings.profile_privacy !== undefined && pendingSettings.profile_privacy !== user.settings.profile_privacy) {
+    if (
+      pendingSettings.profile_privacy !== undefined &&
+      pendingSettings.profile_privacy !== user.settings.profile_privacy
+    ) {
       entries.push(['profile_privacy', pendingSettings.profile_privacy]);
     }
     if (pendingSettings.accept_gifts !== undefined && pendingSettings.accept_gifts !== user.settings.accept_gifts) {
@@ -305,10 +338,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
     setCurrentPage(1);
   }, [catchFilter]);
 
-  const paginatedCatches = filteredCatches.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const paginatedCatches = filteredCatches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   if (loading) {
     return (
@@ -359,9 +389,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
             exit={{ opacity: 0, y: -6 }}
             className={cn(
               'flex items-center justify-between rounded-lg px-4 py-3 text-xs font-medium',
-              feedback.type === 'success'
-                ? 'bg-emerald-500/10 text-emerald-400'
-                : 'bg-rose-500/10 text-rose-400'
+              feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400',
             )}
           >
             <span>{feedback.message}</span>
@@ -394,9 +422,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5 sm:hidden">
-                <span className="text-xs tabular-nums text-[var(--admin-muted)]">
-                  {user.discordId}
-                </span>
+                <span className="text-xs tabular-nums text-[var(--admin-muted)]">{user.discordId}</span>
 
                 <button
                   type="button"
@@ -404,19 +430,13 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   className="cursor-pointer p-1 text-[var(--admin-muted)] transition-colors hover:text-[var(--admin-fg)]"
                   title="Copy Discord ID"
                 >
-                  {copied ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                  ) : (
-                    <Copy className="h-3.5 w-3.5" />
-                  )}
+                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
                 </button>
               </div>
             </div>
 
             {user.global_name && user.username && user.username !== user.global_name && (
-              <span className="hidden sm:block text-xs text-[var(--admin-muted)]">
-                @{user.username}
-              </span>
+              <span className="hidden sm:block text-xs text-[var(--admin-muted)]">@{user.username}</span>
             )}
 
             <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--admin-muted)]">
@@ -427,11 +447,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                 className="cursor-pointer p-0.5 text-[var(--admin-muted)] transition-colors hover:text-[var(--admin-fg)]"
                 title="Copy Discord ID"
               >
-                {copied ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             </div>
           </div>
@@ -449,22 +465,30 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-[var(--admin-muted)]">Inventory</span>
-              <span className="text-xs font-semibold text-[var(--admin-fg)] capitalize">{user.settings.inventory_privacy}</span>
+              <span className="text-xs font-semibold text-[var(--admin-fg)] capitalize">
+                {user.settings.inventory_privacy}
+              </span>
             </div>
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-[var(--admin-muted)]">Profile</span>
-              <span className="text-xs font-semibold text-[var(--admin-fg)] capitalize">{user.settings.profile_privacy}</span>
+              <span className="text-xs font-semibold text-[var(--admin-fg)] capitalize">
+                {user.settings.profile_privacy}
+              </span>
             </div>
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-[var(--admin-muted)]">Gifts</span>
-              <span className="text-xs font-semibold text-[var(--admin-fg)]">{user.settings.accept_gifts ? 'On' : 'Off'}</span>
+              <span className="text-xs font-semibold text-[var(--admin-fg)]">
+                {user.settings.accept_gifts ? 'On' : 'Off'}
+              </span>
             </div>
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-[var(--admin-muted)]">Auctions</span>
-              <span className="text-xs font-semibold text-[var(--admin-fg)]">{user.auctionData.sold}/{user.auctionData.total} Sold</span>
+              <span className="text-xs font-semibold text-[var(--admin-fg)]">
+                {user.auctionData.sold}/{user.auctionData.total} Sold
+              </span>
             </div>
           </div>
         </div>
@@ -475,7 +499,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Coins className="h-4 w-4 text-[var(--admin-muted)]" />
-              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Balance Management</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">
+                Balance Management
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -497,7 +523,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       'rounded-full px-4 py-1.5 text-xs font-medium capitalize transition-all cursor-pointer',
                       balanceMode === mode
                         ? 'bg-white text-black shadow-sm font-semibold'
-                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                     )}
                   >
                     {mode === 'add' ? '+ Add' : mode === 'remove' ? '- Remove' : '= Set'}
@@ -514,7 +540,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   value={balanceAmount}
                   onChange={(e) => setBalanceAmount(e.currentTarget.value)}
                   placeholder="Enter amount (whole number, max 12 digits)..."
-                  omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
+                  omitDefaults="h-10 text-sm"
+                  className={cn('h-9 text-xs', admin.input)}
                 />
 
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -534,7 +561,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               <Button
                 type="submit"
                 disabled={isUpdatingBalance || !balanceAmount}
-                omitDefaults="rounded-md text-sm transition-colors h-10" className="w-full h-9 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity"
+                omitDefaults="rounded-md text-sm transition-colors h-10"
+                className="w-full h-9 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity"
               >
                 {isUpdatingBalance ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                 Apply Balance Change
@@ -548,7 +576,12 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-[var(--admin-muted)]" />
-                <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Settings & Privacy</CardTitle>
+                <CardTitle
+                  omitDefaults="text-2xl leading-none"
+                  className="text-sm font-semibold text-[var(--admin-fg)]"
+                >
+                  Settings & Privacy
+                </CardTitle>
               </div>
               <button
                 type="button"
@@ -575,7 +608,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       'rounded-full px-3.5 py-1 text-xs font-medium capitalize transition-all cursor-pointer',
                       (pendingSettings?.inventory_privacy ?? user.settings.inventory_privacy) === mode
                         ? 'bg-white text-black shadow-sm font-semibold'
-                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                     )}
                   >
                     {mode}
@@ -599,7 +632,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       'rounded-full px-3.5 py-1 text-xs font-medium capitalize transition-all cursor-pointer',
                       (pendingSettings?.profile_privacy ?? user.settings.profile_privacy) === mode
                         ? 'bg-white text-black shadow-sm font-semibold'
-                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                     )}
                   >
                     {mode}
@@ -626,7 +659,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                       'rounded-full px-3.5 py-1 text-xs font-medium transition-all cursor-pointer',
                       (pendingSettings?.accept_gifts ?? user.settings.accept_gifts) === item.value
                         ? 'bg-white text-black shadow-sm font-semibold'
-                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                        : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
                     )}
                   >
                     {item.label}
@@ -643,7 +676,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Gavel className="h-4 w-4 text-[var(--admin-muted)]" />
-              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Auction Activity</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">
+                Auction Activity
+              </CardTitle>
               <span className="rounded-full bg-[var(--admin-elevated)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--admin-muted)]">
                 {user.auctionData.onSale.length} on sale
               </span>
@@ -657,7 +692,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                 setAuctionEarningsInput(String(user.auctionData.earnings));
                 setShowAuctionModal(true);
               }}
-              omitDefaults="text-sm h-9 px-3" className="h-7 rounded-md border-0 bg-[var(--admin-elevated)] px-2.5 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 cursor-pointer shadow-none"
+              omitDefaults="text-sm h-9 px-3"
+              className="h-7 rounded-md border-0 bg-[var(--admin-elevated)] px-2.5 text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80 cursor-pointer shadow-none"
             >
               Adjust
             </Button>
@@ -672,19 +708,25 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               </p>
             </div>
             <div className="rounded-lg bg-[var(--admin-elevated)] px-3 pt-2 pb-2.5">
-              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">Auctions Sold</span>
+              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">
+                Auctions Sold
+              </span>
               <p className="mt-1.5 text-lg font-semibold tabular-nums leading-tight text-[var(--admin-fg)]">
                 {user.auctionData.sold}
               </p>
             </div>
             <div className="rounded-lg bg-[var(--admin-elevated)] px-3 pt-2 pb-2.5">
-              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">Auction Earnings</span>
+              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">
+                Auction Earnings
+              </span>
               <p className="mt-1.5 text-lg font-semibold tabular-nums leading-tight text-[var(--admin-fg)]">
                 {user.auctionData.earnings.toLocaleString()}
               </p>
             </div>
             <div className="rounded-lg bg-[var(--admin-elevated)] px-3 pt-2 pb-2.5">
-              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">Active On Sale</span>
+              <span className="block text-[11px] font-medium leading-none text-[var(--admin-muted)]">
+                Active On Sale
+              </span>
               <p className="mt-1.5 text-lg font-semibold tabular-nums leading-tight text-[var(--admin-fg)]">
                 {user.auctionData.onSale.length}
               </p>
@@ -696,18 +738,23 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               <table className="w-full min-w-[560px]">
                 <thead>
                   <tr className="border-b border-[var(--admin-border)]">
-                    <th className="pb-3 pl-3 pr-4 text-left text-xs font-medium text-[var(--admin-muted)]">Auction ID</th>
+                    <th className="pb-3 pl-3 pr-4 text-left text-xs font-medium text-[var(--admin-muted)]">
+                      Auction ID
+                    </th>
                     <th className="pb-3 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Nation / Item</th>
                     <th className="pb-3 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Starting Bid</th>
                     <th className="pb-3 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Buyout</th>
                     <th className="pb-3 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Current Bid</th>
-                    <th className="pb-3 pr-3 text-right text-xs font-medium text-[var(--admin-muted)]">Status / Ends</th>
+                    <th className="pb-3 pr-3 text-right text-xs font-medium text-[var(--admin-muted)]">
+                      Status / Ends
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {user.auctionData.activeAuctions.map((auc) => {
                     const catalogNation = catalog.find((c) => String(c.id) === String(auc.catalogId));
-                    const nationName = catalogNation?.name || (auc.catalogId ? `Nation #${auc.catalogId}` : `#${auc.nationCatchId}`);
+                    const nationName =
+                      catalogNation?.name || (auc.catalogId ? `Nation #${auc.catalogId}` : `#${auc.nationCatchId}`);
                     const nationClass = catalogNation?.class || 'common';
                     return (
                       <tr
@@ -725,15 +772,13 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             <span
                               className={cn(
                                 'rounded px-2 py-0.5 text-[10px] font-medium capitalize',
-                                rarityBadgeClass[nationClass]
+                                rarityBadgeClass[nationClass],
                               )}
                             >
                               {nationClass}
                             </span>
                             {auc.nationCatchId && (
-                              <span className="text-[11px] text-[var(--admin-muted)]">
-                                #{auc.nationCatchId}
-                              </span>
+                              <span className="text-[11px] text-[var(--admin-muted)]">#{auc.nationCatchId}</span>
                             )}
                           </div>
                         </td>
@@ -745,18 +790,22 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         </td>
                         <td className="py-3 px-4 text-xs tabular-nums text-[var(--admin-fg)]">
                           {auc.currentBid > 0 ? (
-                            <span>{auc.currentBid.toLocaleString()} ({auc.bidsCount} bids)</span>
+                            <span>
+                              {auc.currentBid.toLocaleString()} ({auc.bidsCount} bids)
+                            </span>
                           ) : (
                             <span className="text-[var(--admin-muted)]">No bids</span>
                           )}
                         </td>
                         <td className="py-3 pr-3 text-right text-xs">
-                          <span className={cn(
-                            'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
-                            auc.status === 'active'
-                              ? 'bg-emerald-500/10 text-emerald-400'
-                              : 'bg-[var(--admin-elevated)] text-[var(--admin-muted)]'
-                          )}>
+                          <span
+                            className={cn(
+                              'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
+                              auc.status === 'active'
+                                ? 'bg-emerald-500/10 text-emerald-400'
+                                : 'bg-[var(--admin-elevated)] text-[var(--admin-muted)]',
+                            )}
+                          >
                             {auc.status === 'active' ? (auc.endsAt ? `Ends ${auc.endsAt}` : 'Active') : 'Ended'}
                           </span>
                         </td>
@@ -778,7 +827,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
         <CardHeader omitDefaults="p-6" className="p-5 pb-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">Nation Inventory</CardTitle>
+              <CardTitle omitDefaults="text-2xl leading-none" className="text-sm font-semibold text-[var(--admin-fg)]">
+                Nation Inventory
+              </CardTitle>
               <span className="rounded-full bg-[var(--admin-elevated)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--admin-muted)]">
                 {user.collectiblesData.length}
               </span>
@@ -792,14 +843,16 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   value={catchFilter}
                   onChange={(e) => setCatchFilter(e.currentTarget.value)}
                   placeholder="Filter catches..."
-                  omitDefaults="h-10 text-sm" className={cn('h-8 pl-8 text-xs', admin.input)}
+                  omitDefaults="h-10 text-sm"
+                  className={cn('h-8 pl-8 text-xs', admin.input)}
                 />
               </div>
 
               <Button
                 size="sm"
                 onClick={() => setShowGiveModal(true)}
-                omitDefaults="rounded-md text-sm h-9 rounded-md px-3" className="h-8 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3.5 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
+                omitDefaults="rounded-md text-sm h-9 rounded-md px-3"
+                className="h-8 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3.5 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Give Nation</span>
@@ -813,11 +866,15 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
             <table className="w-full min-w-[560px]">
               <thead>
                 <tr className="border-b border-[var(--admin-border)]">
-                  <th className="py-4 pl-5 sm:pl-6 pr-4 text-left text-xs font-medium text-[var(--admin-muted)]">Catch ID</th>
+                  <th className="py-4 pl-5 sm:pl-6 pr-4 text-left text-xs font-medium text-[var(--admin-muted)]">
+                    Catch ID
+                  </th>
                   <th className="py-4 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Nation</th>
                   <th className="py-4 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Rarity</th>
                   <th className="py-4 px-4 text-left text-xs font-medium text-[var(--admin-muted)]">Stats</th>
-                  <th className="py-4 pr-5 sm:pr-6 text-right text-xs font-medium text-[var(--admin-muted)]">Actions</th>
+                  <th className="py-4 pr-5 sm:pr-6 text-right text-xs font-medium text-[var(--admin-muted)]">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -839,14 +896,12 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             #{entry.catch}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-xs font-medium text-[var(--admin-fg)]">
-                          {nationName}
-                        </td>
+                        <td className="py-3 px-4 text-xs font-medium text-[var(--admin-fg)]">{nationName}</td>
                         <td className="py-3 px-4 text-xs">
                           <span
                             className={cn(
                               'rounded px-2 py-0.5 text-[10px] font-medium capitalize',
-                              rarityBadgeClass[nationClass]
+                              rarityBadgeClass[nationClass],
                             )}
                           >
                             {nationClass}
@@ -869,7 +924,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => setCatchToRemove(entry)}
-                            omitDefaults="text-sm h-9 px-3" className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-400 cursor-pointer"
+                            omitDefaults="text-sm h-9 px-3"
+                            className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-400 cursor-pointer"
                             title="Remove nation catch"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -950,7 +1006,9 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-base font-semibold text-[var(--admin-fg)]">Give Nation to User</h3>
-                      <p className="text-xs text-[var(--admin-muted)] mt-0.5">Search or choose a nation from the catalog</p>
+                      <p className="text-xs text-[var(--admin-muted)] mt-0.5">
+                        Search or choose a nation from the catalog
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -978,7 +1036,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           </div>
                           <div className="relative flex items-center">
                             <Search className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-[var(--admin-muted)]" />
-                            <input name="givesearchquery"
+                            <input
+                              name="givesearchquery"
                               type="text"
                               value={giveSearchQuery}
                               onChange={(e) => setGiveSearchQuery(e.currentTarget.value)}
@@ -1000,7 +1059,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                             <div className="max-h-44 overflow-y-auto rounded-lg bg-[var(--admin-elevated)] p-1.5 space-y-1 border-0 shadow-none scrollbar-thin">
                               {filteredGiveCatalog.length > 0 ? (
                                 filteredGiveCatalog.map((cat) => {
-                                  const isSelected = String(cat.id).toLowerCase() === String(giveNationId).toLowerCase();
+                                  const isSelected =
+                                    String(cat.id).toLowerCase() === String(giveNationId).toLowerCase();
                                   return (
                                     <button
                                       key={cat.id}
@@ -1013,7 +1073,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                                         'flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs transition-colors border-0 shadow-none',
                                         isSelected
                                           ? 'bg-[var(--admin-card)] text-[var(--admin-accent)] font-medium'
-                                          : 'text-[var(--admin-fg)] hover:bg-[var(--admin-card)]/70'
+                                          : 'text-[var(--admin-fg)] hover:bg-[var(--admin-card)]/70',
                                       )}
                                     >
                                       <div className="flex items-center gap-2 min-w-0">
@@ -1024,7 +1084,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                                         <span
                                           className={cn(
                                             'rounded px-1.5 py-0.5 text-[10px] font-medium capitalize',
-                                            rarityBadgeClass[cat.class.toLowerCase() as RarityClass] || 'bg-white/10 text-[var(--admin-fg)]'
+                                            rarityBadgeClass[cat.class.toLowerCase() as RarityClass] ||
+                                              'bg-white/10 text-[var(--admin-fg)]',
                                           )}
                                         >
                                           {cat.class}
@@ -1045,7 +1106,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
 
                         <div className="space-y-1.5">
                           <label className="text-xs font-medium text-[var(--admin-fg)]">Or Select From Dropdown</label>
-                          <select name="givenationid"
+                          <select
+                            name="givenationid"
                             value={giveNationId}
                             onChange={(e) => setGiveNationId(e.currentTarget.value)}
                             className="h-9 w-full rounded-lg bg-[var(--admin-elevated)] px-3 text-xs text-[var(--admin-fg)] focus:outline-none border-0 shadow-none cursor-pointer"
@@ -1076,7 +1138,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                               <span
                                 className={cn(
                                   'rounded px-2 py-0.5 text-[10px] font-medium capitalize',
-                                  rarityBadgeClass[selectedGiveNation.class.toLowerCase() as RarityClass] || 'bg-white/10 text-[var(--admin-fg)]'
+                                  rarityBadgeClass[selectedGiveNation.class.toLowerCase() as RarityClass] ||
+                                    'bg-white/10 text-[var(--admin-fg)]',
                                 )}
                               >
                                 {selectedGiveNation.class}
@@ -1100,7 +1163,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           value={giveNationId}
                           onChange={(e) => setGiveNationId(e.currentTarget.value)}
                           placeholder="e.g. US, JP, DE..."
-                          omitDefaults="h-10 text-sm" className={cn('h-9 text-xs border-0 shadow-none bg-[var(--admin-elevated)]', admin.input)}
+                          omitDefaults="h-10 text-sm"
+                          className={cn('h-9 text-xs border-0 shadow-none bg-[var(--admin-elevated)]', admin.input)}
                         />
                       </div>
                     )}
@@ -1110,7 +1174,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         <label className="text-xs font-medium text-[var(--admin-fg)]">Count (1 - 25)</label>
                         <span className="text-xs font-semibold tabular-nums text-[var(--admin-fg)]">{giveCount}</span>
                       </div>
-                      <input name="givecount"
+                      <input
+                        name="givecount"
                         type="range"
                         min="1"
                         max="25"
@@ -1130,7 +1195,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                           setShowGiveModal(false);
                           setGiveSearchQuery('');
                         }}
-                        omitDefaults="text-sm h-9" className="h-8 text-xs border-0 shadow-none"
+                        omitDefaults="text-sm h-9"
+                        className="h-8 text-xs border-0 shadow-none"
                       >
                         Cancel
                       </Button>
@@ -1138,7 +1204,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         type="submit"
                         size="sm"
                         disabled={isGiving || !giveNationId}
-                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 border-0 shadow-none"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md"
+                        className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 border-0 shadow-none"
                       >
                         {isGiving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                         Grant Nation
@@ -1189,7 +1256,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         value={auctionTotalInput}
                         onChange={(e) => setAuctionTotalInput(e.currentTarget.value)}
                         placeholder="0"
-                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm"
+                        className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1203,7 +1271,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         value={auctionSoldInput}
                         onChange={(e) => setAuctionSoldInput(e.currentTarget.value)}
                         placeholder="0"
-                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm"
+                        className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1217,7 +1286,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         value={auctionEarningsInput}
                         onChange={(e) => setAuctionEarningsInput(e.currentTarget.value)}
                         placeholder="0"
-                        omitDefaults="h-10 text-sm" className={cn('h-9 text-xs', admin.input)}
+                        omitDefaults="h-10 text-sm"
+                        className={cn('h-9 text-xs', admin.input)}
                       />
                     </div>
 
@@ -1227,7 +1297,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowAuctionModal(false)}
-                        omitDefaults="text-sm h-9" className="h-8 text-xs cursor-pointer"
+                        omitDefaults="text-sm h-9"
+                        className="h-8 text-xs cursor-pointer"
                       >
                         Cancel
                       </Button>
@@ -1235,7 +1306,8 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
                         type="submit"
                         size="sm"
                         disabled={isUpdatingAuction}
-                        omitDefaults="rounded-md text-sm h-9 rounded-md" className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
+                        omitDefaults="rounded-md text-sm h-9 rounded-md"
+                        className="h-8 rounded-lg bg-[var(--admin-accent)] text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90 cursor-pointer"
                       >
                         {isUpdatingAuction ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
                         Save Stats
@@ -1246,7 +1318,7 @@ export default function UserEdit({ userId, onBack }: UserEditProps) {
               </div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
 
       <UnsavedChangesBar

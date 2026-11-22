@@ -134,7 +134,7 @@ export function applyThemeToDocument(prefs: ThemePrefs) {
   if (palette.gradientEnabled) {
     root.style.setProperty(
       '--admin-shell-bg',
-      `linear-gradient(${palette.gradientAngle}deg, ${palette.gradientFrom}, ${palette.gradientTo})`
+      `linear-gradient(${palette.gradientAngle}deg, ${palette.gradientFrom}, ${palette.gradientTo})`,
     );
   } else {
     root.style.setProperty('--admin-shell-bg', palette.shell);

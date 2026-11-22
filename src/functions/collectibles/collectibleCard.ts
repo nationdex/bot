@@ -61,7 +61,7 @@ export default new ForgeFunction({
   $drawText[info;fill;$get[attack];95px stats;$get[attack_color];1038;1685]
   $drawText[info;fill;Artwork by:;48px credits;#FFFFFF;67;1856]
   $drawText[info;fill;$get[artist];48px credits;#FFFFFF;67;1916]
-  
+
   $return[
 ID: \`#$get[id]\`
 Caught on $discordTimestamp[$collectible[$get[id];timestamp];FullDateShortTime] in $shortParse[$collectible[$get[id];caught_in];5]

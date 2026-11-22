@@ -10,7 +10,21 @@ import { admin } from '@/lib/admin-classes';
 import { motionSettingGroups, type MotionPrefKey } from '@/lib/animation-prefs';
 import { cn } from '@/lib/utils';
 
-function SettingToggle({ id, label, description, checked, disabled, onChange }: { id: string; label: string; description: string; checked: boolean; disabled?: boolean; onChange: (checked: boolean) => void; }) {
+function SettingToggle({
+  id,
+  label,
+  description,
+  checked,
+  disabled,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (checked: boolean) => void;
+}) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
@@ -29,15 +43,13 @@ function SettingToggle({ id, label, description, checked, disabled, onChange }: 
         className={cn(
           'relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors',
           checked ? 'bg-[var(--admin-accent)]' : 'bg-[var(--admin-elevated)]',
-          disabled && 'cursor-not-allowed opacity-50'
+          disabled && 'cursor-not-allowed opacity-50',
         )}
       >
         <span
           className={cn(
             'absolute top-0.5 left-0.5 h-5 w-5 rounded-full transition-transform',
-            checked
-              ? 'translate-x-5 bg-[var(--admin-accent-fg)]'
-              : 'translate-x-0 bg-[var(--admin-fg)] opacity-50'
+            checked ? 'translate-x-5 bg-[var(--admin-accent-fg)]' : 'translate-x-0 bg-[var(--admin-fg)] opacity-50',
           )}
         />
       </button>
@@ -83,7 +95,7 @@ export default function Settings() {
             className={cn(
               'h-4 w-4 shrink-0 transition-transform duration-200',
               admin.muted,
-              openSections.has('theme') && 'rotate-90 text-[var(--admin-fg)]'
+              openSections.has('theme') && 'rotate-90 text-[var(--admin-fg)]',
             )}
           />
         </button>
@@ -119,7 +131,7 @@ export default function Settings() {
             className={cn(
               'h-4 w-4 shrink-0 transition-transform duration-200',
               admin.muted,
-              openSections.has('motion') && 'rotate-90 text-[var(--admin-fg)]'
+              openSections.has('motion') && 'rotate-90 text-[var(--admin-fg)]',
             )}
           />
         </button>
@@ -145,9 +157,7 @@ export default function Settings() {
 
                 {motionSettingGroups.map((group) => (
                   <div key={group.title} className="space-y-4">
-                    <p className={cn('text-xs font-medium uppercase tracking-wide', admin.muted)}>
-                      {group.title}
-                    </p>
+                    <p className={cn('text-xs font-medium uppercase tracking-wide', admin.muted)}>{group.title}</p>
                     <div className="space-y-4">
                       {group.settings.map((setting) => (
                         <SettingToggle
@@ -166,16 +176,11 @@ export default function Settings() {
 
                 {osReducedMotion && (
                   <div
-                    className={cn(
-                      'flex items-start gap-2 rounded-xl px-3 py-2.5 text-xs',
-                      admin.elevated,
-                      admin.muted
-                    )}
+                    className={cn('flex items-start gap-2 rounded-xl px-3 py-2.5 text-xs', admin.elevated, admin.muted)}
                   >
                     <Monitor className={cn('mt-0.5 h-3.5 w-3.5 shrink-0', admin.muted)} />
                     <p>
-                      System <strong className={admin.fg}>Reduce motion</strong> is on. These toggles
-                      have no effect.
+                      System <strong className={admin.fg}>Reduce motion</strong> is on. These toggles have no effect.
                     </p>
                   </div>
                 )}
@@ -185,11 +190,7 @@ export default function Settings() {
         </AnimatePresence>
       </Card>
 
-      <div
-        className={cn(
-          'flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between'
-        )}
-      >
+      <div className={cn('flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between')}>
         <div className="inline-flex items-center gap-1 p-1 rounded-full bg-[var(--admin-card)] w-fit">
           <button
             type="button"
@@ -199,7 +200,7 @@ export default function Settings() {
               'h-7 sm:h-8 px-3 rounded-full inline-flex items-center justify-center gap-1.5 text-xs font-medium transition-colors shrink-0',
               admin.muted,
               admin.hoverRow,
-              (osReducedMotion || !masterEnabled) && 'cursor-not-allowed opacity-50'
+              (osReducedMotion || !masterEnabled) && 'cursor-not-allowed opacity-50',
             )}
           >
             <Gauge className="h-3.5 w-3.5 shrink-0" />
@@ -212,7 +213,7 @@ export default function Settings() {
             className={cn(
               'h-7 sm:h-8 px-3 rounded-full inline-flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none shrink-0',
               admin.muted,
-              admin.hoverRow
+              admin.hoverRow,
             )}
           >
             <RotateCcw className="h-3.5 w-3.5 shrink-0" />

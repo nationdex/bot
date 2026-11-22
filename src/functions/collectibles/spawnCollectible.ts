@@ -70,7 +70,7 @@ export default new ForgeFunction({
     $footer[Type its name in the chat to catch it!]
     $color[$jsonVar[config;accent]]
   ;true]]
-  
+
   $let[spawnLock;$mutex[acquire;spawn:$guildID]]
   $jsonLoad[config;$getGuildVar[spawnConfig]]
   $!jsonSet[config;caught_by;""]
