@@ -3,6 +3,7 @@ import { ChevronRight, Gauge, Monitor, Palette, RotateCcw, Sparkles } from '@/co
 import { useState } from 'preact/hooks';
 import InstallApp from '@/components/layout/InstallApp';
 import ThemeSettings from '@/pages/settings/ThemeSettings';
+import RemoteExtrasSettings from '@/pages/settings/RemoteExtrasSettings';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAnimationPrefs } from '@/hooks/useAnimationPrefs';
 import { useMotionPref, useOsPrefersReducedMotion } from '@/hooks/useReducedMotion';
@@ -81,6 +82,11 @@ export default function Settings() {
   return (
     <div className="w-full space-y-4 sm:space-y-6">
       <InstallApp />
+      <Card className={cn(admin.card, 'overflow-hidden')}>
+        <div className="p-5"><h3 className={cn('text-sm font-medium', admin.fg)}>Remote extras</h3>
+          <p className={cn('mt-1 text-xs', admin.muted)}>Manage the allowlist used by the extras website. The bot's API token is issued separately through Discord and is never stored in these settings.</p></div>
+        <CardContent className="px-5 pb-5 pt-0"><RemoteExtrasSettings /></CardContent>
+      </Card>
       <Card className={cn(admin.card, 'overflow-hidden')}>
         <button
           type="button"

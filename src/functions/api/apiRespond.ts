@@ -30,7 +30,7 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $jsonLoad[names;{"200":"OK","400":"Bad Request","401":"Unauthorized","403":"Forbidden","404":"Not Found","413":"Payload Too Large","500":"Internal Server Error","503":"Service Unavailable"}]
+  $jsonLoad[names;{"200":"OK","400":"Bad Request","401":"Unauthorized","403":"Forbidden","404":"Not Found","408":"Request Timeout","409":"Conflict","413":"Payload Too Large","415":"Unsupported Media Type","500":"Internal Server Error","503":"Service Unavailable"}]
   $jsonLoad[r;$default[$replace[$env[json];null;];{"status":500,"error":"Empty reply."}]]
   $let[status;$default[$replace[$env[r;status];undefined;];500]]
   $if[$isNumber[$get[status]]==false;$let[status;500]]

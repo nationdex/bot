@@ -87,7 +87,7 @@
 
     "@napi-rs/canvas-win32-x64-msvc": ["@napi-rs/canvas-win32-x64-msvc@1.2.0", "", { "os": "win32", "cpu": "x64" }, "sha512-GJ0DLyiTvLw5xNtdUJ0ncRuuT4Yv9zNXnrrvfvKr1/M08mbvtFVLoKiwQAaWixEcTsCh0U94/nMxkJTLH7ZMfw=="],
 
-    "@nationdex/api": ["@nationdex/api@github:nationdex/api#f8a23a3", { "peerDependencies": { "@tryforge/forgescript": "^2.8.0" } }, "nationdex-api-f8a23a3", "sha512-T2kfbE9VVDtZavvGUjkI37dAJXQ0UQkDDkXYX26A+MUqy9uQWHCosMty+nVWQweNFaB8pSraTFxyKye+oTXVZg=="],
+    "@nationdex/api": ["@nationdex/api@github:nationdex/api#51375da", { "peerDependencies": { "@tryforge/forgescript": "^2.8.0" } }, "nationdex-api-51375da", "sha512-erCYho3Zv97WbcJ02LJJZzVNprNKhekQA14GI9P2hWwo/okFL1P158daqJCYoHm/IiOJ6AGvIJ5BNJoZDaDpRA=="],
 
     "@nationdex/db": ["@nationdex/db@github:nationdex/db#ee7658b", { "dependencies": { "@electric-sql/pglite": "~0.5.17" }, "peerDependencies": { "@tryforge/forgescript": "^2.8.0" } }, "nationdex-db-ee7658b", "sha512-MFFYFcPM8cvvqwl0AM5fJMQtOz6ED/p8OATgfQiU8LNfFlNVN7dwnAeo3bqwCxKCTTI1zIoTpxjUyo+B61N8jA=="],
 

@@ -1,249 +1,127 @@
-# Project Nationdex 2026 🔵✊
+# Project Nationdex 2026
 
-**The OG alternative to Ballsdex!**
+Project Nationdex 2026 is a Discord collectible bot built with Bun, TypeScript, and ForgeScript. It is a revival of Nationdex.bot, first created in 2022.
 
-That is right, one of the oldest Ballsdex-like bots in existence, created in December 2022 as a legitimate Ballsdex alternative, has returned.
+[Nationdex community](https://dsc.nationdex.com/) · [Source code](https://github.com/nationdex/bot)
 
-Join our cause at the NDS [headquarters](https://dsc.nationdex.com/)!
+![Nationdex banner](assets/banner.jpg)
 
-![Banner](assets/banner.jpg)
+## Run the bot
 
-## ⚙️ Setup
+### Requirements
 
-Install Bun 1.4.3 or newer, then install dependencies:
+- Bun 1.4.3 or newer
+- A Discord application and bot token
+- A home server ID for staff commands and access controls
 
-```bash
+The database is embedded PGlite, managed by `@nationdex/db`. You do not need a separate PostgreSQL server or Docker.
+
+### Install and start
+
+```sh
 bun install
-```
-
-Bun runs the bot directly from TypeScript source.
-
-To run on dev:
-
-```bash
-bun run dev
-```
-
-To start:
-
-```bash
 bun run start
 ```
 
-## 🛠️ Troubleshooting
+For development with file watching:
 
-After adding, renaming, or removing a bot function or command file, run `bun run bundle:prep` to refresh the registration list.
+```sh
+bun run dev
+```
 
-In order to check for any errors and warnings on the codebase, run:
+Set the required bot credentials in the root `.env` file:
 
-```bash
+```dotenv
+TOKEN=your_discord_bot_token
+HOME_GUILD_ID=your_staff_server_id
+```
+
+The API listens on port `2222` by default. Set `API_PORT` to change it. The panel listens on port `3000` by default and has separate settings in `website/.env.example`.
+
+## Bot access and API tokens
+
+In the configured home server, the Discord application owner can use `/access grant` to give staff the `admin` or `moderator` preset. Use `/access roles` to review presets and available capabilities. Owners can also create custom roles and grant individual capabilities.
+
+The verified Discord application owner receives owner capabilities automatically. No ownership claim command is required. Only that owner can create API tokens with `/api token`; the token is shown once. Revoke tokens with `/api tokenrevoke`. A token carries the current capabilities of its owner, so removing access also removes the token's API permissions.
+
+Eval access is owner-controlled. Admin and Moderator presets do not include eval. Keep API tokens private: they can access any API route allowed by their owner's capabilities.
+
+## Admin panel
+
+The panel is served by the bot's Bun process. It uses `website/dist` for its built interface and can build that directory from `website/` source when needed. Panel accounts and their permissions are separate from Discord bot staff permissions.
+
+For public access, put the panel behind HTTPS. The panel can also serve HTTPS directly with certificate and key paths configured in `website/.env`; see [the deployment guide](website/deploy/README.md) for Nginx and tunnel examples.
+
+## HTTP API
+
+The API is provided by `@nationdex/api`. Route implementations live in `src/api_routes/v1/GET` and `src/api_routes/v1/POST`.
+
+### Read routes
+
+Most GET routes are public. Sensitive views require a token with the listed capability. Player privacy settings still apply unless the token has `inspect.read`.
+
+| Route | Purpose | Access |
+| --- | --- | --- |
+| `GET /v1/stats` | Global bot and collection statistics | Public |
+| `GET /v1/config` | Bot configuration | Public |
+| `GET /v1/collectibles/data?id=:id` | Catalog, optionally one collectible | Public |
+| `GET /v1/user?id=:discordId` | A player's inventory, auction, and settings | Public view; `inspect.read` bypasses privacy |
+| `GET /v1/users/:id/auction` | Player auction statistics | Public view; `inspect.read` bypasses privacy |
+| `GET /v1/guilds/:id` | Spawn settings for a joined server | Public |
+| `GET /v1/cards` and `GET /v1/cards/:id/image` | Card catalog and card image | Public |
+| `GET /v1/commands/data`, `GET /v1/slash/data` | Registered command definitions | Public |
+| `GET /v1/search_db/:variable?id=:id` | Raw database records | `inspect.read` |
+
+Example:
+
+```sh
+curl http://localhost:2222/v1/stats
+curl 'http://localhost:2222/v1/collectibles/data?id=31'
+```
+
+### Write routes
+
+Every POST request needs `Authorization: Bearer <token>`, `Content-Type: application/json`, and the capability listed below. The token is created by the Discord application owner with `/api token`.
+
+| Route family | Capability | Examples |
+| --- | --- | --- |
+| `/v1/nations*` | `nations.edit` or `cards.edit` for card/art operations | Add, edit, categorize, delete, and add artwork to nations |
+| `/v1/categories*`, `/v1/cards*` | `cards.edit` | Manage card backgrounds, specials, and categories |
+| `/v1/users/:id/*` | `users.edit` | Edit balances, settings, stats, auctions, and inventories |
+| `/v1/guilds/:id/edit` | `guilds.edit` | Change a server's spawn channel and spawn status |
+| `/v1/config*` | `config.edit` | Change bot settings and keywords |
+
+Example:
+
+```sh
+curl -X POST http://localhost:2222/v1/users/525421785001361408/balance \
+  -H 'Authorization: Bearer ndx_<token>' \
+  -H 'Content-Type: application/json' \
+  -d '{"mode":"add","amount":500}'
+```
+
+Successful writes are recorded in `/access audit`; request bodies are not logged. Common responses are `200` for success, `400` for invalid input, `401` for a missing or revoked token, `403` for a missing capability, `413` for an oversized request, and `500` for an unexpected error.
+
+Do not expose the API port directly to the public internet over plain HTTP. Use HTTPS through a reverse proxy or configure TLS for the service.
+
+## Remote extras
+
+The Nationdex index can connect to a reachable bot instance over HTTPS. Create an API token with `/api token` in Discord, then enter it on the index site. The site keeps the token in the open tab's memory and discards it on disconnect, tab close, or reload; it does not save the token in browser storage.
+
+The panel owner must enable remote extras, approve the index origin, and add each allowed extra repository with a full commit SHA under **Settings → Remote extras**. The public index catalogue is only a directory; it does not authorize installation on a bot.
+
+An extra is trusted code executed with the bot process's privileges. Review its source before approving it. Installation and removal take effect after a bot restart. The API also exposes `GET /v1/discovery` with public product and extras-protocol metadata; sensitive management routes require the bot owner's API token.
+
+## Development checks
+
+```sh
+bun run bundle:prep
+bun run lint
 bun run typecheck
 ```
 
-## 🗄️ Database
+Run `bun run bundle:prep` after adding, renaming, or removing a function, event, command, slash command, or API route so the bot's registration bundle stays current.
 
-Nationdex uses an embedded **PGlite** (WASM Postgres) instance via `@nationdex/db`. No external database container or `DATABASE_URL` is required. And most importantly, **no more Docker**!
+## Contributors
 
-## 🌐 API
-
-Nationdex serves an HTTP API through `@nationdex/api`. The routes are ForgeScript files in `src/api_routes/v1/GET` (read) and `src/api_routes/v1/POST` (write). It listens on `API_PORT` (default `2222`), so the examples below use `http://localhost:2222`.
-
-### Reading data (GET)
-
-GET routes return JSON and need no token, except `/v1/search_db`, which needs one with the `inspect.read` capability (see below). Query values go in the URL (`?id=...`).
-
-| Route                         | Query                                                                                                      | Returns                                                                                                                                                                                                                                                                                  |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /v1/stats`               | none                                                                                                       | `collectibles_caught_global`, `collectibles_count`, `registered_users`, `registered_guilds`                                                                                                                                                                                              |
-| `GET /v1/config`              | none                                                                                                       | The bot config (`bot`, `urls`, `paths`, `maintainers`, `prefix`, `logChannel`, `accent`)                                                                                                                                                                                                 |
-| `GET /v1/collectibles/data`   | optional `id`                                                                                              | The whole catalog, or just that nation. Unknown `id` gives `404` and `{"error": "Collectible Not Found"}`                                                                                                                                                                                |
-| `GET /v1/user`                | `id` (Discord user ID, required)                                                                           | `collectiblesData` (inventory), `auctionData`, `settings`. A player's privacy settings are honoured: a private inventory or profile comes back as `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}` |
-| `GET /v1/users/:id/auction`   | none                                                                                                       | The user's auction stats (`total`, `sold`, `earnings`, `onSale`). A private profile returns `{"private": true}` unless the request carries a token with `inspect.read`. Unknown user gives `404` and `{"error": "User Not Found"}`                                                       |
-| `GET /v1/guilds/:id`          | none                                                                                                       | A server's spawn configuration (`guild`, `status`, `config_channel`, `weight`, `timestamp`). Unknown or unjoined guild gives `404` and `{"error": "Guild Not Found"}`                                                                                                                    |
-| `GET /v1/cards`               | none                                                                                                       | The card backgrounds as an array of `id`, `name`, `file`, `url` and `nationsCount` (how many nations use it). `url` is the path of the image, for example `/v1/cards/democracy/image`                                                                                                    |
-| `GET /v1/cards/:id/image`     | `id` from `GET /v1/cards`                                                                                  | The card background PNG itself (`image/png`, cached for an hour), ready for an `<img>` tag. Unknown `id` gives `404` and `{"error": "Card Not Found"}`                                                                                                                                   |
-| `GET /v1/commands/data`       | none                                                                                                       | The prefix command definitions (`src/config/commands.ts`)                                                                                                                                                                                                                                |
-| `GET /v1/slash/data`          | none                                                                                                       | The slash command definitions (`src/config/slash.ts`)                                                                                                                                                                                                                                    |
-| `GET /v1/search_db/:variable` | optional `id`. **Needs a token with `inspect.read`** (`401` without a token, `403` without the capability) | The raw database records of a variable, for example `/v1/search_db/spawnConfig` or `/v1/search_db/userCollectibles?id=123`. Each record has `identifier`, `name`, `id`, `type`, `value` (a JSON string) and `guild_id`                                                                   |
-
-```bash
-curl http://localhost:2222/v1/stats
-curl "http://localhost:2222/v1/collectibles/data?id=31"
-curl "http://localhost:2222/v1/user?id=525421785001361408"
-```
-
-`search_db` returns raw records (balances, staff grants, the audit log), which is why it needs a token. Send it the same way as for the POST routes below. Keep the API port behind a reverse proxy with HTTPS so tokens are not sent in clear text.
-
-### Changing data (POST)
-
-POST routes edit users, nations, cards and the bot settings. Every call needs a token and a JSON body.
-
-1. A staff member with a role (see `/access grant`) runs `/access token` in the main server. The token is shown once. Up to 3 tokens per person, `/access tokenrevoke` removes them.
-2. Send it as `Authorization: Bearer ndx_...` with `Content-Type: application/json`.
-3. The token only identifies you. Each route checks your **current** capability, so removing someone's role cuts their API access at once.
-
-| Capability     | Routes                                                  | Default roles          |
-| -------------- | ------------------------------------------------------- | ---------------------- |
-| `nations.edit` | `/v1/nations*` (except `/card`)                         | `curator`              |
-| `cards.edit`   | `/v1/nations/:id/card`, `/v1/categories*`, `/v1/cards*` | `curator`              |
-| `users.edit`   | `/v1/users/:id/*`                                       | `support`              |
-| `guilds.edit`  | `/v1/guilds/:id/*`                                      | `support`, `moderator` |
-| `config.edit`  | `/v1/config*`                                           | `owner` only           |
-| `inspect.read` | `GET /v1/search_db/*`, the full `GET /v1/user` view     | `developer`            |
-
-```bash
-curl -X POST http://localhost:2222/v1/users/525421785001361408/balance \
-  -H "Authorization: Bearer ndx_<your token>" \
-  -H "Content-Type: application/json" \
-  -d '{"mode": "add", "amount": 500}'
-```
-
-Every answer has the same shape, and `ok` is `true` only for status `200`:
-
-```json
-{ "ok": true,  "status": 200, "statusText": "OK", "value": { } }
-{ "ok": false, "status": 400, "statusText": "Bad Request", "error": "A nation named Atlantis already exists." }
-```
-
-| Status | Meaning                                                          |
-| ------ | ---------------------------------------------------------------- |
-| `200`  | Done. `value` may carry a result                                 |
-| `400`  | The input was rejected. `error` says why and nothing was changed |
-| `401`  | Missing, malformed or revoked token                              |
-| `403`  | The token's owner does not hold the capability this route needs  |
-| `404`  | `users` routes only: no such Discord user                        |
-| `413`  | Body too large (64 KB, or 15 MB for the background upload)       |
-| `500`  | Unexpected error, nothing was changed                            |
-
-Successful calls are written to `/access audit` as `api:<route>`. Request bodies are never logged.
-
-#### Nations
-
-| Route                           | Body keys                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /v1/nations`              | **`name`** text, 1-80 chars, must be unique. **`class`** an existing category. **`emoji_id`** the ID of an existing emoji, up to 64 chars: an application emoji or an emoji of any server the bot is in (`400` if no such emoji exists). **`attack`** whole number, 0 or more. **`health`** whole number, 0 or more. `rarity` / `weight` positive number, float or int (spawn weight, default `10`). Optional `short_name`, `regime`, `economy`, `capacity_name`, `capacity_description`, `credits`, `translations`, `catch_names` / `catching_names`, `global_caught`, `price`, `sell_price`. `wild_card` and `collection_card` are artwork file names that must already exist (see `/art` below). Answers `{ "value": { "id": "112" } }`. A new nation cannot spawn or be given to players until it has artwork                                                                                                                                                                                                                                                                           |
-| `POST /v1/nations/:id`          | Send any or all fields to change. `name` (1-80), `short_name` (up to 48, empty or null clears it), `class` (existing category, moves category and updates counters), `emoji_id` (up to 64, skips verification if unchanged), `credits` (up to 120), `attack`, `health` (0 or more), `rarity` / `weight` (positive number, float or int like `0.8`, updates both and recounts owner inventories), `regime` (background name in `assets/cards`, `.png` extension optional), `economy` (icon filename in `assets/icons`), `price`, `sell_price` (0 or more), `global_caught` (0 or more), `capacity_name` (up to 64), `capacity_description` (up to 600), `catch_names` and `catching_names` (array or comma separated text, lowercased, at least one, kept in sync, no clash with other nations), `translations` (same, empty clears it), `wild_card` and `collection_card` (existing artwork filename in `assets/spawn_art` or `assets/window_art`, skips check if unchanged). If an `id` field is present in the payload, it is automatically ignored. At least one valid field is required |
-| `POST /v1/nations/:id/category` | **`class`** an existing category. Moves the nation and fixes every counter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `POST /v1/nations/:id/delete`   | `cascade` `true` also deletes every catch of the nation and recounts the owners. Without it, the call fails while catches exist. Always refused while an auction holds the nation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `POST /v1/nations/:id/art`      | Needs `cards.edit`. **`kind`** `spawn` (the wild artwork shown when it spawns) or `window` (the collection artwork). **`data`** the image, base64 encoded, PNG, JPEG or WebP, up to 10 MB. `name` the file name without extension (letters, numbers, `-`, `_`, up to 60); it is generated from the nation when left out. Answers `{ "value": { "file": "Atlantis.png" } }`. A nation needs `spawn` artwork to spawn and both kinds before it can be given to a player                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `POST /v1/nations/:id/card`     | `regime` card background (file name in `assets/cards` without `.png`), `economy` icon (file name in `assets/icons` with its extension). Send either or both                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-
-#### Categories and card backgrounds
-
-| Route                                      | Body keys                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /v1/categories`                      | **`name`** 2-20 chars: lowercase letters, numbers, `-` or `_`, starting with a letter. `total`, `total_caught`, `classes` and `collectibles` are reserved                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `POST /v1/categories/:name/delete`         | none. Fails while a nation uses the category, and for the last category                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `POST /v1/cards/backgrounds`               | **`name`** 1-40 chars, no `.`, `/` or `\`. **`data`** (or `image`) the PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Fails if the name already exists                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `POST /v1/cards/backgrounds/:name/replace` | Needs `cards.edit`. **`data`** (or `image`) the new PNG, base64 encoded, exactly 1428x2000 pixels, up to 10 MB. Overwrites the file `assets/cards/<name>.png`, so every nation and special that uses the background shows the new image at once. `404` when the background does not exist                                                                                                                                                                                                                                                                                                                      |
-| `POST /v1/cards/backgrounds/:name/delete`  | none. Fails while a nation or a special uses it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `POST /v1/cards/:name/edit`                | Edits an existing card background or special variant. `:name` is the card ID or special name. Fields: `name` (new identifier, 1-40 chars; renames card background file on disk, updates catalog nations using this regime, and updates special entries), `image` or `data` (base64 encoded PNG, 1428x2000 pixels, up to 10 MB; replaces card image on disk), optional special properties: `emoji`, `rarity` / `chance`, `catch_phrase`, `credits`, `display_name`, `card` (background name). At least one valid field is required                                                                              |
-| `POST /v1/cards/add/regime`                | Creates a new regime card background. **`name`** 1-40 chars, no `.`, `/` or `\`. **`image`** or **`data`** base64 encoded PNG, exactly 1428x2000 pixels, up to 10 MB. Fails if the card already exists. Answers `{ "value": { "id": "name", "file": "name.png" } }`                                                                                                                                                                                                                                                                                                                                            |
-| `POST /v1/cards/add/special`               | Creates a new special card variant. **`name`** 1-40 chars, no `.`, `/` or `\`. Optional `image` or `data` (base64 encoded PNG, 1428x2000 pixels, up to 10 MB to upload a new card background image), `card` (card background name in `assets/cards`, defaults to `name`; if no image is uploaded, the background file must already exist), `emoji` (string/emoji), `rarity` / `chance` (number, spawn chance), `catch_phrase` (text), `credits` (text), `display_name` (custom name). Fails if the special already exists. Answers `{ "value": { "id": "name", "card": "cardName", "file": "cardName.png" } }` |
-
-#### Users
-
-`:id` is a Discord user ID that must exist.
-
-| Route                               | Body keys                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `POST /v1/users/:id/balance`        | **`mode`** `set`, `add` or `remove`. **`amount`** whole number, up to 12 digits. The result stays between 0 and 999999999999                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `POST /v1/users/:id/settings`       | **`key`** `inventory_privacy` or `profile_privacy` (value `public` or `private`), or `accept_gifts` (value `true` or `false`). **`value`** one of those values                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `POST /v1/users/:id/settings/reset` | none. Back to the defaults                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `POST /v1/users/:id/stats`          | **`key`** `catches_total`, `battles_won`, `trades_completed` or `gifts_sent`. **`value`** whole number, up to 9 digits                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `POST /v1/users/:id/auction`        | Updates auction stats. Can send direct fields (`total`, `sold`, `earnings` whole numbers up to 12 digits, and/or `onSale` array of auction IDs), or send **`key`** (`total`, `sold`, `earnings`, `onSale`) and **`value`** with optional `mode` (`set`, `add` or `remove`)                                                                                                                                                                                                                                                                                                                       |
-| `POST /v1/users/:id/nations/give`   | **`nation`** a catalog ID. `count` 1-25 (default `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `POST /v1/users/:id/nations/remove` | **`catch`** the 7-character catch ID. Fails if the user does not hold it (catches in an active auction are not in their inventory)                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `POST /v1/users/:id/nations/edit`   | Edits nation instance(s) held by the user. Specify target via **`catch`** (7-character ID), **`catches`** (array of IDs), or **`nation`** (catalog ID to edit all instances of that nation). Editable fields: `attack`, `health` (0-999999999), `attack_type`, `health_type` (`buffed` or `nerfed`), `special` (variant name, or empty/`none` to clear), `card` or `regime` (background file in `assets/cards`), `nation` (new catalog ID to reassign the catch, updates inventory class counts and catalog statistics), `timestamp`, `caught_in` (ms). At least one field to change is required |
-
-#### Guilds
-
-`:id` is a Discord guild (server) ID where the bot is a member.
-
-| Route                      | Body keys                                                                                                                                                                                                                                                                                                                                                                                 |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /v1/guilds/:id/edit` | Configures server spawn settings. **`channel`** (or `config_channel`, `spawn_channel`) Discord channel ID where collectibles spawn (send empty string or `null` to clear and spawn in the most active channel). **`status`** (or `enabled`) `enabled` or `disabled` (boolean `true` or `false` also accepted). Optional `weight` whole number accumulator. At least one field is required |
-
-#### Bot settings
-
-`root` is `config` (the bot config) or `keywords` (the words the bot uses, such as `currency.plural`). `path` is a dotted path like `urls.server`. Text values are up to 300 chars. Keywords become Discord command and option names, so they must be 1-32 lowercase letters, numbers, `-` or `_`. Texts built at startup, like command descriptions, change after a restart.
-
-| Route                    | Body keys                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /v1/config`        | **`root`**, **`path`** of an existing value, **`value`**. Checked by path: `accent` is `#rrggbb`, `prefix` is 1-5 chars without spaces, `maintainers.*` are full http(s) profile links (the key is the name shown in `/about`, underscores show as spaces; add one with `parent` `maintainers`), `logChannel` is a channel ID or empty, `paths.*` are relative and cannot contain `..`, `urls.*` and `*.profile` / `*.repo` must be `http(s)` URLs, `bot.name` is 1-32 chars, `api.allowedOrigins` is a list of origins (see below). Keywords follow the rule above |
-| `POST /v1/config/add`    | **`root`**, `parent` the group to add to (empty for the top level), **`key`** letters, numbers and `_` (up to 32, starting with a letter), **`value`**                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `POST /v1/config/delete` | **`root`**, **`path`** of a custom value. Built-in values cannot be deleted                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `POST /v1/config/reset`  | **`root`**, **`path`** of a built-in value, back to its default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-
-Keys in **bold** are required.
-
-#### Calling from a browser
-
-The API sends no CORS headers: browsers on another origin cannot call it. Call it from a server, from `curl`, or through the admin panel, which is served by the bot itself and talks to the API on the same machine.
-
-## 👥 Devs and Mentions
-
-Made with great honor and dedication by those who worked for Nationdex.
-
-| Developers | Roles              |
-| ---------- | ------------------ |
-| Ariel Aram | Founding Father    |
-| Aditya     | Frontend Developer |
-| Ayansh     | Backend Developer  |
-
-| Staff           | Roles                 |
-| --------------- | --------------------- |
-| Mr. Lore        | Staff Member          |
-| BloxyBlitz      | Staff & Code Reviewer |
-| HiboMan         | Staff & Code Reviewer |
-| AhmedTheWarrior | Staff Member          |
-
-And Nationdex as a whole was only possible at some point thanks to the help from the following people.
-
-| Honourable Mentions | Roles                         |
-| ------------------- | ----------------------------- |
-| Luka22r             | Former BDFD & Python Head-Dev |
-| MetroKitten         | Former Developer & Ex-Manager |
-| Tape                | Former BDFD & FS Developer    |
-| Econome             | Former FS & DJS Developer     |
-| Gasvo               | Former BDFD Expert Developer  |
-| Emtyapple           | Former BDFD Mid-Range Dev     |
-| Emperor Scorpion    | Leader of Scorpceltic Empire  |
-| Hariri              | Original Idealist             |
-| UG                  | Former Server Shareholder     |
-
-Project Nationdex 2026, our gratitude to everyone who made it possible, our response to everyone who fought for a better community.
-**Wishes, are eternal, and hope, is not lost.**
-
-### Remote extras (v1.2.0 preview)
-
-The Nationdex index can manage extras on a reachable HTTPS instance. This requires an
-`@nationdex/api` build exporting `supportsRequestHandler`; older API builds keep the
-ordinary bot API working but cannot enable remote management.
-
-Set `EXTRAS_API_TOKEN` to a dedicated random secret of at least 32 characters,
-`EXTRAS_ALLOW_INSTALL=true`, `EXTRAS_ALLOWED_ORIGINS` to the exact index origin, and
-`EXTRAS_CATALOG_FILE` to a local JSON file approved by the host owner:
-
-```json
-[{ "id": "example-extra", "repository": "owner/repository", "ref": "FULL_40_CHARACTER_COMMIT_SHA" }]
-```
-
-The index catalogue lists extras; the host catalogue independently authorizes their
-installation. Connect with the instance HTTPS URL and this dedicated token. Never
-provide a Discord token. Revoke access by rotating the extras token. The API supports
-`GET /v1/extras`, `POST /v1/extras/install` with `{id,ref}`, and
-`POST /v1/extras/remove` with `{id}`. Restart the bot to apply installations/removals.
-Removal preserves extra-owned data. Back up data before upgrades.
-
-An extra must contain `nationdex.extra.json`:
-
-```json
-{ "id": "example-extra", "apiVersion": 1, "entrypoint": "index.ts" }
-```
-
-Its entrypoint exports `register(client)`. Extras execute with the bot process's full
-privileges: approval is trust in the code's publisher, not a sandbox. Use self-contained
-extras or imports already provided by the host. The manager never installs dependencies,
-runs package scripts, or loads Git submodules. Git must be available on the host, including
-for binary installations. Existing binaries need an updated release to include this manager.
+Nationdex is built by its maintainers, staff, and community contributors. Thank you to everyone who has helped develop, review, test, and support the project.

@@ -28,5 +28,14 @@ for (const [name, specifier, exported] of [
         '// NativeFunction({\nmodule.exports = require(' + JSON.stringify(specifier) + ').' + exported + '[' + index + '];\n',
     ));
 }
+const pndDir = path.join(root, 'pnd');
+fs.mkdirSync(pndDir, { recursive: true });
+for (const file of fs.readdirSync(pndDir)) {
+    if (/^function-\d+\.js$/.test(file)) fs.unlinkSync(path.join(pndDir, file));
+}
+fs.writeFileSync(
+    path.join(pndDir, 'function-0.js'),
+    '// NativeFunction({\nmodule.exports = require(' + JSON.stringify(path.join(pndDir, '..', '..', '..', '..', 'src/functions/extras/extrasOperation.ts')) + ');\n',
+);
 module.exports.extensions = ['@tryforge/forge.canvas'];
-module.exports.natives = [path.join(root, 'db'), path.join(root, 'api')];
+module.exports.natives = [path.join(root, 'db'), path.join(root, 'api'), pndDir];

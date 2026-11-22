@@ -1,24 +1,31 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
 import { mkdir, readFile, rename, rm, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { ForgeClient } from '@tryforge/forgescript';
+const panelStore = require('../../website/server/db') as { getMeta: (key: string) => Promise<string | null> };
 
-// Extras execute trusted code with the bot's privileges. Installation is an explicit host-owner opt-in.
+// Extras execute trusted code with the bot's privileges. Installation requires explicit panel approval.
 interface CatalogueEntry { id: string; repository: string; ref: string }
+interface ExtrasSettings { enabled: boolean; allowedOrigins: string[]; catalogue: CatalogueEntry[] }
 interface InstalledExtra extends CatalogueEntry { entrypoint: string; enabled: boolean }
 interface ExtraManifest { id: string; entrypoint: string; apiVersion: number }
 const validId = (id: unknown): id is string => typeof id === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(id);
 const commit = /^[a-f0-9]{40}$/;
-const repository = /^[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+$/;
-const root = (): string => path.resolve(process.env.EXTRAS_DIRECTORY || 'data/extras');
+const repositoryPart = /^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,98}[A-Za-z0-9])?$/;
+const validRepository = (value: unknown): value is string => typeof value === 'string' && value.length <= 201 && value.split('/').length === 2 && value.split('/').every(part => repositoryPart.test(part));
+const validOrigin = (value: unknown): value is string => {
+  if (typeof value !== 'string' || value.length > 255) return false;
+  try { const url = new URL(value); return url.protocol === 'https:' && url.origin === value && !url.username && !url.password; } catch { return false; }
+};
+const root = (): string => path.resolve('data/extras');
+const settingsKey = 'remote_extras_settings';
 let mutating = false;
 const loaded = new Set<string>();
 
 async function state(): Promise<InstalledExtra[]> {
   try {
     const value: unknown = JSON.parse(await readFile(path.join(root(), 'installed.json'), 'utf8'));
-    if (!Array.isArray(value) || !value.every(item => item && validId(item.id) && repository.test(item.repository) && commit.test(item.ref) && safeEntry(item.entrypoint) && typeof item.enabled === 'boolean')) throw new Error('Invalid extras state');
+    if (!Array.isArray(value) || !value.every(item => item && validId(item.id) && validRepository(item.repository) && commit.test(item.ref) && safeEntry(item.entrypoint) && typeof item.enabled === 'boolean')) throw new Error('Invalid extras state');
     return value;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
@@ -34,13 +41,19 @@ async function save(items: InstalledExtra[]): Promise<void> {
   await Bun.write(temporary, JSON.stringify(items, null, 2), { mode: 0o600 });
   await rename(temporary, path.join(root(), 'installed.json'));
 }
-async function catalogue(): Promise<CatalogueEntry[]> {
-  const file = process.env.EXTRAS_CATALOG_FILE;
-  if (!file) throw new Error('EXTRAS_CATALOG_FILE is not configured');
-  const value: unknown = JSON.parse(await readFile(file, 'utf8'));
-  if (!Array.isArray(value) || !value.every(item => item && validId(item.id) && typeof item.repository === 'string' && repository.test(item.repository) && typeof item.ref === 'string' && commit.test(item.ref))) throw new Error('Catalogue must contain ids, owner/repository names and full commit hashes');
-  if (new Set(value.map(item => item.id)).size !== value.length) throw new Error('Duplicate extra ids');
-  return value;
+const defaults: ExtrasSettings = { enabled: false, allowedOrigins: ['https://extras.nationdex.com'], catalogue: [] };
+async function settings(): Promise<ExtrasSettings> {
+  const raw = await panelStore.getMeta(settingsKey);
+  if (!raw) return defaults;
+  const value: unknown = JSON.parse(raw);
+  if (!value || typeof value !== 'object') throw new Error('Invalid remote extras settings');
+  const input = value as Partial<ExtrasSettings>;
+  if (typeof input.enabled !== 'boolean' || !Array.isArray(input.allowedOrigins) || input.allowedOrigins.length > 20 || !input.allowedOrigins.every(validOrigin) || new Set(input.allowedOrigins).size !== input.allowedOrigins.length || !Array.isArray(input.catalogue) || input.catalogue.length > 100 || !input.catalogue.every(item => item && validId(item.id) && validRepository(item.repository) && typeof item.ref === 'string' && commit.test(item.ref))) throw new Error('Invalid remote extras settings');
+  if (new Set(input.catalogue.map(item => item.id)).size !== input.catalogue.length) throw new Error('Duplicate extra ids');
+  return { enabled: input.enabled, allowedOrigins: input.allowedOrigins, catalogue: input.catalogue };
+}
+export async function extrasAllowedOrigins(): Promise<string[]> {
+  try { return (await settings()).allowedOrigins; } catch { return defaults.allowedOrigins; }
 }
 async function git(args: string[], cwd: string): Promise<string> {
   const proc = Bun.spawn(['git', '-c', 'core.hooksPath=/dev/null', '-c', 'protocol.file.allow=never', '-c', 'protocol.ext.allow=never', ...args], {
@@ -96,64 +109,40 @@ export async function loadExtras(client: ForgeClient): Promise<void> {
   if (items.some(extra => !extra.enabled)) await save(items.filter(extra => extra.enabled));
 }
 
-export function createExtrasHandler(_client: ForgeClient): (req: Request) => Promise<Response | null> {
-  return async (req) => {
-    const pathname = new URL(req.url).pathname;
-    if (pathname !== '/v1/extras' && !pathname.startsWith('/v1/extras/')) return null;
-    const origin = req.headers.get('origin');
-    const allowed = (process.env.EXTRAS_ALLOWED_ORIGINS || '').split(',').map(item => item.trim()).filter(Boolean);
-    const headers: Record<string, string> = { 'Cache-Control': 'no-store', 'Vary': 'Origin' };
-    const reply = (value: unknown, status = 200) => Response.json(value, { status, headers });
-    if (origin && !allowed.includes(origin)) return reply({ error: 'Origin is not approved' }, 403);
-    if (origin) headers['Access-Control-Allow-Origin'] = origin;
-    if (req.method === 'OPTIONS') {
-      headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
-      headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type';
-      return new Response(null, { status: 204, headers });
+export async function extrasOperation(operation: string, rawBody = ''): Promise<Record<string, unknown>> {
+  let body: { id?: unknown; ref?: unknown } = {};
+  if (operation !== 'list') {
+    try { body = JSON.parse(rawBody) as typeof body; } catch { return { status: 400, error: 'Invalid JSON.' }; }
+    if (!body || typeof body !== 'object' || !validId(body.id)) return { status: 400, error: 'Invalid extra id.' };
+  }
+  if (!['list', 'install', 'remove'].includes(operation)) return { status: 400, error: 'Unknown extras operation.' };
+  let config: ExtrasSettings;
+  try { config = await settings(); } catch { return { status: 503, error: 'Remote extras settings are unavailable.' }; }
+  if (!config.enabled) return { status: 403, error: 'Remote extras are disabled by the host owner.' };
+  if (operation === 'list') {
+    try { return { status: 200, extras: await state(), restartRequired: true, apiVersion: 1 }; }
+    catch { return { status: 500, error: 'Could not read installed extras.' }; }
+  }
+  if (mutating) return { status: 409, error: 'Another extras operation is in progress.' };
+  mutating = true;
+  try {
+    const items = await state();
+    if (operation === 'remove') {
+      const extra = items.find(item => item.id === body.id);
+      if (!extra) return { status: 404, error: 'Extra is not installed.' };
+      // Deactivation is applied at restart; keep data outside this manager untouched.
+      extra.enabled = false;
+      await save(items);
+      return { status: 200, restartRequired: true };
     }
-    const token = process.env.EXTRAS_API_TOKEN;
-    if (!token || token.length < 32) return reply({ error: 'Extras management is disabled; configure a dedicated token of at least 32 characters' }, 503);
-    const supplied = req.headers.get('authorization') || '';
-    const digest = (value: string) => createHash('sha256').update(value).digest();
-    if (!timingSafeEqual(digest(supplied), digest('Bearer ' + token))) return reply({ error: 'Unauthorized' }, 401);
-    if (pathname === '/v1/extras' && req.method === 'GET') {
-      try { return reply({ extras: await state(), restartRequired: true, apiVersion: 1 }); }
-      catch { return reply({ error: 'Could not read installed extras' }, 500); }
-    }
-    if (req.method !== 'POST' || !['/v1/extras/install', '/v1/extras/remove'].includes(pathname)) return reply({ error: 'Not found' }, 404);
-    if (process.env.EXTRAS_ALLOW_INSTALL !== 'true') return reply({ error: 'Host owner has not enabled extras installation' }, 403);
-    if (!(req.headers.get('content-type') || '').startsWith('application/json')) return reply({ error: 'Expected application/json' }, 415);
-    let body: { id?: unknown; ref?: unknown };
-    try {
-      const reader = req.body?.getReader();
-      const chunks: Uint8Array[] = []; let bytes = 0;
-      if (reader) for (;;) { let timer: ReturnType<typeof setTimeout> | undefined; const part = await Promise.race([reader.read(), new Promise<never>((_, reject) => { timer = setTimeout(() => { void reader.cancel(); reject(new Error('Body timeout')); }, 5000); })]).finally(() => clearTimeout(timer)); if (part.done) break; bytes += part.value.length; if (bytes > 4096) { await reader.cancel(); return reply({ error: 'Request too large' }, 413); } chunks.push(part.value); }
-      body = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-      if (!body || typeof body !== 'object' || !validId(body.id)) return reply({ error: 'Invalid extra id' }, 400);
-    } catch { return reply({ error: 'Invalid JSON' }, 400); }
-    const perform = async (): Promise<Response> => {
-      try {
-        const items = await state();
-        if (pathname.endsWith('/remove')) {
-          const extra = items.find(item => item.id === body.id);
-          if (!extra) return reply({ error: 'Extra is not installed' }, 404);
-          // Do not delete code that this process may still be executing. User data is retained.
-          extra.enabled = false;
-          await save(items);
-          return reply({ ok: true, restartRequired: true });
-        }
-        const approved = (await catalogue()).find(item => item.id === body.id && item.ref === body.ref);
-        if (!approved) return reply({ error: 'Extra and commit are not approved by the host catalogue' }, 403);
-        const extra = await install(approved);
-        await save([...items.filter(item => item.id !== extra.id), extra]);
-        return reply({ ok: true, extra, restartRequired: true });
-      } catch (error) {
-        console.error('Extras operation failed:', error);
-        return reply({ error: 'Extras operation failed; check the bot logs' }, 500);
-      }
-    };
-    if (mutating) return reply({ error: 'Another extras operation is in progress' }, 409);
-    mutating = true;
-    try { return await perform(); } finally { mutating = false; }
-  };
+    if (typeof body.ref !== 'string' || !commit.test(body.ref)) return { status: 400, error: 'Invalid commit hash.' };
+    const approved = config.catalogue.find(item => item.id === body.id && item.ref === body.ref);
+    if (!approved) return { status: 403, error: 'Extra and commit are not approved by the host catalogue.' };
+    const extra = await install(approved);
+    await save([...items.filter(item => item.id !== extra.id), extra]);
+    return { status: 200, extra, restartRequired: true };
+  } catch (error) {
+    console.error('Extras operation failed:', error);
+    return { status: 500, error: 'Extras operation failed; check the bot logs.' };
+  } finally { mutating = false; }
 }

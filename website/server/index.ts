@@ -4,6 +4,7 @@ import { ensureCatchIndex, handleData } from './data';
 import { handlePanel } from './users';
 import { proxyBot, proxyCardImage, useBotRunner, type BotRunner } from './proxy';
 import { accepted, json } from './util';
+import { getMeta, setMeta } from './db';
 
 // The built UI sits next to the bot (cwd/website/dist), also when everything runs from one compiled binary.
 const distDir = path.join(process.cwd(), 'website', 'dist');
@@ -127,6 +128,46 @@ async function route(req: Request): Promise<Response> {
       if (!hasPermission(me, permission)) return json({ error: 'Forbidden' }, 403);
       const data = await handleData(req, pathname, url.searchParams);
       if (data) return data;
+    }
+    if (pathname === '/api/panel/extras/settings') {
+      if (me.role !== 'owner') return json({ error: 'Only the panel owner can manage remote extras.' }, 403);
+      const key = 'remote_extras_settings';
+      if (req.method === 'GET') {
+        let value: unknown = { enabled: false, allowedOrigins: ['https://extras.nationdex.com'], catalogue: [] };
+        try { value = JSON.parse((await getMeta(key)) || JSON.stringify(value)); } catch { return json({ error: 'Saved extras settings are invalid.' }, 500); }
+        return json(value, 200, { 'Cache-Control': 'no-store' });
+      }
+      if (req.method !== 'PUT') return json({ error: 'Method not allowed.' }, 405);
+      const reader = req.body?.getReader();
+      const chunks: Uint8Array[] = [];
+      let size = 0;
+      try {
+        if (reader) for (;;) {
+          const part = await reader.read();
+          if (part.done) break;
+          size += part.value.byteLength;
+          if (size > 32_768) { await reader.cancel(); return json({ error: 'Settings request is too large.' }, 413); }
+          chunks.push(part.value);
+        }
+      } catch { return json({ error: 'Could not read settings request.' }, 400); }
+      let body: { enabled?: unknown; allowedOrigins?: unknown; catalogue?: unknown } | null;
+      try { body = JSON.parse(new TextDecoder().decode(Buffer.concat(chunks))) as typeof body; } catch { body = null; }
+      const originValid = (value: unknown): value is string => {
+        if (typeof value !== 'string' || value.length > 255) return false;
+        try { const url = new URL(value); return url.protocol === 'https:' && url.origin === value && !url.username && !url.password; } catch { return false; }
+      };
+      const catalogueValid = (value: unknown): value is Array<{ id: string; repository: string; ref: string }> =>
+        Array.isArray(value) && value.length <= 100 && value.every((item) => item && typeof item === 'object' &&
+          typeof item.id === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(item.id) &&
+          typeof item.repository === 'string' && item.repository.length <= 201 && item.repository.split('/').length === 2 && item.repository.split('/').every((part: string) => /^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,98}[A-Za-z0-9])?$/.test(part)) &&
+          typeof item.ref === 'string' && /^[a-f0-9]{40}$/.test(item.ref));
+      if (!body || typeof body.enabled !== 'boolean' || !Array.isArray(body.allowedOrigins) || body.allowedOrigins.length > 20 ||
+        !body.allowedOrigins.every(originValid) || new Set(body.allowedOrigins).size !== body.allowedOrigins.length || !catalogueValid(body.catalogue) ||
+        new Set(body.catalogue.map((item) => item.id)).size !== body.catalogue.length)
+        return json({ error: 'Invalid settings. Use HTTPS origins and catalogue entries pinned to full commit hashes.' }, 400);
+      const settings = { enabled: body.enabled, allowedOrigins: body.allowedOrigins, catalogue: body.catalogue };
+      await setMeta(key, JSON.stringify(settings));
+      return json({ ok: true, settings }, 200, { 'Cache-Control': 'no-store' });
     }
     return handlePanel(req, pathname, me);
   }

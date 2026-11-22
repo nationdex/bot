@@ -5,8 +5,7 @@ require('@tryforge/forgescript/dist/functions/recursiveReaddirSync').default = (
 
 import { ForgeCanvas } from '@tryforge/forge.canvas';
 import { API, apiFunctions } from '@nationdex/api';
-import * as apiModule from '@nationdex/api';
-import { createExtrasHandler, loadExtras } from './core/extras';
+import { extrasAllowedOrigins, loadExtras } from './core/extras';
 import { DB } from '@nationdex/db';
 import { functions as dbFunctions } from '@nationdex/db/functions';
 import { events as dbEvents } from '@nationdex/db/events';
@@ -20,12 +19,13 @@ import {
 import { evalFunctions } from './core/runtime/evalRunner';
 import { startPanel } from './core/panel';
 
-// The updated API package is required only when remote extras are enabled.
-const extrasSupported = (apiModule as unknown as { supportsRequestHandler?: boolean }).supportsRequestHandler === true;
 const apiOptions = {
   path: 'src/api_routes',
   port: parseInt(process.env.API_PORT || '2222', 10),
-  requestHandler: (request: Request) => createExtrasHandler(dex)(request),
+  cors: {
+    origins: extrasAllowedOrigins,
+    pathPrefix: ['/v1/extras', '/v1/discovery'],
+  },
 };
 const api = new API(apiOptions);
 
@@ -128,7 +128,6 @@ async function main() {
   // Load slash commands (bundled)
   initSlashCommands({ path: '', commands: getReq(get_botSlash()) }, dex);
 
-  if (process.env.EXTRAS_API_TOKEN && !extrasSupported) throw new Error('Update @nationdex/api to a version supporting requestHandler before enabling remote extras.');
   await loadExtras(dex);
   api.init(dex);
 

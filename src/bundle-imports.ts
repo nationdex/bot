@@ -1322,6 +1322,7 @@ export const get_canvasFunctions = () => [
   require("@tryforge/forge.canvas/dist/functions/gradient/newConicGradient.js"),
 ];
 export const get_botFunctions = () => [
+  require("./functions/extras/extrasOperation.ts"),
   require("./functions/players/editBalance.ts"),
   require("./functions/players/settingsMenu.ts"),
   require("./functions/players/userSettings.ts"),

@@ -2,7 +2,7 @@ import { ForgeFunction } from '@tryforge/forgescript';
 
 export default new ForgeFunction({
   name: 'accessToken',
-  // Creates an API token for the caller and returns ok:<token> once, or a status such as denied or limit.
+  // Creates an API token only for the Discord application owner. Returns ok:<token> once.
   params: [
   ],
   code: `
@@ -10,7 +10,7 @@ export default new ForgeFunction({
   $let[home;$homeGuild]
   $if[$or[$get[home]==;$guildID!=$get[home]];$return[denied]]
   $jsonLoad[caps;$accessCaps[$get[actor]]]
-  $if[$arrayLength[caps]==0;$return[denied]]
+  $if[$arrayIncludes[caps;*]==false;$return[owner_only]]
   $if[$accessRate[$get[actor]]==rate;$return[rate]]
   $let[token;ndx_$randomBytes[32]]
   $let[hash;$sha256[$get[token]]]

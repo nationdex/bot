@@ -17,12 +17,13 @@ export const accessCapabilities = [
   'config.edit',
   'access.manage',
   'guilds.edit',
+  'extras.manage',
 ] as const;
 
 // Only an owner may grant or hold-delegate these.
-export const ownerOnlyCapabilities = ['*', 'eval.run', 'config.edit'] as const;
+export const ownerOnlyCapabilities = ['*', 'eval.run', 'config.edit', 'extras.manage'] as const;
 // Changes to these notify every owner.
-export const sensitiveCapabilities = ['*', 'eval.run', 'access.manage', 'config.edit', 'users.edit'] as const;
+export const sensitiveCapabilities = ['*', 'eval.run', 'access.manage', 'config.edit', 'users.edit', 'extras.manage'] as const;
 
 const userOpt = (description: string, required = true): SlashOptionConfig => ({
   type: ApplicationCommandOptionType.User,
