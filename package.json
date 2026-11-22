@@ -1,6 +1,6 @@
 {
   "name": "nationdex",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "The Project Nationdex 2026, also known as Nationdex 2.0, is a modern revival from one of the oldest dex bots in existence, which is named Nationdex.bot!",
   "type": "commonjs",
   "main": "src/index.ts",
@@ -22,13 +22,13 @@
     "start:binary:darwin-arm64": "test -f ./binaries/nationdex-bot-darwin-arm64 || tar -xzf ./binaries/nationdex-bot-darwin-arm64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-arm64",
     "start:binary:darwin-x64": "test -f ./binaries/nationdex-bot-darwin-x64 || tar -xzf ./binaries/nationdex-bot-darwin-x64.tar.gz -C ./binaries; ./binaries/nationdex-bot-darwin-x64",
     "dev": "bun --watch src/index.ts",
-    "lint": "forgelint",
+    "lint": "bun node_modules/forge.lint/dist/cli.js",
     "typecheck": "bun check && bun check -p website",
     "validate:collectibles": "bun src/core/data/collectibles.ts",
     "format": "bun fmt",
     "format:check": "bun fmt --check",
-    "format:forge": "forgelint --fix",
-    "format:forge:check": "forgelint --check"
+    "format:forge": "bun node_modules/forge.lint/dist/cli.js --fix",
+    "format:forge:check": "bun node_modules/forge.lint/dist/cli.js --check"
   },
   "author": "Nationdex Solutions (https://github.com/nationdex)",
   "license": "Apache-2.0",

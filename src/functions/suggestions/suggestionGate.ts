@@ -1,5 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { suggestionLimits } from '../../config/suggestions';
 
 export default new ForgeFunction({
   name: 'suggestionGate',
@@ -13,20 +12,13 @@ export default new ForgeFunction({
     },
   ],
   code: `
-  $jsonLoad[all;$listSuggestions[]]
-  $let[user;$env[user]]
-  $arrayFilter[all;s;$env[s;submitterId]==$get[user];mine]
-  $arrayFilter[mine;s;$or[$env[s;status]==pending;$env[s;status]==changes_requested];open]
-  $if[$arrayLength[open]>=${suggestionLimits.maxOpenPerUser};
+  $jsonLoad[stats;$getSuggestionStats[$env[user]]]
+  $if[$env[stats;openCount]>=$jsonVar[config;suggestions.maxOpenPerUser;3];
     $return[suggestion_limit]
   ]
-  $let[last;0]
+  $let[last;$default[$env[stats;latestSubmissionAt];0]]
   $let[now;$getTimestamp]
-  $arrayForEach[mine;s;
-    $let[t;$unparseDate[$env[s;createdAt]]]
-    $if[$get[t]>$get[last];$let[last;$get[t]]]
-  ]
-  $if[$and[$get[last]>0;$sub[$get[now];$get[last]]<${suggestionLimits.cooldownMs}];
+  $if[$and[$get[last]>0;$sub[$get[now];$get[last]]<$jsonVar[config;suggestions.cooldownMs;600000]];
     $return[suggestion_cooldown]
   ]
   $return[]

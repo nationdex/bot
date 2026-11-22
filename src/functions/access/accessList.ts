@@ -30,7 +30,7 @@ export default new ForgeFunction({
     if (!target) {
       const known = '${accessCapabilities.join(',')}'.split(',');
       const lines = Object.entries(acc.roles || {}).map((e) => '- ' + code(e.at(0)) + ': ' + e.at(1).map(code).join(', '));
-      return '**Roles**' + nl + lines.join(nl) + nl + nl + '**Capabilities**' + nl + known.map(code).join(', ');
+      return '**Quick setup**' + nl + 'Use /access grant with admin for staff administration or moderator for moderation. Add individual capabilities for finer control. Only owners can grant eval.run (or a role containing eval access). Admin and Moderator do not include eval. Existing roles can be customized with /access role.' + nl + nl + '**Roles**' + nl + lines.join(nl) + nl + nl + '**Capabilities**' + nl + known.map(code).join(', ');
     }
     const ua = JSON.parse(ctx.getKeyword('ua') || 'null') || {};
     const grants = ua.grants || new Array();

@@ -125,7 +125,7 @@ function getPgliteAssets() {
 
 try {
   const { PGlite } = require('@electric-sql/pglite');
-  const { DataBase } = require('@nationdex/db/dist/util/database');
+  const { DataBase } = require('@nationdex/db/database');
 
   DataBase.prototype.connect = async function () {
     const folder = this.options?.memory ? undefined : (process.env.DATABASE_FOLDER ?? this.options?.folder ?? 'database');

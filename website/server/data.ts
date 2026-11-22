@@ -220,7 +220,7 @@ const int = (v: string | null, fallback: number, min: number, max: number): numb
 };
 
 export async function handleData(req: Request, path: string, search: URLSearchParams): Promise<Response | null> {
-  if (req.method !== 'GET') return null;
+  if (req.method !== 'GET' && req.method !== 'HEAD') return null;
   if ((path.startsWith('/api/panel/data/') || path === '/api/bot/stats') && !allow(req)) return json({ error: 'Too many requests, slow down.' }, 429, { 'Retry-After': '1' });
   if (path === '/api/bot/stats') return cachedAnswer(req, 'stats', TTL_MS, stats);
   if (path === '/api/panel/data/users') return cachedAnswer(req, 'users', TTL_MS, users);

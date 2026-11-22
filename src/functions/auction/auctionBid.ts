@@ -1,5 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { auctionConfig } from '../../config/auction';
 
 export default new ForgeFunction({
   name: 'auctionBid',
@@ -35,7 +34,7 @@ export default new ForgeFunction({
   $let[cur;$default[$env[a;bid];0]]
   $let[prev;$env[a;bidder]]
   $let[buyout;$default[$env[a;buyout];0]]
-  $let[min;$if[$get[prev]==;$default[$env[a;start];1];$sum[$get[cur];$max[1;$ceil[$divide[$multi[$get[cur];${auctionConfig.minIncrementPercent}];100]]]]]]
+  $let[min;$if[$get[prev]==;$default[$env[a;start];1];$sum[$get[cur];$max[1;$ceil[$divide[$multi[$get[cur];$jsonVar[config;auction.minIncrementPercent;5]];100]]]]]]
   $let[isBuyout;$and[$get[buyout]>0;$get[amount]>=$get[buyout]]]
   $if[$get[isBuyout];$let[amount;$get[buyout]]]
   $let[bal;$default[$getUserVar[balance;$get[user]];0]]
@@ -58,8 +57,8 @@ export default new ForgeFunction({
       $!jsonSet[house;auctions;$get[aid];bid;$get[amount]]
       $!jsonSet[house;auctions;$get[aid];bidder;"$get[user]"]
       $!jsonSet[house;auctions;$get[aid];bids;$sum[$default[$env[a;bids];0];1]]
-      $if[$sub[$env[a;ends];$get[now]]<${auctionConfig.antiSnipeMs};
-        $!jsonSet[house;auctions;$get[aid];ends;$sum[$get[now];${auctionConfig.antiSnipeMs}]]
+      $if[$sub[$env[a;ends];$get[now]]<$jsonVar[config;auction.antiSnipeMs;120000];
+        $!jsonSet[house;auctions;$get[aid];ends;$sum[$get[now];$jsonVar[config;auction.antiSnipeMs;120000]]]
       ]
       $setGlobalVar[auctionHouse;$env[house]]
       $if[$get[isBuyout];

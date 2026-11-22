@@ -2,7 +2,7 @@ import path from 'node:path';
 import { authUser, handleAuth, hasPermission } from './auth';
 import { ensureCatchIndex, handleData } from './data';
 import { handlePanel } from './users';
-import { proxyBot, proxyCardImage, useTokenProvider, type TokenProvider } from './proxy';
+import { proxyBot, proxyCardImage, useBotRunner, type BotRunner } from './proxy';
 import { accepted, json } from './util';
 
 // The built UI sits next to the bot (cwd/website/dist), also when everything runs from one compiled binary.
@@ -99,7 +99,7 @@ async function route(req: Request): Promise<Response> {
       const permission = rules.find(([pattern]) => pattern.test(pathname.slice('/api/bot'.length)))?.[1];
       if (!permission || !hasPermission(me, permission)) return json({ error: 'Forbidden' }, 403);
       const data = await handleData(req, pathname, url.searchParams);
-      return data ?? proxyBot(req, pathname, url.search);
+      return data ?? proxyBot(req, pathname, url.search, `panel:${me.id}`);
     }
     if (pathname.startsWith('/api/panel/data/')) {
       const permission = pathname === '/api/panel/data/instances' ? 'manage_nations'
@@ -114,8 +114,8 @@ async function route(req: Request): Promise<Response> {
 }
 
 // Runs inside the bot's Bun process; the caller has already initialised the panel tables in the bot's PGlite.
-export function startPanelServer(opts: { port: number; hostname: string; tokens: TokenProvider; tls?: { cert: string; key: string } }): void {
-  useTokenProvider(opts.tokens);
+export function startPanelServer(opts: { port: number; hostname: string; run: BotRunner; tls?: { cert: string; key: string } }): void {
+  useBotRunner(opts.run);
   ensureCatchIndex().catch((err) => console.error('Admin panel: could not build the catch index:', err));
   Bun.serve({
     port: opts.port,

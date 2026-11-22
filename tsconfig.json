@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "ES2022",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "types": ["bun"],
     "rootDir": "./src",
     "paths": {},
     "strict": true,

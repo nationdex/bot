@@ -1,5 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { auctionConfig } from '../../config/auction';
 
 export default new ForgeFunction({
   name: 'auctionView',
@@ -61,7 +60,7 @@ export default new ForgeFunction({
   $let[bidder;$env[a;bidder]]
   $let[cur;$default[$env[a;bid];0]]
   $let[buyout;$default[$env[a;buyout];0]]
-  $let[min;$if[$get[bidder]==;$env[a;start];$sum[$get[cur];$max[1;$ceil[$divide[$multi[$get[cur];${auctionConfig.minIncrementPercent}];100]]]]]]
+  $let[min;$if[$get[bidder]==;$env[a;start];$sum[$get[cur];$max[1;$ceil[$divide[$multi[$get[cur];$jsonVar[config;auction.minIncrementPercent;5]];100]]]]]]
   $if[$and[$get[buyout]>0;$get[min]>$get[buyout]];$let[min;$get[buyout]]]
   $let[ended;$if[$env[a;ends]<=$getTimestamp;true;false]]
   $let[endsSec;$floor[$divide[$env[a;ends];1000]]]

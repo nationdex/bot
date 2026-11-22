@@ -214,3 +214,36 @@ And Nationdex as a whole was only possible at some point thanks to the help from
 
 Project Nationdex 2026, our gratitude to everyone who made it possible, our response to everyone who fought for a better community.
 **Wishes, are eternal, and hope, is not lost.**
+
+### Remote extras (v1.2.0 preview)
+
+The Nationdex index can manage extras on a reachable HTTPS instance. This requires an
+`@nationdex/api` build exporting `supportsRequestHandler`; older API builds keep the
+ordinary bot API working but cannot enable remote management.
+
+Set `EXTRAS_API_TOKEN` to a dedicated random secret of at least 32 characters,
+`EXTRAS_ALLOW_INSTALL=true`, `EXTRAS_ALLOWED_ORIGINS` to the exact index origin, and
+`EXTRAS_CATALOG_FILE` to a local JSON file approved by the host owner:
+
+```json
+[{"id":"example-extra","repository":"owner/repository","ref":"FULL_40_CHARACTER_COMMIT_SHA"}]
+```
+
+The index catalogue lists extras; the host catalogue independently authorizes their
+installation. Connect with the instance HTTPS URL and this dedicated token. Never
+provide a Discord token. Revoke access by rotating the extras token. The API supports
+`GET /v1/extras`, `POST /v1/extras/install` with `{id,ref}`, and
+`POST /v1/extras/remove` with `{id}`. Restart the bot to apply installations/removals.
+Removal preserves extra-owned data. Back up data before upgrades.
+
+An extra must contain `nationdex.extra.json`:
+
+```json
+{"id":"example-extra","apiVersion":1,"entrypoint":"index.ts"}
+```
+
+Its entrypoint exports `register(client)`. Extras execute with the bot process's full
+privileges: approval is trust in the code's publisher, not a sandbox. Use self-contained
+extras or imports already provided by the host. The manager never installs dependencies,
+runs package scripts, or loads Git submodules. Git must be available on the host, including
+for binary installations. Existing binaries need an updated release to include this manager.

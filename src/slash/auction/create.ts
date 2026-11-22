@@ -28,7 +28,7 @@ export default SlashCommand('auction.create', `
   $jsonLoad[keys;$jsonKeys[listed]]
   $arrayFilter[keys;key;$and[$env[listed;$env[key];seller]==$authorID;$env[listed;$env[key];ends]>$getTimestamp];mine]
   $let[active;$arrayLength[mine]]
-  $onlyIf[$get[active]<${auctionConfig.maxActivePerUser};
+  $onlyIf[$get[active]<$jsonVar[config;auction.maxActivePerUser;5];
     $err[auction_limit;true]
   ]
 

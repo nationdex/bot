@@ -505,7 +505,6 @@ export default function BotSettings() {
   const [config, setConfig] = useState<Record<string, unknown>>(() => {
     return getCache<Record<string, unknown>>('config_raw') || {
       name: 'Nationdex',
-      version: '1.0.0',
       description:
         'Collect nations on Discord and enjoy an OG environment of peace and freedom!',
       rarityClasses: ['common', 'uncommon', 'rare', 'mythic', 'legendary'],
@@ -532,6 +531,8 @@ export default function BotSettings() {
     void fetchFullConfig()
       .then((data) => {
         if (active && data && typeof data === 'object') {
+          if (data.bot && typeof data.bot === 'object') delete (data.bot as Record<string, unknown>).version;
+          delete data.version;
           setConfig(data);
           setInitialConfig(data);
           setJsonText(JSON.stringify(data, null, 2));
@@ -603,7 +604,11 @@ export default function BotSettings() {
         }
       }
 
-      await Promise.allSettled(tasks);
+      const results = await Promise.allSettled(tasks);
+      if (results.some(r => r.status === 'rejected' || (r.status === 'fulfilled' && (!r.value || (r.value as { ok?: boolean }).ok === false)))) {
+        setJsonError('Some settings could not be saved. Reload and retry.');
+        return;
+      }
       setInitialConfig(config);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);

@@ -23,35 +23,5 @@ export default new ForgeFunction({
       required: false,
     },
   ],
-  code: `$jsonLoad[data;$default[$getGlobalVar[$env[variable]];{}]]
-
-  $return[$js[
-    (() => {
-      const data = ctx.getEnvironmentKey("data");
-      const key = String(ctx.getEnvironmentKey("key") ?? "").trim();
-      const def = ctx.getEnvironmentKey("default") ?? "";
-
-      if (!key) {
-        return typeof data === "object" ? JSON.stringify(data) : (data ?? def);
-      }
-
-      const parts = key.split(".");
-      let val = data;
-      for (const p of parts) {
-        if (val === null || val === undefined || typeof val !== "object") {
-          val = undefined;
-          break;
-        }
-        val = Reflect.get(val, p);
-      }
-
-      if (val === undefined || val === null) {
-        return def;
-      } else if (typeof val === "object") {
-        return JSON.stringify(val);
-      }
-      return String(val);
-    })()
-  ]]
-  `,
+  code: `$return[$getGlobalVar[$env[variable];$env[default];$env[key]]]`,
 });

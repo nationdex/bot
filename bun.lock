@@ -87,9 +87,9 @@
 
     "@napi-rs/canvas-win32-x64-msvc": ["@napi-rs/canvas-win32-x64-msvc@1.1.1", "", { "os": "win32", "cpu": "x64" }, "sha512-6Ge1AF1SVO+Ypjaw9IPcApm95krR3GQ32HgVqlIckbN/WqUlWYS0hnb8ZIdu3e0IbutbJgd8D2qSeb2/Cdpbdw=="],
 
-    "@nationdex/api": ["@nationdex/api@github:nationdex/api#47e6dc2", { "optionalDependencies": { "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.69.0" } }, "nationdex-api-47e6dc2", "sha512-qNRqDEUyk8Po+4wHOqUPGyTa8puW0pgFcOLGrj+BeuvNvdseeaXrCHCwCmMXFk14nwzahpNpQZoxhRS3zoCIpg=="],
+    "@nationdex/api": ["@nationdex/api@github:nationdex/api#f8a23a3", { "peerDependencies": { "@tryforge/forgescript": "^2.8.0" } }, "nationdex-api-f8a23a3", "sha512-T2kfbE9VVDtZavvGUjkI37dAJXQ0UQkDDkXYX26A+MUqy9uQWHCosMty+nVWQweNFaB8pSraTFxyKye+oTXVZg=="],
 
-    "@nationdex/db": ["@nationdex/db@github:nationdex/db#d9145d5", { "dependencies": { "@electric-sql/pglite": "^0.5.8", "tiny-typed-emitter": "^2.1.0" } }, "nationdex-db-d9145d5", "sha512-0gDRISvJgIATkjWR5enkaZoi//HHE47rvA6cYs+q1LuF09iuHXJ0nDYaOg+VjE82oTqi1L7QvI2SSavQECD4Sw=="],
+    "@nationdex/db": ["@nationdex/db@github:nationdex/db#ee7658b", { "dependencies": { "@electric-sql/pglite": "~0.5.17" }, "peerDependencies": { "@tryforge/forgescript": "^2.8.0" } }, "nationdex-db-ee7658b", "sha512-MFFYFcPM8cvvqwl0AM5fJMQtOz6ED/p8OATgfQiU8LNfFlNVN7dwnAeo3bqwCxKCTTI1zIoTpxjUyo+B61N8jA=="],
 
     "@sapphire/async-queue": ["@sapphire/async-queue@1.5.5", "", {}, "sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg=="],
 
@@ -136,8 +136,6 @@
     "ts-mixer": ["ts-mixer@6.0.4", "", {}, "sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA=="],
 
     "tslib": ["tslib@2.9.1", "", {}, "sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA=="],
-
-    "uWebSockets.js": ["uWebSockets.js@github:uNetworking/uWebSockets.js#dddd8ff", {}, "uNetworking-uWebSockets.js-dddd8ff", "sha512-fDaDQQEj+Jn8LsDXGGE629Nna1MGnRS8j9kxsaqtPHBMq3pBDIbKs2sGxk1QMWpQ78+o4F9jV/tuBZZqfanBWQ=="],
 
     "undici": ["undici@7.30.2", "", {}, "sha512-mLyPQnHwUxaM/rideoK/+KL8DaAJLRl4aBCfmX444aCSLnIaomqPLtNRe2jdCYcsk5wZzXrDIQC8ZeYNRAYyIA=="],
 

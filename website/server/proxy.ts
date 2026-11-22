@@ -1,95 +1,115 @@
+import path from 'node:path';
 import { cachedAnswer, invalidateData } from './data';
-import { json, readJson } from './util';
+import { json } from './util';
 
-const TIMEOUT_MS = 5000;
-const IMAGE_TIMEOUT_MS = 6000;
+export type BotRunner = (code: string) => Promise<string>;
+let run: BotRunner = async () => { throw new Error('Bot connection unavailable'); };
+export const useBotRunner = (runner: BotRunner): void => { run = runner; };
 
-const baseUrl = (): string => (process.env.API_BASE_URL ?? '').replace(/\/$/, '');
-// The bot hands the panel an API token for its own process (see src/core/panel.ts); no manual token is needed.
-export type TokenProvider = { get: () => Promise<string | null>; invalidate: () => void };
-let tokens: TokenProvider = { get: async () => process.env.API_BEARER_TOKEN ?? null, invalidate: () => {} };
-export const useTokenProvider = (provider: TokenProvider): void => {
-  tokens = provider;
-};
+// Values enter the interpreter through an encoded literal, never as executable DSL.
+const value = (input: string): string => '$decodeURIComponent[' + encodeURIComponent(input) + ']';
+const writes: ReadonlyArray<readonly [RegExp, string, string, number]> = [
+  [new RegExp("^/nations/([^/]+)/delete$"), "$nationDelete[$get[id];$get[body]]", "nations.delete", 65536],
+  [new RegExp("^/users/([^/]+)/balance$"), "$userEdit[balance;$get[id];$get[body]]", "users.balance", 65536],
+  [new RegExp("^/categories$"), "$catalogEdit[categoryAdd;;$get[body]]", "categories.add", 65536],
+  [new RegExp("^/cards/add/regime$"), "$catalogEdit[cardAddRegime;;$get[body]]", "cards.add.regime", 20971520],
+  [new RegExp("^/cards/add/special$"), "$catalogEdit[cardAddSpecial;;$get[body]]", "cards.add.special", 20971520],
+  [new RegExp("^/nations$"), "$catalogEdit[nationAdd;;$get[body]]", "nations.add", 65536],
+  [new RegExp("^/users/([^/]+)/nations/give$"), "$userEdit[give;$get[id];$get[body]]", "users.nations.give", 65536],
+  [new RegExp("^/config/add$"), "$configEdit[add;$get[body]]", "config.add", 65536],
+  [new RegExp("^/cards/([^/]+)/edit$"), "$catalogEdit[cardEdit;$get[id];$get[body]]", "cards.edit", 20971520],
+  [new RegExp("^/users/([^/]+)/settings$"), "$userEdit[setting;$get[id];$get[body]]", "users.settings", 65536],
+  [new RegExp("^/cards/backgrounds/([^/]+)/replace$"), "$catalogEdit[backgroundReplace;$get[id];$get[body]]", "cards.backgrounds.replace", 20971520],
+  [new RegExp("^/config/delete$"), "$configEdit[delete;$get[body]]", "config.delete", 65536],
+  [new RegExp("^/cards/backgrounds/([^/]+)/delete$"), "$catalogEdit[backgroundDelete;$get[id]]", "cards.backgrounds.delete", 65536],
+  [new RegExp("^/users/([^/]+)/nations/edit$"), "$userEdit[editCatch;$get[id];$get[body]]", "users.nations.edit", 65536],
+  [new RegExp("^/nations/([^/]+)/art$"), "$catalogEdit[nationArt;$get[id];$get[body]]", "nations.art", 20971520],
+  [new RegExp("^/nations/([^/]+)$"), "$catalogEdit[nationEdit;$get[id];$get[body]]", "nations.edit", 65536],
+  [new RegExp("^/users/([^/]+)/stats$"), "$userEdit[stat;$get[id];$get[body]]", "users.stats", 65536],
+  [new RegExp("^/nations/([^/]+)/category$"), "$catalogEdit[nationCategory;$get[id];$get[body]]", "nations.category", 65536],
+  [new RegExp("^/config/reset$"), "$configEdit[reset;$get[body]]", "config.reset", 65536],
+  [new RegExp("^/users/([^/]+)/settings/reset$"), "$userEdit[settingsReset;$get[id]]", "users.settings.reset", 65536],
+  [new RegExp("^/cards/backgrounds$"), "$catalogEdit[backgroundAdd;;$get[body]]", "cards.backgrounds.add", 20971520],
+  [new RegExp("^/config$"), "$configEdit[set;$get[body]]", "config.set", 65536],
+  [new RegExp("^/users/([^/]+)/nations/remove$"), "$userEdit[removeCatch;$get[id];$get[body]]", "users.nations.remove", 65536],
+  [new RegExp("^/nations/([^/]+)/card$"), "$catalogEdit[nationCard;$get[id];$get[body]]", "nations.card", 65536],
+  [new RegExp("^/categories/([^/]+)/delete$"), "$catalogEdit[categoryDelete;$get[id]]", "categories.delete", 65536],
+  [new RegExp("^/guilds/([^/]+)/edit$"), "$guildEdit[$get[id];$get[body]]", "guilds.edit", 65536],
+  [new RegExp("^/users/([^/]+)/auction$"), "$userEdit[auction;$get[id];$get[body]]", "users.auction", 65536],
+];
 
-const authHeaders = async (): Promise<Record<string, string>> => {
-  const token = await tokens.get();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
-// The panel UI calls /api/bot/*; only these few paths differ from the bot's own /v1 routes.
-function upstreamPath(path: string): string {
-  const rest = path.replace('/api/bot', '');
+function botPath(url: string): string {
+  const rest = url.replace('/api/bot', '');
   if (rest === '/collectibles') return '/collectibles/data';
-  if (rest.startsWith('/nation/cards/')) return `/nations/${rest.slice('/nation/cards/'.length)}/card`;
-  if (rest.startsWith('/nation/')) return `/nations/${rest.slice('/nation/'.length)}`;
+  if (rest.startsWith('/nation/cards/')) return '/nations/' + rest.slice('/nation/cards/'.length) + '/card';
+  if (rest.startsWith('/nation/')) return '/nations/' + rest.slice('/nation/'.length);
   return rest;
 }
 
-const notConfigured = (): Response => json({ error: 'API_BASE_URL is not configured' }, 502);
-
-// Card images are fetched by <img> tags, so they skip the session check (same as before).
-export async function proxyCardImage(path: string): Promise<Response> {
-  if (!baseUrl()) return notConfigured();
-  const raw = path.startsWith('/api/bot/cards/image/') ? path.slice('/api/bot/cards/image/'.length) : path.slice('/api/bot/cards/'.length, -'/image'.length);
+export async function proxyCardImage(url: string): Promise<Response> {
+  const raw = url.startsWith('/api/bot/cards/image/') ? url.slice('/api/bot/cards/image/'.length) : url.slice('/api/bot/cards/'.length, -'/image'.length);
   const id = raw.trim().replace(/\.(png|jpg|webp|svg)$/i, '');
+  if (!/^[a-zA-Z0-9_-]+$/.test(id)) return json({ error: 'Card Not Found' }, 404);
+  const cards = JSON.parse(await run('$cardList')) as { id: string }[];
+  if (!cards.some(card => String(card.id) === id)) return json({ error: 'Card Not Found' }, 404);
+  const dir = await run('$jsonVar[config;paths.cards]');
+  const file = Bun.file(path.resolve(dir.trim(), id + '.png'));
+  if (!(await file.exists())) return json({ error: 'Card Not Found' }, 404);
+  return new Response(file, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' } });
+}
+
+async function read(url: string, search: string): Promise<unknown> {
+  const query = new URLSearchParams(search);
+  const id = query.get('id') ?? '';
+  if (url === '/config') return JSON.parse(await run('$getGlobalVar[config]'));
+  if (url === '/cards' || url === '/cards/backgrounds') return JSON.parse(await run('$cardList'));
+  if (url === '/collectibles/data') {
+    const data = JSON.parse(await run('$getGlobalVar[collectiblesData]'));
+    if (!id) return data;
+    if (!Object.prototype.hasOwnProperty.call(data.collectibles ?? {}, id)) throw new Error('Collectible Not Found');
+    return data.collectibles[id];
+  }
+  const variable = /^\/search_db\/([^/]+)$/.exec(url);
+  if (variable) return JSON.parse(await run('$searchDB[' + value(variable[1]) + ';' + value(id) + ']'));
+  const user = url === '/user' ? id : /^\/users\/([^/]+)\/auction$/.exec(url)?.[1];
+  if (user) {
+    const get = async (name: string) => JSON.parse(await run('$getUserVar[' + name + ';' + value(user) + ']') || '{}');
+    if (url !== '/user') return get('auction');
+    return { collectiblesData: await get('userCollectibles'), auctionData: await get('auction'), settings: await get('settings') };
+  }
+  const guild = /^\/guilds\/(\d{15,25})$/.exec(url);
+  if (guild) {
+    const cfg = JSON.parse(await run('$getGuildVar[spawnConfig;' + value(guild[1]) + ']') || '{}');
+    return { guild: guild[1], status: cfg.status ?? 'enabled', config_channel: cfg.config_channel ?? '', weight: cfg.weight ?? 0, timestamp: cfg.timestamp ?? '' };
+  }
+  throw new Error('Unknown panel operation');
+}
+
+// The caller authenticates the panel session and checks the exact method/path permission.
+export async function proxyBot(req: Request, url: string, search: string, actor: string): Promise<Response> {
+  const target = botPath(url);
+  if (req.method === 'POST') {
+    const operation = writes.find(([pattern]) => pattern.test(target));
+    if (!operation) return json({ error: 'Not Found' }, 404);
+    const [pattern, code, action, limit] = operation;
+    const body = await req.text();
+    if (body.length > limit) return json({ error: 'The request body is too large.' }, 413);
+    if (body) {
+      try { JSON.parse(body); } catch { return json({ error: 'Invalid JSON' }, 400); }
+    }
+    const id = pattern.exec(target)?.[1] ?? '';
+    const result = JSON.parse(await run('$let[id;' + value(id) + ']$let[body;' + value(body) + ']' + code));
+    const status = Number(result.status);
+    if (!Number.isInteger(status) || status < 100 || status > 599) throw new Error('Invalid bot response');
+    if (status === 200) {
+      invalidateData();
+      await run('$accessLog[' + value(actor) + ';' + value('panel:' + action) + ';;' + value(id) + ']');
+    }
+    return json({ ...result, ok: status === 200, statusText: status === 200 ? 'OK' : result.error ?? 'Error' }, status);
+  }
   try {
-    const res = await fetch(`${baseUrl()}/cards/${encodeURIComponent(id)}/image`, { headers: await authHeaders(), signal: AbortSignal.timeout(IMAGE_TIMEOUT_MS) });
-    if (!res.ok) return json({ error: 'Card Not Found' }, res.status);
-    return new Response(res.body, { headers: { 'Content-Type': res.headers.get('content-type') || 'image/png', 'Cache-Control': 'public, max-age=3600' } });
+    return await cachedAnswer(req, 'bot:' + target + search, 10_000, () => read(target, search), false);
   } catch {
-    return json({ error: 'Card Not Found' }, 404);
-  }
-}
-
-// An upstream answer that must not be cached or re-encoded (images) or that failed.
-class Passthrough extends Error {
-  constructor(readonly response: Response) {
-    super('passthrough');
-  }
-}
-
-async function upstream(req: Request, path: string, search: string, hasBody: boolean): Promise<unknown> {
-  const res = await fetch(`${baseUrl()}${upstreamPath(path).split('/').map(encodeURIComponent).join('/')}${search}`, {
-    method: req.method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(await authHeaders()) },
-    body: hasBody ? JSON.stringify(await readJson(req)) : undefined,
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-  });
-
-  if (res.status === 401) tokens.invalidate();
-  if (hasBody && res.ok) invalidateData();
-  const type = res.headers.get('content-type') || '';
-  if (res.ok && (type.includes('image/') || type.includes('application/octet-stream'))) {
-    throw new Passthrough(new Response(res.body, { status: res.status, headers: { 'Content-Type': type } }));
-  }
-  let data: unknown;
-  try {
-    data = await res.json();
-  } catch {
-    throw new Passthrough(json({ ok: false, status: res.status, statusText: res.statusText, error: res.statusText }, res.status));
-  }
-  // Some ForgeScript routes answer with a JSON string instead of an object.
-  if (typeof data === 'string' && data.trim().startsWith('{')) {
-    try {
-      data = JSON.parse(data);
-    } catch {}
-  }
-  if (!res.ok) throw new Passthrough(json(data, res.status));
-  return data;
-}
-
-// Reads are answered from a short-lived cache (compressed once, ETag-revalidated); anything that changes data
-// goes straight upstream and clears it. Catalog-like routes change rarely, live data gets a shorter window.
-export async function proxyBot(req: Request, path: string, search: string): Promise<Response> {
-  if (!baseUrl()) return notConfigured();
-  const hasBody = req.method !== 'GET' && req.method !== 'HEAD';
-  try {
-    if (hasBody) return json(await upstream(req, path, search, true));
-    const ttl = /^\/api\/bot\/(collectibles|cards|config)/.test(path) ? 30_000 : 10_000;
-    return await cachedAnswer(req, `proxy:${path}${search}`, ttl, () => upstream(req, path, search, false), false);
-  } catch (err) {
-    if (err instanceof Passthrough) return err.response;
-    return json({ ok: false, status: 502, error: err instanceof Error ? err.message : 'Upstream API error' }, 502);
+    return json({ error: 'Bot data unavailable' }, 500);
   }
 }

@@ -1,4 +1,4 @@
-import { RouteDefinition } from '@nationdex/api';
+import type { RouteDefinition } from '@nationdex/api';
 
 const route: RouteDefinition = {
   url: 'v1/nations/:id',

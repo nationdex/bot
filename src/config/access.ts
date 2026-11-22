@@ -34,7 +34,7 @@ const userOpt = (description: string, required = true): SlashOptionConfig => ({
 const subjectOpt: SlashOptionConfig = {
   type: ApplicationCommandOptionType.String,
   name: 'access',
-  description: 'A role name or capability (see /access roles)',
+  description: 'admin, moderator, a custom role, or one capability (see /access roles)',
   required: true,
   autocomplete: true,
   max_length: 64,
@@ -80,7 +80,7 @@ export const accessCommand: SlashCommandConfig = {
     },
     roles: {
       name: 'roles',
-      description: 'Show the roles and the available capabilities',
+      description: 'Show quick setup, roles and granular capabilities',
       tags: ['access'],
     },
     role: {
@@ -106,6 +106,23 @@ export const accessCommand: SlashCommandConfig = {
         { type: ApplicationCommandOptionType.Channel, name: 'channel', description: 'The eval channel', required: false, channel_types: [ChannelType.GuildText] },
       ],
     },
+    audit: {
+      name: 'audit',
+      description: 'Show recent access changes and eval runs',
+      tags: ['access'],
+    },
+  },
+};
+
+export const apiCommand: SlashCommandConfig = {
+  name: 'api',
+  description: 'Manage external API credentials',
+  tags: ['api'],
+  type: RegistrationType.Guild,
+  default_member_permissions: null,
+  integration_types: [ApplicationIntegrationType.GuildInstall],
+  contexts: [InteractionContextType.Guild],
+  subcommands: {
     token: {
       name: 'token',
       description: 'Create an API token for the staff API (shown once)',
@@ -116,11 +133,6 @@ export const accessCommand: SlashCommandConfig = {
       description: 'Revoke every API token of yourself, or of another user if you manage access',
       tags: ['access', 'api'],
       options: [userOpt('Another user (empty for yourself)', false)],
-    },
-    audit: {
-      name: 'audit',
-      description: 'Show recent access changes and eval runs',
-      tags: ['access'],
     },
   },
 };

@@ -1,5 +1,4 @@
 import { ForgeFunction } from '@tryforge/forgescript';
-import { auctionConfig } from '../../config/auction';
 
 export default new ForgeFunction({
   name: 'auctionClose',
@@ -34,7 +33,7 @@ export default new ForgeFunction({
 
   $ifx[
     $if[$get[sold];
-      $let[fee;$floor[$divide[$multi[$get[bid];${auctionConfig.feePercent}];100]]]
+      $let[fee;$floor[$divide[$multi[$get[bid];$jsonVar[config;auction.feePercent;5]];100]]]
       $let[net;$sub[$get[bid];$get[fee]]]
       $!auctionGrant[$get[bidder];$get[nat]]
       $editBalance[$get[seller];add;$get[net]]
