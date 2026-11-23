@@ -30,6 +30,10 @@ export default new ForgeFunction({
     $apiRespond[{"status":401,"error":"Missing or invalid API token."}]
     $stop
   ]
+  $if[$and[$env[capability]==extras.manage;$get[user]!=$botOwnerID];
+    $apiRespond[{"status":403,"error":"Only the bot owner can manage extras."}]
+    $stop
+  ]
   $if[$hasCap[$get[user];$env[capability];home]==false;
     $apiRespond[{"status":403,"error":"Your account lacks the $env[capability] capability."}]
     $stop

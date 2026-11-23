@@ -1,5 +1,5 @@
-// Runs one eval request in an isolated process. It is spawned by the bot with an empty environment,
-// no Discord client and no database handle, so nothing here can reach the bot token or ./database.
+// Runs one eval request in a separate process with an empty environment and no live Discord/DB handles.
+// This is not an OS sandbox: eval retains the service user’s filesystem, network and process privileges.
 import { inspect } from 'util';
 
 interface Request {

@@ -218,7 +218,7 @@ export default function App() {
       case 'panel_users':
         return <PanelUsersPage currentUser={currentUser} />;
       case 'settings':
-        return <Settings />;
+        return <Settings isOwner={currentUser?.role === 'owner'} />;
       default:
         return <Dashboard logSearchQuery={sectionFilterQuery} />;
     }

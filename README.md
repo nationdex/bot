@@ -52,6 +52,14 @@ The panel is served by the bot's Bun process. It uses `website/dist` for its bui
 
 For public access, put the panel behind HTTPS. The panel can also serve HTTPS directly with certificate and key paths configured in `website/.env`; see [the deployment guide](website/deploy/README.md) for Nginx and tunnel examples.
 
+### Discord panel sign-in
+
+Optional Discord sign-in is configured in `website/.env` (or the bot's `.env`): set `PANEL_DISCORD_CLIENT_ID`, `PANEL_DISCORD_CLIENT_SECRET`, `PANEL_DISCORD_REDIRECT_URI`, and `PANEL_DISCORD_OWNER_ID`. Register the exact callback URL, `https://your-panel.example/api/auth/discord/callback`, in the Discord application's OAuth2 settings. HTTP is accepted only for localhost development. The login page then offers **Continue with Discord**, including during initial setup.
+
+Only the configured owner Discord ID can create the first owner account through Discord. Other accounts must be listed in `PANEL_DISCORD_ALLOWED_IDS`; they receive dashboard-only member accounts that a panel owner can manage. The allowlist is checked on every Discord sign-in. Password sign-in remains available. Discord-only accounts use usernames like `discord_123456789012345678` and have no known password; a panel owner can set a password through account management if needed.
+
+Discord identities are linked by immutable ID, never by username or email. Existing password accounts are not automatically linked or promoted, including when the configured Discord owner signs in after setup. Discord sign-in requires cookies; password sign-in retains the existing cookie-free fallback. OAuth secrets stay on the server; only the identify scope is requested, and Discord access/refresh tokens are not persisted. Changing the Discord allowlist does not revoke existing panel sessions: delete the account or revoke its sessions when removing access.
+
 ## HTTP API
 
 The API is provided by `@nationdex/api`. Route implementations live in `src/api_routes/v1/GET` and `src/api_routes/v1/POST`.
@@ -100,7 +108,34 @@ The Nationdex index can connect to a reachable bot instance over HTTPS. Create a
 
 The panel owner must enable remote extras, approve the index origin, and add each allowed extra repository with a full commit SHA under **Settings → Remote extras**. The public index catalogue is only a directory; it does not authorize installation on a bot.
 
+Extras are limited to 5,000 files, 50 MiB of extracted content and 100 MiB of fetched Git objects. Git commands have a 60-second timeout and bounded output. The Git object limit is checked after fetching; use host disk quotas to bound transfer-time disk usage. Installed directories and entrypoints are checked for symbolic links before loading.
+
+A catalogue entry can optionally select a directory inside an extras monorepo:
+
+```json
+{
+  "id": "example",
+  "repository": "owner/extras",
+  "ref": "<full 40-character commit SHA>",
+  "path": "extras/example"
+}
+```
+
+Omit `path` or leave it empty for a repository-root extra. The selected directory must contain `nationdex.extra.json` and its entrypoint. Only that directory is installed; workspace sibling imports and dependencies are not automatically included or installed. The panel owner approves this path with the repository and commit; browser install requests cannot override it.
+
 An extra is trusted code executed with the bot process's privileges. Review its source before approving it. Installation and removal take effect after a bot restart. The API also exposes `GET /v1/discovery` with public product and extras-protocol metadata; sensitive management routes require the bot owner's API token.
+
+### Owner prefix commands
+
+Use the configured bot prefix with:
+
+- `extrasinstall <id> <full commit SHA>`
+- `extrasremove <id>`
+- `extrasupdate <id> <full commit SHA>`
+- `extrasedit <id> <full commit SHA>`
+- `extraslist`
+
+Only the actual Discord application owner can use these commands. They need no API token and remain available when remote extras management is disabled. Repositories, monorepo folders and exact commits must still be approved in the admin panel. Update and edit require an installed extra; edit changes its version rather than accepting arbitrary code. Restart the bot to apply changes. Command attempts are recorded in the access audit.
 
 ## Development checks
 

@@ -58,7 +58,7 @@ function SettingToggle({
   );
 }
 
-export default function Settings() {
+export default function Settings({ isOwner }: { isOwner: boolean }) {
   const prefs = useAnimationPrefs();
   const { masterEnabled, setMasterEnabled, setPref, applyLowSpecMode, resetAnimationPrefs } = prefs;
   const osReducedMotion = useOsPrefersReducedMotion();
@@ -82,11 +82,20 @@ export default function Settings() {
   return (
     <div className="w-full space-y-4 sm:space-y-6">
       <InstallApp />
-      <Card className={cn(admin.card, 'overflow-hidden')}>
-        <div className="p-5"><h3 className={cn('text-sm font-medium', admin.fg)}>Remote extras</h3>
-          <p className={cn('mt-1 text-xs', admin.muted)}>Manage the allowlist used by the extras website. The bot's API token is issued separately through Discord and is never stored in these settings.</p></div>
-        <CardContent className="px-5 pb-5 pt-0"><RemoteExtrasSettings /></CardContent>
-      </Card>
+      {isOwner && (
+        <Card className={cn(admin.card, 'overflow-hidden')}>
+          <div className="p-5">
+            <h3 className={cn('text-sm font-medium', admin.fg)}>Remote extras</h3>
+            <p className={cn('mt-1 text-xs', admin.muted)}>
+              Manage the allowlist used by the extras website. The bot's API token is issued separately through Discord
+              and is never stored in these settings.
+            </p>
+          </div>
+          <CardContent className="px-5 pb-5 pt-0">
+            <RemoteExtrasSettings />
+          </CardContent>
+        </Card>
+      )}
       <Card className={cn(admin.card, 'overflow-hidden')}>
         <button
           type="button"

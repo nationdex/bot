@@ -38,6 +38,10 @@ export async function initPanelDb(pg: Pg): Promise<void> {
     )
   `);
 
+  await db.query(
+    'CREATE TABLE IF NOT EXISTS panel_discord_accounts (discord_id TEXT PRIMARY KEY, user_id INTEGER UNIQUE NOT NULL REFERENCES panel_users(id) ON DELETE CASCADE)',
+  );
+
   await db.query('CREATE TABLE IF NOT EXISTS panel_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
   await initCatchIndex();
 
@@ -496,4 +500,50 @@ export async function setPasswordHashForAdmin(hash: string): Promise<void> {
       permissions: ['*'],
     });
   }
+}
+
+// Serializes both password and Discord bootstrap so two first logins cannot create two owners.
+export async function createInitialPanelOwner(data: {
+  username: string;
+  passwordHash: string;
+  displayName: string;
+}): Promise<number | null> {
+  return db.transaction(async (tx) => {
+    await tx.query('LOCK TABLE panel_users IN EXCLUSIVE MODE');
+    if ((await tx.query('SELECT 1 FROM panel_users LIMIT 1')).rows.length) return null;
+    const row = await tx.query(
+      "INSERT INTO panel_users (username,password_hash,display_name,role,permissions,created_at) VALUES ($1,$2,$3,'owner','[\"*\"]',$4) RETURNING id",
+      [data.username, data.passwordHash, data.displayName, Date.now()],
+    );
+    return Number(row.rows[0].id);
+  });
+}
+export async function discordPanelAccount(
+  discordId: string,
+  displayName: string,
+  ownerId: string,
+  allowed: string[],
+  passwordHash: string,
+): Promise<number | null> {
+  return db.transaction(async (tx) => {
+    await tx.query('LOCK TABLE panel_users IN EXCLUSIVE MODE');
+    const existing = await tx.query('SELECT user_id FROM panel_discord_accounts WHERE discord_id=$1', [discordId]);
+    if (existing.rows.length) return Number(existing.rows[0].user_id);
+    const first = !(await tx.query('SELECT 1 FROM panel_users LIMIT 1')).rows.length;
+    if (first ? discordId !== ownerId : discordId !== ownerId && !allowed.includes(discordId)) return null;
+    const row = await tx.query(
+      'INSERT INTO panel_users (username,password_hash,display_name,role,permissions,created_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
+      [
+        'discord_' + discordId,
+        passwordHash,
+        displayName,
+        first ? 'owner' : 'member',
+        JSON.stringify(first ? ['*'] : ['view_dashboard']),
+        Date.now(),
+      ],
+    );
+    const id = Number(row.rows[0].id);
+    await tx.query('INSERT INTO panel_discord_accounts (discord_id,user_id) VALUES ($1,$2)', [discordId, id]);
+    return id;
+  });
 }

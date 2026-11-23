@@ -7,6 +7,7 @@ import { bot } from '@/lib/bot';
 import { cn } from '@/lib/utils';
 
 export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => void }) {
+  const [discordEnabled, setDiscordEnabled] = useState(false);
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
   const [needsSetup, setNeedsSetup] = useState(false);
@@ -15,8 +16,15 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (new URLSearchParams(location.search).has('discord_error')) {
+      setError('Discord sign-in failed or this account is not allowed.');
+      history.replaceState(null, '', location.pathname);
+    }
     fetchAuthStatus()
-      .then((s) => setNeedsSetup(s.needsSetup))
+      .then((s) => {
+        setNeedsSetup(s.needsSetup);
+        setDiscordEnabled(!!s.discordEnabled);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -56,6 +64,14 @@ export default function Login({ onSuccess }: { onSuccess: (user?: PanelUser) => 
                 Cookies are blocked in this browser. You can still sign in, but the session lasts only until you reload
                 or close this tab.
               </p>
+            )}
+            {discordEnabled && !cookiesBlocked() && (
+              <a
+                href="/api/auth/discord/start"
+                className={cn('block rounded-lg px-4 py-2 text-center text-sm font-medium', admin.elevated, admin.fg)}
+              >
+                Continue with Discord
+              </a>
             )}
             <div>
               <label htmlFor="admin-username" className={cn('mb-1.5 block text-xs font-medium', admin.muted)}>

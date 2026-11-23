@@ -92,6 +92,20 @@ async function route(req: Request): Promise<Response> {
       ? serveStatic(req, pathname)
       : new Response(null, { status: 405 });
   }
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    const site = req.headers.get('sec-fetch-site');
+    const origin = req.headers.get('origin');
+    // Reverse proxies already supply this header for HTTPS cookie handling; preserve their public scheme.
+    const protocol =
+      req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https:'
+        ? 'https:'
+        : req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https'
+          ? 'https:'
+          : url.protocol;
+    if ((site && site !== 'same-origin' && site !== 'none') || (origin && origin !== protocol + '//' + url.host)) {
+      return json({ error: 'Cross-origin panel mutations are forbidden.' }, 403);
+    }
+  }
   if (pathname.startsWith('/api/auth/')) return handleAuth(req, pathname);
 
   // Keep path segments stable between the permission check and upstream URL parsing.
@@ -134,37 +148,100 @@ async function route(req: Request): Promise<Response> {
       const key = 'remote_extras_settings';
       if (req.method === 'GET') {
         let value: unknown = { enabled: false, allowedOrigins: ['https://extras.nationdex.com'], catalogue: [] };
-        try { value = JSON.parse((await getMeta(key)) || JSON.stringify(value)); } catch { return json({ error: 'Saved extras settings are invalid.' }, 500); }
+        try {
+          value = JSON.parse((await getMeta(key)) || JSON.stringify(value));
+        } catch {
+          return json({ error: 'Saved extras settings are invalid.' }, 500);
+        }
         return json(value, 200, { 'Cache-Control': 'no-store' });
       }
       if (req.method !== 'PUT') return json({ error: 'Method not allowed.' }, 405);
       const reader = req.body?.getReader();
       const chunks: Uint8Array[] = [];
       let size = 0;
+      let timedOut = false;
+      const deadline = setTimeout(() => {
+        timedOut = true;
+        void reader?.cancel().catch(() => {});
+      }, 10_000);
       try {
-        if (reader) for (;;) {
-          const part = await reader.read();
-          if (part.done) break;
-          size += part.value.byteLength;
-          if (size > 32_768) { await reader.cancel(); return json({ error: 'Settings request is too large.' }, 413); }
-          chunks.push(part.value);
-        }
-      } catch { return json({ error: 'Could not read settings request.' }, 400); }
+        if (reader)
+          for (;;) {
+            const part = await reader.read();
+            if (part.done) break;
+            size += part.value.byteLength;
+            if (size > 32_768) {
+              await reader.cancel();
+              return json({ error: 'Settings request is too large.' }, 413);
+            }
+            chunks.push(part.value);
+          }
+      } catch {
+        return json({ error: 'Could not read settings request.' }, timedOut ? 408 : 400);
+      } finally {
+        clearTimeout(deadline);
+        reader?.releaseLock();
+      }
+      if (timedOut) return json({ error: 'Settings request timed out.' }, 408);
       let body: { enabled?: unknown; allowedOrigins?: unknown; catalogue?: unknown } | null;
-      try { body = JSON.parse(new TextDecoder().decode(Buffer.concat(chunks))) as typeof body; } catch { body = null; }
+      try {
+        body = JSON.parse(new TextDecoder().decode(Buffer.concat(chunks))) as typeof body;
+      } catch {
+        body = null;
+      }
       const originValid = (value: unknown): value is string => {
         if (typeof value !== 'string' || value.length > 255) return false;
-        try { const url = new URL(value); return url.protocol === 'https:' && url.origin === value && !url.username && !url.password; } catch { return false; }
+        try {
+          const url = new URL(value);
+          return url.protocol === 'https:' && url.origin === value && !url.username && !url.password;
+        } catch {
+          return false;
+        }
       };
-      const catalogueValid = (value: unknown): value is Array<{ id: string; repository: string; ref: string }> =>
-        Array.isArray(value) && value.length <= 100 && value.every((item) => item && typeof item === 'object' &&
-          typeof item.id === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(item.id) &&
-          typeof item.repository === 'string' && item.repository.length <= 201 && item.repository.split('/').length === 2 && item.repository.split('/').every((part: string) => /^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,98}[A-Za-z0-9])?$/.test(part)) &&
-          typeof item.ref === 'string' && /^[a-f0-9]{40}$/.test(item.ref));
-      if (!body || typeof body.enabled !== 'boolean' || !Array.isArray(body.allowedOrigins) || body.allowedOrigins.length > 20 ||
-        !body.allowedOrigins.every(originValid) || new Set(body.allowedOrigins).size !== body.allowedOrigins.length || !catalogueValid(body.catalogue) ||
-        new Set(body.catalogue.map((item) => item.id)).size !== body.catalogue.length)
-        return json({ error: 'Invalid settings. Use HTTPS origins and catalogue entries pinned to full commit hashes.' }, 400);
+      const catalogueValid = (
+        value: unknown,
+      ): value is Array<{ id: string; repository: string; ref: string; path?: string }> =>
+        Array.isArray(value) &&
+        value.length <= 100 &&
+        value.every(
+          (item) =>
+            item &&
+            typeof item === 'object' &&
+            typeof item.id === 'string' &&
+            /^[a-z0-9][a-z0-9-]{0,63}$/.test(item.id) &&
+            typeof item.repository === 'string' &&
+            item.repository.length <= 201 &&
+            item.repository.split('/').length === 2 &&
+            item.repository
+              .split('/')
+              .every((part: string) => /^[A-Za-z0-9](?:[A-Za-z0-9_.-]{0,98}[A-Za-z0-9])?$/.test(part)) &&
+            typeof item.ref === 'string' &&
+            /^[a-f0-9]{40}$/.test(item.ref) &&
+            (item.path === undefined ||
+              (typeof item.path === 'string' &&
+                item.path.length <= 200 &&
+                (item.path === '' ||
+                  item.path
+                    .split('/')
+                    .every(
+                      (segment: string) =>
+                        /^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(segment) && segment.toLowerCase() !== '.git',
+                    )))),
+        );
+      if (
+        !body ||
+        typeof body.enabled !== 'boolean' ||
+        !Array.isArray(body.allowedOrigins) ||
+        body.allowedOrigins.length > 20 ||
+        !body.allowedOrigins.every(originValid) ||
+        new Set(body.allowedOrigins).size !== body.allowedOrigins.length ||
+        !catalogueValid(body.catalogue) ||
+        new Set(body.catalogue.map((item) => item.id)).size !== body.catalogue.length
+      )
+        return json(
+          { error: 'Invalid settings. Use HTTPS origins and catalogue entries pinned to full commit hashes.' },
+          400,
+        );
       const settings = { enabled: body.enabled, allowedOrigins: body.allowedOrigins, catalogue: body.catalogue };
       await setMeta(key, JSON.stringify(settings));
       return json({ ok: true, settings }, 200, { 'Cache-Control': 'no-store' });

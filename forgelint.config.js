@@ -37,5 +37,6 @@ fs.writeFileSync(
     path.join(pndDir, 'function-0.js'),
     '// NativeFunction({\nmodule.exports = require(' + JSON.stringify(path.join(pndDir, '..', '..', '..', '..', 'src/functions/extras/extrasOperation.ts')) + ');\n',
 );
+fs.writeFileSync(path.join(pndDir, 'function-1.js'), '// NativeFunction({\nmodule.exports = require(' + JSON.stringify(path.join(pndDir, '..', '..', '..', '..', 'src/functions/extras/extrasOwnerCommand.ts')) + ');\n');
 module.exports.extensions = ['@tryforge/forge.canvas'];
 module.exports.natives = [path.join(root, 'db'), path.join(root, 'api'), pndDir];

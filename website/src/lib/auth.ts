@@ -20,10 +20,10 @@ export type PanelGroup = {
   memberCount: number;
 };
 
-export async function fetchAuthStatus(): Promise<{ needsSetup: boolean }> {
+export async function fetchAuthStatus(): Promise<{ needsSetup: boolean; discordEnabled?: boolean }> {
   const res = await fetch('/api/auth/status', { credentials: 'include' });
   if (!res.ok) return { needsSetup: false };
-  return res.json() as Promise<{ needsSetup: boolean }>;
+  return res.json() as Promise<{ needsSetup: boolean; discordEnabled?: boolean }>;
 }
 
 export async function checkSession(): Promise<{ authenticated: boolean; user?: PanelUser }> {

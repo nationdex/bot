@@ -1322,6 +1322,7 @@ export const get_canvasFunctions = () => [
   require("@tryforge/forge.canvas/dist/functions/gradient/newConicGradient.js"),
 ];
 export const get_botFunctions = () => [
+  require("./functions/extras/extrasOwnerCommand.ts"),
   require("./functions/extras/extrasOperation.ts"),
   require("./functions/players/editBalance.ts"),
   require("./functions/players/settingsMenu.ts"),
@@ -1435,7 +1436,12 @@ export const get_botCommands = () => [
   require("./commands/events/catch.ts"),
   require("./commands/events/guildCreate.ts"),
   require("./commands/events/spawn.ts"),
+  require("./commands/developer/extrasupdate.ts"),
   require("./commands/developer/eval.ts"),
+  require("./commands/developer/extraslist.ts"),
+  require("./commands/developer/extrasremove.ts"),
+  require("./commands/developer/extrasinstall.ts"),
+  require("./commands/developer/extrasedit.ts"),
   require("./commands/prefix/howlate.ts"),
   require("./commands/interactions/auction/buttons.ts"),
   require("./commands/interactions/settings.ts"),
