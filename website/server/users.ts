@@ -1,6 +1,16 @@
 import {
-  createGroup, createPanelUser, deleteGroup, deletePanelUser, getGroups, getPanelUserById, getPanelUserByUsername,
-  getPanelUsers, setOwner, updateGroup, updatePanelUser, type PanelUserWithGroup,
+  createGroup,
+  createPanelUser,
+  deleteGroup,
+  deletePanelUser,
+  getGroups,
+  getPanelUserById,
+  getPanelUserByUsername,
+  getPanelUsers,
+  setOwner,
+  updateGroup,
+  updatePanelUser,
+  type PanelUserWithGroup,
 } from './db';
 import { hasPermission } from './auth';
 import { hashPassword } from './password';
@@ -10,7 +20,8 @@ type Role = 'owner' | 'admin' | 'member';
 const fail = (error: string, status = 400): Response => json({ ok: false, error }, status);
 
 async function handleUsers(req: Request, path: string, me: PanelUserWithGroup): Promise<Response | null> {
-  if (!hasPermission(me, 'manage_panel_users')) return json({ error: 'Forbidden: Insufficient permissions to manage panel users.' }, 403);
+  if (!hasPermission(me, 'manage_panel_users'))
+    return json({ error: 'Forbidden: Insufficient permissions to manage panel users.' }, 403);
 
   if (path === '/api/panel/users') {
     if (req.method === 'GET') return json({ users: await getPanelUsers() });
@@ -54,7 +65,8 @@ async function handleUsers(req: Request, path: string, me: PanelUserWithGroup): 
     const username = body.username !== undefined ? String(body.username).trim() : undefined;
     const password = body.password ? String(body.password) : undefined;
     const role = body.role as Role | undefined;
-    if (target.role === 'owner' && me.role !== 'owner') return fail('Only the panel Owner can modify the Owner account.', 403);
+    if (target.role === 'owner' && me.role !== 'owner')
+      return fail('Only the panel Owner can modify the Owner account.', 403);
     if (username && username !== target.username) {
       const dup = await getPanelUserByUsername(username);
       if (dup && dup.id !== id) return fail('Username is already taken.');
@@ -109,7 +121,12 @@ async function handleGroups(req: Request, path: string, me: PanelUserWithGroup):
   if (req.method === 'PUT') {
     const body = await readJson(req);
     const text = (v: unknown) => (v !== undefined ? String(v).trim() : undefined);
-    await updateGroup(id, { name: text(body.name), description: text(body.description), color: text(body.color), permissions: strings(body.permissions) });
+    await updateGroup(id, {
+      name: text(body.name),
+      description: text(body.description),
+      color: text(body.color),
+      permissions: strings(body.permissions),
+    });
     return groups();
   }
   if (req.method === 'DELETE') {
@@ -120,6 +137,10 @@ async function handleGroups(req: Request, path: string, me: PanelUserWithGroup):
 }
 
 export async function handlePanel(req: Request, path: string, me: PanelUserWithGroup): Promise<Response> {
-  const res = path.startsWith('/api/panel/users') ? await handleUsers(req, path, me) : path.startsWith('/api/panel/groups') ? await handleGroups(req, path, me) : null;
+  const res = path.startsWith('/api/panel/users')
+    ? await handleUsers(req, path, me)
+    : path.startsWith('/api/panel/groups')
+      ? await handleGroups(req, path, me)
+      : null;
   return res ?? json({ error: 'Not found' }, 404);
 }

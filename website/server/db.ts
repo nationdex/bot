@@ -38,16 +38,39 @@ export async function initPanelDb(pg: Pg): Promise<void> {
     )
   `);
 
+  await db.query(
+    'CREATE TABLE IF NOT EXISTS panel_discord_accounts (discord_id TEXT PRIMARY KEY, user_id INTEGER UNIQUE NOT NULL REFERENCES panel_users(id) ON DELETE CASCADE)',
+  );
+
   await db.query('CREATE TABLE IF NOT EXISTS panel_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
   await initCatchIndex();
 
   const count = await db.query('SELECT COUNT(*) AS count FROM panel_groups');
   if (Number(count.rows[0].count) === 0) {
     const now = Date.now();
-    const insert = 'INSERT INTO panel_groups (name, description, color, permissions, created_at) VALUES ($1, $2, $3, $4, $5)';
-    await db.query(insert, ['Administrators', 'Full administrative control over all panel features and users', '#a855f7', JSON.stringify(['*']), now]);
-    await db.query(insert, ['Moderators', 'Moderation access to nation collectibles, bot users, and servers', '#3b82f6', JSON.stringify(['view_dashboard', 'manage_nations', 'manage_users', 'manage_servers']), now]);
-    await db.query(insert, ['Viewers', 'Read-only access to statistics and overview analytics', '#10b981', JSON.stringify(['view_dashboard']), now]);
+    const insert =
+      'INSERT INTO panel_groups (name, description, color, permissions, created_at) VALUES ($1, $2, $3, $4, $5)';
+    await db.query(insert, [
+      'Administrators',
+      'Full administrative control over all panel features and users',
+      '#a855f7',
+      JSON.stringify(['*']),
+      now,
+    ]);
+    await db.query(insert, [
+      'Moderators',
+      'Moderation access to nation collectibles, bot users, and servers',
+      '#3b82f6',
+      JSON.stringify(['view_dashboard', 'manage_nations', 'manage_users', 'manage_servers']),
+      now,
+    ]);
+    await db.query(insert, [
+      'Viewers',
+      'Read-only access to statistics and overview analytics',
+      '#10b981',
+      JSON.stringify(['view_dashboard']),
+      now,
+    ]);
   }
 }
 
@@ -95,9 +118,13 @@ async function initCatchIndex(): Promise<void> {
     END
     $fn$ LANGUAGE plpgsql`);
   await db.query('DROP TRIGGER IF EXISTS panel_catch_write ON record');
-  await db.query("CREATE TRIGGER panel_catch_write AFTER INSERT OR UPDATE ON record FOR EACH ROW WHEN (NEW.name = 'collectible' AND NEW.type = 'old') EXECUTE FUNCTION panel_catch_sync()");
+  await db.query(
+    "CREATE TRIGGER panel_catch_write AFTER INSERT OR UPDATE ON record FOR EACH ROW WHEN (NEW.name = 'collectible' AND NEW.type = 'old') EXECUTE FUNCTION panel_catch_sync()",
+  );
   await db.query('DROP TRIGGER IF EXISTS panel_catch_delete ON record');
-  await db.query("CREATE TRIGGER panel_catch_delete AFTER DELETE ON record FOR EACH ROW WHEN (OLD.name = 'collectible' AND OLD.type = 'old') EXECUTE FUNCTION panel_catch_sync()");
+  await db.query(
+    "CREATE TRIGGER panel_catch_delete AFTER DELETE ON record FOR EACH ROW WHEN (OLD.name = 'collectible' AND OLD.type = 'old') EXECUTE FUNCTION panel_catch_sync()",
+  );
 }
 
 // Fills panel_catch from the existing catches in small batches so the bot keeps running while it builds.
@@ -109,7 +136,11 @@ export async function backfillCatchIndex(): Promise<void> {
     db.query("SELECT COUNT(*) AS n FROM record WHERE name = 'collectible' AND type = 'old'"),
   ]);
   if (Number(have.rows[0].n) === Number(want.rows[0].n)) return;
-  const ids = (await db.query("SELECT identifier FROM record r WHERE name = 'collectible' AND type = 'old' AND NOT EXISTS (SELECT 1 FROM panel_catch p WHERE p.identifier = r.identifier)")).rows.map((r) => r.identifier as string);
+  const ids = (
+    await db.query(
+      "SELECT identifier FROM record r WHERE name = 'collectible' AND type = 'old' AND NOT EXISTS (SELECT 1 FROM panel_catch p WHERE p.identifier = r.identifier)",
+    )
+  ).rows.map((r) => r.identifier as string);
   for (let i = 0; i < ids.length; i += 1000) {
     await db.query(
       `INSERT INTO panel_catch (identifier, id, nation, author, atk, hp, ts)
@@ -119,12 +150,14 @@ export async function backfillCatchIndex(): Promise<void> {
              FROM (SELECT identifier, id, CASE WHEN pg_input_is_valid(value, 'jsonb') THEN value::jsonb END AS j
                    FROM record WHERE identifier = ANY($1)) a) b
        ON CONFLICT (identifier) DO NOTHING`,
-      [ids.slice(i, i + 1000)]
+      [ids.slice(i, i + 1000)],
     );
     await new Promise((resolve) => setTimeout(resolve, 5)); // let the bot's own work run between batches
   }
   // Rows removed while the table was not being kept (before the triggers existed).
-  await db.query("DELETE FROM panel_catch p WHERE NOT EXISTS (SELECT 1 FROM record r WHERE r.identifier = p.identifier)");
+  await db.query(
+    'DELETE FROM panel_catch p WHERE NOT EXISTS (SELECT 1 FROM record r WHERE r.identifier = p.identifier)',
+  );
 }
 
 export async function getMeta(key: string): Promise<string | null> {
@@ -133,7 +166,10 @@ export async function getMeta(key: string): Promise<string | null> {
 }
 
 export async function setMeta(key: string, value: string): Promise<void> {
-  await db.query('INSERT INTO panel_meta (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value', [key, value]);
+  await db.query(
+    'INSERT INTO panel_meta (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value',
+    [key, value],
+  );
 }
 
 export type DbPanelUser = {
@@ -230,22 +266,30 @@ export async function getPanelUsers(): Promise<PanelUserWithGroup[]> {
 }
 
 export async function getPanelUserById(id: number): Promise<PanelUserWithGroup | null> {
-  const res = await db.query(`
+  const res = await db.query(
+    `
     SELECT ${USER_COLS}
     FROM panel_users u
     LEFT JOIN panel_groups g ON u.group_id = g.id
     WHERE u.id = $1
-  `, [id]);
+  `,
+    [id],
+  );
   return res.rows[0] ? toUser(res.rows[0]) : null;
 }
 
-export async function getPanelUserByUsername(username: string): Promise<(DbPanelUser & { group_name?: string; group_color?: string }) | null> {
-  const res = await db.query(`
+export async function getPanelUserByUsername(
+  username: string,
+): Promise<(DbPanelUser & { group_name?: string; group_color?: string }) | null> {
+  const res = await db.query(
+    `
     SELECT u.*, g.name AS group_name, g.color AS group_color
     FROM panel_users u
     LEFT JOIN panel_groups g ON u.group_id = g.id
     WHERE LOWER(u.username) = LOWER($1)
-  `, [username]);
+  `,
+    [username],
+  );
   const row = res.rows[0];
   return row ? { ...row, created_at: Number(row.created_at) } : null;
 }
@@ -258,19 +302,22 @@ export async function createPanelUser(data: {
   groupId?: number | null;
   permissions?: string[];
 }): Promise<number> {
-  const res = await db.query(`
+  const res = await db.query(
+    `
     INSERT INTO panel_users (username, password_hash, display_name, role, group_id, permissions, created_at)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id
-  `, [
-    data.username,
-    data.passwordHash,
-    data.displayName ?? data.username,
-    data.role ?? 'member',
-    data.groupId ?? null,
-    JSON.stringify(data.permissions ?? ['view_dashboard']),
-    Date.now(),
-  ]);
+  `,
+    [
+      data.username,
+      data.passwordHash,
+      data.displayName ?? data.username,
+      data.role ?? 'member',
+      data.groupId ?? null,
+      JSON.stringify(data.permissions ?? ['view_dashboard']),
+      Date.now(),
+    ],
+  );
   return Number(res.rows[0].id);
 }
 
@@ -283,24 +330,27 @@ export async function updatePanelUser(
     role?: 'owner' | 'admin' | 'member';
     groupId?: number | null;
     permissions?: string[];
-  }
+  },
 ): Promise<void> {
   const cur = (await db.query('SELECT * FROM panel_users WHERE id = $1', [id])).rows[0] as DbPanelUser | undefined;
   if (!cur) return;
 
-  await db.query(`
+  await db.query(
+    `
     UPDATE panel_users
     SET username = $1, password_hash = $2, display_name = $3, role = $4, group_id = $5, permissions = $6
     WHERE id = $7
-  `, [
-    data.username ?? cur.username,
-    data.passwordHash ?? cur.password_hash,
-    data.displayName ?? cur.display_name,
-    data.role ?? cur.role,
-    data.groupId !== undefined ? data.groupId : cur.group_id,
-    data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
-    id,
-  ]);
+  `,
+    [
+      data.username ?? cur.username,
+      data.passwordHash ?? cur.password_hash,
+      data.displayName ?? cur.display_name,
+      data.role ?? cur.role,
+      data.groupId !== undefined ? data.groupId : cur.group_id,
+      data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
+      id,
+    ],
+  );
 }
 
 export async function deletePanelUser(id: number): Promise<void> {
@@ -310,7 +360,10 @@ export async function deletePanelUser(id: number): Promise<void> {
 export async function setOwner(newOwnerId: number): Promise<void> {
   await db.transaction(async (tx) => {
     await tx.query("UPDATE panel_users SET role = 'admin' WHERE role = 'owner'");
-    await tx.query("UPDATE panel_users SET role = 'owner', permissions = $1 WHERE id = $2", [JSON.stringify(['*']), newOwnerId]);
+    await tx.query("UPDATE panel_users SET role = 'owner', permissions = $1 WHERE id = $2", [
+      JSON.stringify(['*']),
+      newOwnerId,
+    ]);
   });
 }
 
@@ -339,17 +392,20 @@ export async function createGroup(data: {
   color?: string;
   permissions?: string[];
 }): Promise<number> {
-  const res = await db.query(`
+  const res = await db.query(
+    `
     INSERT INTO panel_groups (name, description, color, permissions, created_at)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING id
-  `, [
-    data.name,
-    data.description ?? '',
-    data.color ?? '#8b5cf6',
-    JSON.stringify(data.permissions ?? ['view_dashboard']),
-    Date.now(),
-  ]);
+  `,
+    [
+      data.name,
+      data.description ?? '',
+      data.color ?? '#8b5cf6',
+      JSON.stringify(data.permissions ?? ['view_dashboard']),
+      Date.now(),
+    ],
+  );
   return Number(res.rows[0].id);
 }
 
@@ -360,22 +416,25 @@ export async function updateGroup(
     description?: string;
     color?: string;
     permissions?: string[];
-  }
+  },
 ): Promise<void> {
   const cur = (await db.query('SELECT * FROM panel_groups WHERE id = $1', [id])).rows[0] as DbGroup | undefined;
   if (!cur) return;
 
-  await db.query(`
+  await db.query(
+    `
     UPDATE panel_groups
     SET name = $1, description = $2, color = $3, permissions = $4
     WHERE id = $5
-  `, [
-    data.name ?? cur.name,
-    data.description ?? cur.description,
-    data.color ?? cur.color,
-    data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
-    id,
-  ]);
+  `,
+    [
+      data.name ?? cur.name,
+      data.description ?? cur.description,
+      data.color ?? cur.color,
+      data.permissions !== undefined ? JSON.stringify(data.permissions) : cur.permissions,
+      id,
+    ],
+  );
 }
 
 export async function deleteGroup(id: number): Promise<void> {
@@ -383,7 +442,11 @@ export async function deleteGroup(id: number): Promise<void> {
 }
 
 export async function createSession(token: string, userId: number, expiresAt: number): Promise<void> {
-  await db.query('INSERT INTO panel_sessions (token, user_id, expires_at) VALUES ($1, $2, $3)', [token, userId, expiresAt]);
+  await db.query('INSERT INTO panel_sessions (token, user_id, expires_at) VALUES ($1, $2, $3)', [
+    token,
+    userId,
+    expiresAt,
+  ]);
 }
 
 export async function deleteSession(token: string): Promise<void> {
@@ -391,13 +454,16 @@ export async function deleteSession(token: string): Promise<void> {
 }
 
 export async function getSessionUser(token: string): Promise<PanelUserWithGroup | null> {
-  const res = await db.query(`
+  const res = await db.query(
+    `
     SELECT s.expires_at, ${USER_COLS}, g.permissions AS group_permissions
     FROM panel_sessions s
     JOIN panel_users u ON s.user_id = u.id
     LEFT JOIN panel_groups g ON u.group_id = g.id
     WHERE s.token = $1
-  `, [token]);
+  `,
+    [token],
+  );
   const row = res.rows[0];
   if (!row) return null;
   if (Number(row.expires_at) < Date.now()) {
@@ -434,4 +500,50 @@ export async function setPasswordHashForAdmin(hash: string): Promise<void> {
       permissions: ['*'],
     });
   }
+}
+
+// Serializes both password and Discord bootstrap so two first logins cannot create two owners.
+export async function createInitialPanelOwner(data: {
+  username: string;
+  passwordHash: string;
+  displayName: string;
+}): Promise<number | null> {
+  return db.transaction(async (tx) => {
+    await tx.query('LOCK TABLE panel_users IN EXCLUSIVE MODE');
+    if ((await tx.query('SELECT 1 FROM panel_users LIMIT 1')).rows.length) return null;
+    const row = await tx.query(
+      "INSERT INTO panel_users (username,password_hash,display_name,role,permissions,created_at) VALUES ($1,$2,$3,'owner','[\"*\"]',$4) RETURNING id",
+      [data.username, data.passwordHash, data.displayName, Date.now()],
+    );
+    return Number(row.rows[0].id);
+  });
+}
+export async function discordPanelAccount(
+  discordId: string,
+  displayName: string,
+  ownerId: string,
+  allowed: string[],
+  passwordHash: string,
+): Promise<number | null> {
+  return db.transaction(async (tx) => {
+    await tx.query('LOCK TABLE panel_users IN EXCLUSIVE MODE');
+    const existing = await tx.query('SELECT user_id FROM panel_discord_accounts WHERE discord_id=$1', [discordId]);
+    if (existing.rows.length) return Number(existing.rows[0].user_id);
+    const first = !(await tx.query('SELECT 1 FROM panel_users LIMIT 1')).rows.length;
+    if (first ? discordId !== ownerId : discordId !== ownerId && !allowed.includes(discordId)) return null;
+    const row = await tx.query(
+      'INSERT INTO panel_users (username,password_hash,display_name,role,permissions,created_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
+      [
+        'discord_' + discordId,
+        passwordHash,
+        displayName,
+        first ? 'owner' : 'member',
+        JSON.stringify(first ? ['*'] : ['view_dashboard']),
+        Date.now(),
+      ],
+    );
+    const id = Number(row.rows[0].id);
+    await tx.query('INSERT INTO panel_discord_accounts (discord_id,user_id) VALUES ($1,$2)', [discordId, id]);
+    return id;
+  });
 }

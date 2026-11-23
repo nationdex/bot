@@ -28,7 +28,7 @@ export default new ForgeFunction({
   $let[ctbl;$env[collectibleID]]
   $let[data;$env[data]]
   $let[id;$randomString[7;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ]]
-  
+
   $let[invLock;$mutex[acquire;inv:$get[user]]]
   $jsonLoad[userData;$getUserVar[userCollectibles;$get[user]]]
   $jsonLoad[unique;$env[userData;unique]]
@@ -43,7 +43,7 @@ export default new ForgeFunction({
   $setUserVar[userCollectibles;$env[userData];$get[user]]
   $setVar[collectible;$get[id];$env[data]]
   $!mutex[release;inv:$get[user];$get[invLock]]
-  
+
   $let[catLock;$mutex[acquire;catalog]]
   $jsonLoad[data;$getGlobalVar[collectiblesData]]
   $!jsonSet[data;total_caught;$sum[$env[data;total_caught];1]]

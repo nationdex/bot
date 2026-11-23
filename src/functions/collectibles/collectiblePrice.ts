@@ -15,7 +15,7 @@ export default new ForgeFunction({
   $let[input;$env[id]]
   $let[rawCatID;$replace[$collectible[$get[input];id];null;]]
   $let[catID;$default[$get[rawCatID];$get[input]]]
-  
+
   $let[rawPrice;$replace[$collectibleInfo[$get[catID];sell_price];null;]]
   $if[$and[$isNumber[$get[rawPrice]];$get[rawPrice]>0];
     $return[$get[rawPrice]]

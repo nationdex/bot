@@ -11,7 +11,10 @@ const COMPRESSIBLE = /\.(js|css|html|json|svg|webmanifest|txt)$/;
 const MIN_BYTES = 1024;
 
 const encoders: Record<'br' | 'gz', (data: Uint8Array<ArrayBuffer>) => Uint8Array> = {
-  br: (data) => brotliCompressSync(data, { params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: data.length } }),
+  br: (data) =>
+    brotliCompressSync(data, {
+      params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: data.length },
+    }),
   gz: (data) => Bun.gzipSync(data, { level: 9 }),
 };
 
@@ -62,19 +65,32 @@ export async function buildPanel(): Promise<void> {
   if (!result.success) throw new AggregateError(result.logs, 'Admin panel build failed');
 
   // The Dashboard is the first page after sign-in and loads lazily: preload it (and what it imports) with the shell.
-  const outputs = (result.metafile?.outputs ?? {}) as Record<string, { inputs: Record<string, unknown>; imports: Array<{ path: string; kind: string }> }>;
-  const dash = Object.entries(outputs).find(([, o]) => Object.keys(o.inputs).some((i) => i.endsWith('pages/dashboard/Dashboard.tsx')));
+  const outputs = (result.metafile?.outputs ?? {}) as Record<
+    string,
+    { inputs: Record<string, unknown>; imports: Array<{ path: string; kind: string }> }
+  >;
+  const dash = Object.entries(outputs).find(([, o]) =>
+    Object.keys(o.inputs).some((i) => i.endsWith('pages/dashboard/Dashboard.tsx')),
+  );
   const preload = dash
-    ? [dash[0], ...dash[1].imports.filter((i) => i.kind === 'import-statement').map((i) => i.path)].map((p) => `  <link rel="modulepreload" href="/${path.basename(p)}" />\n`).join('')
+    ? [dash[0], ...dash[1].imports.filter((i) => i.kind === 'import-statement').map((i) => i.path)]
+        .map((p) => `  <link rel="modulepreload" href="/${path.basename(p)}" />\n`)
+        .join('')
     : '';
   await cp(path.join(root, 'public'), distDir, { recursive: true });
 
   const swPath = path.join(distDir, 'sw.js');
-  await writeFile(swPath, (await readFile(swPath, 'utf8')).replace("const VERSION = 'dev';", `const VERSION = '${Date.now().toString(36)}';`));
+  await writeFile(
+    swPath,
+    (await readFile(swPath, 'utf8')).replace("const VERSION = 'dev';", `const VERSION = '${Date.now().toString(36)}';`),
+  );
 
   const indexPath = path.join(distDir, 'index.html');
   const html = (await readFile(indexPath, 'utf8'))
-    .replace('<meta name="viewport" content="width=device-width, initial-scale=1.0" />', '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />')
+    .replace(
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+      '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />',
+    )
     .replace('</head>', `${preload}${PWA_HEAD}</head>`);
   await writeFile(indexPath, html);
 

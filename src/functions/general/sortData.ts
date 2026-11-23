@@ -25,12 +25,12 @@ export default new ForgeFunction({
   ],
   code: `
   $if[$isJSON[$env[data]];
-  $return[$js[const json = $env[data];
+      $return[$js[const json = JSON.parse(String(ctx.getEnvironmentKey("data")));
     if (json == null || typeof json !== "object") { JSON.stringify(json != null ? json : null) }
     else if ((Array.isArray(json) && json.length === 0) || Object.keys(json).length === 0) { JSON.stringify(json) }
     else {
-    const sortKey = "$env[key]";
-    const order = "$default[$env[order];desc]";
+    const sortKey = String(ctx.getEnvironmentKey("key") ?? "");
+    const order = String(ctx.getEnvironmentKey("order") || "desc");
     const isArray = Array.isArray(json);
     const entries = isArray ? json.map((v, i) => [String(i), v\\]) : Object.entries(json);
     const isFlat = entries.every(([, v\\]) => typeof v !== "object" || v === null);

@@ -1,11 +1,14 @@
 import './core/runtime/native';
 
-import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_dbFunctions, get_dbEvents, get_apiFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
+import { get_forgescriptNative, get_forgescriptEvents, get_canvasFunctions, get_botFunctions, get_botCommands, get_botSlash } from './bundle-imports';
 require('@tryforge/forgescript/dist/functions/recursiveReaddirSync').default = () => [];
 
 import { ForgeCanvas } from '@tryforge/forge.canvas';
-import { API } from '@nationdex/api';
+import { API, apiFunctions } from '@nationdex/api';
+import { extrasAllowedOrigins, loadExtras } from './core/extras';
 import { DB } from '@nationdex/db';
+import { functions as dbFunctions } from '@nationdex/db/functions';
+import { events as dbEvents } from '@nationdex/db/events';
 import { ForgeClient, FunctionManager, EventManager } from '@tryforge/forgescript';
 import {
   variables,
@@ -16,10 +19,15 @@ import {
 import { evalFunctions } from './core/runtime/evalRunner';
 import { startPanel } from './core/panel';
 
-const api = new API({
+const apiOptions = {
   path: 'src/api_routes',
   port: parseInt(process.env.API_PORT || '2222', 10),
-});
+  cors: {
+    origins: extrasAllowedOrigins,
+    pathPrefix: ['/v1/extras', '/v1/discovery'],
+  },
+};
+const api = new API(apiOptions);
 
 const db = new DB({
   folder: process.env.DATABASE_FOLDER || './database',
@@ -32,8 +40,8 @@ const getReq = (arr: any[]) => arr.map(a => a.default ?? a).filter(Boolean);
 // Register native and extension functions before initializing client
 FunctionManager.addMany(getReq(get_forgescriptNative()));
 FunctionManager.addMany(getReq(get_canvasFunctions()));
-FunctionManager.addMany(getReq(get_dbFunctions()));
-FunctionManager.addMany(getReq(get_apiFunctions()));
+FunctionManager.addMany(dbFunctions);
+FunctionManager.addMany(apiFunctions);
 FunctionManager.addMany(evalFunctions);
 
 const dex = new ForgeClient({
@@ -66,7 +74,7 @@ dex.events.load('native', dex.options.events);
 
 // Register DB events
 EventManager.Loaded['DBEvents'] = {};
-for (const req of getReq(get_dbEvents())) {
+for (const req of getReq(dbEvents)) {
   EventManager.Loaded['DBEvents'][req.name] = req;
 }
 if (db.options?.events?.length) {
@@ -120,6 +128,7 @@ async function main() {
   // Load slash commands (bundled)
   initSlashCommands({ path: '', commands: getReq(get_botSlash()) }, dex);
 
+  await loadExtras(dex);
   api.init(dex);
 
   await dex.login(token);

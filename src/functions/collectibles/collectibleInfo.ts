@@ -29,7 +29,7 @@ export default new ForgeFunction({
   $let[sep;$env[separator]]
   $jsonLoad[data;$getGlobalVar[collectiblesData]]
   $jsonLoad[colID;$env[data;collectibles;$get[id]]]
-  
+
   $if[$get[value]!=null;
     $let[val;$env[colID;$get[value]]]
     $if[$and[$get[sep]!=null;$isArray[$get[val]]];

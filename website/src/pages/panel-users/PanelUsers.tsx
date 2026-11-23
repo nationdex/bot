@@ -3,27 +3,78 @@ import { ConfirmModal } from '@/components/feedback/ConfirmModal';
 import { PanelUsersSkeleton } from '@/components/feedback/SectionSkeleton';
 import { TablePagination } from '@/components/ui/TablePagination';
 import { UnsavedChangesBar } from '@/components/feedback/UnsavedChangesBar';
-import { ArrowLeft, ArrowRight, Check, FolderGit2, Plus, Search, StarPlus, Trash2, UserPlus, Users } from '@/components/icons';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  FolderGit2,
+  Plus,
+  Search,
+  StarPlus,
+  Trash2,
+  UserPlus,
+  Users,
+} from '@/components/icons';
 import { useEffect, useState } from 'preact/hooks';
 import { createPortal } from 'preact';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { createPanelGroup, createPanelUser, deletePanelGroup, deletePanelUser, fetchPanelGroups, fetchPanelUsers, transferPanelOwnership, updatePanelGroup, updatePanelUser, type PanelGroup, type PanelUser } from '@/lib/auth';
+import {
+  createPanelGroup,
+  createPanelUser,
+  deletePanelGroup,
+  deletePanelUser,
+  fetchPanelGroups,
+  fetchPanelUsers,
+  transferPanelOwnership,
+  updatePanelGroup,
+  updatePanelUser,
+  type PanelGroup,
+  type PanelUser,
+} from '@/lib/auth';
 import { useMotionPref } from '@/hooks/useReducedMotion';
 import { listItem, quickTransition, staggerContainer } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 const availablePermissions: Array<{ key: string; label: string; description: string }> = [
-  { key: '*', label: 'Full Access (*)', description: 'Unrestricted control over all panel features and administrative settings' },
+  {
+    key: '*',
+    label: 'Full Access (*)',
+    description: 'Unrestricted control over all panel features and administrative settings',
+  },
   { key: 'view_dashboard', label: 'View Dashboard', description: 'Access to statistics, metrics, and overview charts' },
-  { key: 'manage_nations', label: 'Manage Nations', description: 'Create, edit, and manage nation collectibles and catalog' },
-  { key: 'manage_users', label: 'Manage Bot Users', description: 'View player inventories, balances, and gift settings' },
-  { key: 'manage_servers', label: 'Manage Servers', description: 'Manage guild spawn configs and active server settings' },
+  {
+    key: 'manage_nations',
+    label: 'Manage Nations',
+    description: 'Create, edit, and manage nation collectibles and catalog',
+  },
+  {
+    key: 'manage_users',
+    label: 'Manage Bot Users',
+    description: 'View player inventories, balances, and gift settings',
+  },
+  {
+    key: 'manage_servers',
+    label: 'Manage Servers',
+    description: 'Manage guild spawn configs and active server settings',
+  },
   { key: 'manage_cards', label: 'Manage Cards', description: 'Upload and configure regime and special card art' },
-  { key: 'manage_bot_settings', label: 'Manage Bot Settings', description: 'Configure system parameters and rarity thresholds' },
-  { key: 'manage_panel_users', label: 'Manage Panel Users', description: 'Create, edit, and delete staff accounts and passwords' },
-  { key: 'manage_groups', label: 'Manage Groups & Roles', description: 'Create and divide staff groups and permission roles' },
+  {
+    key: 'manage_bot_settings',
+    label: 'Manage Bot Settings',
+    description: 'Configure system parameters and rarity thresholds',
+  },
+  {
+    key: 'manage_panel_users',
+    label: 'Manage Panel Users',
+    description: 'Create, edit, and delete staff accounts and passwords',
+  },
+  {
+    key: 'manage_groups',
+    label: 'Manage Groups & Roles',
+    description: 'Create and divide staff groups and permission roles',
+  },
 ];
 
 const presetColors = [
@@ -338,9 +389,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
       setUserPerms(withoutStar.includes(key) ? withoutStar.filter((p) => p !== key) : [...withoutStar, key]);
       return;
     }
-    setUserPerms(
-      userPerms.includes(key) ? userPerms.filter((p) => p !== key) : [...userPerms, key]
-    );
+    setUserPerms(userPerms.includes(key) ? userPerms.filter((p) => p !== key) : [...userPerms, key]);
   };
 
   const toggleGroupPerm = (key: string) => {
@@ -354,9 +403,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
       setGroupPerms(withoutStar.includes(key) ? withoutStar.filter((p) => p !== key) : [...withoutStar, key]);
       return;
     }
-    setGroupPerms(
-      groupPerms.includes(key) ? groupPerms.filter((p) => p !== key) : [...groupPerms, key]
-    );
+    setGroupPerms(groupPerms.includes(key) ? groupPerms.filter((p) => p !== key) : [...groupPerms, key]);
   };
 
   const [pageSize, setPageSize] = useState<number>(10);
@@ -369,7 +416,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
   const filteredUsers = users.filter(
     (u) =>
       u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.displayName.toLowerCase().includes(searchQuery.toLowerCase())
+      u.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -390,7 +437,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-[var(--admin-fg)] sm:text-2xl">
-              {editingUser ? `Edit Account: ${editingUser.displayName || editingUser.username}` : 'Create Staff Account'}
+              {editingUser
+                ? `Edit Account: ${editingUser.displayName || editingUser.username}`
+                : 'Create Staff Account'}
             </h1>
             <p className="text-xs text-[var(--admin-muted)]">
               {editingUser ? `@${editingUser.username}` : 'Configure credentials and permissions'}
@@ -406,7 +455,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   setTargetOwnerUser(editingUser);
                   setOwnerModalOpen(true);
                 }}
-                omitDefaults="inline-flex text-sm" className="text-xs text-amber-400 hover:bg-amber-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm"
+                className="text-xs text-amber-400 hover:bg-amber-500/10 flex items-center gap-1.5"
               >
                 <StarPlus className="h-4 w-4" />
                 Transfer Ownership
@@ -418,7 +468,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 type="button"
                 variant="ghost"
                 onClick={() => handleDeleteUser(editingUser)}
-                omitDefaults="inline-flex text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm"
+                className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -430,7 +481,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              omitDefaults="inline-flex text-sm" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
+              omitDefaults="inline-flex text-sm"
+              className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Users
@@ -445,9 +497,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Username
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Username</label>
                   <Input
                     required
                     type="text"
@@ -462,9 +512,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Display Name
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Display Name</label>
                   <Input
                     type="text"
                     value={userDisplayName}
@@ -505,10 +553,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Group / Division
-                  </label>
-                  <select name="usergroupid"
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Group / Division</label>
+                  <select
+                    name="usergroupid"
                     value={userGroupId ?? ''}
                     onChange={(e) => {
                       setUserGroupId(e.currentTarget.value ? Number(e.currentTarget.value) : null);
@@ -526,10 +573,9 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Role Category
-                  </label>
-                  <select name="userrole"
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Role Category</label>
+                  <select
+                    name="userrole"
                     value={userRole}
                     onChange={(e) => {
                       setUserRole(e.currentTarget.value as 'owner' | 'admin' | 'member');
@@ -565,13 +611,17 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       onClick={() => toggleUserPerm(p.key)}
                       className={cn(
                         'p-3 rounded-xl cursor-pointer transition-colors flex items-start gap-3 select-none',
-                        isChecked ? 'bg-[var(--admin-elevated)]' : 'bg-[var(--admin-elevated)]/40 hover:bg-[var(--admin-elevated)]/70'
+                        isChecked
+                          ? 'bg-[var(--admin-elevated)]'
+                          : 'bg-[var(--admin-elevated)]/40 hover:bg-[var(--admin-elevated)]/70',
                       )}
                     >
                       <div
                         className={cn(
                           'h-4 w-4 rounded shrink-0 flex items-center justify-center mt-0.5 transition-colors',
-                          isChecked ? 'bg-[var(--admin-accent)] text-[var(--admin-accent-fg)]' : 'bg-[var(--admin-elevated)]'
+                          isChecked
+                            ? 'bg-[var(--admin-accent)] text-[var(--admin-accent-fg)]'
+                            : 'bg-[var(--admin-elevated)]',
                         )}
                       >
                         {isChecked && <Check className="h-3 w-3" />}
@@ -621,7 +671,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 type="button"
                 variant="ghost"
                 onClick={() => handleDeleteGroup(editingGroup)}
-                omitDefaults="inline-flex text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
+                omitDefaults="inline-flex text-sm"
+                className="text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete Group
@@ -633,7 +684,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              omitDefaults="inline-flex text-sm" className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
+              omitDefaults="inline-flex text-sm"
+              className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] flex items-center gap-1.5"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Groups
@@ -648,9 +700,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Group Name
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Group Name</label>
                   <Input
                     required
                     type="text"
@@ -665,9 +715,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">
-                    Description
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--admin-muted)] mb-1">Description</label>
                   <Input
                     type="text"
                     value={groupDesc}
@@ -682,9 +730,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--admin-muted)] mb-2">
-                  Badge Color
-                </label>
+                <label className="block text-xs font-medium text-[var(--admin-muted)] mb-2">Badge Color</label>
                 <div className="flex flex-wrap gap-2.5 items-center">
                   {presetColors.map((c) => (
                     <button
@@ -696,7 +742,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       }}
                       className={cn(
                         'h-8 w-8 rounded-full transition-transform flex items-center justify-center',
-                        groupColor === c.value ? 'scale-110 ring-2 ring-white/50' : 'hover:scale-105'
+                        groupColor === c.value ? 'scale-110 ring-2 ring-white/50' : 'hover:scale-105',
                       )}
                       style={{ backgroundColor: c.value }}
                     >
@@ -726,13 +772,17 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       onClick={() => toggleGroupPerm(p.key)}
                       className={cn(
                         'p-3 rounded-xl cursor-pointer transition-colors flex items-start gap-3 select-none',
-                        isChecked ? 'bg-[var(--admin-elevated)]' : 'bg-[var(--admin-elevated)]/40 hover:bg-[var(--admin-elevated)]/70'
+                        isChecked
+                          ? 'bg-[var(--admin-elevated)]'
+                          : 'bg-[var(--admin-elevated)]/40 hover:bg-[var(--admin-elevated)]/70',
                       )}
                     >
                       <div
                         className={cn(
                           'h-4 w-4 rounded shrink-0 flex items-center justify-center mt-0.5 transition-colors',
-                          isChecked ? 'bg-[var(--admin-accent)] text-[var(--admin-accent-fg)]' : 'bg-[var(--admin-elevated)]'
+                          isChecked
+                            ? 'bg-[var(--admin-accent)] text-[var(--admin-accent-fg)]'
+                            : 'bg-[var(--admin-elevated)]',
                         )}
                       >
                         {isChecked && <Check className="h-3 w-3" />}
@@ -773,9 +823,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[var(--admin-fg)] sm:text-2xl">
-            Staff & Access Management
-          </h1>
+          <h1 className="text-xl font-bold text-[var(--admin-fg)] sm:text-2xl">Staff & Access Management</h1>
           <p className="text-xs text-[var(--admin-muted)] sm:text-sm">
             Manage admin panel users, assigned divisions, and granular system permissions.
           </p>
@@ -785,7 +833,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           {activeTab === 'users' ? (
             <Button
               onClick={openAddUser}
-              omitDefaults="inline-flex text-sm transition-colors" className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
+              omitDefaults="inline-flex text-sm transition-colors"
+              className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
             >
               <UserPlus className="h-4 w-4" />
               Add User
@@ -793,7 +842,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
           ) : (
             <Button
               onClick={openAddGroup}
-              omitDefaults="inline-flex text-sm transition-colors" className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
+              omitDefaults="inline-flex text-sm transition-colors"
+              className="bg-[var(--admin-accent)] text-[var(--admin-accent-fg)] hover:opacity-90 transition-opacity flex items-center gap-2 text-xs font-medium"
             >
               <Plus className="h-4 w-4" />
               Create Group
@@ -814,7 +864,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 setSearchQuery(e.currentTarget.value);
                 setCurrentPage(1);
               }}
-              omitDefaults="h-10 rounded-md text-sm" className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
+              omitDefaults="h-10 rounded-md text-sm"
+              className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
             />
           </div>
         ) : (
@@ -825,7 +876,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               placeholder="Search groups & divisions..."
               value={groupSearchQuery}
               onChange={(e) => setGroupSearchQuery(e.currentTarget.value)}
-              omitDefaults="h-10 rounded-md text-sm" className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
+              omitDefaults="h-10 rounded-md text-sm"
+              className="h-9 pl-9 rounded-lg bg-[var(--admin-card)] text-xs text-[var(--admin-fg)] placeholder:text-[var(--admin-muted)] border-0 shadow-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)]"
             />
           </div>
         )}
@@ -838,7 +890,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               'relative px-4 py-2 text-xs font-medium rounded-full transition-colors flex items-center gap-2',
               activeTab === 'users'
                 ? 'text-[var(--admin-accent-fg)]'
-                : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
             )}
           >
             {activeTab === 'users' && (
@@ -860,7 +912,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               'relative px-4 py-2 text-xs font-medium rounded-full transition-colors flex items-center gap-2',
               activeTab === 'groups'
                 ? 'text-[var(--admin-accent-fg)]'
-                : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]'
+                : 'text-[var(--admin-muted)] hover:text-[var(--admin-fg)]',
             )}
           >
             {activeTab === 'groups' && (
@@ -892,7 +944,12 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   </tr>
                 </thead>
                 {listReveal ? (
-                  <m.tbody variants={staggerContainer} initial="hidden" animate="show" key={currentPage + '-' + pageSize}>
+                  <m.tbody
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                    key={currentPage + '-' + pageSize}
+                  >
                     {paginatedUsers.map((u) => (
                       <m.tr
                         key={u.id}
@@ -961,7 +1018,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
             filteredGroups.map((g) => (
               <Card
                 key={g.id}
-                omitDefaults="rounded-lg" className="bg-[var(--admin-card)] rounded-xl border-0 shadow-none p-0 gap-0 overflow-hidden flex flex-col justify-between"
+                omitDefaults="rounded-lg"
+                className="bg-[var(--admin-card)] rounded-xl border-0 shadow-none p-0 gap-0 overflow-hidden flex flex-col justify-between"
               >
                 <CardContent omitDefaults="p-6 pt-0" className="p-5 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="space-y-3">
@@ -1008,13 +1066,17 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                   </div>
                 </CardContent>
 
-                <CardFooter omitDefaults="pt-0" className="flex items-center justify-between border-t border-[var(--admin-border)] px-5 py-2.5">
+                <CardFooter
+                  omitDefaults="pt-0"
+                  className="flex items-center justify-between border-t border-[var(--admin-border)] px-5 py-2.5"
+                >
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => openEditGroup(g)}
-                    omitDefaults="text-sm h-9 px-3" className="h-8 gap-1.5 px-2 text-xs font-medium text-[var(--admin-accent)] hover:text-[var(--admin-accent)] hover:bg-[var(--admin-elevated)] border-0 shadow-none"
+                    omitDefaults="text-sm h-9 px-3"
+                    className="h-8 gap-1.5 px-2 text-xs font-medium text-[var(--admin-accent)] hover:text-[var(--admin-accent)] hover:bg-[var(--admin-elevated)] border-0 shadow-none"
                   >
                     <span>Edit Group</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -1024,7 +1086,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteGroup(g)}
-                    omitDefaults="text-sm h-9 px-3" className="h-8 gap-1.5 px-2 text-xs text-rose-400 hover:bg-rose-500/10 hover:text-red-400 border-0 shadow-none"
+                    omitDefaults="text-sm h-9 px-3"
+                    className="h-8 gap-1.5 px-2 text-xs text-rose-400 hover:bg-rose-500/10 hover:text-red-400 border-0 shadow-none"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span>Delete</span>
@@ -1056,13 +1119,15 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                 >
                   <div className="flex items-center gap-3 text-amber-400">
                     <StarPlus className="h-6 w-6" />
-                    <h3 className="text-base font-bold text-[var(--admin-fg)]">
-                      Transfer Panel Ownership
-                    </h3>
+                    <h3 className="text-base font-bold text-[var(--admin-fg)]">Transfer Panel Ownership</h3>
                   </div>
 
                   <p className="text-xs text-[var(--admin-muted)] leading-relaxed">
-                    Are you sure you want to make <strong className="text-[var(--admin-fg)]">{targetOwnerUser.displayName || targetOwnerUser.username}</strong> the new Owner of this admin panel? Your account will be assigned the Admin role.
+                    Are you sure you want to make{' '}
+                    <strong className="text-[var(--admin-fg)]">
+                      {targetOwnerUser.displayName || targetOwnerUser.username}
+                    </strong>{' '}
+                    the new Owner of this admin panel? Your account will be assigned the Admin role.
                   </p>
 
                   <div className="flex justify-end gap-3 pt-2">
@@ -1070,7 +1135,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       type="button"
                       variant="ghost"
                       onClick={() => setOwnerModalOpen(false)}
-                      omitDefaults="text-sm" className="text-xs text-[var(--admin-muted)]"
+                      omitDefaults="text-sm"
+                      className="text-xs text-[var(--admin-muted)]"
                     >
                       Cancel
                     </Button>
@@ -1078,7 +1144,8 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
                       type="button"
                       disabled={submitting}
                       onClick={handleTransferOwnership}
-                      omitDefaults="text-sm font-medium" className="bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
+                      omitDefaults="text-sm font-medium"
+                      className="bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
                     >
                       {submitting ? 'Transferring...' : 'Confirm Ownership Transfer'}
                     </Button>
@@ -1087,7 +1154,7 @@ export default function PanelUsersPage({ currentUser }: { currentUser?: PanelUse
               </div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
 
       <ConfirmModal
@@ -1141,9 +1208,7 @@ function UserRowContent({
       <td className="py-3.5 pl-5 sm:pl-6 pr-4">
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-[var(--admin-fg)]">
-              {u.displayName || u.username}
-            </span>
+            <span className="text-sm font-semibold text-[var(--admin-fg)]">{u.displayName || u.username}</span>
             {u.role === 'owner' && <StarPlus className="h-3.5 w-3.5 text-amber-400" />}
           </div>
           <span className="text-xs text-[var(--admin-muted)]">@{u.username}</span>
@@ -1152,17 +1217,11 @@ function UserRowContent({
 
       <td className="py-3.5 px-4">
         {u.role === 'owner' ? (
-          <span className="text-xs font-bold text-amber-400 inline-flex items-center">
-            Owner
-          </span>
+          <span className="text-xs font-bold text-amber-400 inline-flex items-center">Owner</span>
         ) : u.role === 'admin' ? (
-          <span className="text-xs font-semibold text-purple-400">
-            Admin
-          </span>
+          <span className="text-xs font-semibold text-purple-400">Admin</span>
         ) : (
-          <span className="text-xs font-medium text-[var(--admin-muted)]">
-            Member
-          </span>
+          <span className="text-xs font-medium text-[var(--admin-muted)]">Member</span>
         )}
       </td>
 
@@ -1203,7 +1262,8 @@ function UserRowContent({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            omitDefaults="text-sm" className="text-xs text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]"
+            omitDefaults="text-sm"
+            className="text-xs text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]"
           >
             Edit
           </Button>
@@ -1213,7 +1273,8 @@ function UserRowContent({
               variant="ghost"
               size="sm"
               onClick={onTransfer}
-              omitDefaults="text-sm" className="text-xs text-amber-400 hover:bg-amber-500/10"
+              omitDefaults="text-sm"
+              className="text-xs text-amber-400 hover:bg-amber-500/10"
               title="Transfer Ownership"
             >
               <StarPlus className="h-3.5 w-3.5" />
@@ -1225,7 +1286,8 @@ function UserRowContent({
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              omitDefaults="text-sm" className="text-xs text-rose-400 hover:bg-rose-500/10"
+              omitDefaults="text-sm"
+              className="text-xs text-rose-400 hover:bg-rose-500/10"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>

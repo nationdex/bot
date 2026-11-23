@@ -25,6 +25,11 @@ export const commands = {
     },
   },
   dev: {
+    extrasinstall: { name: 'extrasinstall', description: 'Owner-only extras install', usage: '<id> <commit>', type: 'messageCreate', tags: ['dev', 'extras'] },
+    extrasremove: { name: 'extrasremove', description: 'Owner-only extras remove', usage: '<id>', type: 'messageCreate', tags: ['dev', 'extras'] },
+    extrasupdate: { name: 'extrasupdate', description: 'Owner-only extras update', usage: '<id> <commit>', type: 'messageCreate', tags: ['dev', 'extras'] },
+    extrasedit: { name: 'extrasedit', description: 'Owner-only extras edit', usage: '<id> <commit>', type: 'messageCreate', tags: ['dev', 'extras'] },
+    extraslist: { name: 'extraslist', description: 'Owner-only extras list', usage: '', type: 'messageCreate', tags: ['dev', 'extras'] },
     eval: {
       name: 'eval',
       aliases: ['ev'],

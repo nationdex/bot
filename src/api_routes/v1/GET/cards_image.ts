@@ -1,4 +1,4 @@
-import { RouteDefinition } from '@nationdex/api';
+import type { RouteDefinition } from '@nationdex/api';
 
 const route: RouteDefinition = {
   url: 'v1/cards/:id/image',
@@ -8,7 +8,7 @@ const route: RouteDefinition = {
   $jsonLoad[cards;$cardList]
   $arrayMap[cards;card;$return[$env[card;id]];ids]
   $if[$and[$get[id]!=;$arrayIncludes[ids;$get[id]]];
-    $!writeHeader[Cache-Control;public, max-age=3600]
+
     $sendFile[$jsonVar[config;paths.cards]/$get[id].png]
   ;
     $writeStatus[404;Not Found]

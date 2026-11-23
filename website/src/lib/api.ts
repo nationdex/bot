@@ -52,7 +52,7 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 3,
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       const res = await fetch(endpoint, {
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         signal: controller.signal,
@@ -78,8 +78,6 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 3,
   return null;
 }
 
-
-
 function unwrapData(raw: unknown): unknown {
   if (!raw || typeof raw !== 'object') return raw;
   const obj = raw as Record<string, unknown>;
@@ -96,32 +94,26 @@ function unwrapData(raw: unknown): unknown {
 }
 
 function parseUserEntry(defaultId: string, item: Record<string, unknown>): UserEntry {
-  const userId = String(
-    item.discordId ?? item.discord_id ?? item.id ?? item.user_id ?? defaultId
-  );
+  const userId = String(item.discordId ?? item.discord_id ?? item.id ?? item.user_id ?? defaultId);
 
-  const collectiblesData = (item.collectiblesData ?? item.collectibles_data ?? item.collectibles ?? {}) as Record<string, unknown>;
+  const collectiblesData = (item.collectiblesData ?? item.collectibles_data ?? item.collectibles ?? {}) as Record<
+    string,
+    unknown
+  >;
   const settings = (item.settings ?? {}) as Record<string, unknown>;
 
   const rawUsername = String(
-    item.username ??
-    item.global_name ??
-    item.globalName ??
-    item.user_name ??
-    item.name ??
-    item.tag ??
-    item.user ??
-    ''
+    item.username ?? item.global_name ?? item.globalName ?? item.user_name ?? item.name ?? item.tag ?? item.user ?? '',
   );
 
   const total = Number(
     collectiblesData.total ??
-    item.total ??
-    item.total_nation ??
-    item.total_nations ??
-    item.nations_count ??
-    item.collectibles_count ??
-    (Array.isArray(collectiblesData.collectibleIds) ? collectiblesData.collectibleIds.length : 0)
+      item.total ??
+      item.total_nation ??
+      item.total_nations ??
+      item.nations_count ??
+      item.collectibles_count ??
+      (Array.isArray(collectiblesData.collectibleIds) ? collectiblesData.collectibleIds.length : 0),
   );
 
   let unique = 0;
@@ -134,40 +126,30 @@ function parseUserEntry(defaultId: string, item: Record<string, unknown>): UserE
   } else if (typeof item.unique === 'number') {
     unique = item.unique;
   } else {
-    const parsedUnique = Number(
-      item.unique_nation ??
-      item.unique_nations ??
-      item.unique_count ??
-      0
-    );
+    const parsedUnique = Number(item.unique_nation ?? item.unique_nations ?? item.unique_count ?? 0);
     unique = isNaN(parsedUnique) ? 0 : parsedUnique;
   }
 
   const totalValue = Number(
     collectiblesData.total_value ??
-    collectiblesData.totalValue ??
-    item.totalValue ??
-    item.total_value ??
-    item.value ??
-    0
+      collectiblesData.totalValue ??
+      item.totalValue ??
+      item.total_value ??
+      item.value ??
+      0,
   );
 
   const inventoryPrivacy = String(
     settings.inventory_privacy ??
-    settings.inventoryPrivacy ??
-    item.inventoryPrivacy ??
-    item.inventory_privacy ??
-    item.privacy ??
-    'public'
+      settings.inventoryPrivacy ??
+      item.inventoryPrivacy ??
+      item.inventory_privacy ??
+      item.privacy ??
+      'public',
   );
 
   const rawGifts =
-    settings.accept_gifts ??
-    settings.acceptGifts ??
-    item.acceptGifts ??
-    item.accept_gifts ??
-    item.gifts ??
-    true;
+    settings.accept_gifts ?? settings.acceptGifts ?? item.acceptGifts ?? item.accept_gifts ?? item.gifts ?? true;
 
   const acceptGifts = rawGifts === 'true' || rawGifts === true || rawGifts === '1' || rawGifts === 1;
 
@@ -192,54 +174,54 @@ export async function fetchStats(): Promise<BotStats | null> {
 
   const userCount = Number(
     obj.userCount ??
-    obj.user_count ??
-    obj.registered_users_count ??
-    obj.registers_users_count ??
-    obj.registeredUsersCount ??
-    obj.registered_users ??
-    obj.users_count ??
-    obj.users ??
-    cached?.userCount ??
-    0
+      obj.user_count ??
+      obj.registered_users_count ??
+      obj.registers_users_count ??
+      obj.registeredUsersCount ??
+      obj.registered_users ??
+      obj.users_count ??
+      obj.users ??
+      cached?.userCount ??
+      0,
   );
 
   const guildCount = Number(
     obj.guildCount ??
-    obj.guild_count ??
-    obj.registered_guilds_count ??
-    obj.registeredGuildsCount ??
-    obj.registered_guilds ??
-    obj.guilds_count ??
-    obj.guilds ??
-    obj.servers ??
-    cached?.guildCount ??
-    0
+      obj.guild_count ??
+      obj.registered_guilds_count ??
+      obj.registeredGuildsCount ??
+      obj.registered_guilds ??
+      obj.guilds_count ??
+      obj.guilds ??
+      obj.servers ??
+      cached?.guildCount ??
+      0,
   );
 
   const catalogTotal = Number(
     obj.catalogTotal ??
-    obj.catalog_total ??
-    obj.total_collectibles_count ??
-    obj.totalCollectiblesCount ??
-    obj.collectibles_count ??
-    obj.total_collectibles ??
-    obj.collectibles ??
-    cached?.catalogTotal ??
-    0
+      obj.catalog_total ??
+      obj.total_collectibles_count ??
+      obj.totalCollectiblesCount ??
+      obj.collectibles_count ??
+      obj.total_collectibles ??
+      obj.collectibles ??
+      cached?.catalogTotal ??
+      0,
   );
 
   const totalCaught = Number(
     obj.collectibles_caught_global ??
-    obj.collectiblesCaughtGlobal ??
-    obj.totalCaught ??
-    obj.total_caught ??
-    obj.total_collectibles_caught_globally ??
-    obj.totalCollectiblesCaughtGlobally ??
-    obj.total_collectibles_caught ??
-    obj.global_caught ??
-    obj.caught ??
-    cached?.totalCaught ??
-    0
+      obj.collectiblesCaughtGlobal ??
+      obj.totalCaught ??
+      obj.total_caught ??
+      obj.total_collectibles_caught_globally ??
+      obj.totalCollectiblesCaughtGlobally ??
+      obj.total_collectibles_caught ??
+      obj.global_caught ??
+      obj.caught ??
+      cached?.totalCaught ??
+      0,
   );
 
   const result = { userCount, guildCount, catalogTotal, totalCaught };
@@ -257,9 +239,10 @@ export async function fetchCollectibles(id?: string): Promise<CollectibleEntry[]
 
   const rawData = unwrapData(raw);
   if (!rawData) return cached;
-  const data = (rawData && typeof rawData === 'object' && 'collectiblesData' in rawData)
-    ? (rawData as Record<string, unknown>).collectiblesData
-    : rawData;
+  const data =
+    rawData && typeof rawData === 'object' && 'collectiblesData' in rawData
+      ? (rawData as Record<string, unknown>).collectiblesData
+      : rawData;
 
   let itemsArray: Array<Record<string, unknown>> = [];
 
@@ -276,8 +259,8 @@ export async function fetchCollectibles(id?: string): Promise<CollectibleEntry[]
       obj.collectibles && typeof obj.collectibles === 'object' && !Array.isArray(obj.collectibles)
         ? obj.collectibles
         : obj.nations && typeof obj.nations === 'object' && !Array.isArray(obj.nations)
-        ? obj.nations
-        : null
+          ? obj.nations
+          : null
     ) as Record<string, unknown> | null;
 
     if (targetMap) {
@@ -305,27 +288,23 @@ export async function fetchCollectibles(id?: string): Promise<CollectibleEntry[]
 
   const result: CollectibleEntry[] = itemsArray.map((item, index) => {
     const itemId = String(item.id ?? item.code ?? item.collectible_id ?? `entry_${index}`);
-    const rawClass = String(
-      item.class ?? item.rarity ?? item.rarity_class ?? item.tier ?? 'common'
-    ).toLowerCase();
+    const rawClass = String(item.class ?? item.rarity ?? item.rarity_class ?? item.tier ?? 'common').toLowerCase();
 
     const rarityClass: RarityClass = (
-      ['common', 'uncommon', 'rare', 'mythic', 'legendary'].includes(rawClass)
-        ? rawClass
-        : getRarityFromId(itemId)
+      ['common', 'uncommon', 'rare', 'mythic', 'legendary'].includes(rawClass) ? rawClass : getRarityFromId(itemId)
     ) as RarityClass;
 
     const rawCaught = Number(
       item.collectibles_caught_global ??
-      item.collectiblesCaughtGlobal ??
-      item.collectible_caught_global ??
-      item.collectibles_caught ??
-      item.globalCaught ??
-      item.global_caught ??
-      item.total_caught ??
-      item.caught ??
-      item.count ??
-      0
+        item.collectiblesCaughtGlobal ??
+        item.collectible_caught_global ??
+        item.collectibles_caught ??
+        item.globalCaught ??
+        item.global_caught ??
+        item.total_caught ??
+        item.caught ??
+        item.count ??
+        0,
     );
 
     const globalCaught = rawCaught;
@@ -447,7 +426,10 @@ export type GuildConfigEntry = {
   rawParsed: Record<string, unknown>;
 };
 
-function mapInstances(itemsArray: Array<Record<string, unknown>>, collectibles: CollectibleEntry[] | null): NationInstanceEntry[] {
+function mapInstances(
+  itemsArray: Array<Record<string, unknown>>,
+  collectibles: CollectibleEntry[] | null,
+): NationInstanceEntry[] {
   const collectibleMap = new Map<string, { name: string; class: RarityClass }>();
   if (Array.isArray(collectibles)) {
     for (const c of collectibles) {
@@ -474,8 +456,10 @@ function mapInstances(itemsArray: Array<Record<string, unknown>>, collectibles: 
     }
 
     const nationKey = String(
-      parsed.nation ?? parsed.nation_id ?? parsed.nationId ?? parsed.collectible ?? parsed.id ?? ''
-    ).trim().toLowerCase();
+      parsed.nation ?? parsed.nation_id ?? parsed.nationId ?? parsed.collectible ?? parsed.id ?? '',
+    )
+      .trim()
+      .toLowerCase();
 
     const matched = collectibleMap.get(nationKey);
 
@@ -521,7 +505,12 @@ function mapInstances(itemsArray: Array<Record<string, unknown>>, collectibles: 
 export type InstancesPage = { total: number; items: NationInstanceEntry[] };
 
 // One page of catches, filtered and sorted by the panel server (newest first), instead of every catch in the database.
-export async function fetchInstancesPage(opts: { query: string; rarity: string; page: number; pageSize: number }): Promise<InstancesPage | null> {
+export async function fetchInstancesPage(opts: {
+  query: string;
+  rarity: string;
+  page: number;
+  pageSize: number;
+}): Promise<InstancesPage | null> {
   const params = new URLSearchParams({
     q: opts.query,
     class: opts.rarity,
@@ -538,8 +527,12 @@ export async function fetchInstancesPage(opts: { query: string; rarity: string; 
 
 // Catch counts for three consecutive buckets [t0,t1) [t1,t2) [t2,t3), counted by the server.
 export async function fetchGrowth(bounds: [number, number, number, number]): Promise<[number, number, number] | null> {
-  const raw = await apiFetch<{ counts: number[] }>(`/api/panel/data/growth?${new URLSearchParams({ t0: String(bounds[0]), t1: String(bounds[1]), t2: String(bounds[2]), t3: String(bounds[3]) })}`);
-  return raw && Array.isArray(raw.counts) && raw.counts.length === 3 ? [raw.counts[0], raw.counts[1], raw.counts[2]] : null;
+  const raw = await apiFetch<{ counts: number[] }>(
+    `/api/panel/data/growth?${new URLSearchParams({ t0: String(bounds[0]), t1: String(bounds[1]), t2: String(bounds[2]), t3: String(bounds[3]) })}`,
+  );
+  return raw && Array.isArray(raw.counts) && raw.counts.length === 3
+    ? [raw.counts[0], raw.counts[1], raw.counts[2]]
+    : null;
 }
 
 export async function fetchGuildConfigs(): Promise<GuildConfigEntry[] | null> {
@@ -552,7 +545,9 @@ export async function fetchGuildConfigs(): Promise<GuildConfigEntry[] | null> {
 
   let itemsArray: Array<Record<string, unknown>> = [];
   if (Array.isArray(data)) {
-    itemsArray = data.map((item) => (typeof item === 'object' && item !== null ? (item as Record<string, unknown>) : {}));
+    itemsArray = data.map((item) =>
+      typeof item === 'object' && item !== null ? (item as Record<string, unknown>) : {},
+    );
   } else if (typeof data === 'object' && data !== null) {
     const obj = data as Record<string, unknown>;
     if (Array.isArray(obj.results)) {
@@ -689,22 +684,33 @@ export async function fetchNationDetail(id: string): Promise<NationDetailData | 
   const data = unwrapData(raw);
   if (!data || typeof data !== 'object') return getCache<NationDetailData>(cacheKey);
   const obj = data as Record<string, unknown>;
-  const nationObj = (obj.data ?? obj.value ?? obj.collectible ?? (Array.isArray(obj) ? (obj as any[]).find((x) => String(x?.id).toLowerCase() === id.toLowerCase()) || obj[0] : obj)) as Record<string, unknown>;
+  const nationObj = (obj.data ??
+    obj.value ??
+    obj.collectible ??
+    (Array.isArray(obj)
+      ? (obj as any[]).find((x) => String(x?.id).toLowerCase() === id.toLowerCase()) || obj[0]
+      : obj)) as Record<string, unknown>;
   if (!nationObj) return getCache<NationDetailData>(cacheKey);
 
   const rawCatch = nationObj.catch_names ?? nationObj.catching_names;
   const catch_names = Array.isArray(rawCatch)
     ? (rawCatch as string[]).map(String)
     : typeof rawCatch === 'string' && rawCatch
-    ? rawCatch.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
-    : [String(nationObj.name ?? id).toLowerCase()];
+      ? rawCatch
+          .split(',')
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+      : [String(nationObj.name ?? id).toLowerCase()];
 
   const rawTrans = nationObj.translations;
   const translations = Array.isArray(rawTrans)
     ? (rawTrans as string[]).map(String)
     : typeof rawTrans === 'string' && rawTrans
-    ? rawTrans.split(',').map((s) => s.trim()).filter(Boolean)
-    : [];
+      ? rawTrans
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
 
   const detail: NationDetailData = {
     id: String(nationObj.id ?? id),
@@ -734,9 +740,7 @@ export async function fetchNationDetail(id: string): Promise<NationDetailData | 
   return detail;
 }
 
-export async function createNation(
-  payload: CreateNationPayload
-): Promise<ApiResponse<{ id: string }>> {
+export async function createNation(payload: CreateNationPayload): Promise<ApiResponse<{ id: string }>> {
   const res = await apiFetch<ApiResponse<{ id: string }>>('/api/bot/nations', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -744,10 +748,7 @@ export async function createNation(
   return res || { ok: false, error: 'Network error' };
 }
 
-export async function updateNation(
-  id: string,
-  payload: UpdateNationPayload
-): Promise<ApiResponse> {
+export async function updateNation(id: string, payload: UpdateNationPayload): Promise<ApiResponse> {
   const { id: _ignored, ...body } = (payload || {}) as Record<string, unknown>;
   const res = await apiFetch<ApiResponse>(`/api/bot/nations/${encodeURIComponent(id)}`, {
     method: 'POST',
@@ -768,7 +769,7 @@ export async function uploadNationArt(
   id: string,
   kind: 'spawn' | 'window',
   data: string,
-  name?: string
+  name?: string,
 ): Promise<ApiResponse<{ file: string }>> {
   const res = await apiFetch<ApiResponse<{ file: string }>>(`/api/bot/nations/${encodeURIComponent(id)}/art`, {
     method: 'POST',
@@ -779,7 +780,7 @@ export async function uploadNationArt(
 
 export async function updateNationCard(
   id: string,
-  payload: { regime?: string; economy?: string }
+  payload: { regime?: string; economy?: string },
 ): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/nations/${encodeURIComponent(id)}/card`, {
     method: 'POST',
@@ -807,7 +808,7 @@ export async function deleteCardBackground(name: string): Promise<ApiResponse> {
 export async function updateUserBalance(
   userId: string,
   mode: 'set' | 'add' | 'remove',
-  amount: number
+  amount: number,
 ): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/users/${encodeURIComponent(userId)}/balance`, {
     method: 'POST',
@@ -819,7 +820,7 @@ export async function updateUserBalance(
 export async function updateUserSettings(
   userId: string,
   key: 'inventory_privacy' | 'profile_privacy' | 'accept_gifts',
-  value: string | boolean
+  value: string | boolean,
 ): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/users/${encodeURIComponent(userId)}/settings`, {
     method: 'POST',
@@ -844,9 +845,7 @@ type UserAuctionStats = {
 };
 
 async function fetchUserAuction(userId: string): Promise<UserAuctionStats | null> {
-  let res = await apiFetch<unknown>(
-    `/api/bot/users/${encodeURIComponent(userId)}/auction`
-  );
+  let res = await apiFetch<unknown>(`/api/bot/users/${encodeURIComponent(userId)}/auction`);
   if (!res) {
     return null;
   }
@@ -890,10 +889,7 @@ type UpdateUserAuctionPayload =
       mode?: 'set' | 'add' | 'remove';
     };
 
-export async function updateUserAuction(
-  userId: string,
-  payload: UpdateUserAuctionPayload
-): Promise<ApiResponse> {
+export async function updateUserAuction(userId: string, payload: UpdateUserAuctionPayload): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/users/${encodeURIComponent(userId)}/auction`, {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -901,11 +897,7 @@ export async function updateUserAuction(
   return res || { ok: false, error: 'Network error' };
 }
 
-export async function giveUserNation(
-  userId: string,
-  nation: string,
-  count = 1
-): Promise<ApiResponse> {
+export async function giveUserNation(userId: string, nation: string, count = 1): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/users/${encodeURIComponent(userId)}/nations/give`, {
     method: 'POST',
     body: JSON.stringify({ nation, count }),
@@ -913,10 +905,7 @@ export async function giveUserNation(
   return res || { ok: false, error: 'Network error' };
 }
 
-export async function removeUserNation(
-  userId: string,
-  catchId: string
-): Promise<ApiResponse> {
+export async function removeUserNation(userId: string, catchId: string): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>(`/api/bot/users/${encodeURIComponent(userId)}/nations/remove`, {
     method: 'POST',
     body: JSON.stringify({ catch: catchId }),
@@ -927,7 +916,7 @@ export async function removeUserNation(
 export async function updateConfigItem(
   root: 'config' | 'keywords',
   path: string,
-  value: unknown
+  value: unknown,
 ): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>('/api/bot/config', {
     method: 'POST',
@@ -940,7 +929,7 @@ export async function addConfigItem(
   root: 'config' | 'keywords',
   key: string,
   value: unknown,
-  parent?: string
+  parent?: string,
 ): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>('/api/bot/config/add', {
     method: 'POST',
@@ -949,10 +938,7 @@ export async function addConfigItem(
   return res || { ok: false, error: 'Network error' };
 }
 
-export async function deleteConfigItem(
-  root: 'config' | 'keywords',
-  path: string
-): Promise<ApiResponse> {
+export async function deleteConfigItem(root: 'config' | 'keywords', path: string): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>('/api/bot/config/delete', {
     method: 'POST',
     body: JSON.stringify({ root, path }),
@@ -960,10 +946,7 @@ export async function deleteConfigItem(
   return res || { ok: false, error: 'Network error' };
 }
 
-export async function resetConfigItem(
-  root: 'config' | 'keywords',
-  path: string
-): Promise<ApiResponse> {
+export async function resetConfigItem(root: 'config' | 'keywords', path: string): Promise<ApiResponse> {
   const res = await apiFetch<ApiResponse>('/api/bot/config/reset', {
     method: 'POST',
     body: JSON.stringify({ root, path }),
@@ -1032,7 +1015,12 @@ export type UserDetailData = {
 };
 
 async function fetchUserBalance(userId: string): Promise<number> {
-  const raw = await apiFetch<unknown>(`/api/bot/search_db/balance?id=${encodeURIComponent(userId)}`, undefined, 1, 4000);
+  const raw = await apiFetch<unknown>(
+    `/api/bot/search_db/balance?id=${encodeURIComponent(userId)}`,
+    undefined,
+    1,
+    4000,
+  );
   if (!raw) return 0;
   let record: Record<string, unknown> | null = null;
   if (Array.isArray(raw) && raw.length > 0) {
@@ -1053,7 +1041,12 @@ async function fetchNationCatch(catchId: string): Promise<Record<string, unknown
     return cached;
   }
 
-  const raw = await apiFetch<unknown>(`/api/bot/search_db/collectible?id=${encodeURIComponent(catchId)}`, undefined, 1, 8000);
+  const raw = await apiFetch<unknown>(
+    `/api/bot/search_db/collectible?id=${encodeURIComponent(catchId)}`,
+    undefined,
+    1,
+    8000,
+  );
   if (!raw) return null;
   let record: Record<string, unknown> | null = null;
   if (Array.isArray(raw) && raw.length > 0 && typeof raw[0] === 'object') {
@@ -1133,14 +1126,12 @@ export async function fetchUserDetail(id: string): Promise<UserDetailData | null
   const collectibleIds: string[] = Array.isArray(rawCollectibles.collectibleIDs)
     ? (rawCollectibles.collectibleIDs as string[])
     : Array.isArray(rawCollectibles.collectibleIds)
-    ? (rawCollectibles.collectibleIds as string[])
-    : Array.isArray(rawCollectibles.nations)
-    ? (rawCollectibles.nations as string[])
-    : [];
+      ? (rawCollectibles.collectibleIds as string[])
+      : Array.isArray(rawCollectibles.nations)
+        ? (rawCollectibles.nations as string[])
+        : [];
 
-  const uniqueList: string[] = Array.isArray(rawCollectibles.unique)
-    ? (rawCollectibles.unique as string[])
-    : [];
+  const uniqueList: string[] = Array.isArray(rawCollectibles.unique) ? (rawCollectibles.unique as string[]) : [];
 
   const catches: UserCatchItem[] = await Promise.all(
     collectibleIds.map(async (catchId, idx) => {
@@ -1168,7 +1159,7 @@ export async function fetchUserDetail(id: string): Promise<UserDetailData | null
           name: `#${catchId}`,
         };
       }
-    })
+    }),
   );
 
   const [directAuction, resolvedBalance] = await Promise.all([
@@ -1176,8 +1167,8 @@ export async function fetchUserDetail(id: string): Promise<UserDetailData | null
     typeof data.balance === 'number'
       ? Promise.resolve(data.balance)
       : typeof statsRaw.balance === 'number'
-      ? Promise.resolve(statsRaw.balance)
-      : fetchUserBalance(id),
+        ? Promise.resolve(statsRaw.balance)
+        : fetchUserBalance(id),
   ]);
 
   const rawAuction = (data.auctionData ?? data.auction_data ?? {}) as Record<string, unknown>;
@@ -1185,29 +1176,33 @@ export async function fetchUserDetail(id: string): Promise<UserDetailData | null
   const rawSold = rawAuction.sold !== undefined ? Number(rawAuction.sold) : undefined;
   const rawEarnings = rawAuction.earnings !== undefined ? Number(rawAuction.earnings) : undefined;
 
-  const auctionTotal = directAuction?.total !== undefined && directAuction.total > 0
-    ? directAuction.total
-    : rawTotal !== undefined
-    ? rawTotal
-    : directAuction?.total ?? 0;
+  const auctionTotal =
+    directAuction?.total !== undefined && directAuction.total > 0
+      ? directAuction.total
+      : rawTotal !== undefined
+        ? rawTotal
+        : (directAuction?.total ?? 0);
 
-  const auctionSold = directAuction?.sold !== undefined && directAuction.sold > 0
-    ? directAuction.sold
-    : rawSold !== undefined
-    ? rawSold
-    : directAuction?.sold ?? 0;
+  const auctionSold =
+    directAuction?.sold !== undefined && directAuction.sold > 0
+      ? directAuction.sold
+      : rawSold !== undefined
+        ? rawSold
+        : (directAuction?.sold ?? 0);
 
-  const auctionEarnings = directAuction?.earnings !== undefined && directAuction.earnings > 0
-    ? directAuction.earnings
-    : rawEarnings !== undefined
-    ? rawEarnings
-    : directAuction?.earnings ?? 0;
+  const auctionEarnings =
+    directAuction?.earnings !== undefined && directAuction.earnings > 0
+      ? directAuction.earnings
+      : rawEarnings !== undefined
+        ? rawEarnings
+        : (directAuction?.earnings ?? 0);
 
-  const onSaleIds: string[] = (directAuction?.onSale && directAuction.onSale.length > 0)
-    ? directAuction.onSale
-    : (Array.isArray(rawAuction.onSale)
-    ? (rawAuction.onSale as string[]).map(String)
-    : directAuction?.onSale ?? []);
+  const onSaleIds: string[] =
+    directAuction?.onSale && directAuction.onSale.length > 0
+      ? directAuction.onSale
+      : Array.isArray(rawAuction.onSale)
+        ? (rawAuction.onSale as string[]).map(String)
+        : (directAuction?.onSale ?? []);
 
   let activeAuctions: UserAuctionItem[] = [];
   if (onSaleIds.length > 0) {
@@ -1287,7 +1282,11 @@ export async function fetchUserDetail(id: string): Promise<UserDetailData | null
 
 export function getCardImageUrl(idOrUrlOrFile: string): string {
   if (!idOrUrlOrFile) return '/api/bot/cards/democracy/image';
-  if (idOrUrlOrFile.startsWith('data:') || idOrUrlOrFile.startsWith('http://') || idOrUrlOrFile.startsWith('https://')) {
+  if (
+    idOrUrlOrFile.startsWith('data:') ||
+    idOrUrlOrFile.startsWith('http://') ||
+    idOrUrlOrFile.startsWith('https://')
+  ) {
     return idOrUrlOrFile;
   }
   if (idOrUrlOrFile.startsWith('/v1/')) {
@@ -1328,7 +1327,9 @@ export async function fetchCardBackgrounds(): Promise<RegimeCardItem[]> {
 }
 
 export async function fetchSpecialsCards(): Promise<SpecialCardItem[]> {
-  const res = await apiFetch<SpecialCardItem[] | { ok?: boolean; results?: SpecialCardItem[] }>('/api/bot/search_db/specials');
+  const res = await apiFetch<SpecialCardItem[] | { ok?: boolean; results?: SpecialCardItem[] }>(
+    '/api/bot/search_db/specials',
+  );
   if (Array.isArray(res)) return res;
   if (res && typeof res === 'object' && Array.isArray((res as { results?: SpecialCardItem[] }).results)) {
     return (res as { results: SpecialCardItem[] }).results;

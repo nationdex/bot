@@ -7,7 +7,7 @@ import {
 import { variables } from './variables';
 import { auctionConfig } from './auction';
 import { RegistrationType } from '@tryforge/forgescript';
-import { accessCommand } from './access';
+import { accessCommand, apiCommand } from './access';
 import { blacklistGroups } from './blacklist';
 import { suggestionAdminCommand, suggestionsCommand } from './suggestions';
 
@@ -480,4 +480,5 @@ export const slashes = {
   suggestions: suggestionsCommand,
 
   access: accessCommand,
+  api: apiCommand,
 };

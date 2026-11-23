@@ -35,7 +35,9 @@ export default function Nations({
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const [classFilter, setClassFilter] = useState<string>('all');
-  const [catalog, setCatalog] = useState<CollectibleEntry[]>(() => getCache<CollectibleEntry[]>('collectibles_all') || []);
+  const [catalog, setCatalog] = useState<CollectibleEntry[]>(
+    () => getCache<CollectibleEntry[]>('collectibles_all') || [],
+  );
   const [isLoading, setIsLoading] = useState<boolean>(() => !getCache<CollectibleEntry[]>('collectibles_all')?.length);
   const [deleteItem, setDeleteItem] = useState<CollectibleEntry | null>(null);
 
@@ -137,24 +139,23 @@ export default function Nations({
           >
             <div className="relative min-w-0 flex-1">
               <Search
-                className={cn(
-                  'pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2',
-                  admin.muted
-                )}
+                className={cn('pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)}
               />
               <Input
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.currentTarget.value)}
-                omitDefaults="h-10" className={cn('h-9 w-full pl-9 pr-3', admin.input)}
+                omitDefaults="h-10"
+                className={cn('h-9 w-full pl-9 pr-3', admin.input)}
                 placeholder="Search by name or ID..."
               />
             </div>
 
             <Select value={classFilter} onValueChange={setClassFilter}>
               <SelectTrigger
-                omitDefaults="h-10 text-sm" className={cn(
+                omitDefaults="h-10 text-sm"
+                className={cn(
                   'min-h-9 h-9 w-full shrink-0 cursor-pointer touch-manipulation text-xs md:w-36',
-                  admin.input
+                  admin.input,
                 )}
               >
                 <SelectValue placeholder="All classes" />
@@ -175,7 +176,8 @@ export default function Nations({
               onPointerEnter={preloadEditor}
               onFocus={preloadEditor}
               onClick={() => setIsCreatingNew(true)}
-              omitDefaults="rounded-md text-sm rounded-md" className="h-9 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
+              omitDefaults="rounded-md text-sm rounded-md"
+              className="h-9 shrink-0 gap-1.5 rounded-lg bg-[var(--admin-accent)] px-3 text-xs font-medium text-[var(--admin-accent-fg)] hover:opacity-90"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Nation</span>
@@ -205,91 +207,96 @@ export default function Nations({
             animate={listReveal ? 'show' : undefined}
             className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
-          {filteredCatalog.map((entry) => {
-            const card = (
-              <div className="group relative block h-60 sm:h-64">
-                <span className="absolute inset-0 border-2 border-dashed border-[var(--admin-border)]"></span>
+            {filteredCatalog.map((entry) => {
+              const card = (
+                <div className="group relative block h-60 sm:h-64">
+                  <span className="absolute inset-0 border-2 border-dashed border-[var(--admin-border)]"></span>
 
-                <div className="relative h-full w-full transform border-2 border-[var(--admin-border)] bg-[var(--admin-card)] transition-transform duration-200 group-hover:-translate-x-2 group-hover:-translate-y-2">
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center transition-opacity duration-200 group-hover:pointer-events-none group-hover:opacity-0 sm:p-6">
-                    <h3 className="text-lg font-bold leading-snug text-[var(--admin-fg)] sm:text-xl break-words line-clamp-3">
-                      {entry.name}
-                    </h3>
-                    <div className="mt-3 flex items-center justify-center gap-2">
-                      <span className="text-xs text-[var(--admin-muted)]">ID: {entry.id}</span>
-                      <span
-                        className={cn(
-                          'rounded px-2 py-0.5 text-xs font-medium capitalize',
-                          rarityBadgeClass[entry.class as RarityClass]
-                        )}
-                      >
-                        {formatRarity(entry.class)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="absolute inset-0 flex flex-col justify-between p-5 opacity-0 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 sm:p-6">
-                    <div className="border-b border-[var(--admin-border)] pb-2.5">
-                      <h3 className="text-base font-bold leading-snug text-[var(--admin-fg)] sm:text-lg break-words line-clamp-2" title={entry.name}>
+                  <div className="relative h-full w-full transform border-2 border-[var(--admin-border)] bg-[var(--admin-card)] transition-transform duration-200 group-hover:-translate-x-2 group-hover:-translate-y-2">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center transition-opacity duration-200 group-hover:pointer-events-none group-hover:opacity-0 sm:p-6">
+                      <h3 className="text-lg font-bold leading-snug text-[var(--admin-fg)] sm:text-xl break-words line-clamp-3">
                         {entry.name}
                       </h3>
-                    </div>
-
-                    <div className="flex-1 flex flex-col justify-center py-2">
-                      <div className="grid grid-cols-2 gap-3 w-full">
-                        <div className="rounded-lg bg-[var(--admin-elevated)]/60 p-2.5 text-center">
-                          <span className="block text-[11px] text-[var(--admin-muted)]">Global Caught</span>
-                          <span className="mt-0.5 block text-base font-bold tabular-nums text-[var(--admin-fg)] sm:text-lg">
-                            {entry.globalCaught.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="rounded-lg bg-[var(--admin-elevated)]/60 p-2.5 text-center">
-                          <span className="block text-[11px] text-[var(--admin-muted)]">Spawn Weight</span>
-                          <span className="mt-0.5 block text-base font-bold tabular-nums text-[var(--admin-fg)] sm:text-lg">
-                            {entry.weight}
-                          </span>
-                        </div>
+                      <div className="mt-3 flex items-center justify-center gap-2">
+                        <span className="text-xs text-[var(--admin-muted)]">ID: {entry.id}</span>
+                        <span
+                          className={cn(
+                            'rounded px-2 py-0.5 text-xs font-medium capitalize',
+                            rarityBadgeClass[entry.class as RarityClass],
+                          )}
+                        >
+                          {formatRarity(entry.class)}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 w-full pt-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onPointerEnter={preloadEditor}
-                        onFocus={preloadEditor}
-                        onClick={() => setSelectedNationId(entry.id)}
-                        omitDefaults="text-sm h-9" className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteItem(entry)}
-                        omitDefaults="text-sm h-9" className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400"
-                      >
-                        Delete
-                      </Button>
+                    <div className="absolute inset-0 flex flex-col justify-between p-5 opacity-0 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 sm:p-6">
+                      <div className="border-b border-[var(--admin-border)] pb-2.5">
+                        <h3
+                          className="text-base font-bold leading-snug text-[var(--admin-fg)] sm:text-lg break-words line-clamp-2"
+                          title={entry.name}
+                        >
+                          {entry.name}
+                        </h3>
+                      </div>
+
+                      <div className="flex-1 flex flex-col justify-center py-2">
+                        <div className="grid grid-cols-2 gap-3 w-full">
+                          <div className="rounded-lg bg-[var(--admin-elevated)]/60 p-2.5 text-center">
+                            <span className="block text-[11px] text-[var(--admin-muted)]">Global Caught</span>
+                            <span className="mt-0.5 block text-base font-bold tabular-nums text-[var(--admin-fg)] sm:text-lg">
+                              {entry.globalCaught.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="rounded-lg bg-[var(--admin-elevated)]/60 p-2.5 text-center">
+                            <span className="block text-[11px] text-[var(--admin-muted)]">Spawn Weight</span>
+                            <span className="mt-0.5 block text-base font-bold tabular-nums text-[var(--admin-fg)] sm:text-lg">
+                              {entry.weight}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 w-full pt-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onPointerEnter={preloadEditor}
+                          onFocus={preloadEditor}
+                          onClick={() => setSelectedNationId(entry.id)}
+                          omitDefaults="text-sm h-9"
+                          className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-[var(--admin-fg)] hover:bg-[var(--admin-elevated)]/80"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteItem(entry)}
+                          omitDefaults="text-sm h-9"
+                          className="h-8 w-full bg-[var(--admin-elevated)] text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-400"
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
+              );
 
-            return listReveal ? (
-              <m.div key={entry.id} variants={listItem} className="h-full">
-                {card}
-              </m.div>
-            ) : (
-              <div key={entry.id} className="h-full">
-                {card}
-              </div>
-            );
-          })}
-        </m.div>
+              return listReveal ? (
+                <m.div key={entry.id} variants={listItem} className="h-full">
+                  {card}
+                </m.div>
+              ) : (
+                <div key={entry.id} className="h-full">
+                  {card}
+                </div>
+              );
+            })}
+          </m.div>
         )}
 
         {!isLoading && filteredCatalog.length === 0 && (
@@ -301,9 +308,7 @@ export default function Nations({
         open={Boolean(deleteItem)}
         title="Delete Collectible?"
         description={
-          deleteItem
-            ? `Are you sure you want to delete ${deleteItem.name} (${deleteItem.id}) from the catalog?`
-            : ''
+          deleteItem ? `Are you sure you want to delete ${deleteItem.name} (${deleteItem.id}) from the catalog?` : ''
         }
         confirmText="Delete Collectible"
         onConfirm={handleDeleteConfirm}

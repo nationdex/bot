@@ -20,10 +20,10 @@ export type PanelGroup = {
   memberCount: number;
 };
 
-export async function fetchAuthStatus(): Promise<{ needsSetup: boolean }> {
+export async function fetchAuthStatus(): Promise<{ needsSetup: boolean; discordEnabled?: boolean }> {
   const res = await fetch('/api/auth/status', { credentials: 'include' });
   if (!res.ok) return { needsSetup: false };
-  return res.json() as Promise<{ needsSetup: boolean }>;
+  return res.json() as Promise<{ needsSetup: boolean; discordEnabled?: boolean }>;
 }
 
 export async function checkSession(): Promise<{ authenticated: boolean; user?: PanelUser }> {
@@ -123,7 +123,7 @@ export async function updatePanelUser(
     role?: 'owner' | 'admin' | 'member';
     groupId?: number | null;
     permissions?: string[];
-  }
+  },
 ): Promise<{ ok: boolean; error?: string; user?: PanelUser; users?: PanelUser[] }> {
   const res = await fetch(`/api/panel/users/${id}`, {
     method: 'PUT',
@@ -134,7 +134,9 @@ export async function updatePanelUser(
   return res.json() as Promise<{ ok: boolean; error?: string; user?: PanelUser; users?: PanelUser[] }>;
 }
 
-export async function transferPanelOwnership(id: number): Promise<{ ok: boolean; error?: string; users?: PanelUser[] }> {
+export async function transferPanelOwnership(
+  id: number,
+): Promise<{ ok: boolean; error?: string; users?: PanelUser[] }> {
   const res = await fetch(`/api/panel/users/${id}/owner`, {
     method: 'POST',
     credentials: 'include',
@@ -178,7 +180,7 @@ export async function updatePanelGroup(
     description?: string;
     color?: string;
     permissions?: string[];
-  }
+  },
 ): Promise<{ ok: boolean; error?: string; groups?: PanelGroup[] }> {
   const res = await fetch(`/api/panel/groups/${id}`, {
     method: 'PUT',

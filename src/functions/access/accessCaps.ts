@@ -17,6 +17,7 @@ export default new ForgeFunction({
   $jsonLoad[roles;$if[$jsonHas[acc;roles];$env[acc;roles];{}]]
   $jsonLoad[grants;$if[$jsonHas[ua;grants];$env[ua;grants];{}]]
   $arrayCreate[outCaps]
+  $if[$env[user]==$botOwnerID;$!arrayPush[outCaps;*]]
   $let[now;$getTimestamp]
   $if[$isArray[$env[grants]];
     $arrayForEach[grants;g;

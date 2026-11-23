@@ -1,7 +1,16 @@
 import { type ReactNode } from 'preact/compat';
 import { createContext } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
-import { type AnimationPrefs, applyAnimationPrefsToDocument, applyLowSpecAnimationPrefs, defaultAnimationPrefs, loadAnimationPrefs, normalizeAnimationPrefs, saveAnimationPrefs, type MotionPrefKey } from '@/lib/animation-prefs';
+import {
+  type AnimationPrefs,
+  applyAnimationPrefsToDocument,
+  applyLowSpecAnimationPrefs,
+  defaultAnimationPrefs,
+  loadAnimationPrefs,
+  normalizeAnimationPrefs,
+  saveAnimationPrefs,
+  type MotionPrefKey,
+} from '@/lib/animation-prefs';
 
 type AnimationPrefsContextValue = AnimationPrefs & {
   setPref: (key: MotionPrefKey | 'masterEnabled', value: boolean) => void;
@@ -44,7 +53,7 @@ export function AnimationPrefsProvider({ children }: { children: ReactNode }) {
       applyLowSpecMode,
       resetAnimationPrefs,
     }),
-    [prefs, resetAnimationPrefs, setMasterEnabled, applyLowSpecMode, setPref]
+    [prefs, resetAnimationPrefs, setMasterEnabled, applyLowSpecMode, setPref],
   );
 
   return <AnimationPrefsContext.Provider value={value}>{children}</AnimationPrefsContext.Provider>;
@@ -67,8 +76,7 @@ export function useMotionPref(key: MotionPrefKey): boolean {
 
 export function useOsPrefersReducedMotion() {
   const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
 
   useEffect(() => {

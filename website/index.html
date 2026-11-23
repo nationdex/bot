@@ -1,36 +1,62 @@
 <!doctype html>
 <html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="./public/logo.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Admin panel for Nationdex bot management" />
-  <meta name="robots" content="noindex, nofollow" />
-  <meta name="referrer" content="same-origin" />
-  <title>Nationdex Admin Panel</title>
-</head>
-<body>
-  <div id="root"></div>
-  <noscript>
-    <style>
-      #root { display: none; }
-      .nojs { box-sizing: border-box; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #0a0a0a; color: #fafafa; font: 16px/1.5 system-ui, sans-serif; }
-      .nojs main { max-width: 30rem; }
-      .nojs h1 { margin: 0 0 8px; font-size: 1.25rem; }
-      .nojs p, .nojs li { color: rgba(255, 255, 255, 0.7); }
-      .nojs a { color: #fafafa; }
-    </style>
-    <div class="nojs">
-      <main>
-        <h1>Nationdex admin panel</h1>
-        <p>This panel is an app: it needs JavaScript to sign you in and show live bot data. JavaScript is turned off in this browser.</p>
-        <ul>
-          <li>Turn JavaScript on for this address only (your browser's site settings), then reload.</li>
-          <li>Everything runs from this server. No scripts, fonts or trackers load from anywhere else.</li>
-        </ul>
-      </main>
-    </div>
-  </noscript>
-  <script type="module" src="./src/main.tsx"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="./public/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin panel for Nationdex bot management" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="same-origin" />
+    <title>Nationdex Admin Panel</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <style>
+        #root {
+          display: none;
+        }
+        .nojs {
+          box-sizing: border-box;
+          min-height: 100vh;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          background: #0a0a0a;
+          color: #fafafa;
+          font:
+            16px/1.5 system-ui,
+            sans-serif;
+        }
+        .nojs main {
+          max-width: 30rem;
+        }
+        .nojs h1 {
+          margin: 0 0 8px;
+          font-size: 1.25rem;
+        }
+        .nojs p,
+        .nojs li {
+          color: rgba(255, 255, 255, 0.7);
+        }
+        .nojs a {
+          color: #fafafa;
+        }
+      </style>
+      <div class="nojs">
+        <main>
+          <h1>Nationdex admin panel</h1>
+          <p>
+            This panel is an app: it needs JavaScript to sign you in and show live bot data. JavaScript is turned off in
+            this browser.
+          </p>
+          <ul>
+            <li>Turn JavaScript on for this address only (your browser's site settings), then reload.</li>
+            <li>Everything runs from this server. No scripts, fonts or trackers load from anywhere else.</li>
+          </ul>
+        </main>
+      </div>
+    </noscript>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
 </html>

@@ -1,6 +1,6 @@
 import { SlashCommand } from '../../core/define/slashes';
 
-export default SlashCommand('access.token', `
+export default SlashCommand('api.token', `
   $let[s;$accessToken]
   $onlyIf[$startsWith[$get[s];ok:];$err[access_$get[s];true]]
   $interactionReply[

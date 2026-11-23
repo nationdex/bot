@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "ES2022",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "types": ["bun"],
     "rootDir": "./src",
     "paths": {},
     "strict": true,
@@ -12,10 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

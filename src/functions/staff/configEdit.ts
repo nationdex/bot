@@ -44,10 +44,14 @@ export default new ForgeFunction({
     };
     const value = String(body.value ?? '').trim();
     const path = String(body.path ?? '');
+    if (root === 'config' && path === 'bot.version') return err('Build version is read-only.');
+    if (Array.of(path, String(body.parent ?? '')).some(p => p.split('.').some(k => Array.of('__proto__', 'prototype', 'constructor').includes(k)))) return err('Invalid setting path.');
     const digits = '0123456789abcdefABCDEF';
     const bad = (p, v) => {
       if (v.length > 300) return 'The value is too long (300 characters max).';
       if (root === 'config') {
+        const numeric = { 'auction.feePercent': Array.of(0, 100), 'auction.minIncrementPercent': Array.of(1, 100), 'auction.maxActivePerUser': Array.of(1, 100), 'auction.antiSnipeMs': Array.of(0, 3600000), 'suggestions.maxOpenPerUser': Array.of(1, 100), 'suggestions.cooldownMs': Array.of(0, 86400000), 'spawn.threshold': Array.of(1, 10000) };
+        if (p in numeric) { const bounds = Reflect.get(numeric, p); const min = bounds.at(0), max = bounds.at(1); if (!v || !Number.isInteger(Number(v)) || Number(v) < min || Number(v) > max) return 'Enter an integer between ' + min + ' and ' + max + '.'; }
         if (p === 'accent' && !(v.length === 7 && v.charAt(0) === '#' && v.slice(1).split('').every((c) => digits.includes(c)))) return 'The accent must be a hex colour like #4000ff.';
         if (p === 'prefix' && !(v.length >= 1 && v.length <= 5 && !v.includes(' '))) return 'The prefix must be 1-5 characters without spaces.';
         if (p === 'logChannel' && v && !(v.length > 14 && v.length < 26 && v.split('').every((c) => c >= '0' && c <= '9'))) return 'The log channel must be a channel ID or empty.';

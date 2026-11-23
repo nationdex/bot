@@ -8,6 +8,7 @@ export default new ForgeFunction({
   code: `
   $jsonLoad[rows;$searchDB[userAccess]]
   $arrayCreate[owners]
+  $!arrayPush[owners;$botOwnerID]
   $arrayForEach[rows;r;
     $jsonLoad[held;$accessCaps[$env[r;id]]]
     $if[$arrayIncludes[held;*];$!arrayPush[owners;$env[r;id]]]

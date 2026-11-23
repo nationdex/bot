@@ -6,5 +6,8 @@ export function cn(...inputs: Array<string | false | null | undefined>): string 
 export function withoutDefaults(defaults: string, omitDefaults?: string): string {
   if (!omitDefaults) return defaults;
   const omitted = new Set(omitDefaults.split(' '));
-  return defaults.split(' ').filter((name) => !omitted.has(name)).join(' ');
+  return defaults
+    .split(' ')
+    .filter((name) => !omitted.has(name))
+    .join(' ');
 }

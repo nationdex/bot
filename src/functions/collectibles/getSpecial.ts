@@ -22,7 +22,7 @@ export default new ForgeFunction({
   $let[val;$env[value]]
   $jsonLoad[specials;$getGlobalVar[specials]]
   $jsonLoad[special;$env[specials;$get[ev]]]
-  
+
   $return[$if[$get[val]!=;$env[special;$get[val]];$env[special]]]
   `,
 });

@@ -8,7 +8,35 @@ printWidth = 120
 tabWidth = 2
 singleQuote = true
 semi = true
-ignorePatterns = ["*", "!src/", "!website/", "src/**", "!src/scripts/", "!src/scripts/**/", "!src/scripts/**/*.ts", "website/**", "!website/**/", "!website/**/*.ts", "!website/**/*.tsx", "!website/**/*.js", "!website/**/*.jsx", "!website/**/*.css", "!website/**/*.scss", "!website/**/*.html", "!website/**/*.json", "!website/**/*.yaml", "!website/**/*.yml", "!website/**/*.md", "!website/*.html", "!*.json", "!*.md", "!*.yaml", "!*.yml", "!*.toml", "/src/bundle-imports.ts"]
+ignorePatterns = [
+  "*",
+  "!src/",
+  "!website/",
+  "src/**",
+  "!src/scripts/",
+  "!src/scripts/**/",
+  "!src/scripts/**/*.ts",
+  "website/**",
+  "!website/**/",
+  "!website/**/*.ts",
+  "!website/**/*.tsx",
+  "!website/**/*.js",
+  "!website/**/*.jsx",
+  "!website/**/*.css",
+  "!website/**/*.scss",
+  "!website/**/*.html",
+  "!website/**/*.json",
+  "!website/**/*.yaml",
+  "!website/**/*.yml",
+  "!website/**/*.md",
+  "!website/*.html",
+  "!*.json",
+  "!*.md",
+  "!*.yaml",
+  "!*.yml",
+  "!*.toml",
+  "/src/bundle-imports.ts",
+]
 
 # Used by Bun releases that include the native JavaScript/TypeScript linter.
 [lint]

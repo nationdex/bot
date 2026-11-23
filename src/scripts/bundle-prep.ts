@@ -20,9 +20,6 @@ function getFiles(dir: string, extension = '.js'): string[] {
 const forgescriptNativeFiles = getFiles('node_modules/@tryforge/forgescript/dist/native');
 const forgescriptEventsFiles = getFiles('node_modules/@tryforge/forgescript/dist/handlers/events');
 const canvasFunctionsFiles = getFiles('node_modules/@tryforge/forge.canvas/dist/functions');
-const dbFunctionsFiles = getFiles('node_modules/@nationdex/db/dist/functions');
-const dbEventsFiles = getFiles('node_modules/@nationdex/db/dist/events');
-const apiFunctionsFiles = getFiles('node_modules/@nationdex/api/dist/functions');
 
 const botFunctionsFiles = getFiles('src/functions', '.ts');
 const botCommandsFiles = getFiles('src/commands', '.ts');
@@ -52,9 +49,6 @@ function generateImportBlock(name: string, files: string[], isModule: boolean) {
 code += generateImportBlock('forgescriptNative', forgescriptNativeFiles, true);
 code += generateImportBlock('forgescriptEvents', forgescriptEventsFiles, true);
 code += generateImportBlock('canvasFunctions', canvasFunctionsFiles, true);
-code += generateImportBlock('dbFunctions', dbFunctionsFiles, true);
-code += generateImportBlock('dbEvents', dbEventsFiles, true);
-code += generateImportBlock('apiFunctions', apiFunctionsFiles, true);
 
 code += generateImportBlock('botFunctions', botFunctionsFiles, false);
 code += generateImportBlock('botCommands', botCommandsFiles, false);

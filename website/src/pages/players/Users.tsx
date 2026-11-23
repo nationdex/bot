@@ -32,9 +32,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
   const [users, setUsers] = useState<UserEntry[]>(() => {
     const cached = getCache<UserEntry[]>('users_all');
     if (Array.isArray(cached)) {
-      const valid = cached.filter(
-        (u) => u && typeof u.discordId === 'string' && /^\d{15,22}$/.test(u.discordId)
-      );
+      const valid = cached.filter((u) => u && typeof u.discordId === 'string' && /^\d{15,22}$/.test(u.discordId));
       if (valid.length > 0) return valid;
     }
     return [];
@@ -57,9 +55,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
     void fetchUserData()
       .then((data) => {
         if (active && Array.isArray(data) && data.length > 0) {
-          const valid = data.filter(
-            (u) => u && typeof u.discordId === 'string' && /^\d{15,22}$/.test(u.discordId)
-          );
+          const valid = data.filter((u) => u && typeof u.discordId === 'string' && /^\d{15,22}$/.test(u.discordId));
           if (valid.length > 0) {
             setUsers(valid);
           }
@@ -84,11 +80,9 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
   const filteredUsers = users.filter((user) => {
     const matchesQuery = /^\d{15,22}$/.test(user.discordId) && user.discordId.includes(localQuery);
     const matchesPrivacy =
-      privacyFilter === 'all' ||
-      (user.inventoryPrivacy && user.inventoryPrivacy.toLowerCase() === privacyFilter);
+      privacyFilter === 'all' || (user.inventoryPrivacy && user.inventoryPrivacy.toLowerCase() === privacyFilter);
     const matchesGifts =
-      giftsFilter === 'all' ||
-      (giftsFilter === 'yes' ? Boolean(user.acceptGifts) : !user.acceptGifts);
+      giftsFilter === 'all' || (giftsFilter === 'yes' ? Boolean(user.acceptGifts) : !user.acceptGifts);
     return matchesQuery && matchesPrivacy && matchesGifts;
   });
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -98,9 +92,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
-            <Search
-              className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)}
-            />
+            <Search className={cn('absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2', admin.muted)} />
             <Input
               value={localQuery}
               onChange={(e) => {
@@ -118,7 +110,13 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger omitDefaults="h-10 rounded-md border text-sm" className={cn("h-9 w-full sm:w-32 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none", admin.elevated)}>
+            <SelectTrigger
+              omitDefaults="h-10 rounded-md border text-sm"
+              className={cn(
+                'h-9 w-full sm:w-32 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none',
+                admin.elevated,
+              )}
+            >
               <SelectValue placeholder="All Privacy" />
             </SelectTrigger>
             <SelectContent className={cn(admin.elevated, admin.fg)}>
@@ -134,7 +132,13 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger omitDefaults="h-10 rounded-md border text-sm" className={cn("h-9 w-full sm:w-28 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none", admin.elevated)}>
+            <SelectTrigger
+              omitDefaults="h-10 rounded-md border text-sm"
+              className={cn(
+                'h-9 w-full sm:w-28 text-xs rounded-lg text-[var(--admin-fg)] border-0 shadow-none',
+                admin.elevated,
+              )}
+            >
               <SelectValue placeholder="All Gifts" />
             </SelectTrigger>
             <SelectContent className={cn(admin.elevated, admin.fg)}>
@@ -164,10 +168,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
               {isLoading ? (
                 <tbody>
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-[var(--admin-border)] last:border-0"
-                    >
+                    <tr key={i} className="border-b border-[var(--admin-border)] last:border-0">
                       <td className="py-3 pl-5 sm:pl-6 pr-4">
                         <Skeleton className="h-4 w-36" />
                       </td>
@@ -205,7 +206,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       variants={listItem}
                       className={cn(
                         'border-b border-[var(--admin-border)] last:border-0 transition-colors',
-                        admin.hoverRow
+                        admin.hoverRow,
                       )}
                     >
                       <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
@@ -224,12 +225,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       </td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{user.unique}</td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{user.totalValue}</td>
-                      <td className={cn('py-3 px-4 text-sm capitalize', admin.muted)}>
-                        {user.inventoryPrivacy}
-                      </td>
-                      <td className={cn('py-3 px-4 text-sm', admin.muted)}>
-                        {user.acceptGifts ? 'Yes' : 'No'}
-                      </td>
+                      <td className={cn('py-3 px-4 text-sm capitalize', admin.muted)}>{user.inventoryPrivacy}</td>
+                      <td className={cn('py-3 px-4 text-sm', admin.muted)}>{user.acceptGifts ? 'Yes' : 'No'}</td>
                       <td className="py-3 pr-5 sm:pr-6 text-right">
                         <Button
                           variant="ghost"
@@ -252,7 +249,7 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       key={user.discordId}
                       className={cn(
                         'border-b border-[var(--admin-border)] last:border-0 transition-colors',
-                        admin.hoverRow
+                        admin.hoverRow,
                       )}
                     >
                       <td className={cn('py-3 pl-5 sm:pl-6 pr-4 text-sm font-medium', admin.fg)}>
@@ -269,12 +266,8 @@ export default function UsersPage({ searchQuery = '' }: { searchQuery?: string }
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{user.total}</td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{user.unique}</td>
                       <td className={cn('py-3 px-4 text-sm', admin.fg)}>{user.totalValue}</td>
-                      <td className={cn('py-3 px-4 text-sm capitalize', admin.muted)}>
-                        {user.inventoryPrivacy}
-                      </td>
-                      <td className={cn('py-3 px-4 text-sm', admin.muted)}>
-                        {user.acceptGifts ? 'Yes' : 'No'}
-                      </td>
+                      <td className={cn('py-3 px-4 text-sm capitalize', admin.muted)}>{user.inventoryPrivacy}</td>
+                      <td className={cn('py-3 px-4 text-sm', admin.muted)}>{user.acceptGifts ? 'Yes' : 'No'}</td>
                       <td className="py-3 pr-5 sm:pr-6 text-right">
                         <Button
                           variant="ghost"

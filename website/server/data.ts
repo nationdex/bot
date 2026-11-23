@@ -17,7 +17,8 @@ const pending = new Map<string, Promise<Entry>>();
 // then rest for twice as long as they took (quick ones under 25 ms skip it), which caps the panel at about a third of
 // the database's time no matter how hard it is hit.
 let gate: Promise<unknown> = Promise.resolve();
-const rest = (took: number): Promise<void> => (took < 25 ? Promise.resolve() : new Promise((resolve) => setTimeout(resolve, Math.min(500, took * 2))));
+const rest = (took: number): Promise<void> =>
+  took < 25 ? Promise.resolve() : new Promise((resolve) => setTimeout(resolve, Math.min(500, took * 2)));
 function exclusive<T>(job: () => Promise<T>): Promise<T> {
   let took = 0;
   const run = gate.then(async () => {
@@ -28,7 +29,10 @@ function exclusive<T>(job: () => Promise<T>): Promise<T> {
       took = performance.now() - started;
     }
   });
-  gate = run.then(() => rest(took), () => rest(took));
+  gate = run.then(
+    () => rest(took),
+    () => rest(took),
+  );
   return run;
 }
 
@@ -70,7 +74,9 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>, 
           body,
           etag: `"${Bun.hash(body).toString(36)}"`,
           gz: small ? (Bun.gzipSync(bytes, { level: 6 }) as Bytes) : null,
-          br: small ? (new Uint8Array(brotliCompressSync(bytes, { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })) as Bytes) : null,
+          br: small
+            ? (new Uint8Array(brotliCompressSync(bytes, { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })) as Bytes)
+            : null,
         };
         if (small) cache.set(key, made);
         return made;
@@ -82,16 +88,29 @@ async function entry(key: string, ttl: number, compute: () => Promise<unknown>, 
 }
 
 // gated=false is for upstream HTTP reads, which cost the panel no database time of its own.
-export async function cachedAnswer(req: Request, key: string, ttl: number, compute: () => Promise<unknown>, gated = true): Promise<Response> {
+export async function cachedAnswer(
+  req: Request,
+  key: string,
+  ttl: number,
+  compute: () => Promise<unknown>,
+  gated = true,
+): Promise<Response> {
   const started = performance.now();
   const hit = cache.has(key);
   const made = await entry(key, ttl, compute, gated);
   const timing = `${hit ? 'cache;desc=hit' : `db;desc=miss;dur=${(performance.now() - started).toFixed(1)}`}`;
-  const headers: Record<string, string> = { ETag: made.etag, 'Cache-Control': 'private, no-cache', Vary: 'Accept-Encoding', 'Content-Type': 'application/json', 'Server-Timing': timing };
+  const headers: Record<string, string> = {
+    ETag: made.etag,
+    'Cache-Control': 'private, no-cache',
+    Vary: 'Accept-Encoding',
+    'Content-Type': 'application/json',
+    'Server-Timing': timing,
+  };
   if (req.headers.get('if-none-match') === made.etag) return new Response(null, { status: 304, headers });
   const wanted = accepted(req.headers.get('accept-encoding'));
   if (wanted.has('br') && made.br) return new Response(made.br, { headers: { ...headers, 'Content-Encoding': 'br' } });
-  if (wanted.has('gzip') && made.gz) return new Response(made.gz, { headers: { ...headers, 'Content-Encoding': 'gzip' } });
+  if (wanted.has('gzip') && made.gz)
+    return new Response(made.gz, { headers: { ...headers, 'Content-Encoding': 'gzip' } });
   return new Response(made.body, { headers });
 }
 
@@ -139,7 +158,9 @@ async function users(): Promise<unknown[]> {
     const val = parse(row.value);
     const set = row.settings ? parse(row.settings) : null;
     const unique = Array.isArray(val.unique) ? val.unique.length : Number(val.unique_count ?? val.unique ?? 0) || 0;
-    const privacy = set ? String(set.inventory_privacy || set.privacy || 'public') : String(val.inventory_privacy || 'public');
+    const privacy = set
+      ? String(set.inventory_privacy || set.privacy || 'public')
+      : String(val.inventory_privacy || 'public');
     const gifts = set ? ![false, 'false', 0].includes(set.accept_gifts) : ![false, 'false'].includes(val.accept_gifts);
     list.push({
       discordId: id,
@@ -172,7 +193,7 @@ async function growth(t: number[]): Promise<unknown> {
             COUNT(*) FILTER (WHERE ts >= $2 AND ts < $3) AS c1,
             COUNT(*) FILTER (WHERE (ts >= $3 AND ts < $4) OR ts IS NULL) AS c2
      FROM panel_catch`,
-    t
+    t,
   );
   const r = res.rows[0];
   return { counts: [Number(r.c0), Number(r.c1), Number(r.c2)] };
@@ -185,8 +206,23 @@ async function instances(q: string, rarity: string, limit: number, offset: numbe
   await ensureCatchIndex();
   const cat = await catalog();
   const needle = q.toLowerCase();
-  const nationIds = needle ? Object.entries(cat).filter(([id, c]) => id.toLowerCase() === needle || String(c.name ?? '').toLowerCase().includes(needle)).map(([id]) => id) : [];
-  const classIds = rarity && rarity !== 'all' ? Object.entries(cat).filter(([, c]) => String(c.class ?? '').toLowerCase() === rarity.toLowerCase()).map(([id]) => id) : null;
+  const nationIds = needle
+    ? Object.entries(cat)
+        .filter(
+          ([id, c]) =>
+            id.toLowerCase() === needle ||
+            String(c.name ?? '')
+              .toLowerCase()
+              .includes(needle),
+        )
+        .map(([id]) => id)
+    : [];
+  const classIds =
+    rarity && rarity !== 'all'
+      ? Object.entries(cat)
+          .filter(([, c]) => String(c.class ?? '').toLowerCase() === rarity.toLowerCase())
+          .map(([id]) => id)
+      : null;
 
   const where: string[] = [];
   const params: unknown[] = [];
@@ -209,7 +245,7 @@ async function instances(q: string, rarity: string, limit: number, offset: numbe
      FROM (SELECT p.identifier, p.ts, p.id FROM panel_catch p ${filter} ORDER BY p.ts DESC NULLS LAST, p.id LIMIT ${add(limit)} OFFSET ${add(offset)}) k
      JOIN record r ON r.identifier = k.identifier
      ORDER BY k.ts DESC NULLS LAST, k.id`,
-    params
+    params,
   );
   return { total: Number(count.rows[0].n), results: page.rows };
 }
@@ -220,8 +256,9 @@ const int = (v: string | null, fallback: number, min: number, max: number): numb
 };
 
 export async function handleData(req: Request, path: string, search: URLSearchParams): Promise<Response | null> {
-  if (req.method !== 'GET') return null;
-  if ((path.startsWith('/api/panel/data/') || path === '/api/bot/stats') && !allow(req)) return json({ error: 'Too many requests, slow down.' }, 429, { 'Retry-After': '1' });
+  if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+  if ((path.startsWith('/api/panel/data/') || path === '/api/bot/stats') && !allow(req))
+    return json({ error: 'Too many requests, slow down.' }, 429, { 'Retry-After': '1' });
   if (path === '/api/bot/stats') return cachedAnswer(req, 'stats', TTL_MS, stats);
   if (path === '/api/panel/data/users') return cachedAnswer(req, 'users', TTL_MS, users);
   if (path === '/api/panel/data/growth') {
@@ -234,7 +271,9 @@ export async function handleData(req: Request, path: string, search: URLSearchPa
     const rarity = (search.get('class') ?? 'all').trim().slice(0, 20);
     const limit = int(search.get('limit'), 10, 1, 200);
     const offset = int(search.get('offset'), 0, 0, 200_000);
-    return cachedAnswer(req, `instances:${q}|${rarity}|${limit}|${offset}`, 15_000, () => instances(q, rarity, limit, offset));
+    return cachedAnswer(req, `instances:${q}|${rarity}|${limit}|${offset}`, 15_000, () =>
+      instances(q, rarity, limit, offset),
+    );
   }
   return null;
 }

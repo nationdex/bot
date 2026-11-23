@@ -28,7 +28,7 @@ export default new ForgeFunction({
   $jsonLoad[errors;${JSON.stringify(errors)}]
   $let[message;$if[$jsonHas[errors;$env[message]];$env[errors;$env[message]];$env[message]]]
   $let[delete;$if[$isBoolean[$env[delete?]];$env[delete?];true]]
-  
+
   $ifx[
     $if[$env[ephemeral];
       $return[
@@ -40,7 +40,7 @@ export default new ForgeFunction({
         ]
       ]
     ]
-    
+
     $else[
       $if[$get[delete];
         $return[
@@ -51,7 +51,7 @@ export default new ForgeFunction({
               $addTextDisplay[$get[message]]
             ;#FF0000]
           ;true]]
-          
+
           $setTimeout[
             $if[$and[$channelExists[$channelID];$messageExists[$channelID;$get[msg]]];
               $!deleteMessage[$channelID;$get[msg]]

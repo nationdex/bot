@@ -23,6 +23,9 @@ export const variables = {
       Ayansh: 'https://discord.com/users/1421877908456083578',
       Aditya: 'https://discord.com/users/903681538842054686',
     },
+    auction: { feePercent: 5, minIncrementPercent: 5, maxActivePerUser: 5, antiSnipeMs: 120000 },
+    suggestions: { maxOpenPerUser: 3, cooldownMs: 600000 },
+    spawn: { threshold: 50 },
     prefix: 'n.',
     logChannel: '',
     accent: '#4000ff'
@@ -69,6 +72,7 @@ export const variables = {
   access: {
     roles: {
       owner: ['*'],
+      admin: ['inspect.read', 'suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate', 'users.edit', 'nations.edit', 'cards.edit', 'guilds.edit', 'access.manage'],
       developer: ['eval.run', 'inspect.read'],
       moderator: ['suggestions.review', 'suggestions.approve', 'blacklist.read', 'blacklist.write', 'auction.moderate', 'guilds.edit'],
       reviewer: ['suggestions.review', 'blacklist.read'],

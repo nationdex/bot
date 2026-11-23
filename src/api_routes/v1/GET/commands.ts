@@ -1,4 +1,4 @@
-import { RouteDefinition } from '@nationdex/api';
+import type { RouteDefinition } from '@nationdex/api';
 import { commands } from '../../../config/commands';
 
 // Encode the static JSON so the ForgeScript parser treats it as one argument.

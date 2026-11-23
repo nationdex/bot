@@ -1,7 +1,18 @@
 import { type ReactNode } from 'preact/compat';
 import { createContext } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
-import { applyThemeToDocument, defaultDarkPalette, defaultLightPalette, defaultThemePrefs, getActivePalette, loadThemePrefs, saveThemePrefs, type ThemeMode, type ThemePalette, type ThemePrefs } from '@/lib/theme-prefs';
+import {
+  applyThemeToDocument,
+  defaultDarkPalette,
+  defaultLightPalette,
+  defaultThemePrefs,
+  getActivePalette,
+  loadThemePrefs,
+  saveThemePrefs,
+  type ThemeMode,
+  type ThemePalette,
+  type ThemePrefs,
+} from '@/lib/theme-prefs';
 import { applyPresetToPrefs, type ThemePreset } from '@/lib/theme-presets';
 
 type ThemePrefsContextValue = ThemePrefs & {
@@ -65,16 +76,7 @@ export function ThemePrefsProvider({ children }: { children: ReactNode }) {
       resetDarkPalette,
       resetLightPalette,
     }),
-    [
-      prefs,
-      applyPreset,
-      resetDarkPalette,
-      resetLightPalette,
-      resetTheme,
-      setMode,
-      updateDark,
-      updateLight,
-    ]
+    [prefs, applyPreset, resetDarkPalette, resetLightPalette, resetTheme, setMode, updateDark, updateLight],
   );
 
   return <ThemePrefsContext.Provider value={value}>{children}</ThemePrefsContext.Provider>;

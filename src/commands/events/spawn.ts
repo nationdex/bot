@@ -10,7 +10,7 @@ export default command('spawn', `
   $setGuildVar[spawnConfig;$env[config]]
   $let[ch;$if[$channelExists[$env[config;config_channel]];$env[config;config_channel];$channelID]]
   
-  $onlyIf[$or[$get[weight]>=50;$sub[$getTimestamp;$spawnConfig[timestamp]]>=$parseString[1h30m]]]
+  $onlyIf[$or[$get[weight]>=$jsonVar[config;spawn.threshold;50];$sub[$getTimestamp;$spawnConfig[timestamp]]>=$parseString[1h30m]]]
 
     $!jsonSet[config;weight;0]
     $setGuildVar[spawnConfig;$env[config]]

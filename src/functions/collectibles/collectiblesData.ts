@@ -22,11 +22,11 @@ export default new ForgeFunction({
   $jsonLoad[keys;$jsonKeys[data]]
   $let[value;$env[value]]
   $let[separator;$env[separator]]
-  
+
   $if[$env[value]==null;
     $return[$env[data]]
   ]
-  
+
   $if[$arrayIncludes[keys;$get[value]];
     $return[$env[data;$get[value]]];
     $jsonLoad[collectibles;$env[data;collectibles]]

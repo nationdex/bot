@@ -23,7 +23,7 @@ export default new ForgeFunction({
   $let[author;$collectible[$get[id];author]]
   $let[colID;$collectible[$get[id];id]]
   $let[class;$collectibleInfo[$get[colID];class]]
-  
+
   $arrayCreate[pair]
   $!arrayPush[pair;$get[author]]
   $!arrayPush[pair;$get[receiver]]
@@ -45,7 +45,7 @@ export default new ForgeFunction({
   $!jsonSet[data;$get[class];$sub[$env[data;$get[class]];1]]
   $!jsonSet[data;total_value;$max[$sub[$env[data;total_value];$collectibleInfo[$get[colID];weight]];0]]
   $setUserVar[userCollectibles;$env[data];$get[author]]
-  
+
   $jsonLoad[data;$getUserVar[userCollectibles;$get[receiver]]]
   $jsonLoad[userCollectibles;$env[data;collectibleIDs]]
   $jsonLoad[uniques;$env[data;unique]]
@@ -57,7 +57,7 @@ export default new ForgeFunction({
   $!jsonSet[data;$get[class];$sum[$env[data;$get[class]];1]]
   $!jsonSet[data;total_value;$sum[$env[data;total_value];$collectibleInfo[$get[colID];weight]]]
   $setUserVar[userCollectibles;$env[data];$get[receiver]]
-  
+
   $jsonLoad[data;$getVar[collectible;$get[id]]]
   $!jsonSet[data;author;"$get[receiver]"]
   $setVar[collectible;$get[id];$env[data]]

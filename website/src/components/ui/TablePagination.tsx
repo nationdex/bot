@@ -30,13 +30,14 @@ export function TablePagination({
     <div
       className={cn(
         'flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3.5 border-t border-[var(--admin-border)] text-xs text-[var(--admin-muted)]',
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <span>Rows per page:</span>
-          <select name="pagesize"
+          <select
+            name="pagesize"
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.currentTarget.value));
@@ -53,8 +54,11 @@ export function TablePagination({
         </div>
 
         <span>
-          Showing <strong className="text-[var(--admin-fg)] font-semibold">{startItem}–{endItem}</strong> of{' '}
-          <strong className="text-[var(--admin-fg)] font-semibold">{totalItems}</strong> entries
+          Showing{' '}
+          <strong className="text-[var(--admin-fg)] font-semibold">
+            {startItem}–{endItem}
+          </strong>{' '}
+          of <strong className="text-[var(--admin-fg)] font-semibold">{totalItems}</strong> entries
         </span>
       </div>
 
@@ -65,7 +69,8 @@ export function TablePagination({
           size="sm"
           disabled={safePage <= 1}
           onClick={() => setCurrentPage(1)}
-          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3"
+          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="First Page"
         >
           <ChevronsLeft className="h-3.5 w-3.5" />
@@ -77,7 +82,8 @@ export function TablePagination({
           size="sm"
           disabled={safePage <= 1}
           onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3"
+          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Previous Page"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
@@ -93,7 +99,8 @@ export function TablePagination({
           size="sm"
           disabled={safePage >= totalPages}
           onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3"
+          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Next Page"
         >
           <ChevronRight className="h-3.5 w-3.5" />
@@ -105,7 +112,8 @@ export function TablePagination({
           size="sm"
           disabled={safePage >= totalPages}
           onClick={() => setCurrentPage(totalPages)}
-          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3" className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
+          omitDefaults="rounded-md disabled:opacity-50 h-9 rounded-md px-3"
+          className="h-7 w-7 p-0 rounded-full text-[var(--admin-muted)] hover:text-[var(--admin-fg)] hover:bg-[var(--admin-card)] disabled:opacity-40"
           title="Last Page"
         >
           <ChevronsRight className="h-3.5 w-3.5" />

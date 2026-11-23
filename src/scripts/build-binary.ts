@@ -1,6 +1,15 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, renameSync, statSync } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  mkdtempSync,
+  mkdirSync,
+  copyFileSync,
+  rmSync,
+  renameSync,
+  statSync,
+} from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const targets: Record<string, string> = {
@@ -51,16 +60,28 @@ try {
   }
 
   run(['bun', 'run', 'bundle:prep']);
-  run(['bun', 'build', 'src/index.ts', '--compile', `--target=bun-${target}`,
-    '--external', '@napi-rs/canvas-*', '--external', '@gifsx/gifsx-*',
-    '--outfile', join(stage, executable)]);
+  run([
+    'bun',
+    'build',
+    'src/index.ts',
+    '--compile',
+    `--target=bun-${target}`,
+    '--external',
+    '@napi-rs/canvas-*',
+    '--external',
+    '@gifsx/gifsx-*',
+    '--outfile',
+    join(stage, executable),
+  ]);
   installedBytes += statSync(join(stage, executable)).size;
 
   const archive = name + (windows ? '.zip' : compression ? '.tar.zst' : '.tar.gz');
   if (windows) run(['zip', '-9', '-q', '-r', archive, executable, 'node_modules'], stage);
   else run(['tar', compression ? '--zstd' : '-z', '-cf', archive, executable, 'node_modules'], stage);
   const output = join(outputDir, archive);
-  const hash = createHash('sha256').update(readFileSync(join(stage, archive))).digest('hex');
+  const hash = createHash('sha256')
+    .update(readFileSync(join(stage, archive)))
+    .digest('hex');
   writeFileSync(join(stage, 'checksum'), hash + '  ' + archive + '\n');
   renameSync(join(stage, archive), output);
   renameSync(join(stage, 'checksum'), output + '.sha256');

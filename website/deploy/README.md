@@ -3,11 +3,11 @@
 The panel needs neither. It runs inside the bot and listens on `PANEL_PORT` (default 3000) by itself.
 Use these only if you want a real domain, HTTPS, or a public address without opening ports.
 
-| You want | Use | Needs |
-| --- | --- | --- |
-| A domain with HTTPS on your own server | [`nginx/nationdex-panel.conf`](nginx/nationdex-panel.conf) | Nginx, a domain, certbot |
-| Nginx on a LAN or behind another TLS layer | [`nginx/nationdex-panel.http.conf`](nginx/nationdex-panel.http.conf) | Nginx |
-| A quick public HTTPS address, no port forwarding | [`ngrok/ngrok.yml.example`](ngrok/ngrok.yml.example) or `bun run panel:ngrok` | Ngrok account (free) |
+| You want                                         | Use                                                                           | Needs                    |
+| ------------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------ |
+| A domain with HTTPS on your own server           | [`nginx/nationdex-panel.conf`](nginx/nationdex-panel.conf)                    | Nginx, a domain, certbot |
+| Nginx on a LAN or behind another TLS layer       | [`nginx/nationdex-panel.http.conf`](nginx/nationdex-panel.http.conf)          | Nginx                    |
+| A quick public HTTPS address, no port forwarding | [`ngrok/ngrok.yml.example`](ngrok/ngrok.yml.example) or `bun run panel:ngrok` | Ngrok account (free)     |
 
 You can combine them (Ngrok in front of the panel while Nginx is not used, or Nginx alone). They do not depend on each other.
 

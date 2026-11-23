@@ -20,7 +20,7 @@ export default new ForgeFunction({
   code: `
   $if[$env[guild]!=null;
     $jsonLoad[config;$getGuildVar[spawnConfig;$env[guild]]]
-    ;
+  ;
     $jsonLoad[config;$getGuildVar[spawnConfig]]
   ]
   $return[$env[config;$env[value]]]

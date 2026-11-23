@@ -1,8 +1,19 @@
 {
-  "$schema": "https://raw.githubusercontent.com/EdexLabs/ForgeScript/main/forgeconfig.schema.json",
+  "$schema": "https://raw.githubusercontent.com/EdexLabs/ForgeVSC/main/forgeconfig.schema.json",
   "extensions": [
     "github:tryforge/ForgeScript#main",
-    "github:tryforge/ForgeCanvas#dev"
+    "github:tryforge/ForgeCanvas#dev",
+    {
+      "extension": "@nationdex/db",
+      "functions": "https://raw.githubusercontent.com/nationdex/db/main/metadata/functions.json",
+      "enums": "https://raw.githubusercontent.com/nationdex/db/main/metadata/enums.json",
+      "events": "https://raw.githubusercontent.com/nationdex/db/main/metadata/events.json"
+    },
+    {
+      "extension": "@nationdex/api",
+      "functions": "https://raw.githubusercontent.com/nationdex/api/main/metadata/functions.json",
+      "enums": "https://raw.githubusercontent.com/nationdex/api/main/metadata/enums.json"
+    }
   ],
   "custom_functions_path": "src/functions",
   "semantic_decorations": true

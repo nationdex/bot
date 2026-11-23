@@ -38,7 +38,7 @@ export default new ForgeFunction({
   $let[maxperpage;15]
   $let[stInd;$multi[$get[maxperpage];$sub[$get[page];1]]]
   $let[endInd;$multi[$get[maxperpage];$get[page]]]
-  
+
   $if[$get[type]==collectibles;
     $jsonLoad[collectibles;$collectiblesData[collectibles]]
     $jsonLoad[ids;$collectibleIDs]
@@ -53,12 +53,12 @@ export default new ForgeFunction({
     ]
 
     $let[totalRarity;$math[$collectiblesData[rarity;+]]]
-    
+
     $arrayMap[ids;id;$return[$appEmoji[$collectibleInfo[$env[id];emoji_id]] **$collectibleInfo[$env[id];name]**: \`$cropText[$math[($collectibleInfo[$env[id];rarity]/$get[totalRarity])*100];0;5]%\`];mapped]
   ]
   $let[pages;$ceil[$divide[$arrayLength[ids];$get[maxperpage]]]]
   $arraySlice[mapped;display;$get[stInd];$get[endInd]]
-  
+
   $return[
     $addContainer[
       $addSection[
@@ -67,12 +67,12 @@ export default new ForgeFunction({
         $addThumbnail[$userAvatar[$botID]]
       ]
       $addTextDisplay[$arrayJoin[display;
-]]
+      ]]
     ;$jsonVar[config;accent]]
     $addActionRow
-      $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];Previous;Secondary;;$checkCondition[$get[page]==1]]
-      $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]
-      $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];Next;Secondary;;$checkCondition[$get[page]==$get[pages]]]
+    $addButton[pages-rarity-$authorID-$sub[$get[page];1]-$get[type]-$get[class]-$get[sortType];Previous;Secondary;;$checkCondition[$get[page]==1]]
+    $addButton[pages-rarity-$authorID-index;$get[page] / $get[pages];Primary;;true]
+    $addButton[pages-rarity-$authorID-$sum[$get[page];1]-$get[type]-$get[class]-$get[sortType];Next;Secondary;;$checkCondition[$get[page]==$get[pages]]]
   ]
   `,
 });
