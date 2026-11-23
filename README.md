@@ -60,17 +60,17 @@ The API is provided by `@nationdex/api`. Route implementations live in `src/api_
 
 Most GET routes are public. Sensitive views require a token with the listed capability. Player privacy settings still apply unless the token has `inspect.read`.
 
-| Route | Purpose | Access |
-| --- | --- | --- |
-| `GET /v1/stats` | Global bot and collection statistics | Public |
-| `GET /v1/config` | Bot configuration | Public |
-| `GET /v1/collectibles/data?id=:id` | Catalog, optionally one collectible | Public |
-| `GET /v1/user?id=:discordId` | A player's inventory, auction, and settings | Public view; `inspect.read` bypasses privacy |
-| `GET /v1/users/:id/auction` | Player auction statistics | Public view; `inspect.read` bypasses privacy |
-| `GET /v1/guilds/:id` | Spawn settings for a joined server | Public |
-| `GET /v1/cards` and `GET /v1/cards/:id/image` | Card catalog and card image | Public |
-| `GET /v1/commands/data`, `GET /v1/slash/data` | Registered command definitions | Public |
-| `GET /v1/search_db/:variable?id=:id` | Raw database records | `inspect.read` |
+| Route                                         | Purpose                                     | Access                                       |
+| --------------------------------------------- | ------------------------------------------- | -------------------------------------------- |
+| `GET /v1/stats`                               | Global bot and collection statistics        | Public                                       |
+| `GET /v1/config`                              | Bot configuration                           | Public                                       |
+| `GET /v1/collectibles/data?id=:id`            | Catalog, optionally one collectible         | Public                                       |
+| `GET /v1/user?id=:discordId`                  | A player's inventory, auction, and settings | Public view; `inspect.read` bypasses privacy |
+| `GET /v1/users/:id/auction`                   | Player auction statistics                   | Public view; `inspect.read` bypasses privacy |
+| `GET /v1/guilds/:id`                          | Spawn settings for a joined server          | Public                                       |
+| `GET /v1/cards` and `GET /v1/cards/:id/image` | Card catalog and card image                 | Public                                       |
+| `GET /v1/commands/data`, `GET /v1/slash/data` | Registered command definitions              | Public                                       |
+| `GET /v1/search_db/:variable?id=:id`          | Raw database records                        | `inspect.read`                               |
 
 Example:
 
@@ -81,26 +81,16 @@ curl 'http://localhost:2222/v1/collectibles/data?id=31'
 
 ### Write routes
 
-Every POST request needs `Authorization: Bearer <token>`, `Content-Type: application/json`, and the capability listed below. The token is created by the Discord application owner with `/api token`.
+The external API exposes only two POST routes. Both require the bot owner's API token and `Content-Type: application/json`:
 
-| Route family | Capability | Examples |
-| --- | --- | --- |
-| `/v1/nations*` | `nations.edit` or `cards.edit` for card/art operations | Add, edit, categorize, delete, and add artwork to nations |
-| `/v1/categories*`, `/v1/cards*` | `cards.edit` | Manage card backgrounds, specials, and categories |
-| `/v1/users/:id/*` | `users.edit` | Edit balances, settings, stats, auctions, and inventories |
-| `/v1/guilds/:id/edit` | `guilds.edit` | Change a server's spawn channel and spawn status |
-| `/v1/config*` | `config.edit` | Change bot settings and keywords |
+| Route                     | Purpose                                              |
+| ------------------------- | ---------------------------------------------------- |
+| `POST /v1/extras/install` | Install or update an extra to a host-approved commit |
+| `POST /v1/extras/remove`  | Disable an installed extra for removal on restart    |
 
-Example:
+The former configuration, collectible, card, category, user, guild, and auction mutation routes have been removed. The admin panel executes its operations internally through authenticated panel sessions and panel permissions; API tokens do not authenticate those sessions.
 
-```sh
-curl -X POST http://localhost:2222/v1/users/525421785001361408/balance \
-  -H 'Authorization: Bearer ndx_<token>' \
-  -H 'Content-Type: application/json' \
-  -d '{"mode":"add","amount":500}'
-```
-
-Successful writes are recorded in `/access audit`; request bodies are not logged. Common responses are `200` for success, `400` for invalid input, `401` for a missing or revoked token, `403` for a missing capability, `413` for an oversized request, and `500` for an unexpected error.
+Extras changes are recorded in `/access audit`. Installation still requires remote extras to be enabled and the repository and exact commit to be approved in the panel.
 
 Do not expose the API port directly to the public internet over plain HTTP. Use HTTPS through a reverse proxy or configure TLS for the service.
 
