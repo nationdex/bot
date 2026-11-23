@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, rm, lstat, readdir } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { mkdir, open, rename, rm, lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { ForgeClient } from '@tryforge/forgescript';
@@ -36,9 +37,13 @@ const maxGitBytes = 100 * 1024 * 1024;
 const maxOutputBytes = 2 * 1024 * 1024;
 
 async function checkedFile(file: string, maxBytes: number): Promise<string> {
-  const info = await lstat(file);
-  if (!info.isFile() || info.size > maxBytes) throw new Error('Invalid or oversized extras file');
-  return readFile(file, 'utf8');
+  // O_NOFOLLOW makes the type/size checks apply to the same inode that is read.
+  const handle = await open(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try {
+    const info = await handle.stat();
+    if (!info.isFile() || info.size > maxBytes) throw new Error('Invalid or oversized extras file');
+    return await handle.readFile('utf8');
+  } finally { await handle.close(); }
 }
 async function checkedRoot(): Promise<void> {
   for (const dir of [path.resolve('data'), root()]) {
