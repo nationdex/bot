@@ -48,8 +48,7 @@
     "@nationdex/api": "github:nationdex/api#main",
     "@nationdex/db": "github:nationdex/db#main",
     "@tryforge/forge.canvas": "github:tryforge/ForgeCanvas#dev",
-    "@tryforge/forgescript": "github:tryforge/ForgeScript#main",
-    "preact": "11.2.0"
+    "@tryforge/forgescript": "github:tryforge/ForgeScript#main"
   },
   "devDependencies": {
     "@types/bun": "^1.4.5",

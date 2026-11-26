@@ -246,3 +246,20 @@
 .panel-motion-enter:nth-child(n + 6) {
   --panel-motion-index: 5;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hover-feedback='on'] :is([data-section], [aria-label='Open menu'], pnd-panel-choices button) {
+    transition:
+      scale 150ms ease,
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  [data-hover-feedback='on'] :is([data-section], [aria-label='Open menu'], pnd-panel-choices button):hover {
+    scale: 1.02;
+  }
+
+  [data-hover-feedback='on'] :is([data-section], [aria-label='Open menu'], pnd-panel-choices button):active {
+    scale: 0.96;
+  }
+}

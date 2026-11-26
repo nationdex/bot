@@ -180,6 +180,7 @@ export function applyAnimationPrefsToDocument(prefs: AnimationPrefs) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
   root.dataset.animations = prefs.masterEnabled ? 'on' : 'off';
+  root.dataset.hoverFeedback = prefs.masterEnabled && prefs.hoverFeedback ? 'on' : 'off';
   root.dataset.animations3d = prefs.masterEnabled && prefs.depth3d ? 'on' : 'off';
   root.dataset.smoothScroll = prefs.masterEnabled && prefs.smoothScroll ? 'on' : 'off';
 }

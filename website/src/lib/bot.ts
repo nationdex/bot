@@ -1,6 +1,5 @@
 export const bot = {
   name: 'Nationdex',
-  version: '1.0.0',
   description:
     'Collect nations on Discord and enjoy the OG environment through one of the oldest Ballsdex-like bots in existence!',
   collectible: {

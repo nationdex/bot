@@ -49,7 +49,7 @@ const PWA_HEAD = `
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
 `;
 
-// Bundles the panel UI (Preact + CSS) into website/dist with Bun's own bundler.
+// Bundles the panel UI (native DOM + CSS) into website/dist with Bun's own bundler.
 export async function buildPanel(): Promise<void> {
   await rm(distDir, { recursive: true, force: true });
   const result = await Bun.build({
@@ -70,7 +70,7 @@ export async function buildPanel(): Promise<void> {
     { inputs: Record<string, unknown>; imports: Array<{ path: string; kind: string }> }
   >;
   const dash = Object.entries(outputs).find(([, o]) =>
-    Object.keys(o.inputs).some((i) => i.endsWith('pages/dashboard/Dashboard.tsx')),
+    Object.keys(o.inputs).some((i) => i.endsWith('pages/dashboard/Dashboard.ts')),
   );
   const preload = dash
     ? [dash[0], ...dash[1].imports.filter((i) => i.kind === 'import-statement').map((i) => i.path)]

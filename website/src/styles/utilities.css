@@ -1,3 +1,7 @@
+:where(pnd-skeleton) {
+  display: block;
+}
+
 /* Existing panel utility classes. Keep selector order when editing. */
 /* layer: properties */
 @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
@@ -1170,7 +1174,8 @@ input:where([type='button'], [type='reset'], [type='submit']),
 .rounded-lg {
   border-radius: var(--radius-lg);
 }
-.rounded-md {
+.rounded-md,
+:where(pnd-skeleton:not([data-custom-radius])) {
   border-radius: var(--radius-md);
 }
 .rounded-sm {
@@ -1218,7 +1223,8 @@ input:where([type='button'], [type='reset'], [type='submit']),
 .bg-\[var\(--admin-card\)\] {
   background-color: var(--admin-card);
 }
-.bg-\[var\(--admin-elevated\)\] {
+.bg-\[var\(--admin-elevated\)\],
+:where(pnd-skeleton) {
   background-color: var(--admin-elevated);
 }
 .bg-\[var\(--admin-elevated\)\]\/40 {
@@ -2209,7 +2215,8 @@ input:where([type='button'], [type='reset'], [type='submit']),
     transform: rotate(360deg);
   }
 }
-.animate-pulse {
+.animate-pulse,
+:where(pnd-skeleton) {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 .animate-spin {
